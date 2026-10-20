@@ -1,0 +1,22 @@
+export function VerifiedBadge() {
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent"
+      title="Verified — source traceable and site accessible"
+    >
+      <svg
+        className="h-3.5 w-3.5"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        aria-hidden
+      >
+        <path
+          fillRule="evenodd"
+          d="M16.704 5.29a1 1 0 010 1.42l-7 7a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 11.586l6.293-6.293a1 1 0 011.414 0z"
+          clipRule="evenodd"
+        />
+      </svg>
+      已验证
+    </span>
+  );
+}

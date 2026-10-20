@@ -1,0 +1,354 @@
+[
+  {
+    "id": "tool-gh-arcsin1-oh-my-ppt",
+    "name": "oh-my-ppt",
+    "domain": "ohmyppt.cc",
+    "url": "http://www.ohmyppt.cc",
+    "description": "Describe what you need — a presentation, lesson, or story — and let the AI build clean, beautiful HTML slides for you. Local-first. Works offline. Works for you.",
+    "categories": [
+      "Productivity"
+    ],
+    "heatScore": 67,
+    "githubStars": 2138,
+    "phUpvotes": null,
+    "firstSeenAt": "2026-10-16T05:22:49.296Z",
+    "collectedAt": "2026-10-20T06:55:56.769Z",
+    "verified": "pending",
+    "sourceType": "github",
+    "sourceUrl": "https://github.com/arcsin1/oh-my-ppt",
+    "techStack": [
+      "OpenResty"
+    ]
+  },
+  {
+    "id": "tool-gh-modiqo-skillspec",
+    "name": "skillspec",
+    "domain": "skillspec.sh",
+    "url": "https://skillspec.sh",
+    "description": "SkillSpec makes agent skills followable, testable, and provable with Doctor risk reports, guided imports, structured contracts, and alignment proof.",
+    "categories": [
+      "Other"
+    ],
+    "heatScore": 57,
+    "githubStars": 706,
+    "phUpvotes": null,
+    "firstSeenAt": "2026-10-16T05:22:49.298Z",
+    "collectedAt": "2026-10-20T07:16:33.131Z",
+    "verified": "pending",
+    "sourceType": "github",
+    "sourceUrl": "https://github.com/modiqo/skillspec",
+    "contact": {
+      "socials": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/modiqo/skillspec"
+        }
+      ]
+    }
+  },
+  {
+    "id": "tool-gh-joinly-ai-joinly",
+    "name": "joinly",
+    "domain": "joinly.ai",
+    "url": "https://joinly.ai",
+    "description": "Make your meetings accessible to AI Agents",
+    "categories": [
+      "AI Chat",
+      "Voice & Audio",
+      "Productivity"
+    ],
+    "heatScore": 55,
+    "githubStars": 569,
+    "phUpvotes": null,
+    "firstSeenAt": "2026-10-16T05:37:38.274Z",
+    "collectedAt": "2026-10-20T07:16:40.532Z",
+    "verified": "pending",
+    "sourceType": "github",
+    "sourceUrl": "https://github.com/joinly-ai/joinly",
+    "techStack": [
+      "Next.js",
+      "Webpack"
+    ],
+    "contact": {
+      "email": "johannes@joinly.ai",
+      "socials": [
+        {
+          "label": "Discord",
+          "url": "https://discord.gg/AN5NEBkS4d"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://github.com/joinly-ai/joinly"
+        },
+        {
+          "label": "Twitter / X",
+          "url": "https://x.com/joinly_ai"
+        },
+        {
+          "label": "LinkedIn",
+          "url": "https://www.linkedin.com/company/joinly-ai/"
+        },
+        {
+          "label": "YouTube",
+          "url": "https://www.youtube.com/@joinly-ai"
+        }
+      ]
+    },
+    "pricing": [
+      {
+        "plan": "方案 1",
+        "price": "$12"
+      }
+    ]
+  },
+  {
+    "id": "tool-gh-fulappios-agent-quest",
+    "name": "Agent-Quest",
+    "domain": "fulvioscichilone.it",
+    "url": "https://www.fulvioscichilone.it/agent-quest/",
+    "description": "Real-time gamified dashboard for monitoring Claude Code and Codex AI agents in a medieval fantasy village: context-window gauges, skill & plugin telemetry, subagent families and one-click exports for AI review",
+    "categories": [
+      "AI Chat",
+      "Coding"
+    ],
+    "heatScore": 44,
+    "githubStars": 155,
+    "phUpvotes": null,
+    "firstSeenAt": "2026-10-16T05:37:38.274Z",
+    "collectedAt": "2026-10-20T07:16:56.304Z",
+    "verified": "pending",
+    "sourceType": "github",
+    "sourceUrl": "https://github.com/FulAppiOS/Agent-Quest",
+    "techStack": [
+      "WordPress"
+    ],
+    "contact": {
+      "socials": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/FulAppiOS/Agent-Quest"
+        }
+      ]
+    }
+  },
+  {
+    "id": "tool-gh-affaan-m-ecc",
+    "name": "ECC",
+    "domain": "ecc.tools",
+    "url": "https://ecc.tools",
+    "description": "The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development for Claude Code, Codex, Opencode, Cursor and beyond.",
+    "categories": [
+      "AI Chat",
+      "Coding",
+      "Productivity"
+    ],
+    "heatScore": 100,
+    "githubStars": 280589,
+    "phUpvotes": null,
+    "firstSeenAt": "2026-10-16T05:37:39.024Z",
+    "collectedAt": "2026-10-20T07:17:03.945Z",
+    "verified": "pending",
+    "sourceType": "github",
+    "sourceUrl": "https://github.com/affaan-m/ECC",
+    "techStack": [
+      "Cloudflare"
+    ],
+    "contact": {
+      "socials": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/affaan-m/ECC"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://docs.github.com/en/rest/metrics/traffic#get-repository-clones"
+        },
+        {
+          "label": "Twitter / X",
+          "url": "https://x.com/affaan/status/2033263813387223421"
+        },
+        {
+          "label": "YouTube",
+          "url": "https://www.youtube.com/watch?v=fC0Z_CjEYLU"
+        },
+        {
+          "label": "Discord",
+          "url": "https://discord.gg/36yGMHGFbR"
+        }
+      ]
+    },
+    "pricing": [
+      {
+        "plan": "方案 1",
+        "price": "$19"
+      },
+      {
+        "plan": "方案 2",
+        "price": "$190"
+      }
+    ]
+  },
+  {
+    "id": "tool-gh-morluto-rea",
+    "name": "rea",
+    "domain": "rea.tools",
+    "url": "https://rea.tools",
+    "description": "Reverse engineer anything with agents, from app behavior down to native binaries.",
+    "categories": [
+      "AI Chat",
+      "Coding"
+    ],
+    "heatScore": 100,
+    "githubStars": 275927,
+    "phUpvotes": null,
+    "firstSeenAt": "2026-10-16T05:37:39.024Z",
+    "collectedAt": "2026-10-20T07:17:09.681Z",
+    "verified": "pending",
+    "sourceType": "github",
+    "sourceUrl": "https://github.com/morluto/rea",
+    "techStack": [
+      "Cloudflare"
+    ],
+    "contact": {
+      "socials": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/morluto/rea"
+        },
+        {
+          "label": "Discord",
+          "url": "https://discord.gg/GkcryMnJDM"
+        },
+        {
+          "label": "Twitter / X",
+          "url": "https://x.com/reatools"
+        }
+      ]
+    }
+  },
+  {
+    "id": "tool-gh-nousresearch-hermes-agent",
+    "name": "hermes-agent",
+    "domain": "hermes-agent.nousresearch.com",
+    "url": "https://hermes-agent.nousresearch.com",
+    "description": "The agent that grows with you",
+    "categories": [
+      "AI Chat",
+      "Coding"
+    ],
+    "heatScore": 100,
+    "githubStars": 254190,
+    "phUpvotes": null,
+    "firstSeenAt": "2026-10-16T05:37:39.024Z",
+    "collectedAt": "2026-10-20T07:17:15.496Z",
+    "verified": "pending",
+    "sourceType": "github",
+    "sourceUrl": "https://github.com/NousResearch/hermes-agent",
+    "techStack": [
+      "Vercel",
+      "Next.js",
+      "Google Analytics"
+    ],
+    "contact": {
+      "socials": [
+        {
+          "label": "Discord",
+          "url": "https://discord.gg/nousresearch"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://github.com/NousResearch/hermes-agent"
+        },
+        {
+          "label": "Twitter / X",
+          "url": "https://x.com/NousResearch"
+        },
+        {
+          "label": "YouTube",
+          "url": "https://youtube.com/@NousResearch"
+        }
+      ]
+    },
+    "pricing": [
+      {
+        "plan": "方案 1",
+        "price": "$20"
+      },
+      {
+        "plan": "方案 2",
+        "price": "$22"
+      },
+      {
+        "plan": "方案 3",
+        "price": "$10"
+      }
+    ]
+  },
+  {
+    "id": "tool-gh-firecrawl-firecrawl",
+    "name": "firecrawl",
+    "domain": "firecrawl.dev",
+    "url": "https://firecrawl.dev",
+    "description": "Supercharge your AI agents with data from the web and beyond. Building the library for superintelligence. 🔥",
+    "categories": [
+      "AI Chat",
+      "Data & Analytics"
+    ],
+    "heatScore": 100,
+    "githubStars": 191966,
+    "phUpvotes": null,
+    "firstSeenAt": "2026-10-16T05:37:39.024Z",
+    "collectedAt": "2026-10-20T07:17:22.554Z",
+    "verified": "pending",
+    "sourceType": "github",
+    "sourceUrl": "https://github.com/firecrawl/firecrawl",
+    "techStack": [
+      "Next.js",
+      "Vercel",
+      "Google Tag Manager"
+    ],
+    "contact": {
+      "email": "help@firecrawl.com",
+      "socials": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/firecrawl/firecrawl"
+        },
+        {
+          "label": "Twitter / X",
+          "url": "https://x.com/morganlinton/status/1839454165703204955"
+        },
+        {
+          "label": "LinkedIn",
+          "url": "https://www.linkedin.com/company/firecrawl"
+        },
+        {
+          "label": "YouTube",
+          "url": "https://www.youtube.com/@Firecrawl_dev"
+        },
+        {
+          "label": "Instagram",
+          "url": "https://www.instagram.com/firecrawl_dev/"
+        },
+        {
+          "label": "Discord",
+          "url": "https://discord.gg/firecrawl"
+        }
+      ]
+    },
+    "pricing": [
+      {
+        "plan": "方案 1",
+        "price": "$75"
+      },
+      {
+        "plan": "方案 2",
+        "price": "$100"
+      },
+      {
+        "plan": "方案 3",
+        "price": "$15"
+      }
+    ]
+  }
+]
