@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { AITool } from "@/lib/types";
+import type { AITool } from "@horizons/shared";
 import { ToolRow } from "./ToolRow";
 
 export function BoardSection({

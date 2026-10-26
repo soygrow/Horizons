@@ -1,4 +1,4 @@
-import type { PricingModel } from "@/lib/types";
+import type { PricingModel } from "@horizons/shared";
 import { pricingModelLabels } from "@/lib/data";
 
 const styles: Record<PricingModel, string> = {

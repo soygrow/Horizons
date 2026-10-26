@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthButton } from "./AuthButton";
 
 const channels: { label: string; href: string; soon?: boolean }[] = [
   { label: "AI工具榜", href: "/tools" },
@@ -44,6 +45,7 @@ export function NavBar() {
         </div>
 
         <div className="flex items-center gap-3">
+          <AuthButton />
           <Link
             href="/#subscribe"
             className="hidden rounded-lg px-3 py-2 text-sm font-medium text-ink-secondary transition hover:text-ink sm:block"

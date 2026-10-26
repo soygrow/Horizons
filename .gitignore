@@ -1,5 +1,5 @@
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -9,8 +9,14 @@
 !.yarn/versions
 
 # next.js
-/.next/
-/out/
+**/.next/
+**/out/
+
+# cloudflare / opennext
+.open-next/
+.wrangler/
+.dev.vars
+.dev.vars.*
 
 # production
 /build
@@ -28,6 +34,7 @@ yarn-error.log*
 # env files
 .env*
 !.env.example
+.ph-token.json
 
 # typescript
 *.tsbuildinfo

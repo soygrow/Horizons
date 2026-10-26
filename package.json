@@ -1,30 +1,31 @@
 {
-  "name": "horizons-tools",
+  "name": "horizons",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
+    "dev": "pnpm --filter @horizons/web dev",
+    "build": "pnpm --filter @horizons/web build",
+    "start": "pnpm --filter @horizons/web start",
+    "lint": "pnpm --filter @horizons/web lint",
+    "dev:api": "pnpm --filter @horizons/api dev",
+    "deploy:api": "pnpm --filter @horizons/api deploy",
     "fetch": "tsx scripts/fetch/index.ts",
     "fetch:dry": "tsx scripts/fetch/index.ts --dry",
     "enrich": "tsx scripts/fetch/enrich.ts",
-    "enrich:dry": "tsx scripts/fetch/enrich.ts --dry"
-  },
-  "dependencies": {
-    "next": "^16.4.1",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1",
-    "server-only": "^0.0.1"
+    "enrich:dry": "tsx scripts/fetch/enrich.ts --dry",
+    "dataforseo": "tsx scripts/fetch/dataforseo.ts",
+    "ph:oauth": "tsx scripts/fetch/ph-oauth.ts"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "^26.6.5",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "tailwindcss": "^4.3.3",
+    "playwright": "^1.64.1",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "workerd"
+    ]
   }
 }

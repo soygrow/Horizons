@@ -2,7 +2,7 @@
  * 定价抓取（免费、合规、尽力而为）：访问首页与常见定价路径，用正则提取公开价格。
  * 结果较脆弱，仅作第一版参考，人工核实后才会转为 verified。
  */
-import type { AITool } from "../../../src/lib/types";
+import type { AITool } from "@horizons/shared";
 import { config } from "../config";
 
 const PRICE_PATHS = ["/pricing", "/plans", "/price", "/pricing.html"];

@@ -4,7 +4,7 @@ import { config } from "./config";
 import { detectTechStack } from "./sources/techstack";
 import { extractContact } from "./sources/contact";
 import { detectPricing } from "./sources/pricing";
-import type { AITool } from "../../src/lib/types";
+import type { AITool } from "@horizons/shared";
 
 const TOOLS_PATH = path.resolve(process.cwd(), "content/aitools.json");
 

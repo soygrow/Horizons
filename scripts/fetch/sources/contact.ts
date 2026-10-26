@@ -2,7 +2,7 @@
  * 联系方式提取（免费、合规）：从首页 HTML 提取公开邮箱与社媒链接。
  * 只读取公开页面中的联系信息，不扫描任何非公开资源。
  */
-import type { AITool } from "../../../src/lib/types";
+import type { AITool } from "@horizons/shared";
 
 const EMAIL_RE = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+/g;
 

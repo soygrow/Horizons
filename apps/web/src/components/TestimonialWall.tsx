@@ -1,4 +1,4 @@
-import testimonials from "../../content/testimonials.json";
+import testimonials from "@content/testimonials.json";
 
 export function TestimonialWall() {
   return (

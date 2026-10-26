@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "horizons-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "routes": [
+    {
+      "pattern": "horizons.tools/api/*",
+      "zone_name": "horizons.tools"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "horizons-db",
+      "database_id": "355e5cca-29ca-4b37-90a5-6c88d94e7a4b",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

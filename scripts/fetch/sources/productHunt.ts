@@ -1,35 +1,125 @@
-import type { AITool } from "../../../src/lib/types";
+import fs from "node:fs";
+import path from "node:path";
+import { chromium, type Browser } from "playwright";
+import type { AITool } from "@horizons/shared";
 import { getProductHuntToken, config } from "../config";
 
-/**
- * Product Hunt GraphQL API（Developer Token / OAuth token 均可）。
- * 未配置 token 时返回空数组，不报错。
- *
- * 已知限制（2026-10-16 实测）：
- * 1. `website` / `productLinks` / `url` 全部返回 producthunt.com/r/xxx 跳转链接，
- *    而非真实域名，必须跟随重定向解析。
- * 2. 但 /r/ 跳转与 PH 产品页在服务端均被 Cloudflare 拦截（403），纯服务端无法
- *    拿到真实域名。因此当前环境下 PH 条目域名解析失败会被丢弃（贡献 0 条）。
- *    后续两条出路：① 走 OAuth 授权码流程换取带 scope 的 access token；
- *    ② 用 Playwright 无头浏览器带 JS 打开 /r/ 链接拿真实 URL。
- * 3. 待真实域名可解析后，本适配器无需改动即可自动生效（resolveRedirect 已具备）。
- */
+// 大厂 / 平台域名：PH 上这些通常是模型发布或官方公告，不是独立 AI 工具产品，需排除
+const EXCLUDED_DOMAINS = new Set([
+  "openai.com",
+  "anthropic.com",
+  "google.com",
+  "blog.google",
+  "deepmind.google",
+  "chatgpt.com",
+  "microsoft.com",
+  "meta.com",
+  "apple.com",
+  "github.com",
+  "huggingface.co",
+  "producthunt.com",
+  "twitter.com",
+  "x.com",
+  "linkedin.com",
+  "medium.com",
+  "youtube.com",
+]);
+
+// PH 的 website/url/productLinks 全是 /r/ 跳转，且被 Cloudflare 防护（服务端 403、
+// headless 被挑战拦截），只有有头 Chrome 能穿透。故用 Playwright 有头模式解析域名。
+let browser: Browser | null = null;
+
+async function getBrowser(): Promise<Browser> {
+  if (browser) return browser;
+  try {
+    browser = await chromium.launch({ headless: false, channel: "chrome" });
+  } catch {
+    browser = await chromium.launch({ headless: false });
+  }
+  return browser;
+}
+
+export async function closePHBrowser(): Promise<void> {
+  if (browser) {
+    await browser.close();
+    browser = null;
+  }
+}
+
+async function resolveRedirect(url: string): Promise<string> {
+  const b = await getBrowser();
+  const page = await b.newPage();
+  try {
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
+    for (let i = 0; i < 12; i++) {
+      await page.waitForTimeout(1500);
+      const u = page.url();
+      if (!u.includes("producthunt.com/r/")) return u;
+    }
+    return "";
+  } catch {
+    return "";
+  } finally {
+    await page.close();
+  }
+}
+
+function cleanUrl(raw: string): string {
+  try {
+    const u = new URL(raw);
+    return `${u.origin}${u.pathname}`.replace(/\/$/, "");
+  } catch {
+    return raw;
+  }
+}
+
+function extractDomain(raw: string): string {
+  try {
+    return new URL(raw).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}
+
+function getToken(): string | null {
+  try {
+    const p = path.resolve(process.cwd(), ".ph-token.json");
+    const data = JSON.parse(fs.readFileSync(p, "utf-8")) as { access_token?: string };
+    if (data.access_token) return data.access_token;
+  } catch {
+    // 忽略，回退 Developer Token
+  }
+  return getProductHuntToken();
+}
+
 export async function fetchProductHuntTools(limit: number): Promise<AITool[]> {
-  const token = getProductHuntToken();
+  const token = getToken();
   if (!token) {
-    console.log("[fetch] 未配置 PH_TOKEN，跳过 Product Hunt 抓取");
+    console.log("[fetch] 未配置 PH 凭据，跳过 Product Hunt 抓取");
     return [];
   }
 
+  interface PostNode {
+    name: string;
+    tagline: string;
+    website: string;
+    votesCount: number;
+    commentsCount: number;
+    createdAt: string;
+    topics?: { edges?: Array<{ node: { name: string } }> };
+  }
+
   const query = `
-    query($first: Int!) {
-      posts(first: $first, order: VOTES) {
+    query($first: Int!, $after: String) {
+      posts(first: $first, after: $after, order: VOTES) {
+        pageInfo { endCursor hasNextPage }
         edges {
           node {
             name
             tagline
             website
             votesCount
+            commentsCount
             createdAt
             topics { edges { node { name } } }
           }
@@ -38,57 +128,66 @@ export async function fetchProductHuntTools(limit: number): Promise<AITool[]> {
     }
   `;
 
-  const res = await fetch("https://api.producthunt.com/v2/api/graphql", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-      "User-Agent": config.userAgent,
-    },
-    body: JSON.stringify({ query, variables: { first: limit } }),
-  });
-
-  if (!res.ok) throw new Error(`Product Hunt 请求失败：${res.status}`);
-  const data = (await res.json()) as {
-    data?: {
-      posts?: {
-        edges?: Array<{
-          node: {
-            name: string;
-            tagline: string;
-            website: string;
-            votesCount: number;
-            createdAt: string;
-            topics?: { edges?: Array<{ node: { name: string } }> };
-          };
-        }>;
+  // 翻页拉取（PH 单页约 20 条，用 endCursor 翻页直到 limit）
+  const nodes: PostNode[] = [];
+  let after: string | null = null;
+  const pageSize = 20;
+  while (nodes.length < limit) {
+    const res = await fetch("https://api.producthunt.com/v2/api/graphql", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "User-Agent": config.userAgent,
+      },
+      body: JSON.stringify({
+        query,
+        variables: { first: Math.min(pageSize, limit - nodes.length), after },
+      }),
+    });
+    if (!res.ok) throw new Error(`Product Hunt 请求失败：${res.status}`);
+    const data = (await res.json()) as {
+      data?: {
+        posts?: {
+          pageInfo?: { endCursor?: string | null; hasNextPage?: boolean };
+          edges?: Array<{ node: PostNode }>;
+        };
       };
     };
-  };
+    const posts = data?.data?.posts;
+    const pageNodes = posts?.edges?.map((e) => e.node) ?? [];
+    nodes.push(...pageNodes);
+    if (!posts?.pageInfo?.hasNextPage || !posts?.pageInfo?.endCursor) break;
+    if (pageNodes.length === 0) break;
+    after = posts.pageInfo.endCursor;
+  }
+
+  console.log(`[fetch] Product Hunt 翻页拉到 ${nodes.length} 条，开始解析真实域名（有头浏览器）...`);
 
   const items: AITool[] = [];
-  for (const edge of data?.data?.posts?.edges ?? []) {
-    const node = edge.node;
-
-    // website 是 PH 跳转链接，解析真实域名
+  for (const node of nodes) {
     const realUrl = await resolveRedirect(node.website);
-    const domain = realUrl ? extractDomainSafe(realUrl) : "";
-    if (!domain || domain === "producthunt.com") continue;
+    const domain = realUrl ? extractDomain(realUrl) : "";
+    if (!domain || EXCLUDED_DOMAINS.has(domain)) {
+      console.log(`[fetch] ${node.name}：域名 ${domain || "?"} 已排除（大厂/平台），跳过`);
+      continue;
+    }
 
-    const topics = (node.topics?.edges ?? [])
-      .map((e) => e.node.name)
-      .filter(Boolean);
+    const topics = (node.topics?.edges ?? []).map((e) => e.node.name).filter(Boolean);
     const now = new Date().toISOString();
     items.push({
       id: `tool-ph-${domain.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}`,
       name: node.name.trim(),
       domain,
-      url: realUrl,
+      url: cleanUrl(realUrl),
       description: (node.tagline ?? "").trim(),
+      descriptionSource: "source",
       categories: ["Other"],
       topicSlugs: topics,
+      industry: "人工智能",
       heatScore: Math.min(100, Math.round(Math.log10(node.votesCount + 1) * 20)),
       phUpvotes: node.votesCount,
+      phComments: node.commentsCount,
       githubStars: null,
       launchedAt: node.createdAt,
       firstSeenAt: now,
@@ -96,43 +195,10 @@ export async function fetchProductHuntTools(limit: number): Promise<AITool[]> {
       verified: "pending",
       sourceType: "producthunt",
       sourceUrl: node.website,
+      phUrl: `https://www.producthunt.com/posts/${domain}`,
     });
+    console.log(`[fetch] ${node.name} → ${domain}`);
   }
 
   return items;
-}
-
-/** 跟随重定向解析真实 URL（HEAD 优先，失败降级 GET），失败返回空串 */
-async function resolveRedirect(url: string): Promise<string> {
-  try {
-    const res = await fetch(url, {
-      method: "HEAD",
-      redirect: "follow",
-      signal: AbortSignal.timeout(10_000),
-      headers: { "User-Agent": config.userAgent },
-    });
-    if (res.url && !res.url.includes("producthunt.com/r/")) return res.url;
-  } catch {
-    // HEAD 失败时降级 GET
-    try {
-      const res = await fetch(url, {
-        method: "GET",
-        redirect: "follow",
-        signal: AbortSignal.timeout(10_000),
-        headers: { "User-Agent": config.userAgent },
-      });
-      if (res.url && !res.url.includes("producthunt.com/r/")) return res.url;
-    } catch {
-      return "";
-    }
-  }
-  return "";
-}
-
-function extractDomainSafe(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return "";
-  }
 }

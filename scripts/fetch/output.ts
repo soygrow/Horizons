@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { AITool } from "../../src/lib/types";
+import type { AITool } from "@horizons/shared";
 
 const TOOLS_PATH = path.resolve(process.cwd(), "content/aitools.json");
 

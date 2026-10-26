@@ -1,5 +1,5 @@
-import type { AITool, PricingModel } from "./types";
-import toolsData from "../../content/aitools.json";
+import type { AITool, PricingModel } from "@horizons/shared";
+import toolsData from "@content/aitools.json";
 
 export const tools = toolsData as AITool[];
 

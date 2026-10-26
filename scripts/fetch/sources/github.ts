@@ -1,4 +1,4 @@
-import type { AITool, AIToolCategory } from "../../../src/lib/types";
+import type { AITool, AIToolCategory } from "@horizons/shared";
 import { extractDomain, truncate } from "../normalize";
 import { config } from "../config";
 

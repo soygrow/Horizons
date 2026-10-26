@@ -1,9 +1,8 @@
 import { config } from "./config";
-import { fetchGithubTools } from "./sources/github";
-import { fetchProductHuntTools } from "./sources/productHunt";
+import { fetchProductHuntTools, closePHBrowser } from "./sources/productHunt";
 import { loadExisting } from "./dedupe";
 import { appendTools } from "./output";
-import type { AITool } from "../../src/lib/types";
+import type { AITool } from "@horizons/shared";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
@@ -36,7 +35,6 @@ async function main(): Promise<void> {
   const mode = dryRun ? "（dry-run，不写入）" : "";
   console.log(`[fetch] 开始抓取 AI 工具，每次最多 ${config.maxPerRun} 个${mode}`);
 
-  // 先加载已有数据，逐源渐进去重，避免重复项占满配额导致后面的源被跳过
   const existing = loadExisting();
   const seen = new Set(existing.map((t) => t.domain));
   const fresh: AITool[] = [];
@@ -53,36 +51,25 @@ async function main(): Promise<void> {
     console.log(`[fetch] ${label}：抓到 ${items.length} 个，新增 ${added} 个`);
   }
 
-  // GitHub（免费匿名）
-  if (fresh.length < config.maxPerRun) {
-    await sleep(randomDelay());
-    try {
-      const items = await fetchWithRetry(() =>
-        fetchGithubTools(config.maxPerRun - fresh.length),
-      );
-      absorb("GitHub", items);
-    } catch (e) {
-      console.error(
-        "[fetch] GitHub 失败：",
-        e instanceof Error ? e.message : e,
-      );
+  try {
+    // Product Hunt 优先（AI 工具榜主力 = 真实产品网站）
+    if (fresh.length < config.maxPerRun) {
+      await sleep(randomDelay());
+      try {
+        const items = await fetchWithRetry(() =>
+          fetchProductHuntTools(config.maxPerRun - fresh.length),
+        );
+        absorb("Product Hunt", items);
+      } catch (e) {
+        console.error(
+          "[fetch] Product Hunt 失败：",
+          e instanceof Error ? e.message : e,
+        );
+      }
     }
-  }
 
-  // Product Hunt（需 PH_TOKEN，未配置则跳过）
-  if (fresh.length < config.maxPerRun) {
-    await sleep(randomDelay());
-    try {
-      const items = await fetchWithRetry(() =>
-        fetchProductHuntTools(config.maxPerRun - fresh.length),
-      );
-      absorb("Product Hunt", items);
-    } catch (e) {
-      console.error(
-        "[fetch] Product Hunt 失败：",
-        e instanceof Error ? e.message : e,
-      );
-    }
+  } finally {
+    await closePHBrowser();
   }
 
   if (fresh.length === 0) {

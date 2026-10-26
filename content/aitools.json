@@ -1,354 +1,1574 @@
 [
   {
-    "id": "tool-gh-arcsin1-oh-my-ppt",
-    "name": "oh-my-ppt",
-    "domain": "ohmyppt.cc",
-    "url": "http://www.ohmyppt.cc",
-    "description": "Describe what you need — a presentation, lesson, or story — and let the AI build clean, beautiful HTML slides for you. Local-first. Works offline. Works for you.",
-    "categories": [
-      "Productivity"
-    ],
-    "heatScore": 67,
-    "githubStars": 2138,
-    "phUpvotes": null,
-    "firstSeenAt": "2026-10-16T05:22:49.296Z",
-    "collectedAt": "2026-10-20T06:55:56.769Z",
-    "verified": "pending",
-    "sourceType": "github",
-    "sourceUrl": "https://github.com/arcsin1/oh-my-ppt",
-    "techStack": [
-      "OpenResty"
-    ]
-  },
-  {
-    "id": "tool-gh-modiqo-skillspec",
-    "name": "skillspec",
-    "domain": "skillspec.sh",
-    "url": "https://skillspec.sh",
-    "description": "SkillSpec makes agent skills followable, testable, and provable with Doctor risk reports, guided imports, structured contracts, and alignment proof.",
+    "id": "tool-ph-clueso-io",
+    "name": "Clueso MCP",
+    "domain": "clueso.io",
+    "url": "https://www.clueso.io/mcp",
+    "description": "Create and edit videos by chatting",
+    "descriptionSource": "source",
     "categories": [
       "Other"
     ],
-    "heatScore": 57,
-    "githubStars": 706,
-    "phUpvotes": null,
-    "firstSeenAt": "2026-10-16T05:22:49.298Z",
-    "collectedAt": "2026-10-20T07:16:33.131Z",
+    "topicSlugs": [
+      "Artificial Intelligence",
+      "Animation",
+      "Video"
+    ],
+    "industry": "人工智能",
+    "heatScore": 56,
+    "phUpvotes": 604,
+    "phComments": 158,
+    "githubStars": null,
+    "launchedAt": "2026-09-22T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:52:55.251Z",
+    "collectedAt": "2026-10-21T06:52:55.251Z",
     "verified": "pending",
-    "sourceType": "github",
-    "sourceUrl": "https://github.com/modiqo/skillspec",
-    "contact": {
-      "socials": [
-        {
-          "label": "GitHub",
-          "url": "https://github.com/modiqo/skillspec"
-        }
-      ]
-    }
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/CFUV35KT4ZLPZO?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/clueso.io"
   },
   {
-    "id": "tool-gh-joinly-ai-joinly",
-    "name": "joinly",
-    "domain": "joinly.ai",
-    "url": "https://joinly.ai",
-    "description": "Make your meetings accessible to AI Agents",
+    "id": "tool-ph-console-typesafe-ai",
+    "name": "Jev",
+    "domain": "console.typesafe.ai",
+    "url": "https://console.typesafe.ai/login",
+    "description": "Fast, structured AI decisions for software automation",
+    "descriptionSource": "source",
     "categories": [
-      "AI Chat",
-      "Voice & Audio",
-      "Productivity"
+      "Other"
     ],
+    "topicSlugs": [
+      "API",
+      "Developer Tools",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
     "heatScore": 55,
-    "githubStars": 569,
-    "phUpvotes": null,
-    "firstSeenAt": "2026-10-16T05:37:38.274Z",
-    "collectedAt": "2026-10-20T07:16:40.532Z",
+    "phUpvotes": 590,
+    "phComments": 16,
+    "githubStars": null,
+    "launchedAt": "2026-09-21T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:53:00.128Z",
+    "collectedAt": "2026-10-21T06:53:00.128Z",
     "verified": "pending",
-    "sourceType": "github",
-    "sourceUrl": "https://github.com/joinly-ai/joinly",
-    "techStack": [
-      "Next.js",
-      "Webpack"
-    ],
-    "contact": {
-      "email": "johannes@joinly.ai",
-      "socials": [
-        {
-          "label": "Discord",
-          "url": "https://discord.gg/AN5NEBkS4d"
-        },
-        {
-          "label": "GitHub",
-          "url": "https://github.com/joinly-ai/joinly"
-        },
-        {
-          "label": "Twitter / X",
-          "url": "https://x.com/joinly_ai"
-        },
-        {
-          "label": "LinkedIn",
-          "url": "https://www.linkedin.com/company/joinly-ai/"
-        },
-        {
-          "label": "YouTube",
-          "url": "https://www.youtube.com/@joinly-ai"
-        }
-      ]
-    },
-    "pricing": [
-      {
-        "plan": "方案 1",
-        "price": "$12"
-      }
-    ]
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/XJ7UD64LPY5QDA?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/console.typesafe.ai"
   },
   {
-    "id": "tool-gh-fulappios-agent-quest",
-    "name": "Agent-Quest",
-    "domain": "fulvioscichilone.it",
-    "url": "https://www.fulvioscichilone.it/agent-quest/",
-    "description": "Real-time gamified dashboard for monitoring Claude Code and Codex AI agents in a medieval fantasy village: context-window gauges, skill & plugin telemetry, subagent families and one-click exports for AI review",
+    "id": "tool-ph-spira-ai",
+    "name": "Spira Maxima",
+    "domain": "spira.ai",
+    "url": "https://spira.ai/zh/spira-maxima",
+    "description": "Video model that turns script into viral social media videos",
+    "descriptionSource": "source",
     "categories": [
-      "AI Chat",
-      "Coding"
+      "Other"
     ],
-    "heatScore": 44,
-    "githubStars": 155,
-    "phUpvotes": null,
-    "firstSeenAt": "2026-10-16T05:37:38.274Z",
-    "collectedAt": "2026-10-20T07:16:56.304Z",
+    "topicSlugs": [
+      "Social Media",
+      "Marketing",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 55,
+    "phUpvotes": 582,
+    "phComments": 66,
+    "githubStars": null,
+    "launchedAt": "2026-10-05T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:53:06.073Z",
+    "collectedAt": "2026-10-21T06:53:06.073Z",
     "verified": "pending",
-    "sourceType": "github",
-    "sourceUrl": "https://github.com/FulAppiOS/Agent-Quest",
-    "techStack": [
-      "WordPress"
-    ],
-    "contact": {
-      "socials": [
-        {
-          "label": "GitHub",
-          "url": "https://github.com/FulAppiOS/Agent-Quest"
-        }
-      ]
-    }
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/IAN7QVRIFKVUDA?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/spira.ai"
   },
   {
-    "id": "tool-gh-affaan-m-ecc",
-    "name": "ECC",
-    "domain": "ecc.tools",
-    "url": "https://ecc.tools",
-    "description": "The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development for Claude Code, Codex, Opencode, Cursor and beyond.",
+    "id": "tool-ph-pancake-ai",
+    "name": "Pancake",
+    "domain": "pancake.ai",
+    "url": "https://pancake.ai",
+    "description": "The Vercel for GTM",
+    "descriptionSource": "source",
     "categories": [
-      "AI Chat",
-      "Coding",
-      "Productivity"
+      "Other"
     ],
-    "heatScore": 100,
-    "githubStars": 280589,
-    "phUpvotes": null,
-    "firstSeenAt": "2026-10-16T05:37:39.024Z",
-    "collectedAt": "2026-10-20T07:17:03.945Z",
+    "topicSlugs": [
+      "Sales",
+      "Marketing",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 55,
+    "phUpvotes": 572,
+    "phComments": 72,
+    "githubStars": null,
+    "launchedAt": "2026-10-14T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:53:12.462Z",
+    "collectedAt": "2026-10-21T06:53:12.462Z",
     "verified": "pending",
-    "sourceType": "github",
-    "sourceUrl": "https://github.com/affaan-m/ECC",
-    "techStack": [
-      "Cloudflare"
-    ],
-    "contact": {
-      "socials": [
-        {
-          "label": "GitHub",
-          "url": "https://github.com/affaan-m/ECC"
-        },
-        {
-          "label": "GitHub",
-          "url": "https://docs.github.com/en/rest/metrics/traffic#get-repository-clones"
-        },
-        {
-          "label": "Twitter / X",
-          "url": "https://x.com/affaan/status/2033263813387223421"
-        },
-        {
-          "label": "YouTube",
-          "url": "https://www.youtube.com/watch?v=fC0Z_CjEYLU"
-        },
-        {
-          "label": "Discord",
-          "url": "https://discord.gg/36yGMHGFbR"
-        }
-      ]
-    },
-    "pricing": [
-      {
-        "plan": "方案 1",
-        "price": "$19"
-      },
-      {
-        "plan": "方案 2",
-        "price": "$190"
-      }
-    ]
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/TK5WOCVR7ZG7IU?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/pancake.ai"
   },
   {
-    "id": "tool-gh-morluto-rea",
-    "name": "rea",
-    "domain": "rea.tools",
-    "url": "https://rea.tools",
-    "description": "Reverse engineer anything with agents, from app behavior down to native binaries.",
+    "id": "tool-ph-resollm-ai",
+    "name": "ReSO AI",
+    "domain": "resollm.ai",
+    "url": "https://www.resollm.ai",
+    "description": "Get discovered & recommended when customers ask AI",
+    "descriptionSource": "source",
     "categories": [
-      "AI Chat",
-      "Coding"
+      "Other"
     ],
-    "heatScore": 100,
-    "githubStars": 275927,
-    "phUpvotes": null,
-    "firstSeenAt": "2026-10-16T05:37:39.024Z",
-    "collectedAt": "2026-10-20T07:17:09.681Z",
+    "topicSlugs": [
+      "SEO",
+      "Artificial Intelligence",
+      "Marketing automation"
+    ],
+    "industry": "人工智能",
+    "heatScore": 54,
+    "phUpvotes": 489,
+    "phComments": 44,
+    "githubStars": null,
+    "launchedAt": "2026-10-10T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:53:18.222Z",
+    "collectedAt": "2026-10-21T06:53:18.222Z",
     "verified": "pending",
-    "sourceType": "github",
-    "sourceUrl": "https://github.com/morluto/rea",
-    "techStack": [
-      "Cloudflare"
-    ],
-    "contact": {
-      "socials": [
-        {
-          "label": "GitHub",
-          "url": "https://github.com/morluto/rea"
-        },
-        {
-          "label": "Discord",
-          "url": "https://discord.gg/GkcryMnJDM"
-        },
-        {
-          "label": "Twitter / X",
-          "url": "https://x.com/reatools"
-        }
-      ]
-    }
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/E6PNMMFOZ76WY4?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/resollm.ai"
   },
   {
-    "id": "tool-gh-nousresearch-hermes-agent",
-    "name": "hermes-agent",
-    "domain": "hermes-agent.nousresearch.com",
-    "url": "https://hermes-agent.nousresearch.com",
-    "description": "The agent that grows with you",
+    "id": "tool-ph-irisgo-ai",
+    "name": "IrisGo for Solopreneurs",
+    "domain": "irisgo.ai",
+    "url": "https://irisgo.ai/solopreneur",
+    "description": "AI workflow automation: show it once, let it run",
+    "descriptionSource": "source",
     "categories": [
-      "AI Chat",
-      "Coding"
+      "Other"
     ],
-    "heatScore": 100,
-    "githubStars": 254190,
-    "phUpvotes": null,
-    "firstSeenAt": "2026-10-16T05:37:39.024Z",
-    "collectedAt": "2026-10-20T07:17:15.496Z",
+    "topicSlugs": [
+      "Task Management",
+      "Artificial Intelligence",
+      "Virtual Assistants"
+    ],
+    "industry": "人工智能",
+    "heatScore": 53,
+    "phUpvotes": 464,
+    "phComments": 122,
+    "githubStars": null,
+    "launchedAt": "2026-10-07T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:53:22.718Z",
+    "collectedAt": "2026-10-21T06:53:22.718Z",
     "verified": "pending",
-    "sourceType": "github",
-    "sourceUrl": "https://github.com/NousResearch/hermes-agent",
-    "techStack": [
-      "Vercel",
-      "Next.js",
-      "Google Analytics"
-    ],
-    "contact": {
-      "socials": [
-        {
-          "label": "Discord",
-          "url": "https://discord.gg/nousresearch"
-        },
-        {
-          "label": "GitHub",
-          "url": "https://github.com/NousResearch/hermes-agent"
-        },
-        {
-          "label": "Twitter / X",
-          "url": "https://x.com/NousResearch"
-        },
-        {
-          "label": "YouTube",
-          "url": "https://youtube.com/@NousResearch"
-        }
-      ]
-    },
-    "pricing": [
-      {
-        "plan": "方案 1",
-        "price": "$20"
-      },
-      {
-        "plan": "方案 2",
-        "price": "$22"
-      },
-      {
-        "plan": "方案 3",
-        "price": "$10"
-      }
-    ]
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/I2U7KF4RUGEZSO?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/irisgo.ai"
   },
   {
-    "id": "tool-gh-firecrawl-firecrawl",
-    "name": "firecrawl",
-    "domain": "firecrawl.dev",
-    "url": "https://firecrawl.dev",
-    "description": "Supercharge your AI agents with data from the web and beyond. Building the library for superintelligence. 🔥",
+    "id": "tool-ph-dev-null-sh",
+    "name": "/dev/null",
+    "domain": "dev-null.sh",
+    "url": "https://dev-null.sh",
+    "description": "a social network for devs",
+    "descriptionSource": "source",
     "categories": [
-      "AI Chat",
-      "Data & Analytics"
+      "Other"
     ],
-    "heatScore": 100,
-    "githubStars": 191966,
-    "phUpvotes": null,
-    "firstSeenAt": "2026-10-16T05:37:39.024Z",
-    "collectedAt": "2026-10-20T07:17:22.554Z",
+    "topicSlugs": [
+      "Open Source",
+      "Social Network",
+      "Software Engineering",
+      "GitHub"
+    ],
+    "industry": "人工智能",
+    "heatScore": 53,
+    "phUpvotes": 449,
+    "phComments": 61,
+    "githubStars": null,
+    "launchedAt": "2026-10-20T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:53:30.023Z",
+    "collectedAt": "2026-10-21T06:53:30.023Z",
     "verified": "pending",
-    "sourceType": "github",
-    "sourceUrl": "https://github.com/firecrawl/firecrawl",
-    "techStack": [
-      "Next.js",
-      "Vercel",
-      "Google Tag Manager"
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/CQPWN4LKI7SB2C?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/dev-null.sh"
+  },
+  {
+    "id": "tool-ph-rill-love",
+    "name": "Rill Browser",
+    "domain": "rill.love",
+    "url": "https://rill.love",
+    "description": "The browser where Claude Code and Codex work beside you",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
     ],
-    "contact": {
-      "email": "help@firecrawl.com",
-      "socials": [
-        {
-          "label": "GitHub",
-          "url": "https://github.com/firecrawl/firecrawl"
-        },
-        {
-          "label": "Twitter / X",
-          "url": "https://x.com/morganlinton/status/1839454165703204955"
-        },
-        {
-          "label": "LinkedIn",
-          "url": "https://www.linkedin.com/company/firecrawl"
-        },
-        {
-          "label": "YouTube",
-          "url": "https://www.youtube.com/@Firecrawl_dev"
-        },
-        {
-          "label": "Instagram",
-          "url": "https://www.instagram.com/firecrawl_dev/"
-        },
-        {
-          "label": "Discord",
-          "url": "https://discord.gg/firecrawl"
-        }
-      ]
-    },
-    "pricing": [
-      {
-        "plan": "方案 1",
-        "price": "$75"
-      },
-      {
-        "plan": "方案 2",
-        "price": "$100"
-      },
-      {
-        "plan": "方案 3",
-        "price": "$15"
-      }
-    ]
+    "topicSlugs": [
+      "Developer Tools",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 53,
+    "phUpvotes": 438,
+    "phComments": 64,
+    "githubStars": null,
+    "launchedAt": "2026-10-06T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:53:36.182Z",
+    "collectedAt": "2026-10-21T06:53:36.182Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/YZHJNNU36WBO6Q?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/rill.love"
+  },
+  {
+    "id": "tool-ph-getvelozity-com",
+    "name": "Velozity",
+    "domain": "getvelozity.com",
+    "url": "https://getvelozity.com",
+    "description": "The Multiplayer AI Office where your team and agents work",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Meetings",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 53,
+    "phUpvotes": 430,
+    "phComments": 112,
+    "githubStars": null,
+    "launchedAt": "2026-10-07T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:53:42.010Z",
+    "collectedAt": "2026-10-21T06:53:42.010Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/LVDMUE35VIECA7?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/getvelozity.com"
+  },
+  {
+    "id": "tool-ph-databox-com",
+    "name": "MCP Connectors by Databox",
+    "domain": "databox.com",
+    "url": "https://databox.com",
+    "description": "Give your AI Analyst context to explain performance and act",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Analytics",
+      "SaaS",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 53,
+    "phUpvotes": 429,
+    "phComments": 66,
+    "githubStars": null,
+    "launchedAt": "2026-09-28T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:53:48.977Z",
+    "collectedAt": "2026-10-21T06:53:48.977Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/G6WOTY7G4NBGJP?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/databox.com"
+  },
+  {
+    "id": "tool-ph-pexo-ai",
+    "name": "Pexo",
+    "domain": "pexo.ai",
+    "url": "https://pexo.ai",
+    "description": "Produce pitch perfect launch videos with precise control",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Marketing",
+      "Artificial Intelligence",
+      "Video"
+    ],
+    "industry": "人工智能",
+    "heatScore": 53,
+    "phUpvotes": 426,
+    "phComments": 63,
+    "githubStars": null,
+    "launchedAt": "2026-09-30T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:53:56.279Z",
+    "collectedAt": "2026-10-21T06:53:56.279Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/O3T2IT5O2KIEFF?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/pexo.ai"
+  },
+  {
+    "id": "tool-ph-floot-com",
+    "name": "Floot MCP",
+    "domain": "floot.com",
+    "url": "https://floot.com",
+    "description": "Build and ship web and mobile apps inside Claude or ChatGPT",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Developer Tools",
+      "Artificial Intelligence",
+      "No-Code"
+    ],
+    "industry": "人工智能",
+    "heatScore": 53,
+    "phUpvotes": 422,
+    "phComments": 68,
+    "githubStars": null,
+    "launchedAt": "2026-09-24T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:54:04.903Z",
+    "collectedAt": "2026-10-21T06:54:04.903Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/QUJC2M4LRE7CQ4?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/floot.com"
+  },
+  {
+    "id": "tool-ph-monospace-io",
+    "name": "Monospace from Directus",
+    "domain": "monospace.io",
+    "url": "https://monospace.io",
+    "description": "The governed API layer for every app, person, and agent",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "API",
+      "Developer Tools",
+      "Data"
+    ],
+    "industry": "人工智能",
+    "heatScore": 53,
+    "phUpvotes": 421,
+    "phComments": 103,
+    "githubStars": null,
+    "launchedAt": "2026-10-01T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:54:09.165Z",
+    "collectedAt": "2026-10-21T06:54:09.165Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/OROVPQZ3Y6HPUR?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/monospace.io"
+  },
+  {
+    "id": "tool-ph-openseo-so",
+    "name": "OpenSEO",
+    "domain": "openseo.so",
+    "url": "https://openseo.so",
+    "description": "The open source Semrush alternative",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Open Source",
+      "Marketing",
+      "SEO"
+    ],
+    "industry": "人工智能",
+    "heatScore": 52,
+    "phUpvotes": 407,
+    "phComments": 39,
+    "githubStars": null,
+    "launchedAt": "2026-10-08T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:54:16.962Z",
+    "collectedAt": "2026-10-21T06:54:16.962Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/UBW3XPFGNKPZ5S?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/openseo.so"
+  },
+  {
+    "id": "tool-ph-arcjet-com",
+    "name": "Arcjet",
+    "domain": "arcjet.com",
+    "url": "https://arcjet.com",
+    "description": "Secure the AI agents you're building at runtime",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Developer Tools",
+      "SDK",
+      "Security"
+    ],
+    "industry": "人工智能",
+    "heatScore": 52,
+    "phUpvotes": 405,
+    "phComments": 68,
+    "githubStars": null,
+    "launchedAt": "2026-09-21T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:54:23.879Z",
+    "collectedAt": "2026-10-21T06:54:23.879Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/7QMMNEZ7CJTVIJ?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/arcjet.com"
+  },
+  {
+    "id": "tool-ph-ferndesk-com",
+    "name": "Ferndesk",
+    "domain": "ferndesk.com",
+    "url": "https://ferndesk.com",
+    "description": "The help center that never goes out of date",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Customer Success",
+      "Customer Communication",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 52,
+    "phUpvotes": 387,
+    "phComments": 27,
+    "githubStars": null,
+    "launchedAt": "2026-09-30T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:54:29.044Z",
+    "collectedAt": "2026-10-21T06:54:29.044Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/576PDTHXOH2PTI?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/ferndesk.com"
+  },
+  {
+    "id": "tool-ph-sai-simular-ai",
+    "name": "Sai",
+    "domain": "sai.simular.ai",
+    "url": "https://sai.simular.ai/auth",
+    "description": "The autonomous computer fleet at your command",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 52,
+    "phUpvotes": 384,
+    "phComments": 43,
+    "githubStars": null,
+    "launchedAt": "2026-09-21T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:54:33.171Z",
+    "collectedAt": "2026-10-21T06:54:33.171Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/EXXMVNBYWQYZ32?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/sai.simular.ai"
+  },
+  {
+    "id": "tool-ph-ifixai-ai",
+    "name": "iFixAi",
+    "domain": "ifixai.ai",
+    "url": "https://www.ifixai.ai",
+    "description": "Independent auditing of AI agents to uncover misalignment",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "API",
+      "Developer Tools",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 52,
+    "phUpvotes": 383,
+    "phComments": 46,
+    "githubStars": null,
+    "launchedAt": "2026-09-29T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:54:38.604Z",
+    "collectedAt": "2026-10-21T06:54:38.604Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/GH7ZXAZXZF36UQ?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/ifixai.ai"
+  },
+  {
+    "id": "tool-ph-beam-win",
+    "name": "Beam.win",
+    "domain": "beam.win",
+    "url": "https://beam.win",
+    "description": "Run AI agents on one Mac and use its windows on another",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Developer Tools",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 51,
+    "phUpvotes": 371,
+    "phComments": 48,
+    "githubStars": null,
+    "launchedAt": "2026-10-19T07:01:00Z",
+    "firstSeenAt": "2026-10-21T06:54:44.774Z",
+    "collectedAt": "2026-10-21T06:54:44.774Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/XR2QV6TXWMZHHX?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/beam.win"
+  },
+  {
+    "id": "tool-ph-solid-tech",
+    "name": "Solid",
+    "domain": "solid.tech",
+    "url": "https://solid.tech",
+    "description": "Agents with their own computers, accounts, and budgets.",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Artificial Intelligence",
+      "Development"
+    ],
+    "industry": "人工智能",
+    "heatScore": 52,
+    "phUpvotes": 411,
+    "phComments": 35,
+    "githubStars": null,
+    "launchedAt": "2026-09-23T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:27:34.343Z",
+    "collectedAt": "2026-10-21T07:27:34.343Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/IGFJIPCFXEAE6A?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/solid.tech"
+  },
+  {
+    "id": "tool-ph-getinboxzero-com",
+    "name": "Inbox Zero",
+    "domain": "getinboxzero.com",
+    "url": "https://www.getinboxzero.com/email-client",
+    "description": "Open-source Superhuman alternative",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Email",
+      "Open Source",
+      "Artificial Intelligence",
+      "GitHub"
+    ],
+    "industry": "人工智能",
+    "heatScore": 51,
+    "phUpvotes": 371,
+    "phComments": 30,
+    "githubStars": null,
+    "launchedAt": "2026-10-18T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:27:59.210Z",
+    "collectedAt": "2026-10-21T07:27:59.210Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/FK6F3KNVDZW35Y?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/getinboxzero.com"
+  },
+  {
+    "id": "tool-ph-genpage-ai",
+    "name": "GenPage 3.0",
+    "domain": "genpage.ai",
+    "url": "https://www.genpage.ai",
+    "description": "Build, personalize, and optimize landing pages with AI",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Sales",
+      "Marketing",
+      "Website Builder"
+    ],
+    "industry": "人工智能",
+    "heatScore": 51,
+    "phUpvotes": 366,
+    "phComments": 56,
+    "githubStars": null,
+    "launchedAt": "2026-10-07T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:28:10.268Z",
+    "collectedAt": "2026-10-21T07:28:10.268Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/45NVHJPQAW44TX?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/genpage.ai"
+  },
+  {
+    "id": "tool-ph-twelvelabs-io",
+    "name": "Jockey by TwelveLabs",
+    "domain": "twelvelabs.io",
+    "url": "https://www.twelvelabs.io/jockey",
+    "description": "Your entire video library: organized, searchable, understood",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Artificial Intelligence",
+      "Video"
+    ],
+    "industry": "人工智能",
+    "heatScore": 51,
+    "phUpvotes": 354,
+    "phComments": 25,
+    "githubStars": null,
+    "launchedAt": "2026-10-16T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:28:26.381Z",
+    "collectedAt": "2026-10-21T07:28:26.381Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/H3AVDIX7A2JROL?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/twelvelabs.io"
+  },
+  {
+    "id": "tool-ph-opengeni-ai",
+    "name": "Opengeni",
+    "domain": "opengeni.ai",
+    "url": "https://opengeni.ai",
+    "description": "Ship AI agents within minutes. Infrastructure for Agents",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Open Source",
+      "Developer Tools",
+      "Artificial Intelligence",
+      "GitHub"
+    ],
+    "industry": "人工智能",
+    "heatScore": 51,
+    "phUpvotes": 343,
+    "phComments": 49,
+    "githubStars": null,
+    "launchedAt": "2026-10-05T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:28:35.024Z",
+    "collectedAt": "2026-10-21T07:28:35.024Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/T6GNSAK2RWSRW2?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/opengeni.ai"
+  },
+  {
+    "id": "tool-ph-talanoa-email",
+    "name": "Talanoa",
+    "domain": "talanoa.email",
+    "url": "https://talanoa.email",
+    "description": "Email that feels like chat",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Email",
+      "Productivity",
+      "Task Management"
+    ],
+    "industry": "人工智能",
+    "heatScore": 51,
+    "phUpvotes": 339,
+    "phComments": 23,
+    "githubStars": null,
+    "launchedAt": "2026-10-15T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:28:47.571Z",
+    "collectedAt": "2026-10-21T07:28:47.571Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/LOUVBI5K3ZIRPE?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/talanoa.email"
+  },
+  {
+    "id": "tool-ph-openswarm-com",
+    "name": "OpenSwarm",
+    "domain": "openswarm.com",
+    "url": "https://www.openswarm.com",
+    "description": "A swarm of agents, in the same place you work",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Task Management",
+      "Developer Tools",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 51,
+    "phUpvotes": 335,
+    "phComments": 39,
+    "githubStars": null,
+    "launchedAt": "2026-10-08T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:28:59.563Z",
+    "collectedAt": "2026-10-21T07:28:59.563Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/Y54VBVRLNCMW2B?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/openswarm.com"
+  },
+  {
+    "id": "tool-ph-humalike-ai",
+    "name": "Humalike - AI NPC",
+    "domain": "humalike.ai",
+    "url": "https://humalike.ai/npc",
+    "description": "AI NPCs that talk, remember & act on their own",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Developer Tools",
+      "Artificial Intelligence",
+      "Games"
+    ],
+    "industry": "人工智能",
+    "heatScore": 51,
+    "phUpvotes": 334,
+    "phComments": 29,
+    "githubStars": null,
+    "launchedAt": "2026-09-27T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:29:04.378Z",
+    "collectedAt": "2026-10-21T07:29:04.378Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/V63RWUYZIRKDTC?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/humalike.ai"
+  },
+  {
+    "id": "tool-ph-composio-dev",
+    "name": "Composio Instant",
+    "domain": "composio.dev",
+    "url": "https://composio.dev/instant",
+    "description": "The easiest way for AI agents to pay for their own tools",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Developer Tools",
+      "Artificial Intelligence",
+      "SDK"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 330,
+    "phComments": 47,
+    "githubStars": null,
+    "launchedAt": "2026-10-20T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:29:08.408Z",
+    "collectedAt": "2026-10-21T07:29:08.408Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/PO3RPT47NFZ2LL?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/composio.dev"
+  },
+  {
+    "id": "tool-ph-zernio-com",
+    "name": "Zernio",
+    "domain": "zernio.com",
+    "url": "https://zernio.com",
+    "description": "Marketing infrastructure for products and agents",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "API",
+      "Marketing",
+      "Developer Tools"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 329,
+    "phComments": 58,
+    "githubStars": null,
+    "launchedAt": "2026-10-09T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:29:14.380Z",
+    "collectedAt": "2026-10-21T07:29:14.380Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/2QQY2FLJ5IUZ2E?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/zernio.com"
+  },
+  {
+    "id": "tool-ph-articos-com",
+    "name": "Articos MCP",
+    "domain": "articos.com",
+    "url": "https://www.articos.com",
+    "description": "See how simulated buyers react, right in your agent",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Marketing",
+      "Developer Tools",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 326,
+    "phComments": 89,
+    "githubStars": null,
+    "launchedAt": "2026-10-13T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:29:21.651Z",
+    "collectedAt": "2026-10-21T07:29:21.651Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/KE4OQDDO5PVYVA?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/articos.com"
+  },
+  {
+    "id": "tool-ph-hemory-com",
+    "name": "Hemory",
+    "domain": "hemory.com",
+    "url": "https://www.hemory.com/zh",
+    "description": "Keep listening. Searchable memory for your AI agents.",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Artificial Intelligence",
+      "Audio"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 323,
+    "phComments": 73,
+    "githubStars": null,
+    "launchedAt": "2026-09-26T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:29:26.811Z",
+    "collectedAt": "2026-10-21T07:29:26.811Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/DESVXS45MENTRI?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/hemory.com"
+  },
+  {
+    "id": "tool-ph-opencode-ai",
+    "name": "OpenCode 2.0",
+    "domain": "opencode.ai",
+    "url": "https://opencode.ai",
+    "description": "The open source AI coding agent",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Open Source",
+      "Developer Tools",
+      "GitHub",
+      "Development"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 321,
+    "phComments": 13,
+    "githubStars": null,
+    "launchedAt": "2026-10-13T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:29:30.234Z",
+    "collectedAt": "2026-10-21T07:29:30.234Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/RIJ2YFQQYD7OOS?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/opencode.ai"
+  },
+  {
+    "id": "tool-ph-schole-ai",
+    "name": "Scholé Learn by Building",
+    "domain": "schole.ai",
+    "url": "https://schole.ai/learn-anywhere",
+    "description": "Learning should be more than \"click next\"",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Education",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 321,
+    "phComments": 27,
+    "githubStars": null,
+    "launchedAt": "2026-09-24T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:29:34.746Z",
+    "collectedAt": "2026-10-21T07:29:34.746Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/F22BXESSBPZXG7?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/schole.ai"
+  },
+  {
+    "id": "tool-ph-gauth-com",
+    "name": "Gauth Unlimited Digital Canvas",
+    "domain": "gauth.com",
+    "url": "https://www.gauth.com/course/science",
+    "description": "An AI tutor on an infinite whiteboard, not a chat thread",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Education",
+      "Artificial Intelligence",
+      "Online Learning"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 321,
+    "phComments": 75,
+    "githubStars": null,
+    "launchedAt": "2026-10-02T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:29:46.133Z",
+    "collectedAt": "2026-10-21T07:29:46.133Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/TCMAWBRPUPSDRM?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/gauth.com"
+  },
+  {
+    "id": "tool-ph-kodlo-ai",
+    "name": "kōdlo",
+    "domain": "kodlo.ai",
+    "url": "https://kodlo.ai",
+    "description": "End-to-end sales workspace with unified context",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Sales",
+      "SaaS",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 316,
+    "phComments": 58,
+    "githubStars": null,
+    "launchedAt": "2026-10-11T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:29:52.912Z",
+    "collectedAt": "2026-10-21T07:29:52.912Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/OZIBM7CMM6TNPX?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/kodlo.ai"
+  },
+  {
+    "id": "tool-ph-projectminimi-com",
+    "name": "minimi 2.0",
+    "domain": "projectminimi.com",
+    "url": "https://www.projectminimi.com",
+    "description": "AI cat that closes your open loops",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "User Experience",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 314,
+    "phComments": 50,
+    "githubStars": null,
+    "launchedAt": "2026-09-24T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:29:57.507Z",
+    "collectedAt": "2026-10-21T07:29:57.507Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/XOGIIH5II2AH7S?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/projectminimi.com"
+  },
+  {
+    "id": "tool-ph-naise-ai",
+    "name": "Naise AI",
+    "domain": "naise.ai",
+    "url": "https://naise.ai",
+    "description": "Autonomous marketing agents that actually execute",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Social Media",
+      "Marketing",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 313,
+    "phComments": 52,
+    "githubStars": null,
+    "launchedAt": "2026-09-23T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:30:04.693Z",
+    "collectedAt": "2026-10-21T07:30:04.693Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/I323VH3KBIWT3P?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/naise.ai"
+  },
+  {
+    "id": "tool-ph-fastrouter-ai",
+    "name": "FastRouter.ai",
+    "domain": "fastrouter.ai",
+    "url": "https://fastrouter.ai",
+    "description": "Route requests to the right LLM for cost, latency & quality",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "API",
+      "Developer Tools",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 309,
+    "phComments": 36,
+    "githubStars": null,
+    "launchedAt": "2026-10-05T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:30:08.011Z",
+    "collectedAt": "2026-10-21T07:30:08.011Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/PAFQYYKYJKF7HJ?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/fastrouter.ai"
+  },
+  {
+    "id": "tool-ph-busabase-com",
+    "name": "Busabase",
+    "domain": "busabase.com",
+    "url": "https://busabase.com/zh-CN",
+    "description": "The general system of record for AI agents",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Developer Tools",
+      "Database"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 308,
+    "phComments": 81,
+    "githubStars": null,
+    "launchedAt": "2026-10-09T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:30:12.895Z",
+    "collectedAt": "2026-10-21T07:30:12.895Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/NCFRPHEHNAHLX7?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/busabase.com"
+  },
+  {
+    "id": "tool-ph-veltrix-com",
+    "name": "Veltrix AI for E-commerce",
+    "domain": "veltrix.com",
+    "url": "https://veltrix.com/free-business-check",
+    "description": "Find how your e-commerce business could earn more",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Artificial Intelligence",
+      "E-Commerce",
+      "Business"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 307,
+    "phComments": 42,
+    "githubStars": null,
+    "launchedAt": "2026-10-02T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:30:16.902Z",
+    "collectedAt": "2026-10-21T07:30:16.902Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/WLBR6YF7GXE2Z7?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/veltrix.com"
+  },
+  {
+    "id": "tool-ph-cuey-io",
+    "name": "Cuey",
+    "domain": "cuey.io",
+    "url": "https://cuey.io/install",
+    "description": "Compare ChatGPT, Claude & Gemini answers in one tab.",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Artificial Intelligence",
+      "Tech"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 302,
+    "phComments": 52,
+    "githubStars": null,
+    "launchedAt": "2026-09-27T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:30:25.247Z",
+    "collectedAt": "2026-10-21T07:30:25.247Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/KQXSDK666ISFA3?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/cuey.io"
+  },
+  {
+    "id": "tool-ph-bleetz-network",
+    "name": "Bleetz Network",
+    "domain": "bleetz.network",
+    "url": "https://bleetz.network",
+    "description": "AI agent-to-agent VC fundraising & scouting network",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Venture Capital",
+      "Artificial Intelligence",
+      "Fundraising",
+      "Vercel Day"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 300,
+    "phComments": 67,
+    "githubStars": null,
+    "launchedAt": "2026-09-25T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:30:32.621Z",
+    "collectedAt": "2026-10-21T07:30:32.621Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/Z7GCSLX6DOHXC5?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/bleetz.network"
+  },
+  {
+    "id": "tool-ph-openbot-run",
+    "name": "OpenBot",
+    "domain": "openbot.run",
+    "url": "https://openbot.run",
+    "description": "Grok Bot alternative: free, local, open-source, multiplayer",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Open Source",
+      "Artificial Intelligence",
+      "GitHub"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 299,
+    "phComments": 49,
+    "githubStars": null,
+    "launchedAt": "2026-10-06T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:30:36.227Z",
+    "collectedAt": "2026-10-21T07:30:36.227Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/6MPDE2Q3ZJDJZF?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/openbot.run"
+  },
+  {
+    "id": "tool-ph-corespeed-io",
+    "name": "CoreSpeed",
+    "domain": "corespeed.io",
+    "url": "https://corespeed.io",
+    "description": "One MCP for everything your agents need: apps, memory, tools",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Marketing",
+      "Developer Tools"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 299,
+    "phComments": 36,
+    "githubStars": null,
+    "launchedAt": "2026-10-04T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:30:41.184Z",
+    "collectedAt": "2026-10-21T07:30:41.184Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/ZNJTNNHC4VT6ET?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/corespeed.io"
+  },
+  {
+    "id": "tool-ph-vitalsmac-com",
+    "name": "Vitals ",
+    "domain": "vitalsmac.com",
+    "url": "https://vitalsmac.com",
+    "description": "A Mac activity monitor that thinks in apps, not processes",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Mac",
+      "Developer Tools",
+      "Menu Bar Apps"
+    ],
+    "industry": "人工智能",
+    "heatScore": 50,
+    "phUpvotes": 299,
+    "phComments": 36,
+    "githubStars": null,
+    "launchedAt": "2026-09-28T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:30:44.826Z",
+    "collectedAt": "2026-10-21T07:30:44.826Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/AI4LWX7QMJSJZL?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/vitalsmac.com"
+  },
+  {
+    "id": "tool-ph-world-pixverse-video",
+    "name": "PixVerse R2",
+    "domain": "world.pixverse.video",
+    "url": "https://world.pixverse.video/home",
+    "description": "A real-time world model you can explore and change",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Developer Tools",
+      "Artificial Intelligence",
+      "Games",
+      "Vercel Day"
+    ],
+    "industry": "人工智能",
+    "heatScore": 49,
+    "phUpvotes": 297,
+    "phComments": 31,
+    "githubStars": null,
+    "launchedAt": "2026-09-25T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:30:48.620Z",
+    "collectedAt": "2026-10-21T07:30:48.620Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/VQZLAZ7ZJU56G3?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/world.pixverse.video"
+  },
+  {
+    "id": "tool-ph-zoowork-ai",
+    "name": "ZooWork",
+    "domain": "zoowork.ai",
+    "url": "https://zoowork.ai",
+    "description": "The AI agent delivery platform for FDEs and domain experts",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Developer Tools",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 49,
+    "phUpvotes": 296,
+    "phComments": 37,
+    "githubStars": null,
+    "launchedAt": "2026-10-03T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:30:52.292Z",
+    "collectedAt": "2026-10-21T07:30:52.292Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/EIW66MPSNX7TY2?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/zoowork.ai"
+  },
+  {
+    "id": "tool-ph-salesmartly-com",
+    "name": "SaleSmartly",
+    "domain": "salesmartly.com",
+    "url": "https://www.salesmartly.com/en",
+    "description": "Turn conversations across every channel into customers",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Messaging",
+      "Sales",
+      "Social Media"
+    ],
+    "industry": "人工智能",
+    "heatScore": 49,
+    "phUpvotes": 295,
+    "phComments": 49,
+    "githubStars": null,
+    "launchedAt": "2026-09-28T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:31:01.436Z",
+    "collectedAt": "2026-10-21T07:31:01.436Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/EZKALQKOCUWIZ4?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/salesmartly.com"
+  },
+  {
+    "id": "tool-ph-incredible-one",
+    "name": "Incredible",
+    "domain": "incredible.one",
+    "url": "https://www.incredible.one",
+    "description": "Vibe computing. Control your computer with your voice.",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Artificial Intelligence",
+      "Menu Bar Apps"
+    ],
+    "industry": "人工智能",
+    "heatScore": 49,
+    "phUpvotes": 292,
+    "phComments": 34,
+    "githubStars": null,
+    "launchedAt": "2026-10-06T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:31:08.856Z",
+    "collectedAt": "2026-10-21T07:31:08.856Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/4HJ5NAOQFNL6CT?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/incredible.one"
+  },
+  {
+    "id": "tool-ph-autonomous-ai",
+    "name": "Harness by Autonomous",
+    "domain": "autonomous.ai",
+    "url": "https://www.autonomous.ai/harness",
+    "description": "Every coding agent, every machine, one command center.",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Open Source",
+      "Developer Tools",
+      "Artificial Intelligence",
+      "GitHub"
+    ],
+    "industry": "人工智能",
+    "heatScore": 49,
+    "phUpvotes": 287,
+    "phComments": 26,
+    "githubStars": null,
+    "launchedAt": "2026-10-16T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:31:12.502Z",
+    "collectedAt": "2026-10-21T07:31:12.502Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/DTWJQ55RR225ZD?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/autonomous.ai"
+  },
+  {
+    "id": "tool-ph-luci-memories-ai",
+    "name": "LUCI Desktop",
+    "domain": "luci.memories.ai",
+    "url": "https://luci.memories.ai",
+    "description": "Let your AI agents remember what you've seen",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Productivity",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 49,
+    "phUpvotes": 284,
+    "phComments": 30,
+    "githubStars": null,
+    "launchedAt": "2026-09-29T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:31:22.535Z",
+    "collectedAt": "2026-10-21T07:31:22.535Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/IAYIS7TAFM7O7D?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/luci.memories.ai"
+  },
+  {
+    "id": "tool-ph-ctrlops-io",
+    "name": "CtrlOps 1.0",
+    "domain": "ctrlops.io",
+    "url": "https://ctrlops.io",
+    "description": "Your server. Audited, managed, and deployed with AI.",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Linux",
+      "Developer Tools",
+      "Security"
+    ],
+    "industry": "人工智能",
+    "heatScore": 49,
+    "phUpvotes": 283,
+    "phComments": 74,
+    "githubStars": null,
+    "launchedAt": "2026-09-24T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:31:26.780Z",
+    "collectedAt": "2026-10-21T07:31:26.780Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/QDCOCHU6ZDBMJY?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/ctrlops.io"
+  },
+  {
+    "id": "tool-ph-ngram-com",
+    "name": "ngram 2.0",
+    "domain": "ngram.com",
+    "url": "https://www.ngram.com",
+    "description": "Create explainers, screencasts, and AI avatar videos",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Education",
+      "Artificial Intelligence",
+      "Video"
+    ],
+    "industry": "人工智能",
+    "heatScore": 49,
+    "phUpvotes": 280,
+    "phComments": 43,
+    "githubStars": null,
+    "launchedAt": "2026-10-12T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:31:32.391Z",
+    "collectedAt": "2026-10-21T07:31:32.391Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/B7QZKLCV5HYNON?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/ngram.com"
+  },
+  {
+    "id": "tool-ph-statable-com",
+    "name": "Statable Analytics",
+    "domain": "statable.com",
+    "url": "https://statable.com",
+    "description": "Web analytics built for you and your AI agents",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Analytics",
+      "Artificial Intelligence"
+    ],
+    "industry": "人工智能",
+    "heatScore": 49,
+    "phUpvotes": 275,
+    "phComments": 20,
+    "githubStars": null,
+    "launchedAt": "2026-09-28T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:31:37.352Z",
+    "collectedAt": "2026-10-21T07:31:37.352Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/XNQ4NCU2AP5NPN?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/statable.com"
+  },
+  {
+    "id": "tool-ph-zenabm-com",
+    "name": "ZenABM",
+    "domain": "zenabm.com",
+    "url": "https://zenabm.com/ai",
+    "description": "Create, optimize & report on LinkedIn Ads from any AI tool",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Advertising",
+      "Artificial Intelligence",
+      "LinkedIn"
+    ],
+    "industry": "人工智能",
+    "heatScore": 48,
+    "phUpvotes": 265,
+    "phComments": 72,
+    "githubStars": null,
+    "launchedAt": "2026-09-29T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:31:42.087Z",
+    "collectedAt": "2026-10-21T07:31:42.087Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/UAJNQGCRP7DJRD?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/zenabm.com"
+  },
+  {
+    "id": "tool-ph-inferock-ai",
+    "name": "Inferock",
+    "domain": "inferock.ai",
+    "url": "https://inferock.ai",
+    "description": "Serverless inference, with credits back for failed calls.",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "topicSlugs": [
+      "Developer Tools",
+      "Artificial Intelligence",
+      "Google Cloud Run"
+    ],
+    "industry": "人工智能",
+    "heatScore": 48,
+    "phUpvotes": 264,
+    "phComments": 26,
+    "githubStars": null,
+    "launchedAt": "2026-10-14T07:01:00Z",
+    "firstSeenAt": "2026-10-21T07:31:46.017Z",
+    "collectedAt": "2026-10-21T07:31:46.017Z",
+    "verified": "pending",
+    "sourceType": "producthunt",
+    "sourceUrl": "https://www.producthunt.com/r/Q5YAUE7WHFYYB4?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
+    "phUrl": "https://www.producthunt.com/posts/inferock.ai"
   }
 ]

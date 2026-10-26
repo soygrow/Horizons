@@ -18,6 +18,30 @@ import { GrowthBadge } from "@/components/GrowthBadge";
 import { Sparkline } from "@/components/Sparkline";
 import { formatDate, formatCount } from "@/lib/format";
 
+function MetricCard({ value, label }: { value?: string; label: string }) {
+  const pending = !value;
+  return (
+    <div className="rounded-2xl border border-border bg-surface p-4">
+      <p
+        className={`text-xl font-semibold tabular-nums ${
+          pending ? "text-ink-muted" : "text-ink"
+        }`}
+      >
+        {value ?? "待接入"}
+      </p>
+      <p className="mt-1 text-xs text-ink-muted">{label}</p>
+    </div>
+  );
+}
+
+function PendingBlock({ text }: { text: string }) {
+  return (
+    <div className="mt-3 flex h-24 items-center justify-center rounded-2xl border border-dashed border-border bg-surface">
+      <span className="text-sm text-ink-muted">{text}</span>
+    </div>
+  );
+}
+
 export function generateStaticParams() {
   return tools.map((t) => ({ domain: t.domain }));
 }
@@ -115,6 +139,111 @@ export default async function ToolDetailPage({
         </div>
       </section>
 
+      {/* Traffic overview */}
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold text-ink">流量概览</h2>
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <MetricCard
+            value={
+              (tool.traffic?.organicVisits ?? 0) + (tool.traffic?.paidVisits ?? 0) > 0
+                ? formatCount(
+                    (tool.traffic?.organicVisits ?? 0) +
+                      (tool.traffic?.paidVisits ?? 0),
+                  )
+                : undefined
+            }
+            label="月搜索流量"
+          />
+          <MetricCard
+            value={tool.traffic?.visits ? formatCount(tool.traffic.visits) : undefined}
+            label="月访问量（总）"
+          />
+          <MetricCard
+            value={tool.traffic?.pagesPerVisit?.toString()}
+            label="单次访问页数"
+          />
+          <MetricCard
+            value={tool.traffic?.durationSec ? `${tool.traffic.durationSec} 秒` : undefined}
+            label="访问时长"
+          />
+          <MetricCard
+            value={tool.traffic?.bounceRate ? `${tool.traffic.bounceRate}%` : undefined}
+            label="跳出率"
+          />
+          <MetricCard
+            value={tool.trancoRank ? `#${formatCount(tool.trancoRank)}` : undefined}
+            label="全球排名"
+          />
+        </div>
+      </section>
+
+      {/* Traffic trend */}
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold text-ink">流量趋势</h2>
+        {tool.trafficHistory && tool.trafficHistory.length > 0 ? (
+          <div className="mt-3 h-40 rounded-2xl border border-border bg-surface" />
+        ) : (
+          <PendingBlock text="流量趋势数据待接入" />
+        )}
+      </section>
+
+      {/* Channels */}
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold text-ink">来源渠道</h2>
+        {tool.channels ? (
+          <div className="mt-3 space-y-2">
+            {(
+              [
+                ["社媒", tool.channels.social],
+                ["直接访问", tool.channels.direct],
+                ["搜索", tool.channels.search],
+                ["外链", tool.channels.referral],
+                ["邮件", tool.channels.email],
+              ] as const
+            ).map(([label, v]) => (
+              <div key={label} className="flex items-center gap-3">
+                <span className="w-20 shrink-0 text-sm text-ink-secondary">
+                  {label}
+                </span>
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-2">
+                  <div
+                    className="h-full rounded-full bg-primary"
+                    style={{ width: `${v ?? 0}%` }}
+                  />
+                </div>
+                <span className="w-12 text-right text-xs tabular-nums text-ink-muted">
+                  {v ?? 0}%
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <PendingBlock text="来源渠道数据待接入" />
+        )}
+      </section>
+
+      {/* Geo distribution */}
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold text-ink">国家分布</h2>
+        {tool.geoDistribution && tool.geoDistribution.length > 0 ? (
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {tool.geoDistribution.map((g) => (
+              <li
+                key={g.country}
+                className="flex items-center justify-between rounded-xl border border-border bg-surface px-3 py-2"
+              >
+                <span className="text-sm text-ink-secondary">{g.country}</span>
+                <span className="text-sm font-medium tabular-nums text-ink">
+                  {g.share}%
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <PendingBlock text="国家分布数据待接入" />
+        )}
+      </section>
+
       {/* About */}
       <section className="mt-8">
         <h2 className="text-lg font-semibold text-ink">简介</h2>
@@ -171,6 +300,43 @@ export default async function ToolDetailPage({
           </div>
         </section>
       ) : null}
+
+      {/* Keywords */}
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold text-ink">关键词</h2>
+        {tool.keywords && tool.keywords.length > 0 ? (
+          <div className="mt-3 overflow-hidden rounded-2xl border border-border">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-surface-2 text-xs text-ink-muted">
+                <tr>
+                  <th className="px-4 py-2 font-medium">关键词</th>
+                  <th className="px-4 py-2 font-medium">月搜索量</th>
+                  <th className="px-4 py-2 font-medium">CPC</th>
+                  <th className="px-4 py-2 font-medium">竞争程度</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tool.keywords.map((k) => (
+                  <tr key={k.term} className="border-t border-border">
+                    <td className="px-4 py-2 text-ink">{k.term}</td>
+                    <td className="px-4 py-2 tabular-nums text-ink-secondary">
+                      {k.volume ? formatCount(k.volume) : "—"}
+                    </td>
+                    <td className="px-4 py-2 tabular-nums text-ink-secondary">
+                      {k.cpc ? `$${k.cpc}` : "—"}
+                    </td>
+                    <td className="px-4 py-2 text-ink-secondary">
+                      {k.competition ?? "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <PendingBlock text="关键词数据待接入" />
+        )}
+      </section>
 
       {/* Similar tools */}
       {similar.length > 0 ? (

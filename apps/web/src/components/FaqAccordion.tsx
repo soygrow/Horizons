@@ -1,4 +1,4 @@
-import faq from "../../content/faq.json";
+import faq from "@content/faq.json";
 
 export function FaqAccordion() {
   return (

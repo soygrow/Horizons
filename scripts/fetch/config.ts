@@ -37,7 +37,7 @@ export interface FetchConfig {
 }
 
 export const config: FetchConfig = {
-  maxPerRun: 8,
+  maxPerRun: 60,
   requestDelayMs: [2000, 5000],
   maxRetries: 2,
   userAgent:

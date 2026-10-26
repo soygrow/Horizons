@@ -6,7 +6,7 @@ import { ToolTableHead } from "@/components/ToolTableHead";
 import { ToolRow } from "@/components/ToolRow";
 import { Pagination } from "@/components/Pagination";
 import { PaywallBanner } from "@/components/PaywallBanner";
-import type { AITool } from "@/lib/types";
+import type { AITool } from "@horizons/shared";
 
 export const metadata: Metadata = { title: "AI工具榜" };
 
