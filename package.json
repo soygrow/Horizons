@@ -15,10 +15,13 @@
     "enrich": "tsx scripts/fetch/enrich.ts",
     "enrich:dry": "tsx scripts/fetch/enrich.ts --dry",
     "dataforseo": "tsx scripts/fetch/dataforseo.ts",
+    "enrich:llm": "tsx scripts/fetch/enrich-llm.ts",
+    "screenshot": "tsx scripts/fetch/screenshot.ts",
     "ph:oauth": "tsx scripts/fetch/ph-oauth.ts"
   },
   "devDependencies": {
     "playwright": "^1.64.1",
+    "tldts": "^7.4.19",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3"
   },

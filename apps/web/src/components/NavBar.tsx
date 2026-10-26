@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AuthButton } from "./AuthButton";
+import { ThemeToggle } from "./ThemeToggle";
 
 const channels: { label: string; href: string; soon?: boolean }[] = [
   { label: "AI工具榜", href: "/tools" },
@@ -45,6 +46,7 @@ export function NavBar() {
         </div>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <AuthButton />
           <Link
             href="/#subscribe"

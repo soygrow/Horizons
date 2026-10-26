@@ -67,24 +67,28 @@ export async function fetchTrafficEstimate(
   const map = new Map<string, SearchTraffic>();
   if (domains.length === 0) return map;
 
-  const body = domains.map((target) => ({
-    target,
-    location_code: LOCATION_CODE,
-    language_code: LANGUAGE_CODE,
-  }));
+  const body = [
+    {
+      targets: domains,
+      location_code: LOCATION_CODE,
+      language_code: LANGUAGE_CODE,
+    },
+  ];
   const data = await request<{
     tasks?: Array<{
       result?: Array<{
-        target?: string;
-        metrics?: {
-          organic?: { etv?: number };
-          paid?: { etv?: number };
-        };
+        items?: Array<{
+          target?: string;
+          metrics?: {
+            organic?: { etv?: number };
+            paid?: { etv?: number };
+          };
+        }>;
       }>;
     }>;
   }>("dataforseo_labs/google/bulk_traffic_estimation/live", body);
 
-  for (const item of data.tasks?.[0]?.result ?? []) {
+  for (const item of data.tasks?.[0]?.result?.[0]?.items ?? []) {
     const domain = item.target;
     if (!domain) continue;
     const organic = item.metrics?.organic?.etv ?? 0;
@@ -162,31 +166,222 @@ export async function fetchGeoDistribution(domain: string): Promise<GeoItem[]> {
     .slice(0, 10);
 }
 
-/** 历史搜索流量趋势 */
-export async function fetchTrafficHistory(
-  domain: string,
-): Promise<{ date: string; visits: number }[]> {
+/** 关键词排名分布（域名在各排名位置段的关键词数量） */
+export interface KeywordRankBucket {
+  label: string;
+  count: number;
+}
+
+export interface TrafficHistoryResult {
+  history: { date: string; total: number; organic: number }[];
+  keywordCount: number;
+  rankDistribution: KeywordRankBucket[];
+}
+
+const POS_BUCKETS: [key: string, label: string][] = [
+  ["pos_1", "第 1 名"],
+  ["pos_2_3", "2-3 名"],
+  ["pos_4_10", "4-10 名"],
+  ["pos_11_20", "11-20 名"],
+  ["pos_21_30", "21-30 名"],
+  ["pos_31_40", "31-40 名"],
+  ["pos_41_50", "41-50 名"],
+  ["pos_51_60", "51-60 名"],
+  ["pos_61_70", "61-70 名"],
+  ["pos_71_80", "71-80 名"],
+  ["pos_81_90", "81-90 名"],
+  ["pos_91_100", "91-100 名"],
+];
+
+/**
+ * 历史流量趋势 + 最新月关键词排名分布。
+ * 关键：用 clickstream_etv（基于点击流数据的估算流量，比普通 etv 更接近真实流量）。
+ * 普通 etv 只基于 Google 关键词排名，对新站（DR 低、排名少）严重低估。
+ */
+export async function fetchTrafficHistory(domain: string): Promise<TrafficHistoryResult> {
   const data = await request<{
     tasks?: Array<{
       result?: Array<{
         items?: Array<{
           month?: number;
           year?: number;
-          metrics?: { organic?: { etv?: number }; paid?: { etv?: number } };
+          metrics?: {
+            organic?: { etv?: number; clickstream_etv?: number; count?: number } & Record<string, number>;
+            paid?: { etv?: number; clickstream_etv?: number } & Record<string, number>;
+          };
         }>;
       }>;
     }>;
   }>("dataforseo_labs/google/historical_rank_overview/live", [
-    { target: domain, location_code: LOCATION_CODE, language_code: LANGUAGE_CODE },
+    {
+      target: domain,
+      location_code: LOCATION_CODE,
+      language_code: LANGUAGE_CODE,
+      include_clickstream_data: true,
+    },
   ]);
 
   const items = data.tasks?.[0]?.result?.[0]?.items ?? [];
-  return items
+  const history = items
     .map((it) => {
       const month = it.month ? String(it.month).padStart(2, "0") : "01";
       const year = it.year ?? 2000;
-      const visits = (it.metrics?.organic?.etv ?? 0) + (it.metrics?.paid?.etv ?? 0);
-      return { date: `${year}-${month}-01`, visits };
+      const o = it.metrics?.organic;
+      const p = it.metrics?.paid;
+      const organic = Math.round(o?.clickstream_etv ?? o?.etv ?? 0);
+      const paid = Math.round(p?.clickstream_etv ?? p?.etv ?? 0);
+      return { date: `${year}-${month}-01`, total: organic + paid, organic };
     })
     .sort((a, b) => a.date.localeCompare(b.date));
+
+  // 最新月关键词排名分布
+  const latest = items[items.length - 1];
+  const organic = latest?.metrics?.organic;
+  const keywordCount = organic?.count ?? 0;
+  const rankDistribution: KeywordRankBucket[] = POS_BUCKETS.map(([key, label]) => ({
+    label,
+    count: organic?.[key] ?? 0,
+  })).filter((b) => b.count > 0);
+
+  return { history, keywordCount, rankDistribution };
+}
+
+export interface BacklinkSummary {
+  total: number;
+  totalDofollowShare: number;
+  refDomains: number;
+  refDofollowShare: number;
+  domainWeight: number; // DFS rank（0~1000 权重，替代 DR）
+}
+
+/** 外链汇总（backlinks summary） */
+export async function fetchBacklinksSummary(domain: string): Promise<BacklinkSummary | null> {
+  const data = await request<{
+    tasks?: Array<{
+      result?: Array<{
+        items?: Array<{
+          target?: string;
+          rank?: number;
+          backlinks?: number;
+          dofollow?: number;
+          refdomains?: number;
+          refdomains_dofollow?: number;
+        }>;
+      }>;
+    }>;
+  }>("backlinks/summary/live", [{ target: domain }]);
+
+  const it = data.tasks?.[0]?.result?.[0]?.items?.[0];
+  if (!it || it.target !== domain) return null;
+
+  const total = it.backlinks ?? 0;
+  const refDomains = it.refdomains ?? 0;
+  const pct = (part: number, whole: number) =>
+    whole > 0 ? Math.round((part / whole) * 1000) / 10 : 0;
+
+  return {
+    total,
+    totalDofollowShare: pct(it.dofollow ?? 0, total),
+    refDomains,
+    refDofollowShare: pct(it.refdomains_dofollow ?? 0, refDomains),
+    domainWeight: it.rank ?? 0,
+  };
+}
+
+/** WHOIS 注册时间 */
+export async function fetchWhois(domain: string): Promise<string | undefined> {
+  const data = await request<{
+    tasks?: Array<{
+      result?: Array<{
+        items?: Array<{
+          domain?: string;
+          created_datetime?: string;
+          first_seen?: string;
+        }>;
+      }>;
+    }>;
+  }>("domain_analytics/whois/overview/live", [{ target: domain, limit: 1 }]);
+
+  const it = data.tasks?.[0]?.result?.[0]?.items?.[0];
+  if (!it) return undefined;
+  // first_seen 是 DFS 爬虫首次发现域名的时间，比 created_datetime 对 .ai 等 ccTLD 更可靠
+  const raw = it.first_seen ?? it.created_datetime;
+  if (!raw) return undefined;
+  return raw.slice(0, 10); // YYYY-MM-DD
+}
+
+/** 竞品过滤：排除平台巨头 / 内容站（它们竞争的是大词，不是直接竞品） */
+const COMPETITOR_EXCLUDED = new Set([
+  "google.com", "youtube.com", "facebook.com", "instagram.com", "reddit.com",
+  "twitter.com", "x.com", "linkedin.com", "wikipedia.org", "amazon.com",
+  "apple.com", "microsoft.com", "github.com", "adobe.com", "pinterest.com",
+  "tiktok.com", "quora.com", "medium.com", "openai.com", "chatgpt.com",
+]);
+
+/** 真实竞品域名（competitors_domain：与目标站竞争相同关键词的域名） */
+export async function fetchCompetitors(domain: string, limit = 8): Promise<string[]> {
+  const data = await request<{
+    tasks?: Array<{
+      result?: Array<{
+        items?: Array<{
+          domain?: string;
+          rank?: number;
+        }>;
+      }>;
+    }>;
+  }>("dataforseo_labs/google/competitors_domain/live", [
+    { target: domain, location_code: LOCATION_CODE, language_code: LANGUAGE_CODE, limit: 20 },
+  ]);
+
+  return (data.tasks?.[0]?.result?.[0]?.items ?? [])
+    .map((it) => it.domain)
+    .filter((d): d is string => !!d && d !== domain && !COMPETITOR_EXCLUDED.has(d))
+    .slice(0, limit);
+}
+
+/** 相关关键词（related_keywords：给灵感点子提供素材） */
+export async function fetchRelatedKeywords(
+  keywords: string[],
+  limit = 15,
+): Promise<{ term: string; volume?: number }[]> {
+  const data = await request<{
+    tasks?: Array<{
+      result?: Array<{
+        items?: Array<{
+          keyword_data?: { keyword?: string; search_volume?: number };
+        }>;
+      }>;
+    }>;
+  }>("dataforseo_labs/google/related_keywords/live", [
+    { keywords, location_code: LOCATION_CODE, language_code: LANGUAGE_CODE, limit },
+  ]);
+
+  return (data.tasks?.[0]?.result?.[0]?.items ?? [])
+    .map((it) => ({
+      term: it.keyword_data?.keyword ?? "",
+      volume: it.keyword_data?.search_volume,
+    }))
+    .filter((k) => k.term);
+}
+
+/**
+ * 自然搜索流量估算（domain_rank_overview，汇总各地区 organic.etv）。
+ * 用于 Apify 拿不到自然搜索份额时兜底（低流量站渠道份额缺失的常见场景）。
+ */
+export async function fetchOrganicSearchETV(domain: string): Promise<number | undefined> {
+  const data = await request<{
+    tasks?: Array<{
+      result?: Array<{
+        items?: Array<{
+          metrics?: { organic?: { etv?: number } };
+        }>;
+      }>;
+    }>;
+  }>("dataforseo_labs/google/domain_rank_overview/live", [
+    { target: domain, limit: 1000 },
+  ]);
+
+  const items = data.tasks?.[0]?.result?.[0]?.items ?? [];
+  const total = items.reduce((sum, it) => sum + (it.metrics?.organic?.etv ?? 0), 0);
+  return total > 0 ? Math.round(total) : undefined;
 }

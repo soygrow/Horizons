@@ -18,6 +18,9 @@ node_modules/
 .dev.vars
 .dev.vars.*
 
+# 采集产物（截图二进制不进 git）
+apps/web/public/screenshots/
+
 # production
 /build
 

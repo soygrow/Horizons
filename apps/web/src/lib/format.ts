@@ -19,10 +19,10 @@ export function toISODate(value?: string | null): string | undefined {
   return d.toISOString();
 }
 
-/** 数字缩写：2138 → 2.1k */
+/** 数字缩写：5503 → 5.5K（对齐哥伦布展示口径） */
 export function formatCount(value?: number | null): string {
   if (value === null || value === undefined) return "";
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}m`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}k`;
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
   return String(value);
 }

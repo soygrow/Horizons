@@ -46,12 +46,223 @@ export interface KeywordItem {
   volume?: number;      // 月搜索量
   cpc?: number;         // CPC
   competition?: string; // 竞争程度
+  traffic?: number;     // 该词带来的月流量（详情页「流量」列）
 }
 
 export interface PricePlan {
   plan: string;
   price: string;
   desc?: string;
+}
+
+// ---------------------------------------------------------------------------
+// V5 详情页字段（对齐哥伦布「站点分析」页；全部可选，缺失时前端渲染「待接入」）
+// ---------------------------------------------------------------------------
+
+/** 01 概览：核心指标 */
+export interface SiteMetrics {
+  monthlyVisits?: number;       // 月访问量（总口径；DFS 接入后为搜索口径需加注）
+  visitsCategoryRank?: string;  // 类目内排名，如 "1031 / 1209"
+  momGrowth?: number;           // 环比增长 %
+  organicVisits?: number;       // 自然搜索流量
+  organicShare?: number;        // 自然搜索占比 %
+  domainWeight?: number;        // 域名权重（DFS rank / DR 替代）
+  domainWeightLabel?: string;   // 展示名：DR / 权重
+  weightCategoryRank?: string;  // 类目内排名
+  registeredAt?: string;        // 注册时间（WHOIS）
+}
+
+/** 02 流量：趋势点（双系列） */
+export interface TrafficTrendPoint {
+  date: string;   // YYYY-MM
+  total: number;  // 总访问量
+  organic: number; // 自然搜索
+}
+
+/** 02 流量：渠道 key（哥伦布 10 渠道） */
+export type ChannelKey =
+  | "direct"
+  | "organicSearch"
+  | "referral"
+  | "displayAds"
+  | "organicSocial"
+  | "email"
+  | "affiliates"
+  | "paidSearch"
+  | "aiAssistants"
+  | "paidSocial";
+
+/** 02 流量：互动指标 */
+export interface Engagement {
+  bounceRate?: number;      // 跳出率 %
+  pagesPerVisit?: number;   // 页均访问
+  durationSec?: number | null; // 停留时长秒；null=无记录
+}
+
+/** 02 流量：排名 */
+export interface SiteRanks {
+  global?: number;  // 全球排名
+  country?: number; // 国内排名
+}
+
+/** 03 外链统计 + 明细 */
+export interface BacklinkItem {
+  sourceUrl: string;
+  sourceTitle?: string;
+  dr?: number;
+  anchorText?: string;
+  targetUrl?: string;
+}
+
+export interface BacklinkStats {
+  total?: number;             // 外链总数
+  totalDofollowShare?: number; // dofollow %
+  refDomains?: number;        // 引荐域名
+  refDofollowShare?: number;  // 引荐域名 dofollow %
+  items?: BacklinkItem[];     // Top N 明细
+}
+
+/** AI 解读（8 段） */
+export interface AiInsight {
+  analyzedAt?: string;      // 分析于 2026-10
+  confidence?: number;      // AI 置信度 %
+  question?: string;        // 引导问题
+  intro?: string;           // 引言：核心痛点
+  before?: string;          // 以前
+  now?: string;             // 现在
+  comparison?: string;      // 相比之下
+  audiences?: string[];     // 帮的是谁
+  hooks?: { title: string; desc: string }[]; // 靠什么打动人
+  willingness?: { level: "低" | "中等" | "高"; score?: 1 | 2 | 3; reason?: string };
+  growthDriver?: string;    // AI 解读 · 增长驱动
+  acquisition?: string;     // AI 解读 · 获客打法
+  trafficQuality?: string;  // 流量质量段
+  moat?: string;            // AI 解读 · 竞争壁垒
+  moatBadge?: string;       // 如「浅层封装」
+  monetization?: string;    // AI 解读 · 收费模式
+  monetizationBadge?: string; // 如「证据明确」
+}
+
+/** 04 变现与产品：标签组 */
+export interface TagGroup {
+  label: string;   // 变现方式 / SEO 打法 / 成熟度信号 / 模型家族 / 使用模型
+  values: string[];
+}
+
+/** 04 站点拆解：技术 + SEO 审计 */
+export interface SiteAudit {
+  techStack?: string[];
+  analytics?: string[];
+  pricingClues?: string[];
+  wordCount?: number;
+  pageLang?: string;
+  internalLinks?: number;
+  outboundLinks?: number;
+  images?: number;
+  imagesMissingAlt?: number;
+  structuredData?: string[];
+  outboundDomains?: string[];
+}
+
+export interface PageLinkItem {
+  text: string;
+  url: string;
+}
+
+/** 04 页面结构与链接明细 */
+export interface PageStructure {
+  title?: string;
+  metaDescription?: string;
+  canonical?: string;
+  robotsDirective?: string;
+  h1?: string[];
+  h2?: string[];
+  h3?: string[];
+  internalLinks?: PageLinkItem[];
+  outboundLinks?: PageLinkItem[];
+}
+
+/** 05 观察与竞品 */
+export interface Observations {
+  practices?: string[];   // 值得关注的做法
+  concerns?: string[];    // 疑点
+  competitors?: string[]; // 竞品域名
+}
+
+/** 数据快照 */
+export interface DataSnapshot {
+  period?: string;  // 2026-09
+  syncedAt?: string; // 2026-10-07 05:24:18
+}
+
+// ---------------------------------------------------------------------------
+// V6 创业洞察字段（差异化模块，对齐「创业机会雷达」定位）
+// ---------------------------------------------------------------------------
+
+/** ① 机会评分卡 */
+export interface OpportunityScore {
+  score: number;                    // 综合分 0~100
+  verdict: "值得抄" | "谨慎" | "别碰";
+  reason: string;                   // 一句话结论（so-what）
+  dimensions: {
+    label: string;                  // 竞争度 / 变现成熟度 / 增长可复制性 / 技术门槛 / 启动成本
+    score: number;                  // 0~100
+    note?: string;
+  }[];
+}
+
+/** ② 变现蓝图 */
+export interface MonetizationBlueprint {
+  model: string;                    // 商业模式：订阅 + 积分 等
+  tiers: string[];                  // 定价阶梯摘要
+  paymentDetected: string[];        // 收款平台检测：Stripe / Paddle / LemonSqueezy
+  pricingAdvice: string;            // 「你起步怎么定价」建议
+}
+
+/** ③ 增长复盘 */
+export interface GrowthPlaybook {
+  coldStart: string;                // 冷启动路径
+  channels: string[];               // 有效渠道
+  copyable: string[];               // 值得抄
+  avoid: string[];                  // 是坑别踩
+}
+
+/** ④ 启动蓝图 */
+export interface BuildBlueprint {
+  techStack: string[];              // 技术栈
+  thirdParty: string[];             // 依赖的第三方 API / 模型
+  mvpScope: string;                 // MVP 范围
+  devTime: string;                  // 预估开发周期
+  monthlyCost: string;              // 预估月成本
+}
+
+/** ⑤ 灵感触发 */
+export interface IdeaSpark {
+  title: string;
+  angle: string;                    // 换场景 / 换人群 / 换商业模式 / 换语区
+  why: string;                      // 为什么有机会
+  source?: string;                  // 灵感来源（指向某个数据点/竞品特征，让点子可追溯）
+}
+
+/** 各数据模块的分析结论 + 「这对你意味着什么」so-what */
+export interface ModuleInsight {
+  performance?: { analysis?: string; soWhat?: string };
+  growth?: { analysis?: string; soWhat?: string };
+  keywords?: { analysis?: string; soWhat?: string };
+  competition?: { analysis?: string; soWhat?: string };
+}
+
+/** docs/9 的 8 个「产品表现」指标（Apify Similarweb 数据源） */
+export interface TrafficMetrics {
+  monthlyVisits?: number;       // 1 月访问量
+  monthlyVisitsGrowth?: number; // 2 月访问量增长率（%）
+  organicSearchVisits?: number; // 3 自然搜索流量
+  directVisits?: number;        // 4 直接访问流量
+  referralVisits?: number;      // 5 引荐流量
+  socialVisits?: number;        // 6 社交媒体流量
+  monthlyPageviews?: number;    // 7 月页面浏览量
+  avgVisitDurationSec?: number; // 8 平均访问时长（秒）
+  snapshotMonth?: string;       // 数据快照月份
 }
 
 export interface AITool {
@@ -116,6 +327,39 @@ export interface AITool {
   geoDistribution?: GeoItem[];
   keywords?: KeywordItem[];
   priceHistory?: { date: string; plans: PricePlan[] }[];
+
+  // V5 详情页字段（对齐哥伦布站点分析页）
+  featureTags?: string[];       // Hero 特色标签（品牌驱动 / All In One / 多语言·N 种）
+  categoryTags?: string[];      // Hero 品类标签（视频制作 / AI 视频生成器 / …）
+  metrics?: SiteMetrics;        // 01 概览指标
+  dataSnapshot?: DataSnapshot;  // 数据快照月份 + 最后同步
+  trend?: TrafficTrendPoint[];  // 流量趋势（总 + 自然搜索）
+  channelShares?: Partial<Record<ChannelKey, number>>; // 10 渠道占比 %
+  engagement?: Engagement;      // 互动指标
+  ranks?: SiteRanks;            // 全球 / 国内排名
+  backlinks?: BacklinkStats;    // 外链
+  aiInsight?: AiInsight;        // AI 解读 8 段
+  tagGroups?: TagGroup[];       // 04 标签卡
+  siteAudit?: SiteAudit;        // 站点拆解
+  pageStructure?: PageStructure; // 页面结构与链接明细
+  observations?: Observations;  // 05 观察与竞品
+  screenshotDesktopUrl?: string;
+  screenshotMobileUrl?: string;
+
+  // V6 创业洞察（差异化模块）
+  opportunity?: OpportunityScore;         // ① 机会评分卡
+  monetizationBlueprint?: MonetizationBlueprint; // ② 变现蓝图
+  growthPlaybook?: GrowthPlaybook;        // ③ 增长复盘
+  buildBlueprint?: BuildBlueprint;        // ④ 启动蓝图
+  ideaSparks?: IdeaSpark[];               // ⑤ 灵感触发
+
+  // V7 数据整合
+  relatedKeywords?: { term: string; volume?: number }[]; // 相关关键词（DFS）
+  searchTraffic?: { organic: number; paid: number };     // 搜索流量拆解（自然/付费）
+  keywordCount?: number;                                  // 排名关键词总数（DFS）
+  rankDistribution?: { label: string; count: number }[]; // 关键词排名分布（DFS）
+  moduleInsights?: ModuleInsight;                         // 各模块分析 + so-what（AI）
+  trafficMetrics?: TrafficMetrics;                        // 产品表现 8 指标（Apify Similarweb）
 }
 
 /** 登录会话中的用户信息（前后端共享） */

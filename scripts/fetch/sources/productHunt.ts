@@ -1,10 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { chromium, type Browser } from "playwright";
+import { getDomain } from "tldts";
 import type { AITool } from "@horizons/shared";
 import { getProductHuntToken, config } from "../config";
 
-// 大厂 / 平台域名：PH 上这些通常是模型发布或官方公告，不是独立 AI 工具产品，需排除
+// 大厂 / 平台域名：通常是模型发布或官方公告，不是独立 AI 工具产品
 const EXCLUDED_DOMAINS = new Set([
   "openai.com",
   "anthropic.com",
@@ -23,7 +24,30 @@ const EXCLUDED_DOMAINS = new Set([
   "linkedin.com",
   "medium.com",
   "youtube.com",
+  "behance.net",
 ]);
+
+// 建站平台 / 应用商店子域：多为学生项目与非 Web 产品
+const EXCLUDED_SUFFIXES = [
+  "vercel.app",
+  "netlify.app",
+  "github.io",
+  "pages.dev",
+  "workers.dev",
+  "webflow.io",
+  "wixsite.com",
+  "weebly.com",
+  "blogspot.com",
+  "wordpress.com",
+  "gumroad.com",
+  "play.google.com",
+  "apps.apple.com",
+];
+
+function isExcludedDomain(domain: string): boolean {
+  if (EXCLUDED_DOMAINS.has(domain)) return true;
+  return EXCLUDED_SUFFIXES.some((s) => domain === s || domain.endsWith("." + s));
+}
 
 // PH 的 website/url/productLinks 全是 /r/ 跳转，且被 Cloudflare 防护（服务端 403、
 // headless 被挑战拦截），只有有头 Chrome 能穿透。故用 Playwright 有头模式解析域名。
@@ -65,17 +89,14 @@ async function resolveRedirect(url: string): Promise<string> {
 }
 
 function cleanUrl(raw: string): string {
-  try {
-    const u = new URL(raw);
-    return `${u.origin}${u.pathname}`.replace(/\/$/, "");
-  } catch {
-    return raw;
-  }
+  const d = extractDomain(raw);
+  return d ? `https://${d}` : raw;
 }
 
 function extractDomain(raw: string): string {
   try {
-    return new URL(raw).hostname.replace(/^www\./, "");
+    const host = new URL(raw).hostname;
+    return getDomain(host) || host;
   } catch {
     return "";
   }
@@ -92,7 +113,12 @@ function getToken(): string | null {
   return getProductHuntToken();
 }
 
-export async function fetchProductHuntTools(limit: number): Promise<AITool[]> {
+export async function fetchProductHuntTools(
+  limit: number,
+  order: "VOTES" | "NEWEST" = "VOTES",
+  topic = "artificial-intelligence",
+  existingNames: Set<string> = new Set(),
+): Promise<AITool[]> {
   const token = getToken();
   if (!token) {
     console.log("[fetch] 未配置 PH 凭据，跳过 Product Hunt 抓取");
@@ -111,7 +137,7 @@ export async function fetchProductHuntTools(limit: number): Promise<AITool[]> {
 
   const query = `
     query($first: Int!, $after: String) {
-      posts(first: $first, after: $after, order: VOTES) {
+      posts(first: $first, after: $after, order: ${order}, topic: "${topic}") {
         pageInfo { endCursor hasNextPage }
         edges {
           node {
@@ -162,14 +188,18 @@ export async function fetchProductHuntTools(limit: number): Promise<AITool[]> {
     after = posts.pageInfo.endCursor;
   }
 
-  console.log(`[fetch] Product Hunt 翻页拉到 ${nodes.length} 条，开始解析真实域名（有头浏览器）...`);
+  // name 预筛：已收录的在解析域名前跳过，省浏览器时间
+  const pending = nodes.filter((n) => !existingNames.has(n.name.toLowerCase()));
+  console.log(
+    `[fetch] PH(${order}, topic=${topic}) 翻页拉到 ${nodes.length} 条，新产品 ${pending.length} 个，开始解析域名...`,
+  );
 
   const items: AITool[] = [];
-  for (const node of nodes) {
+  for (const node of pending) {
     const realUrl = await resolveRedirect(node.website);
     const domain = realUrl ? extractDomain(realUrl) : "";
-    if (!domain || EXCLUDED_DOMAINS.has(domain)) {
-      console.log(`[fetch] ${node.name}：域名 ${domain || "?"} 已排除（大厂/平台），跳过`);
+    if (!domain || isExcludedDomain(domain)) {
+      console.log(`[fetch] ${node.name}：域名 ${domain || "?"} 已排除，跳过`);
       continue;
     }
 

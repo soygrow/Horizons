@@ -1,46 +1,160 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import {
-  tools,
-  getToolByDomain,
-  getSimilarTools,
-  deriveTags,
-  derivePricingModel,
-  sparklinePoints,
-  computeGrowth,
-} from "@/lib/data";
-import { ToolIcon } from "@/components/ToolIcon";
-import { CategoryBadge } from "@/components/CategoryBadge";
-import { VerifiedBadge } from "@/components/VerifiedBadge";
-import { PricingTag } from "@/components/PricingTag";
-import { GrowthBadge } from "@/components/GrowthBadge";
-import { Sparkline } from "@/components/Sparkline";
-import { formatDate, formatCount } from "@/lib/format";
+import type { ReactNode } from "react";
+import { tools, getToolByDomain } from "@/lib/data";
+import { CopyDataButton } from "@/components/detail/CopyDataButton";
+import { FavoriteButton } from "@/components/detail/FavoriteButton";
+import { ScreenshotLightbox } from "@/components/detail/ScreenshotLightbox";
+import { TrafficTrendChart } from "@/components/detail/TrafficTrendChart";
+import { buildSiteMarkdown } from "@/lib/site-markdown";
+import { getDict, format as tf } from "@/lib/i18n";
+import { formatCount } from "@/lib/format";
 
-function MetricCard({ value, label }: { value?: string; label: string }) {
+const dict = getDict("zh");
+
+/* ------------------------------- 通用小组件 ------------------------------- */
+
+function Badge({ children }: { children: ReactNode }) {
+  return (
+    <span className="inline-flex h-[22px] w-fit items-center rounded-full border border-border bg-surface-2 px-2.5 text-xs text-ink-secondary">
+      {children}
+    </span>
+  );
+}
+
+function SectionHeader({ no, title, desc }: { no: string; title: string; desc: string }) {
+  return (
+    <header className="flex flex-col gap-2 border-b border-border pb-5">
+      <span className="text-xs tabular-nums tracking-widest text-ink-muted">{no}</span>
+      <h2 className="text-xl font-semibold text-ink">{title}</h2>
+      <p className="max-w-2xl text-sm text-ink-muted">{desc}</p>
+    </header>
+  );
+}
+
+/** 指标卡（value 为空时显示「待获取」） */
+function Stat({ label, value, success }: { label: string; value?: string; success?: boolean }) {
   const pending = !value;
   return (
-    <div className="rounded-2xl border border-border bg-surface p-4">
-      <p
-        className={`text-xl font-semibold tabular-nums ${
-          pending ? "text-ink-muted" : "text-ink"
+    <div className="flex flex-col gap-1 rounded-lg border border-border p-4">
+      <span className="text-xs text-ink-muted">{label}</span>
+      <span
+        className={`text-lg font-semibold tabular-nums ${
+          pending ? "text-ink-muted" : success ? "text-success" : "text-ink"
         }`}
       >
-        {value ?? "待接入"}
-      </p>
-      <p className="mt-1 text-xs text-ink-muted">{label}</p>
+        {pending ? dict.analysis.pending : value}
+      </span>
     </div>
   );
 }
 
-function PendingBlock({ text }: { text: string }) {
+function formatDuration(sec?: number): string | undefined {
+  if (sec === undefined || sec === null) return undefined;
+  if (sec < 60) return `${sec} 秒`;
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return s ? `${m} 分 ${s} 秒` : `${m} 分钟`;
+}
+
+/** 「待获取」占位块 */
+function Pending({ text = dict.analysis.pending }: { text?: string }) {
   return (
-    <div className="mt-3 flex h-24 items-center justify-center rounded-2xl border border-dashed border-border bg-surface">
+    <div className="flex h-32 items-center justify-center rounded-xl border border-dashed border-border">
       <span className="text-sm text-ink-muted">{text}</span>
     </div>
   );
 }
+
+/** 横向条形（排名分布用 count，渠道/国家用 share 百分比） */
+function Bars({ items }: { items: { label: string; value: number; suffix?: string }[] }) {
+  const max = Math.max(...items.map((i) => i.value), 1);
+  return (
+    <ul className="flex flex-col gap-2.5">
+      {items.map((it) => (
+        <li key={it.label} className="flex items-center gap-3">
+          <span className="w-20 shrink-0 text-xs text-ink-secondary">{it.label}</span>
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-2">
+            <div className="h-full rounded-full bg-primary" style={{ width: `${(it.value / max) * 100}%` }} />
+          </div>
+          <span className="w-14 text-right text-xs tabular-nums text-ink-muted">
+            {it.value}{it.suffix ?? ""}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** 右侧分析面板（sticky）+ 「这对你意味着什么」so-what */
+function AnalysisPanel({
+  title,
+  soWhat,
+  children,
+}: {
+  title: string;
+  soWhat?: string;
+  children?: ReactNode;
+}) {
+  return (
+    <div className="lg:sticky lg:top-32 lg:self-start">
+      <div className="rounded-2xl border border-border bg-surface p-5">
+        <h3 className="flex items-center gap-2 text-sm font-medium text-primary">{title}</h3>
+        <div className="mt-3">{children ?? <Pending />}</div>
+        <div className="mt-3 border-t border-border pt-3">
+          <span className="text-xs font-medium text-primary">{dict.analysis.soWhat}</span>
+          <p className="mt-1 text-sm leading-relaxed text-ink-secondary">
+            {soWhat ?? dict.analysis.pending}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** 流量情况子模块卡片（左数据右解读的「左」块） */
+function SubCard({ title, extra, children }: { title: string; extra?: ReactNode; children: ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-border bg-surface p-6">
+      <div className="flex items-baseline justify-between">
+        <h3 className="font-medium text-ink">{title}</h3>
+        {extra}
+      </div>
+      <div className="mt-4">{children}</div>
+    </div>
+  );
+}
+
+function Favicon({ domain }: { domain: string }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
+      alt=""
+      className="h-4 w-4 shrink-0 rounded-sm bg-surface-2"
+      loading="lazy"
+    />
+  );
+}
+
+const VERDICT_STYLE: Record<string, string> = {
+  "值得入场": "bg-success-soft text-success",
+  "谨慎": "bg-warning-soft text-warning",
+  "别碰": "bg-danger-soft text-danger",
+};
+
+/** 左右布局容器（65:35） */
+function Split({ left, right }: { left: ReactNode; right: ReactNode }) {
+  return (
+    <div className="grid gap-6 lg:grid-cols-[65fr_35fr] lg:gap-8">
+      <div className="min-w-0">{left}</div>
+      <div className="min-w-0">{right}</div>
+    </div>
+  );
+}
+
+/* --------------------------------- 数据组装 -------------------------------- */
 
 export function generateStaticParams() {
   return tools.map((t) => ({ domain: t.domain }));
@@ -53,8 +167,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { domain } = await params;
   const tool = getToolByDomain(domain);
-  if (!tool) return { title: "工具未找到" };
-  return { title: tool.name, description: tool.description };
+  if (!tool) return { title: "站点未找到" };
+  return { title: `${tool.domain} - 值不值得做`, description: tool.description };
 }
 
 export default async function ToolDetailPage({
@@ -66,369 +180,593 @@ export default async function ToolDetailPage({
   const tool = getToolByDomain(domain);
   if (!tool) notFound();
 
-  const similar = getSimilarTools(tool);
-  const tags = deriveTags(tool);
-  const pricingModel = derivePricingModel(tool);
-  const points = sparklinePoints(tool);
-  const growth = computeGrowth(tool);
+  const ai = tool.aiInsight;
+  const tm = tool.trafficMetrics;
+  const b = tool.backlinks;
+  const audit = tool.siteAudit;
+  const ps = tool.pageStructure;
+  const obs = tool.observations;
+  const opp = tool.opportunity;
+  const mb = tool.monetizationBlueprint;
+  const gp = tool.growthPlaybook;
+  const bb = tool.buildBlueprint;
+  const sparks = tool.ideaSparks;
+  const mi = tool.moduleInsights;
+  const markdown = buildSiteMarkdown(tool);
+
+  const t = dict.opportunity;
+  const competitors = obs?.competitors ?? [];
+  const keywords = tool.keywords ?? [];
+  const relatedKeywords = tool.relatedKeywords ?? [];
+  const rankDistribution = tool.rankDistribution ?? [];
+  const trend = tool.trend ?? [];
+  const channelShares = tool.channelShares ?? {};
+  const geo = tool.geoDistribution ?? [];
+  const ranks = tool.ranks;
+
+  // 渠道份额（按从大到小排序，值已是 %）
+  const channelItems = Object.entries(channelShares)
+    .map(([key, value]) => ({
+      key,
+      label: dict.traffic.channels[key as keyof typeof dict.traffic.channels] ?? key,
+      value: value ?? 0,
+    }))
+    .sort((a, b) => b.value - a.value);
+
+  const heroShots = [
+    tool.screenshotDesktopUrl ? { src: tool.screenshotDesktopUrl, caption: dict.hero.desktop } : null,
+    tool.screenshotMobileUrl ? { src: tool.screenshotMobileUrl, caption: dict.hero.mobile } : null,
+  ].filter((s): s is { src: string; caption: string } => s !== null);
+
+  const NAV: [string, string][] = [
+    ["#performance", dict.anchorNav.performance],
+    ["#opportunity", dict.anchorNav.opportunity],
+    ["#traffic", dict.anchorNav.traffic],
+    ["#business", dict.anchorNav.business],
+    ["#playbook", dict.anchorNav.playbook],
+    ["#ideas", dict.anchorNav.ideas],
+  ];
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
-      <Link
-        href="/tools"
-        className="inline-flex items-center gap-1 text-sm text-ink-secondary transition hover:text-primary"
-      >
-        <span aria-hidden>←</span> 全部工具
-      </Link>
-
-      {/* Header */}
-      <header className="mt-6 flex flex-col gap-5 sm:flex-row sm:items-start">
-        <ToolIcon domain={tool.domain} name={tool.name} size="lg" />
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-            <h1 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">
-              {tool.name}
-            </h1>
-            {tool.verified === "verified" ? <VerifiedBadge /> : null}
-          </div>
-          <p className="mt-1 text-sm text-ink-muted">{tool.domain}</p>
-
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            {tool.categories.map((c) => (
-              <CategoryBadge key={c} label={c} />
-            ))}
-            {pricingModel ? <PricingTag model={pricingModel} /> : null}
-            <a
-              href={tool.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-white transition hover:bg-primary-hover"
-            >
-              访问官网 ↗
-            </a>
-          </div>
-        </div>
-      </header>
-
-      {/* Overview metrics */}
-      <section className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-2xl border border-border bg-surface p-4">
-          <p className="text-2xl font-semibold text-ink tabular-nums">
-            {tool.heatScore}
-          </p>
-          <p className="mt-1 text-xs text-ink-muted">热度分</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-surface p-4">
-          <p className="text-2xl font-semibold text-ink tabular-nums">
-            {tool.githubStars ? formatCount(tool.githubStars) : "—"}
-          </p>
-          <p className="mt-1 text-xs text-ink-muted">GitHub stars</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-surface p-4">
-          <p className="text-2xl font-semibold text-ink tabular-nums">
-            {tool.phUpvotes ? formatCount(tool.phUpvotes) : "—"}
-          </p>
-          <p className="mt-1 text-xs text-ink-muted">PH 票数</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-surface p-4">
-          <div className="flex items-center gap-2">
-            <Sparkline points={points} width={48} height={24} />
-            <GrowthBadge growth={growth} />
-          </div>
-          <p className="mt-1 text-xs text-ink-muted">趋势</p>
-        </div>
-      </section>
-
-      {/* Traffic overview */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold text-ink">流量概览</h2>
-        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-          <MetricCard
-            value={
-              (tool.traffic?.organicVisits ?? 0) + (tool.traffic?.paidVisits ?? 0) > 0
-                ? formatCount(
-                    (tool.traffic?.organicVisits ?? 0) +
-                      (tool.traffic?.paidVisits ?? 0),
-                  )
-                : undefined
-            }
-            label="月搜索流量"
-          />
-          <MetricCard
-            value={tool.traffic?.visits ? formatCount(tool.traffic.visits) : undefined}
-            label="月访问量（总）"
-          />
-          <MetricCard
-            value={tool.traffic?.pagesPerVisit?.toString()}
-            label="单次访问页数"
-          />
-          <MetricCard
-            value={tool.traffic?.durationSec ? `${tool.traffic.durationSec} 秒` : undefined}
-            label="访问时长"
-          />
-          <MetricCard
-            value={tool.traffic?.bounceRate ? `${tool.traffic.bounceRate}%` : undefined}
-            label="跳出率"
-          />
-          <MetricCard
-            value={tool.trancoRank ? `#${formatCount(tool.trancoRank)}` : undefined}
-            label="全球排名"
-          />
-        </div>
-      </section>
-
-      {/* Traffic trend */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold text-ink">流量趋势</h2>
-        {tool.trafficHistory && tool.trafficHistory.length > 0 ? (
-          <div className="mt-3 h-40 rounded-2xl border border-border bg-surface" />
-        ) : (
-          <PendingBlock text="流量趋势数据待接入" />
-        )}
-      </section>
-
-      {/* Channels */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold text-ink">来源渠道</h2>
-        {tool.channels ? (
-          <div className="mt-3 space-y-2">
-            {(
-              [
-                ["社媒", tool.channels.social],
-                ["直接访问", tool.channels.direct],
-                ["搜索", tool.channels.search],
-                ["外链", tool.channels.referral],
-                ["邮件", tool.channels.email],
-              ] as const
-            ).map(([label, v]) => (
-              <div key={label} className="flex items-center gap-3">
-                <span className="w-20 shrink-0 text-sm text-ink-secondary">
-                  {label}
-                </span>
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-2">
-                  <div
-                    className="h-full rounded-full bg-primary"
-                    style={{ width: `${v ?? 0}%` }}
-                  />
-                </div>
-                <span className="w-12 text-right text-xs tabular-nums text-ink-muted">
-                  {v ?? 0}%
-                </span>
+    <div className="flex flex-col">
+      {/* ------------------------------ Hero 头部 ------------------------------ */}
+      <section className="border-b border-border bg-frost py-12 md:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <header className="flex flex-col-reverse gap-8 lg:flex-row lg:items-center lg:gap-14">
+            <div className="flex min-w-0 flex-1 flex-col gap-6">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-3">
+                <h1 className="max-w-full truncate text-3xl font-semibold text-ink">{tool.domain}</h1>
+                <a
+                  href={tool.url}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  className="inline-flex h-9 shrink-0 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-white transition hover:bg-primary-hover"
+                >
+                  {dict.hero.visitSite}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M15 3h6v6" />
+                    <path d="M10 14 21 3" />
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  </svg>
+                </a>
+                <FavoriteButton domain={tool.domain} />
+                <CopyDataButton markdown={markdown} />
               </div>
-            ))}
-          </div>
-        ) : (
-          <PendingBlock text="来源渠道数据待接入" />
-        )}
+
+              <p className="max-w-2xl text-lg leading-relaxed text-ink-secondary">{tool.description}</p>
+
+              <div className="flex flex-col gap-3">
+                {tool.featureTags?.length ? (
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    {tool.featureTags.map((t) => <Badge key={t}>{t}</Badge>)}
+                  </div>
+                ) : null}
+                {tool.categoryTags?.length ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    {tool.categoryTags.map((t) => <Badge key={t}>{t}</Badge>)}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            {heroShots.length > 0 ? (
+              <div className="w-full shrink-0 lg:w-[520px]">
+                <div className="flex items-start gap-3">
+                  {heroShots.map((s, i) => (
+                    <figure key={s.src} className="flex min-w-0 flex-col gap-2" style={{ width: i === 0 ? "72%" : "28%" }}>
+                      <ScreenshotLightbox shots={[s]} />
+                      <figcaption className="text-center text-xs text-ink-muted">{s.caption}</figcaption>
+                    </figure>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="hidden aspect-[16/10] w-full shrink-0 items-center justify-center rounded-xl border border-dashed border-border text-sm text-ink-muted lg:flex lg:w-[520px]">
+                {dict.hero.screenshotPending}
+              </div>
+            )}
+          </header>
+        </div>
       </section>
 
-      {/* Geo distribution */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold text-ink">国家分布</h2>
-        {tool.geoDistribution && tool.geoDistribution.length > 0 ? (
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-            {tool.geoDistribution.map((g) => (
-              <li
-                key={g.country}
-                className="flex items-center justify-between rounded-xl border border-border bg-surface px-3 py-2"
-              >
-                <span className="text-sm text-ink-secondary">{g.country}</span>
-                <span className="text-sm font-medium tabular-nums text-ink">
-                  {g.share}%
-                </span>
+      {/* ---------------------------- sticky 锚点导航 ---------------------------- */}
+      <nav className="sticky inset-x-0 top-16 z-30 border-b border-border bg-canvas/95 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl px-4 sm:px-6">
+          <span className="hidden max-w-[12rem] shrink-0 truncate py-2.5 text-sm font-medium text-ink lg:block">{tool.domain}</span>
+          <span className="hidden h-4 w-px shrink-0 self-center bg-border lg:block" />
+          <ul className="flex min-w-0 items-center gap-1 overflow-x-auto">
+            {NAV.map(([href, label]) => (
+              <li key={href} className="shrink-0">
+                <a href={href} className="block whitespace-nowrap rounded-full px-3 py-1.5 text-sm text-ink-secondary transition hover:bg-surface-2 hover:text-ink">
+                  {label}
+                </a>
               </li>
             ))}
           </ul>
-        ) : (
-          <PendingBlock text="国家分布数据待接入" />
-        )}
-      </section>
+        </div>
+      </nav>
 
-      {/* About */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold text-ink">简介</h2>
-        <p className="mt-2 text-sm leading-relaxed text-ink-secondary">
-          {tool.longDescription ?? tool.description}
-        </p>
-      </section>
-
-      {/* Tags */}
-      {tags.length > 0 ? (
-        <section className="mt-8">
-          <h2 className="text-lg font-semibold text-ink">亮点标签</h2>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <CategoryBadge key={tag} label={tag} />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {/* Pricing */}
-      {tool.pricing && tool.pricing.length > 0 ? (
-        <section className="mt-8">
-          <h2 className="text-lg font-semibold text-ink">定价</h2>
-          <div className="mt-3 grid gap-3 sm:grid-cols-3">
-            {tool.pricing.map((p) => (
-              <div
-                key={p.plan}
-                className="rounded-2xl border border-border bg-surface p-4"
-              >
-                <p className="text-sm font-medium text-ink">{p.plan}</p>
-                <p className="mt-1 text-lg font-semibold text-primary tabular-nums">
-                  {p.price}
-                </p>
+      <div className="mx-auto flex max-w-7xl flex-col gap-16 px-4 py-12 sm:px-6">
+        {/* ------------------------ 01 产品表现 ------------------------ */}
+        <section id="performance" className="flex scroll-mt-36 flex-col gap-10">
+          <SectionHeader
+            no={dict.sections.performance.no}
+            title={dict.sections.performance.title}
+            desc={dict.sections.performance.desc}
+          />
+          <Split
+            left={
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                <Stat label={dict.metrics.monthlyVisits} value={tm?.monthlyVisits !== undefined ? formatCount(tm.monthlyVisits) : undefined} />
+                <Stat
+                  label={dict.metrics.monthlyVisitsGrowth}
+                  value={tm?.monthlyVisitsGrowth !== undefined ? `${tm.monthlyVisitsGrowth > 0 ? "+" : ""}${tm.monthlyVisitsGrowth}%` : undefined}
+                  success={(tm?.monthlyVisitsGrowth ?? 0) > 0}
+                />
+                <Stat label={dict.metrics.organicSearchVisits} value={tm?.organicSearchVisits !== undefined ? formatCount(tm.organicSearchVisits) : undefined} />
+                <Stat label={dict.metrics.directVisits} value={tm?.directVisits !== undefined ? formatCount(tm.directVisits) : undefined} />
+                <Stat label={dict.metrics.referralVisits} value={tm?.referralVisits !== undefined ? formatCount(tm.referralVisits) : undefined} />
+                <Stat label={dict.metrics.socialVisits} value={tm?.socialVisits !== undefined ? formatCount(tm.socialVisits) : undefined} />
+                <Stat label={dict.metrics.monthlyPageviews} value={tm?.monthlyPageviews !== undefined ? formatCount(tm.monthlyPageviews) : undefined} />
+                <Stat label={dict.metrics.avgVisitDuration} value={formatDuration(tm?.avgVisitDurationSec)} />
               </div>
-            ))}
-          </div>
+            }
+            right={
+              <AnalysisPanel title={dict.analysis.performance} soWhat={mi?.performance?.soWhat}>
+                {mi?.performance?.analysis ? <p className="text-sm leading-relaxed text-ink-secondary">{mi.performance.analysis}</p> : undefined}
+              </AnalysisPanel>
+            }
+          />
         </section>
-      ) : null}
 
-      {/* Tech stack */}
-      {tool.techStack && tool.techStack.length > 0 ? (
-        <section className="mt-8">
-          <h2 className="text-lg font-semibold text-ink">技术栈</h2>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {tool.techStack.map((t) => (
-              <span
-                key={t}
-                className="rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs text-ink-secondary"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {/* Keywords */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold text-ink">关键词</h2>
-        {tool.keywords && tool.keywords.length > 0 ? (
-          <div className="mt-3 overflow-hidden rounded-2xl border border-border">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-surface-2 text-xs text-ink-muted">
-                <tr>
-                  <th className="px-4 py-2 font-medium">关键词</th>
-                  <th className="px-4 py-2 font-medium">月搜索量</th>
-                  <th className="px-4 py-2 font-medium">CPC</th>
-                  <th className="px-4 py-2 font-medium">竞争程度</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tool.keywords.map((k) => (
-                  <tr key={k.term} className="border-t border-border">
-                    <td className="px-4 py-2 text-ink">{k.term}</td>
-                    <td className="px-4 py-2 tabular-nums text-ink-secondary">
-                      {k.volume ? formatCount(k.volume) : "—"}
-                    </td>
-                    <td className="px-4 py-2 tabular-nums text-ink-secondary">
-                      {k.cpc ? `$${k.cpc}` : "—"}
-                    </td>
-                    <td className="px-4 py-2 text-ink-secondary">
-                      {k.competition ?? "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <PendingBlock text="关键词数据待接入" />
-        )}
-      </section>
-
-      {/* Similar tools */}
-      {similar.length > 0 ? (
-        <section className="mt-8">
-          <h2 className="text-lg font-semibold text-ink">相似产品</h2>
-          <div className="mt-3 space-y-2">
-            {similar.map((s) => (
-              <Link
-                key={s.id}
-                href={`/tools/${s.domain}`}
-                className="flex items-center gap-3 rounded-xl border border-border bg-surface p-3 transition hover:border-primary/40"
-              >
-                <ToolIcon domain={s.domain} name={s.name} />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-ink">{s.name}</p>
-                  <p className="truncate text-xs text-ink-muted">
-                    {s.description}
-                  </p>
+        {/* ------------------------ 02 值不值得做 ------------------------ */}
+        <section id="opportunity" className="flex scroll-mt-36 flex-col gap-10">
+          <SectionHeader
+            no={dict.sections.opportunity.no}
+            title={dict.sections.opportunity.title}
+            desc={dict.sections.opportunity.desc}
+          />
+          <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8">
+            {opp ? (
+              <>
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-4xl font-bold tabular-nums leading-none text-ink">{opp.score}</span>
+                    <span className="text-base text-ink-muted">{t.scoreOf}</span>
+                  </div>
+                  <span className={`inline-flex items-center rounded-full px-3.5 py-1 text-base font-semibold ${VERDICT_STYLE[opp.verdict] ?? "bg-surface-2 text-ink-secondary"}`}>
+                    {opp.verdict}
+                  </span>
+                  {opp.reason ? (
+                    <p className="min-w-[14rem] flex-1 text-sm leading-relaxed text-ink-secondary">{opp.reason}</p>
+                  ) : null}
                 </div>
-                <span className="text-sm font-semibold text-ink tabular-nums">
-                  {s.heatScore}
-                </span>
-              </Link>
-            ))}
+                <div className="mt-7 grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-5">
+                  {opp.dimensions?.map((d) => (
+                    <div key={d.label} className="flex flex-col gap-1.5">
+                      <div className="flex items-baseline justify-between text-xs">
+                        <span className="font-medium text-ink-secondary">{d.label}</span>
+                        <span className="font-semibold tabular-nums text-ink">{d.score}</span>
+                      </div>
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
+                        <div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(0, Math.min(100, d.score))}%` }} />
+                      </div>
+                      {d.note ? <p className="text-xs leading-relaxed text-ink-muted">{d.note}</p> : null}
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <Pending text={`${t.scoreLabel} · ${dict.analysis.pending}`} />
+            )}
           </div>
         </section>
-      ) : null}
 
-      {/* Source info */}
-      <section className="mt-8 rounded-2xl border border-border bg-surface p-5">
-        <h2 className="text-sm font-semibold text-ink">收录信息</h2>
-        <dl className="mt-3 space-y-2 text-sm">
-          <div className="flex gap-2">
-            <dt className="shrink-0 text-ink-muted">来源</dt>
-            <dd className="capitalize text-ink-secondary">{tool.sourceType}</dd>
-          </div>
-          <div className="flex gap-2">
-            <dt className="shrink-0 text-ink-muted">来源链接</dt>
-            <dd className="min-w-0 truncate">
-              <a
-                href={tool.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                {tool.sourceUrl} ↗
-              </a>
-            </dd>
-          </div>
-          <div className="flex gap-2">
-            <dt className="shrink-0 text-ink-muted">首次收录</dt>
-            <dd className="text-ink-secondary">{formatDate(tool.firstSeenAt)}</dd>
-          </div>
-          <div className="flex gap-2">
-            <dt className="shrink-0 text-ink-muted">最近更新</dt>
-            <dd className="text-ink-secondary">{formatDate(tool.collectedAt)}</dd>
-          </div>
-        </dl>
-      </section>
+        {/* ------------------------ 03 流量情况（讲流量故事） ------------------------ */}
+        <section id="traffic" className="flex scroll-mt-36 flex-col gap-10">
+          <SectionHeader
+            no={dict.sections.traffic.no}
+            title={dict.sections.traffic.title}
+            desc={dict.sections.traffic.desc}
+          />
+          <Split
+            left={
+              <div className="flex flex-col gap-5">
+                {/* 3.1 流量趋势 */}
+                <SubCard
+                  title={dict.traffic.trend}
+                  extra={<span className="text-sm text-ink-muted">{tf(dict.traffic.monthsRange, { count: trend.length })}</span>}
+                >
+                  {trend.length >= 2 ? <TrafficTrendChart points={trend} /> : <Pending text={dict.traffic.noHistory} />}
+                </SubCard>
 
-      {/* Contact */}
-      {tool.contact &&
-      (tool.contact.email || tool.contact.socials?.length) ? (
-        <section className="mt-8">
-          <h2 className="text-lg font-semibold text-ink">联系方式</h2>
-          <div className="mt-2 space-y-2">
-            {tool.contact.email ? (
-              <a
-                href={`mailto:${tool.contact.email}`}
-                className="block text-sm text-primary hover:underline"
-              >
-                {tool.contact.email}
-              </a>
-            ) : null}
-            {tool.contact.socials?.length ? (
-              <div className="flex flex-wrap gap-2">
-                {tool.contact.socials.map((s) => (
+                {/* 3.2 流量结构 */}
+                <SubCard title={dict.traffic.sources}>
+                  {channelItems.length ? (
+                    <Bars items={channelItems.map((c) => ({ label: c.label, value: c.value, suffix: "%" }))} />
+                  ) : (
+                    <Pending text={`${dict.traffic.sources} · ${dict.analysis.pending}`} />
+                  )}
+                </SubCard>
+
+                {/* 3.3 主要国家 */}
+                <SubCard title={dict.traffic.countries}>
+                  {geo.length ? (
+                    <Bars items={geo.map((g) => ({ label: g.country, value: g.share, suffix: "%" }))} />
+                  ) : (
+                    <Pending text={`${dict.traffic.countries} · ${dict.analysis.pending}`} />
+                  )}
+                </SubCard>
+
+                {/* 3.4 搜索与排名 */}
+                <SubCard title={dict.traffic.searchRanks}>
+                  <div className="flex flex-col gap-5">
+                    {ranks?.global || ranks?.country ? (
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="rounded-lg border border-border p-4">
+                          <span className="text-xs text-ink-muted">{dict.traffic.globalRank}</span>
+                          <p className="text-2xl font-semibold tabular-nums text-ink">{ranks.global ? `#${formatCount(ranks.global)}` : "—"}</p>
+                        </div>
+                        <div className="rounded-lg border border-border p-4">
+                          <span className="text-xs text-ink-muted">{dict.traffic.countryRank}</span>
+                          <p className="text-2xl font-semibold tabular-nums text-ink">{ranks.country ? `#${formatCount(ranks.country)}` : "—"}</p>
+                        </div>
+                      </div>
+                    ) : null}
+                    {keywords.length ? (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                          <thead className="text-xs text-ink-muted">
+                            <tr>
+                              <th className="py-2 font-medium">{dict.keywords.term}</th>
+                              <th className="whitespace-nowrap py-2 text-right font-medium">{dict.keywords.volume}</th>
+                              <th className="whitespace-nowrap py-2 text-right font-medium">{dict.keywords.cpc}</th>
+                              <th className="whitespace-nowrap py-2 text-right font-medium">{dict.keywords.traffic}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {keywords.slice(0, 8).map((k) => (
+                              <tr key={k.term} className="border-t border-border">
+                                <td className="py-2.5 text-ink">{k.term}</td>
+                                <td className="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">{k.volume ? formatCount(k.volume) : "—"}</td>
+                                <td className="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">{k.cpc ? `$${k.cpc}` : "—"}</td>
+                                <td className="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">{k.traffic ?? "—"}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : null}
+                    {rankDistribution.length ? (
+                      <div>
+                        <span className="text-xs text-ink-muted">{dict.traffic.rankDistribution}</span>
+                        <div className="mt-2">
+                          <Bars items={rankDistribution.map((r) => ({ label: r.label, value: r.count }))} />
+                        </div>
+                      </div>
+                    ) : null}
+                    {!keywords.length && !rankDistribution.length && !ranks?.global && !ranks?.country ? (
+                      <Pending text={`${dict.traffic.searchRanks} · ${dict.analysis.pending}`} />
+                    ) : null}
+                  </div>
+                </SubCard>
+              </div>
+            }
+            right={
+              <div className="lg:sticky lg:top-32 lg:self-start">
+                <div className="flex flex-col gap-4">
+                  <div className="rounded-2xl border border-border bg-surface p-5">
+                    <h3 className="text-sm font-medium text-primary">{dict.aiInsight.growthDriver}</h3>
+                    {ai?.growthDriver ? (
+                      <p className="mt-2 text-sm leading-relaxed text-ink-secondary">{ai.growthDriver}</p>
+                    ) : (
+                      <div className="mt-2"><Pending /></div>
+                    )}
+                  </div>
+                  <div className="rounded-2xl border border-border bg-surface p-5">
+                    <h3 className="text-sm font-medium text-primary">{dict.aiInsight.acquisition}</h3>
+                    {ai?.acquisition ? (
+                      <p className="mt-2 text-sm leading-relaxed text-ink-secondary">{ai.acquisition}</p>
+                    ) : (
+                      <div className="mt-2"><Pending /></div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            }
+          />
+        </section>
+
+        {/* ------------------------ 04 这门生意 ------------------------ */}
+        <section id="business" className="flex scroll-mt-36 flex-col gap-10">
+          <SectionHeader
+            no={dict.sections.business.no}
+            title={dict.sections.business.title}
+            desc={dict.sections.business.desc}
+          />
+          <Split
+            left={
+              <div className="rounded-2xl border border-border bg-surface p-6">
+                <h3 className="text-base font-semibold text-ink">{t.monetization}</h3>
+                {mb ? (
+                  <div className="mt-4 flex flex-col gap-4">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div>
+                        <span className="text-xs text-ink-muted">{t.model}</span>
+                        <p className="text-sm font-medium text-ink">{mb.model}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-ink-muted">{t.payment}</span>
+                        {mb.paymentDetected?.length ? (
+                          <div className="mt-1 flex flex-wrap gap-2">
+                            {mb.paymentDetected.map((p) => <Badge key={p}>{p}</Badge>)}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-ink-muted">未检测到</p>
+                        )}
+                      </div>
+                    </div>
+                    {mb.tiers?.length ? (
+                      <div>
+                        <span className="text-xs text-ink-muted">{t.tiers}</span>
+                        <ul className="mt-2 flex flex-wrap gap-2">
+                          {mb.tiers.map((tier) => <Badge key={tier}>{tier}</Badge>)}
+                        </ul>
+                      </div>
+                    ) : null}
+                    {mb.pricingAdvice ? (
+                      <div className="rounded-lg border border-primary/20 bg-primary-soft px-4 py-3">
+                        <span className="text-xs font-medium text-primary">{t.pricingAdvice}</span>
+                        <p className="mt-1 text-sm leading-relaxed text-ink-secondary">{mb.pricingAdvice}</p>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : (
+                  <div className="mt-4"><Pending text={`${t.monetization} · ${dict.analysis.pending}`} /></div>
+                )}
+              </div>
+            }
+            right={
+              <div className="rounded-2xl border border-border bg-surface p-6">
+                <h3 className="text-base font-semibold text-ink">{t.growth}</h3>
+                {gp ? (
+                  <div className="mt-4 flex flex-col gap-4">
+                    {gp.coldStart ? (
+                      <div>
+                        <span className="text-xs text-ink-muted">{t.coldStart}</span>
+                        <p className="mt-1 text-sm leading-relaxed text-ink-secondary">{gp.coldStart}</p>
+                      </div>
+                    ) : null}
+                    {gp.channels?.length ? (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs text-ink-muted">{t.channels}</span>
+                        {gp.channels.map((c) => <Badge key={c}>{c}</Badge>)}
+                      </div>
+                    ) : null}
+                    <div className="grid gap-5 border-t border-border pt-4 md:grid-cols-2">
+                      {gp.copyable?.length ? (
+                        <div className="flex flex-col gap-2">
+                          <h4 className="text-xs font-medium uppercase tracking-[0.14em] text-success">{t.copyable}</h4>
+                          <ul className="flex flex-col gap-2">
+                            {gp.copyable.map((c) => (
+                              <li key={c} className="flex items-start gap-2 text-sm">
+                                <span className="mt-0.5 shrink-0 text-success" aria-hidden>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
+                                </span>
+                                <span className="leading-relaxed text-ink-secondary">{c}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+                      {gp.avoid?.length ? (
+                        <div className="flex flex-col gap-2">
+                          <h4 className="text-xs font-medium uppercase tracking-[0.14em] text-danger">{t.avoid}</h4>
+                          <ul className="flex flex-col gap-2">
+                            {gp.avoid.map((c) => (
+                              <li key={c} className="flex items-start gap-2 text-sm">
+                                <span className="mt-0.5 shrink-0 text-danger" aria-hidden>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                                </span>
+                                <span className="leading-relaxed text-ink-secondary">{c}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-4"><Pending text={`${t.growth} · ${dict.analysis.pending}`} /></div>
+                )}
+              </div>
+            }
+          />
+        </section>
+
+        {/* ------------------------ 05 怎么复制 ------------------------ */}
+        <section id="playbook" className="flex scroll-mt-36 flex-col gap-10">
+          <SectionHeader
+            no={dict.sections.playbook.no}
+            title={dict.sections.playbook.title}
+            desc={dict.sections.playbook.desc}
+          />
+          <Split
+            left={
+              <div className="rounded-2xl border border-border bg-surface p-6">
+                <h3 className="text-base font-semibold text-ink">{t.build}</h3>
+                {bb ? (
+                  <div className="mt-4 flex flex-col gap-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <span className="text-xs text-ink-muted">{t.devTime}</span>
+                        <p className="text-sm font-medium text-ink">{bb.devTime}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-ink-muted">{t.monthlyCost}</span>
+                        <p className="text-sm font-medium text-ink">{bb.monthlyCost}</p>
+                      </div>
+                    </div>
+                    {bb.techStack?.length ? (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs text-ink-muted">{t.techStack}</span>
+                        {bb.techStack.map((s) => <Badge key={s}>{s}</Badge>)}
+                      </div>
+                    ) : null}
+                    {bb.thirdParty?.length ? (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs text-ink-muted">{t.thirdParty}</span>
+                        {bb.thirdParty.map((s) => <Badge key={s}>{s}</Badge>)}
+                      </div>
+                    ) : null}
+                    {bb.mvpScope ? (
+                      <div>
+                        <span className="text-xs text-ink-muted">{t.mvpScope}</span>
+                        <p className="mt-1 text-sm leading-relaxed text-ink-secondary">{bb.mvpScope}</p>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : (
+                  <div className="mt-4"><Pending text={`${t.build} · ${dict.analysis.pending}`} /></div>
+                )}
+              </div>
+            }
+            right={
+              <div className="rounded-2xl border border-border bg-surface p-6">
+                <h3 className="text-base font-semibold text-ink">{dict.evidence.pageAudit}</h3>
+                {audit ? (
+                  <div className="mt-4 flex flex-col gap-4">
+                    <div className="flex flex-wrap gap-2">
+                      {audit.techStack?.map((s) => <Badge key={s}>{s}</Badge>)}
+                      {audit.analytics?.map((s) => <Badge key={s}>{s}</Badge>)}
+                    </div>
+                    {ps ? (
+                      <details className="group rounded-lg border border-border">
+                        <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-medium text-ink">
+                          {dict.monetization.pageDetail}
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="transition group-open:rotate-180">
+                            <path d="m6 9 6 6 6-6" />
+                          </svg>
+                        </summary>
+                        <div className="border-t border-border p-4">
+                          <dl className="grid gap-3 md:grid-cols-2">
+                            {audit.wordCount !== undefined ? (
+                              <div>
+                                <dt className="text-xs text-ink-muted">{dict.monetization.wordCount}</dt>
+                                <dd className="text-sm tabular-nums text-ink">{audit.wordCount}</dd>
+                              </div>
+                            ) : null}
+                            {audit.pageLang ? (
+                              <div>
+                                <dt className="text-xs text-ink-muted">{dict.monetization.pageLang}</dt>
+                                <dd className="text-sm text-ink">{audit.pageLang}</dd>
+                              </div>
+                            ) : null}
+                            {audit.internalLinks !== undefined ? (
+                              <div>
+                                <dt className="text-xs text-ink-muted">{dict.monetization.internalLinks}</dt>
+                                <dd className="text-sm tabular-nums text-ink">{audit.internalLinks}</dd>
+                              </div>
+                            ) : null}
+                            {audit.outboundLinks !== undefined ? (
+                              <div>
+                                <dt className="text-xs text-ink-muted">{dict.monetization.outboundLinks}</dt>
+                                <dd className="text-sm tabular-nums text-ink">{audit.outboundLinks}</dd>
+                              </div>
+                            ) : null}
+                            {audit.structuredData?.length ? (
+                              <div className="md:col-span-2">
+                                <dt className="text-xs text-ink-muted">{dict.monetization.structuredData}</dt>
+                                <dd className="mt-1 flex flex-wrap gap-2">
+                                  {audit.structuredData.map((s) => <Badge key={s}>{s}</Badge>)}
+                                </dd>
+                              </div>
+                            ) : null}
+                          </dl>
+                        </div>
+                      </details>
+                    ) : null}
+                  </div>
+                ) : (
+                  <div className="mt-4"><Pending text={`${dict.evidence.pageAudit} · ${dict.analysis.pending}`} /></div>
+                )}
+              </div>
+            }
+          />
+        </section>
+
+        {/* ------------------------ 06 你能做什么 ------------------------ */}
+        <section id="ideas" className="flex scroll-mt-36 flex-col gap-10">
+          <SectionHeader
+            no={dict.sections.ideas.no}
+            title={dict.sections.ideas.title}
+            desc={dict.sections.ideas.desc}
+          />
+          {sparks?.length ? (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {sparks.map((s) => (
+                <div key={s.title} className="flex flex-col gap-2.5 rounded-xl border border-border bg-surface p-5 transition hover:border-primary/40">
+                  <h4 className="text-sm font-semibold text-ink">{s.title}</h4>
+                  {s.angle ? <Badge>{s.angle}</Badge> : null}
+                  {s.why ? <p className="text-sm leading-relaxed text-ink-secondary">{s.why}</p> : null}
+                  {s.source ? (
+                    <div className="mt-auto flex items-start gap-1.5 border-t border-border pt-2.5 text-xs text-ink-muted">
+                      <span className="shrink-0 font-medium text-primary">{dict.analysis.ideaSource}</span>
+                      <span>{s.source}</span>
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Pending text={`${t.sparks} · ${dict.analysis.pending}`} />
+          )}
+
+          {competitors.length ? (
+            <div className="rounded-2xl border border-border bg-surface p-6">
+              <h3 className="text-base font-semibold text-ink">{dict.observations.competitors}</h3>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {competitors.map((c) => (
                   <a
-                    key={s.label}
-                    href={s.url}
+                    key={c}
+                    href={`https://${c}`}
                     target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-primary hover:underline"
+                    rel="noopener noreferrer nofollow"
+                    className="flex items-center gap-2.5 rounded-xl border border-border bg-surface-2 px-4 py-3 transition hover:border-primary/40 hover:bg-surface"
                   >
-                    {s.label} ↗
+                    <Favicon domain={c} />
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{c}</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="shrink-0 text-ink-muted">
+                      <path d="M7 7h10v10" />
+                      <path d="M7 17 17 7" />
+                    </svg>
                   </a>
                 ))}
               </div>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </section>
-      ) : null}
+      </div>
     </div>
   );
 }

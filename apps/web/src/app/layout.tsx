@@ -29,8 +29,15 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0d12",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0d12" },
+  ],
 };
+
+/** 首屏前同步主题，避免浅/深色闪烁（FOUC） */
+// 默认浅色；深色后续完善（用户手动切换，localStorage 记忆）
+const themeInitScript = `(function(){try{var t=localStorage.getItem("theme")||"light";if(t==="dark"){document.documentElement.classList.add("dark");}}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -38,7 +45,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="antialiased">
         <div className="flex min-h-screen flex-col">
           <NavBar />

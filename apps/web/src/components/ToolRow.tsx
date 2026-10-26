@@ -23,6 +23,8 @@ export function ToolRow({ tool, rank }: { tool: AITool; rank: number }) {
   return (
     <Link
       href={`/tools/${tool.domain}`}
+      target="_blank"
+      rel="noopener noreferrer"
       className="group grid grid-cols-[2rem_auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3 transition hover:bg-surface-2 sm:px-5 lg:grid-cols-[2.5rem_2.75rem_minmax(0,1.1fr)_minmax(0,1.5fr)_4.5rem_4.5rem_4.5rem_5.5rem_5rem] lg:gap-4"
     >
       {/* 排名 */}

@@ -38,6 +38,10 @@ async function main(): Promise<void> {
   const existing = loadExisting();
   const seen = new Set(existing.map((t) => t.domain));
   const fresh: AITool[] = [];
+  const order = process.argv.includes("--new")
+    ? ("NEWEST" as const)
+    : ("VOTES" as const);
+  const existingNames = new Set(existing.map((t) => t.name.toLowerCase()));
 
   function absorb(label: string, items: AITool[]): void {
     let added = 0;
@@ -57,7 +61,12 @@ async function main(): Promise<void> {
       await sleep(randomDelay());
       try {
         const items = await fetchWithRetry(() =>
-          fetchProductHuntTools(config.maxPerRun - fresh.length),
+          fetchProductHuntTools(
+            config.maxPerRun + existing.length,
+            order,
+            "artificial-intelligence",
+            existingNames,
+          ),
         );
         absorb("Product Hunt", items);
       } catch (e) {
