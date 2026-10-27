@@ -275,6 +275,70 @@ export function extractVortex(item: VortexItem): TrafficMetrics {
 }
 
 /**
+ * Apify Actor：datascraperes/bulk-domain-rating-checker
+ * 取 Ahrefs Domain Rating（域名权重，0~100），作为「域名权重」主口径。
+ * 输入 targets 需为完整 URL 字符串，输出 { target, domainRating, fetchedAt }。
+ */
+export interface DomainRatingItem {
+  target?: string;
+  domainRating?: number;
+  fetchedAt?: string;
+}
+
+export async function fetchDomainRating(domain: string): Promise<number | null> {
+  const token = process.env.APIFY_TOKEN!;
+  const ACTOR = "datascraperes~bulk-domain-rating-checker";
+  const base = "https://api.apify.com/v2";
+  const body = { targets: [`https://${domain}`] };
+
+  // 1) 同步端点
+  try {
+    const res = await fetch(`${base}/acts/${ACTOR}/run-sync-get-dataset-items?token=${encodeURIComponent(token)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "User-Agent": config.userAgent },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(120_000),
+    });
+    if (res.ok) {
+      const arr = (await res.json()) as DomainRatingItem[];
+      const it = arr.find((x) => x.target?.includes(domain));
+      if (it && typeof it.domainRating === "number") return it.domainRating;
+    }
+  } catch {
+    /* fallthrough to async */
+  }
+
+  // 2) 异步 run + 轮询（同步端点偶发超时）
+  try {
+    const runRes = await fetch(`${base}/acts/${ACTOR}/runs?token=${encodeURIComponent(token)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "User-Agent": config.userAgent },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(60_000),
+    });
+    if (!runRes.ok) return null;
+    const runData = (await runRes.json()) as { data?: { id?: string } };
+    const runId = runData.data?.id;
+    if (!runId) return null;
+    for (let i = 0; i < 30; i++) {
+      await new Promise((r) => setTimeout(r, 2000));
+      const st = (await (await fetch(`${base}/actor-runs/${runId}?token=${encodeURIComponent(token)}`)).json()) as {
+        data?: { status?: string };
+      };
+      const s = st.data?.status;
+      if (s === "SUCCEEDED") break;
+      if (s === "FAILED" || s === "ABORTED" || s === "TIMED-OUT") return null;
+    }
+    const items = (await (await fetch(`${base}/actor-runs/${runId}/dataset/items?token=${encodeURIComponent(token)}`)).json()) as DomainRatingItem[];
+    const it = items.find((x) => x.target?.includes(domain));
+    if (it && typeof it.domainRating === "number") return it.domainRating;
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+/**
  * 主入口：vortex（字段最全）→ lergassy 备选 → DataForSEO 自然搜索兜底。
  * 自然搜索份额 Apify 拿不到时，用 DataForSEO domain_rank_overview 的 organic.etv 补齐。
  */

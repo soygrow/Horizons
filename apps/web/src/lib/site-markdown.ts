@@ -40,9 +40,9 @@ export function buildSiteMarkdown(tool: AITool): string {
   L.push("");
   if (m?.monthlyVisits !== undefined) L.push(`- 月访问量: ${m.monthlyVisits}`);
   if (m?.momGrowth !== undefined) L.push(`- 环比增长: ${m.momGrowth}%`);
-  if (m?.organicVisits !== undefined) L.push(`- 自然搜索流量: ${m.organicVisits}`);
+  if (m?.organicVisits !== undefined) L.push(`- 自然搜索量: ${m.organicVisits}`);
   if (tool.searchTraffic?.paid !== undefined) L.push(`- 付费搜索流量: ${tool.searchTraffic.paid}`);
-  if (m?.domainWeight !== undefined) L.push(`- 域名权重 DR: ${m.domainWeight}`);
+  if (m?.domainWeight !== undefined) L.push(`- 域名权重${m.domainWeightLabel ? `（${m.domainWeightLabel}）` : ""}: ${m.domainWeight}`);
   if (m?.registeredAt) L.push(`- 注册时间: ${m.registeredAt}`);
   if (ai?.confidence) L.push(`- AI 置信度: ${ai.confidence}%`);
   if (tool.dataSnapshot?.period)

@@ -182,7 +182,7 @@ export default async function ToolDetailPage({
 
   const ai = tool.aiInsight;
   const tm = tool.trafficMetrics;
-  const eg = tool.engagement;
+  const m = tool.metrics;
   const b = tool.backlinks;
   const audit = tool.siteAudit;
   const ps = tool.pageStructure;
@@ -317,24 +317,34 @@ export default async function ToolDetailPage({
           />
           <Split
             left={
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                <Stat label={dict.metrics.monthlyVisits} value={tm?.monthlyVisits !== undefined ? formatCount(tm.monthlyVisits) : undefined} />
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+                <Stat label={dict.metrics.monthlyVisits} value={m?.monthlyVisits !== undefined ? formatCount(m.monthlyVisits) : undefined} />
                 <Stat
                   label={dict.metrics.monthlyVisitsGrowth}
-                  value={tm?.monthlyVisitsGrowth !== undefined ? `${tm.monthlyVisitsGrowth > 0 ? "+" : ""}${tm.monthlyVisitsGrowth}%` : undefined}
-                  success={(tm?.monthlyVisitsGrowth ?? 0) > 0}
+                  value={m?.momGrowth !== undefined ? `${m.momGrowth > 0 ? "+" : ""}${m.momGrowth}%` : undefined}
+                  success={(m?.momGrowth ?? 0) > 0}
                 />
-                <Stat label={dict.metrics.organicSearchVisits} value={tm?.organicSearchVisits !== undefined ? formatCount(tm.organicSearchVisits) : undefined} />
-                <Stat label={dict.metrics.directVisits} value={tm?.directVisits !== undefined ? formatCount(tm.directVisits) : undefined} />
-                <Stat label={dict.metrics.referralVisits} value={tm?.referralVisits !== undefined ? formatCount(tm.referralVisits) : undefined} />
-                <Stat label={dict.metrics.socialVisits} value={tm?.socialVisits !== undefined ? formatCount(tm.socialVisits) : undefined} />
-                <Stat label={dict.metrics.monthlyPageviews} value={tm?.monthlyPageviews !== undefined ? formatCount(tm.monthlyPageviews) : undefined} />
+                <Stat label={dict.metrics.organicSearchVisits} value={m?.organicVisits !== undefined ? formatCount(m.organicVisits) : undefined} />
                 <Stat
-                  label={dict.traffic.bounceRate}
-                  value={eg?.bounceRate !== undefined ? `${eg.bounceRate}%` : undefined}
-                  success={(eg?.bounceRate ?? 100) <= 45}
+                  label={dict.metrics.organicShare}
+                  value={
+                    m?.organicVisits !== undefined && m?.monthlyVisits
+                      ? `${Math.round((m.organicVisits / m.monthlyVisits) * 1000) / 10}%`
+                      : undefined
+                  }
                 />
-                <Stat label={dict.traffic.pagesPerVisit} value={eg?.pagesPerVisit !== undefined ? String(eg.pagesPerVisit) : undefined} />
+                <Stat label={dict.metrics.directVisits} value={tm?.directVisits !== undefined ? formatCount(tm.directVisits) : undefined} />
+                <Stat
+                  label={dict.metrics.domainWeight}
+                  value={
+                    m?.domainWeight !== undefined
+                      ? m.domainWeightLabel && m.domainWeightLabel !== "权重"
+                        ? `${formatCount(m.domainWeight)}（${m.domainWeightLabel}）`
+                        : formatCount(m.domainWeight)
+                      : undefined
+                  }
+                />
+                <Stat label={dict.metrics.registeredAt} value={m?.registeredAt} />
               </div>
             }
             right={

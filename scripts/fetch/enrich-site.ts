@@ -325,6 +325,8 @@ async function main(): Promise<void> {
         organicVisits: tm.organicSearchVisits,
         momGrowth: tm.monthlyVisitsGrowth,
         registeredAt: tool.metrics?.registeredAt,
+        domainWeight: tool.metrics?.domainWeight,
+        domainWeightLabel: tool.metrics?.domainWeightLabel,
       }
     : metrics;
 

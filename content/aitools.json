@@ -47,7 +47,9 @@
       "monthlyVisits": 5503,
       "organicVisits": 1600,
       "momGrowth": 6083.1,
-      "registeredAt": "2025-12-08"
+      "registeredAt": "2025-12-08",
+      "domainWeight": 0,
+      "domainWeightLabel": "DR"
     },
     "dataSnapshot": {
       "period": "2026-10",
