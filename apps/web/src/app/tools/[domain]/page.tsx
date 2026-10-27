@@ -239,7 +239,7 @@ export default async function ToolDetailPage({
   return (
     <div className="flex flex-col">
       {/* ------------------------------ Hero 头部 ------------------------------ */}
-      <section className="border-b border-border bg-frost py-12 md:py-16">
+      <section className="border-b border-border bg-frost py-8 md:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <header className="flex flex-col-reverse gap-8 lg:flex-row lg:items-center lg:gap-14">
             <div className="flex min-w-0 flex-1 flex-col gap-6">
@@ -559,7 +559,7 @@ export default async function ToolDetailPage({
                 <div className="flex flex-col gap-4">
                   {td ? (
                     <>
-                      <div className="rounded-2xl border border-border bg-surface p-5">
+                      <div className="rounded-2xl border border-border bg-surface px-5 py-4">
                         <div className="flex items-center gap-2">
                           <span aria-hidden>💡</span>
                           <h3 className="text-sm font-semibold text-ink">{dict.trafficDecrypt.overview}</h3>
@@ -567,7 +567,7 @@ export default async function ToolDetailPage({
                         <p className="mt-2 text-sm leading-relaxed text-ink-secondary">{td.overview}</p>
                       </div>
                       {td.sections?.map((s) => (
-                        <div key={s.title} className="rounded-2xl border border-border bg-surface p-5">
+                        <div key={s.title} className="rounded-2xl border border-border bg-surface px-5 py-4">
                           <h3 className="text-sm font-semibold text-ink">{s.title}</h3>
                           {s.highlights?.length ? (
                             <div className="mt-2.5 flex flex-wrap gap-2">
