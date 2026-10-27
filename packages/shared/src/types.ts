@@ -143,6 +143,18 @@ export interface AiInsight {
   monetizationBadge?: string; // 如「证据明确」
 }
 
+/** 流量情况解密：右侧 AI 解读（结构化报告，视角 = 资深增长黑客） */
+export interface TrafficDecryptSection {
+  title: string;        // 含 emoji 前缀与编号，如「📊 1. 流量趋势与结构（它是怎么活下来的？）」
+  highlights: string[]; // 高光标签（2 个）
+  insight: string;      // 数据洞察
+  takeaway: string;     // 创业启发
+}
+export interface TrafficDecrypt {
+  overview: string;              // 流量总览（一段定性结论）
+  sections: TrafficDecryptSection[]; // 固定 3 段：趋势结构 / 地域 / 搜索排名
+}
+
 /** 04 变现与产品：标签组 */
 export interface TagGroup {
   label: string;   // 变现方式 / SEO 打法 / 成熟度信号 / 模型家族 / 使用模型
@@ -202,7 +214,7 @@ export interface DataSnapshot {
 /** ① 机会评分卡 */
 export interface OpportunityScore {
   score: number;                    // 综合分 0~100
-  verdict: "值得抄" | "谨慎" | "别碰";
+  verdict: "值得入场" | "谨慎" | "别碰";
   reason: string;                   // 一句话结论（so-what）
   dimensions: {
     label: string;                  // 竞争度 / 变现成熟度 / 增长可复制性 / 技术门槛 / 启动成本
@@ -242,6 +254,26 @@ export interface IdeaSpark {
   angle: string;                    // 换场景 / 换人群 / 换商业模式 / 换语区
   why: string;                      // 为什么有机会
   source?: string;                  // 灵感来源（指向某个数据点/竞品特征，让点子可追溯）
+}
+
+/** 产品表现：顶部高光结论 —— 产品画像四要素（说清楚：这是什么/解决什么痛点/能干啥/特点） */
+export interface ProductOverview {
+  what?: string;   // 是什么：一句话定义产品定位（做什么、给谁用）
+  pain?: string;   // 解决什么痛点：目标人群苦于什么、它如何解决
+  can?: string;    // 能干什么：核心功能 / 能力清单
+  trait?: string;  // 特点：差异化卖点 / 壁垒信号
+}
+
+/** 产品表现：结构化分析（顶部高光结论 + 六宫格洞察） */
+export interface PerformanceInsight {
+  overview?: ProductOverview; // 顶部高光结论（产品画像四要素）
+  wedge: string;              // 切入点（解决什么）：产品形态，帮谁解决什么
+  model: string;              // 商业模式与卖点（怎么赚钱）：靠什么打动用户、怎么收钱
+  moat: string;               // 业务数据匹配度（护城河）：结合 DR 与站龄判断壁垒
+  trafficTruth: string;       // 流量结构真相（用户从哪来）：自然搜索 vs 直接访问
+  growthEdge: string;         // 增长势能与软肋（生死局）：访问量 × 增长率
+  newPlayerEntry: string;     // 新玩家切入点（行动指南）：截胡 / 平替建议
+  entryTag?: string;          // 结论标签，如「强烈推荐·可切细分」
 }
 
 /** 各数据模块的分析结论 + 「这对你意味着什么」so-what */
@@ -339,6 +371,7 @@ export interface AITool {
   ranks?: SiteRanks;            // 全球 / 国内排名
   backlinks?: BacklinkStats;    // 外链
   aiInsight?: AiInsight;        // AI 解读 8 段
+  trafficDecrypt?: TrafficDecrypt; // 流量情况解密（右侧 AI 解读报告）
   tagGroups?: TagGroup[];       // 04 标签卡
   siteAudit?: SiteAudit;        // 站点拆解
   pageStructure?: PageStructure; // 页面结构与链接明细
@@ -360,6 +393,7 @@ export interface AITool {
   rankDistribution?: { label: string; count: number }[]; // 关键词排名分布（DFS）
   moduleInsights?: ModuleInsight;                         // 各模块分析 + so-what（AI）
   trafficMetrics?: TrafficMetrics;                        // 产品表现 8 指标（Apify Similarweb）
+  performanceInsight?: PerformanceInsight;                // 01 产品表现结构化分析（高光结论 + 六宫格）
 }
 
 /** 登录会话中的用户信息（前后端共享） */

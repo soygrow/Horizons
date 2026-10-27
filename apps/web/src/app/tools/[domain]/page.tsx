@@ -87,28 +87,32 @@ function Bars({ items }: { items: { label: string; value: number; suffix?: strin
   );
 }
 
-/** 右侧分析面板（sticky）+ 「这对你意味着什么」so-what */
-function AnalysisPanel({
+/** 产品表现 · 洞察卡片（标题 + 副标题 + 正文，可选结论标签） */
+function InsightCard({
   title,
-  soWhat,
-  children,
+  sub,
+  text,
+  tag,
 }: {
   title: string;
-  soWhat?: string;
-  children?: ReactNode;
+  sub: string;
+  text?: string;
+  tag?: string;
 }) {
   return (
-    <div className="lg:sticky lg:top-32 lg:self-start">
-      <div className="rounded-2xl border border-border bg-surface p-5">
-        <h3 className="flex items-center gap-2 text-sm font-medium text-primary">{title}</h3>
-        <div className="mt-3">{children ?? <Pending />}</div>
-        <div className="mt-3 border-t border-border pt-3">
-          <span className="text-xs font-medium text-primary">{dict.analysis.soWhat}</span>
-          <p className="mt-1 text-sm leading-relaxed text-ink-secondary">
-            {soWhat ?? dict.analysis.pending}
-          </p>
-        </div>
+    <div className="flex h-full min-w-0 flex-col rounded-2xl border border-border bg-surface p-5">
+      <div className="flex items-baseline justify-between gap-3">
+        <h4 className="text-sm font-semibold text-ink">{title}</h4>
+        <span className="shrink-0 text-xs text-ink-muted">{sub}</span>
       </div>
+      <p className="mt-3 text-sm leading-relaxed break-words text-ink-secondary">
+        {text ?? dict.performanceInsight.pending}
+      </p>
+      {tag ? (
+        <span className="mt-4 inline-flex w-fit items-center rounded-full bg-success-soft px-3 py-1 text-xs font-medium text-success">
+          {tag}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -181,6 +185,7 @@ export default async function ToolDetailPage({
   if (!tool) notFound();
 
   const ai = tool.aiInsight;
+  const td = tool.trafficDecrypt;
   const tm = tool.trafficMetrics;
   const m = tool.metrics;
   const b = tool.backlinks;
@@ -192,7 +197,10 @@ export default async function ToolDetailPage({
   const gp = tool.growthPlaybook;
   const bb = tool.buildBlueprint;
   const sparks = tool.ideaSparks;
-  const mi = tool.moduleInsights;
+  const pi = tool.performanceInsight;
+  const ds = tool.dataSnapshot;
+  const collectedAt = tool.collectedAt;
+  const fmtTime = (s?: string) => (s ? s.slice(0, 19).replace("T", " ") : "");
   const markdown = buildSiteMarkdown(tool);
 
   const t = dict.opportunity;
@@ -315,44 +323,98 @@ export default async function ToolDetailPage({
             title={dict.sections.performance.title}
             desc={dict.sections.performance.desc}
           />
-          <Split
-            left={
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-                <Stat label={dict.metrics.monthlyVisits} value={m?.monthlyVisits !== undefined ? formatCount(m.monthlyVisits) : undefined} />
-                <Stat
-                  label={dict.metrics.monthlyVisitsGrowth}
-                  value={m?.momGrowth !== undefined ? `${m.momGrowth > 0 ? "+" : ""}${m.momGrowth}%` : undefined}
-                  success={(m?.momGrowth ?? 0) > 0}
-                />
-                <Stat label={dict.metrics.organicSearchVisits} value={m?.organicVisits !== undefined ? formatCount(m.organicVisits) : undefined} />
-                <Stat
-                  label={dict.metrics.organicShare}
-                  value={
-                    m?.organicVisits !== undefined && m?.monthlyVisits
-                      ? `${Math.round((m.organicVisits / m.monthlyVisits) * 1000) / 10}%`
-                      : undefined
-                  }
-                />
-                <Stat label={dict.metrics.directVisits} value={tm?.directVisits !== undefined ? formatCount(tm.directVisits) : undefined} />
-                <Stat
-                  label={dict.metrics.domainWeight}
-                  value={
-                    m?.domainWeight !== undefined
-                      ? m.domainWeightLabel && m.domainWeightLabel !== "权重"
-                        ? `${formatCount(m.domainWeight)}（${m.domainWeightLabel}）`
-                        : formatCount(m.domainWeight)
-                      : undefined
-                  }
-                />
-                <Stat label={dict.metrics.registeredAt} value={m?.registeredAt} />
+          {/* 数据时间说明：数据快照期数 + 最后更新时间（-my-5 收紧上下留白） */}
+          {(ds?.period || collectedAt) && (
+            <div className="-my-5 flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-ink-muted">
+              {ds?.period && (
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="text-ink-secondary">{dict.sections.performance.snapshot}</span>
+                  {ds.period}
+                </span>
+              )}
+              {collectedAt && (
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="text-ink-secondary">{dict.sections.performance.updated}</span>
+                  {fmtTime(collectedAt)}
+                </span>
+              )}
+            </div>
+          )}
+          {/* 7 项核心指标（通栏单行，无外框） */}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+            <Stat label={dict.metrics.monthlyVisits} value={m?.monthlyVisits !== undefined ? formatCount(m.monthlyVisits) : undefined} />
+            <Stat
+              label={dict.metrics.monthlyVisitsGrowth}
+              value={m?.momGrowth !== undefined ? `${m.momGrowth > 0 ? "+" : ""}${m.momGrowth}%` : undefined}
+              success={(m?.momGrowth ?? 0) > 0}
+            />
+            <Stat label={dict.metrics.organicSearchVisits} value={m?.organicVisits !== undefined ? formatCount(m.organicVisits) : undefined} />
+            <Stat
+              label={dict.metrics.organicShare}
+              value={
+                m?.organicVisits !== undefined && m?.monthlyVisits
+                  ? `${Math.round((m.organicVisits / m.monthlyVisits) * 1000) / 10}%`
+                  : undefined
+              }
+            />
+            <Stat label={dict.metrics.directVisits} value={tm?.directVisits !== undefined ? formatCount(tm.directVisits) : undefined} />
+            <Stat
+              label={dict.metrics.domainWeight}
+              value={
+                m?.domainWeight !== undefined
+                  ? m.domainWeightLabel && m.domainWeightLabel !== "权重"
+                    ? `${formatCount(m.domainWeight)}（${m.domainWeightLabel}）`
+                    : formatCount(m.domainWeight)
+                  : undefined
+              }
+            />
+            <Stat label={dict.metrics.registeredAt} value={m?.registeredAt} />
+          </div>
+
+          {/* 数据下方：结构化分析 */}
+          <div className="flex flex-col gap-4">
+            {/* 顶部高光结论：产品画像四要素 */}
+            <div className="rounded-2xl border border-border bg-surface p-6">
+              <div className="mb-5 flex items-center gap-2.5">
+                <span className="h-4 w-1 rounded-full bg-primary" aria-hidden />
+                <h3 className="text-sm font-semibold text-ink">{dict.performanceInsight.highlightTag}</h3>
               </div>
-            }
-            right={
-              <AnalysisPanel title={dict.analysis.performance} soWhat={mi?.performance?.soWhat}>
-                {mi?.performance?.analysis ? <p className="text-sm leading-relaxed text-ink-secondary">{mi.performance.analysis}</p> : undefined}
-              </AnalysisPanel>
-            }
-          />
+              <dl className="grid gap-x-10 gap-y-5 sm:grid-cols-2">
+                {[
+                  { k: dict.performanceInsight.what, v: pi?.overview?.what },
+                  { k: dict.performanceInsight.pain, v: pi?.overview?.pain },
+                  { k: dict.performanceInsight.can, v: pi?.overview?.can },
+                  { k: dict.performanceInsight.trait, v: pi?.overview?.trait },
+                ].map(({ k, v }) => (
+                  <div key={k} className="min-w-0">
+                    <dt className="text-xs font-medium text-ink-muted">{k}</dt>
+                    <dd className="mt-1.5 text-sm leading-relaxed break-words text-ink">
+                      {v ?? <span className="text-ink-muted">{dict.performanceInsight.pending}</span>}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            {/* 中间三列：业务与护城河 */}
+            <div className="grid gap-4 md:grid-cols-3">
+              <InsightCard title={dict.performanceInsight.wedge} sub={dict.performanceInsight.wedgeSub} text={pi?.wedge} />
+              <InsightCard title={dict.performanceInsight.model} sub={dict.performanceInsight.modelSub} text={pi?.model} />
+              <InsightCard title={dict.performanceInsight.moat} sub={dict.performanceInsight.moatSub} text={pi?.moat} />
+            </div>
+
+            {/* 底部三列：数据与创业机会 */}
+            <div className="grid gap-4 md:grid-cols-3">
+              <InsightCard title={dict.performanceInsight.trafficTruth} sub={dict.performanceInsight.trafficTruthSub} text={pi?.trafficTruth} />
+              <InsightCard title={dict.performanceInsight.growthEdge} sub={dict.performanceInsight.growthEdgeSub} text={pi?.growthEdge} />
+              <InsightCard
+                title={dict.performanceInsight.newPlayerEntry}
+                sub={dict.performanceInsight.newPlayerEntrySub}
+                text={pi?.newPlayerEntry}
+                tag={pi?.entryTag}
+              />
+            </div>
+          </div>
         </section>
 
         {/* ------------------------ 02 值不值得做 ------------------------ */}
@@ -377,7 +439,11 @@ export default async function ToolDetailPage({
                     <p className="min-w-[14rem] flex-1 text-sm leading-relaxed text-ink-secondary">{opp.reason}</p>
                   ) : null}
                 </div>
-                <div className="mt-7 grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-5">
+                <div className="mt-7 flex flex-col gap-1">
+                  <h4 className="text-sm font-semibold text-ink">{t.dimensions}</h4>
+                  <p className="text-xs text-ink-muted">{t.dimensionsHint}</p>
+                </div>
+                <div className="mt-4 grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-5">
                   {opp.dimensions?.map((d) => (
                     <div key={d.label} className="flex flex-col gap-1.5">
                       <div className="flex items-baseline justify-between text-xs">
@@ -441,11 +507,11 @@ export default async function ToolDetailPage({
                       <div className="grid grid-cols-2 gap-4">
                         <div className="rounded-lg border border-border p-4">
                           <span className="text-xs text-ink-muted">{dict.traffic.globalRank}</span>
-                          <p className="text-2xl font-semibold tabular-nums text-ink">{ranks.global ? `#${formatCount(ranks.global)}` : "—"}</p>
+                          <p className="text-2xl font-semibold tabular-nums text-ink">{ranks.global ? ranks.global.toLocaleString("en-US") : "—"}</p>
                         </div>
                         <div className="rounded-lg border border-border p-4">
                           <span className="text-xs text-ink-muted">{dict.traffic.countryRank}</span>
-                          <p className="text-2xl font-semibold tabular-nums text-ink">{ranks.country ? `#${formatCount(ranks.country)}` : "—"}</p>
+                          <p className="text-2xl font-semibold tabular-nums text-ink">{ranks.country ? ranks.country.toLocaleString("en-US") : "—"}</p>
                         </div>
                       </div>
                     ) : null}
@@ -477,7 +543,7 @@ export default async function ToolDetailPage({
                       <div>
                         <span className="text-xs text-ink-muted">{dict.traffic.rankDistribution}</span>
                         <div className="mt-2">
-                          <Bars items={rankDistribution.map((r) => ({ label: r.label, value: r.count }))} />
+                          <Bars items={rankDistribution.map((r) => ({ label: r.label, value: r.count, suffix: " 个" }))} />
                         </div>
                       </div>
                     ) : null}
@@ -491,22 +557,35 @@ export default async function ToolDetailPage({
             right={
               <div className="lg:sticky lg:top-32 lg:self-start">
                 <div className="flex flex-col gap-4">
-                  <div className="rounded-2xl border border-border bg-surface p-5">
-                    <h3 className="text-sm font-medium text-primary">{dict.aiInsight.growthDriver}</h3>
-                    {ai?.growthDriver ? (
-                      <p className="mt-2 text-sm leading-relaxed text-ink-secondary">{ai.growthDriver}</p>
-                    ) : (
-                      <div className="mt-2"><Pending /></div>
-                    )}
-                  </div>
-                  <div className="rounded-2xl border border-border bg-surface p-5">
-                    <h3 className="text-sm font-medium text-primary">{dict.aiInsight.acquisition}</h3>
-                    {ai?.acquisition ? (
-                      <p className="mt-2 text-sm leading-relaxed text-ink-secondary">{ai.acquisition}</p>
-                    ) : (
-                      <div className="mt-2"><Pending /></div>
-                    )}
-                  </div>
+                  {td ? (
+                    <>
+                      <div className="rounded-2xl border border-border bg-surface p-5">
+                        <div className="flex items-center gap-2">
+                          <span aria-hidden>💡</span>
+                          <h3 className="text-sm font-semibold text-ink">{dict.trafficDecrypt.overview}</h3>
+                        </div>
+                        <p className="mt-2 text-sm leading-relaxed text-ink-secondary">{td.overview}</p>
+                      </div>
+                      {td.sections?.map((s) => (
+                        <div key={s.title} className="rounded-2xl border border-border bg-surface p-5">
+                          <h3 className="text-sm font-semibold text-ink">{s.title}</h3>
+                          {s.highlights?.length ? (
+                            <div className="mt-2.5 flex flex-wrap gap-2">
+                              {s.highlights.map((h) => (
+                                <Badge key={h}>{h}</Badge>
+                              ))}
+                            </div>
+                          ) : null}
+                          <p className="mt-3 text-xs font-semibold text-ink-muted">{dict.trafficDecrypt.insight}</p>
+                          <p className="mt-1 text-sm leading-relaxed text-ink-secondary">{s.insight}</p>
+                          <p className="mt-3 text-xs font-semibold text-ink-muted">{dict.trafficDecrypt.takeaway}</p>
+                          <p className="mt-1 text-sm leading-relaxed text-ink-secondary">{s.takeaway}</p>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <Pending text={`${dict.sections.traffic.title} · ${dict.analysis.pending}`} />
+                  )}
                 </div>
               </div>
             }

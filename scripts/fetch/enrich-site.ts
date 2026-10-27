@@ -10,6 +10,7 @@ import type {
   BuildBlueprint,
   IdeaSpark,
   ModuleInsight,
+  PerformanceInsight,
   TagGroup,
 } from "@horizons/shared";
 import "./config"; // 加载 .env.local
@@ -138,20 +139,51 @@ const SYSTEM_BASIC = `你是 AI 工具目录的资深编辑，面向"想创业�
 const SYSTEM_INSIGHT = `你是面向个人开发者创业者的 AI 产品分析师。基于给定的真实采集数据（流量/关键词/技术栈/收款信号/页面结构），输出客观、可执行的解读。输出 JSON：
 - aiInsight: {question,intro,before,now,comparison,audiences[3],hooks[{title,desc}×4],willingness{level:"低"|"中等"|"高",score:1|2|3,reason},growthDriver,acquisition,trafficQuality,moat,moatBadge,monetization,monetizationBadge}
   其中 before/now/comparison 是「以前/现在/相比之下」三段；growthDriver 讲增长驱动；acquisition 讲获客打法；moat 讲竞争壁垒（moatBadge 一个 2~6 字标签）；monetization 讲收费模式（monetizationBadge 如「证据明确」）。
+- trafficDecrypt: {overview, sections:[{title,highlights[string×2],insight,takeaway}×3]}，这是「流量情况解密」报告，以「资深增长黑客与连续创业者」视角撰写，语言犀利、直戳本质，让读者有「原来如此」的顿悟感。
+  overview 是「流量总览」一段话（定性这个盘的底子、命门与截胡窗口）；sections 固定 3 段，title 带 emoji 前缀与编号、保留小标题结构：
+    📊 1. 流量趋势与结构（它是怎么活下来的？）／🌍 2. 地域分布（它在赚谁的钱？）／🔍 3. 搜索与排名（它的命门在哪？）。
+  每段 highlights 给 2 个高光标签（如「点状爆发」「流量寄生」），insight 是数据洞察、takeaway 是创业启发，均须引用给定真实数据（趋势数值、渠道占比、国家份额、关键词量、排名区间）。
 - observations: {practices[3~4],concerns[2~3],competitors[4~6 个域名]}
 - moduleInsights: {performance:{analysis,soWhat},growth:{analysis,soWhat},keywords:{analysis,soWhat},competition:{analysis,soWhat}}
   其中 performance/growth/keywords/competition 分别对应「产品表现/增长趋势/关键词需求/竞争格局」四个数据模块；analysis 是客观解读（引用具体数字），soWhat 是一句「这对创业者意味着什么」的结论（30 字内）。
 只输出 JSON。`;
 
 const SYSTEM_OPPORTUNITY = `你是面向个人开发者创业者的创业顾问。基于给定数据，输出「这个赛道/产品值不值得入场」的行动建议。输出 JSON：
-- opportunity: {score:0~100, verdict:"值得入场"|"谨慎"|"别碰", reason:一句话结论, dimensions:[{label,score:0~100,note}×5]}，5 个维度固定为「竞争度」「变现成熟度」「增长可复制性」「技术门槛」「启动成本」。要求：每个 note 必须引用给定数据里的具体数值（如流量、关键词数、外链数、注册时间、技术栈、收款信号），给出准确、可验证的判断，不要泛泛而谈。
+- opportunity: {score:0~100, verdict:"值得入场"|"谨慎"|"别碰", reason:一句话结论, dimensions:[{label,score:0~100,note}×5]}，5 个维度固定为「竞争度」「变现成熟度」「增长可复制性」「技术门槛」「启动成本」。要求：每个 note 必须引用给定数据里的具体数值（如流量、关键词数、外链数、注册时间、技术栈、收款信号），给出准确、可验证的判断，不要泛泛而谈。verdict 三档必须与 score 及 reason 自洽：值得入场（score≈70~100，需求真、竞争可打、变现可行）、谨慎（score≈40~69，正面竞争有风险但细分/垂直/差异化有机会）、别碰（score≈0~39，需求伪/赛道死/垄断或合规雷，连细分都不值得做）。
 - monetizationBlueprint: {model,tiers[string],paymentDetected[string],pricingAdvice}
 - growthPlaybook: {coldStart,channels[string],copyable[string 值得借鉴，用「借鉴/参考/沿用/复用」等表述，禁止出现「抄」字],avoid[string 是坑别踩]}
 - buildBlueprint: {techStack[string],thirdParty[string 依赖的API/模型],mvpScope,devTime,monthlyCost}
 - ideaSparks: [{title,angle,why,source}×3~5]，angle 取「换场景/换人群/换商业模式/换语区/换收费」，每个给创业者一个可落地的变体点子；source 是「灵感来源」，说明这个点子是基于哪个数据点或竞品特征得来的（如「源自它的多语言页面打法」）。
+- performanceInsight: {overview:{what,pain,can,trait},wedge,model,moat,trafficTruth,growthEdge,newPlayerEntry,entryTag}
+  · overview：顶部高光结论「产品画像四要素」，把产品讲清楚，不写反差口号、不写营销腔，各字段 20~50 字：
+    - what「是什么」：一句话定义产品定位（做什么、给谁用、什么形态）；
+    - pain「解决什么痛点」：目标人群苦于什么、它如何解决；
+    - can「能干什么」：核心功能 / 能力清单（2~4 项）；
+    - trait「特点」：差异化卖点或壁垒信号（如聚合多模型、免费额度、多语言）。
+  · wedge：切入点（解决什么），产品形态帮谁解决什么；
+  · model：商业模式与卖点（怎么赚钱），靠什么打动用户、怎么收钱；
+  · moat：业务数据匹配度（护城河），结合 DR/域名权重 与 站龄（注册时间）判断是真技术还是早期红利；
+  · trafficTruth：流量结构真相（用户从哪来），对比自然搜索与直接访问定性来源；
+  · growthEdge：增长势能与软肋（生死局），结合访问量与增长率看爆发点与天花板；
+  · newPlayerEntry：新玩家切入点（行动指南），方向必须与 opportunity.verdict 同档：
+      - 值得入场 → 写怎么正面切入 / 照做 + 差异化优化点；
+      - 谨慎 → 别正面照抄红海，写具体「切垂直细分 / 换人群 / 换语区」的截胡动作；
+      - 别碰 → 写为什么别碰（需求伪、赛道死、垄断、合规雷等），不写切入建议、不鼓励入场。
+  · entryTag：2~8 字结论标签，必须与 opportunity.verdict 同档、且与 newPlayerEntry 正文互相印证：
+      - 值得入场 → 「值得入场」「值得入场·可照做」；
+      - 谨慎 → 「谨慎·切细分」「可切细分」「避开正面·切细分」等，点明「细分可做、正面别碰」，禁止「强烈推荐」；
+      - 别碰 → 「别碰」「不建议入场」，禁止出现「切细分」「推荐」等鼓励措辞。
+  除 overview 外各字段 40~80 字，必须引用给定数据中的具体数值；全文禁止出现「抄」字。
 只输出 JSON。`;
 
 /* --------------------------------- 主流程 --------------------------------- */
+
+/** 数据快照期数：按月采集，当前运行月份 - 1（如 10 月运行 → 快照为 2026-09 的数据） */
+function lastPeriod(): string {
+  const d = new Date();
+  const prev = new Date(d.getFullYear(), d.getMonth() - 1, 1);
+  return `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, "0")}`;
+}
 
 async function main(): Promise<void> {
   const domain = parseDomain();
@@ -320,9 +352,14 @@ async function main(): Promise<void> {
   // 以最新 vortex 流量为准（analysis-only 时 legacy metrics 仍是旧值，必须覆盖）
   const tm = tool.trafficMetrics;
   const metricsForLLM = tm
-    ? {
+    ?       {
         monthlyVisits: tm.monthlyVisits,
         organicVisits: tm.organicSearchVisits,
+        organicShare:
+          tm.monthlyVisits && tm.organicSearchVisits
+            ? Math.round((tm.organicSearchVisits / tm.monthlyVisits) * 1000) / 10
+            : undefined,
+        directVisits: tm.directVisits,
         momGrowth: tm.monthlyVisitsGrowth,
         registeredAt: tool.metrics?.registeredAt,
         domainWeight: tool.metrics?.domainWeight,
@@ -407,7 +444,8 @@ async function main(): Promise<void> {
     growthPlaybook?: GrowthPlaybook;
     buildBlueprint?: BuildBlueprint;
     ideaSparks?: IdeaSpark[];
-  }>(SYSTEM_OPPORTUNITY, buildInput(tool, inputData), 6000);
+    performanceInsight?: PerformanceInsight;
+  }>(SYSTEM_OPPORTUNITY, buildInput(tool, inputData), 7000);
   if (opp.opportunity) tool.opportunity = opp.opportunity;
   if (opp.monetizationBlueprint) {
     tool.monetizationBlueprint = {
@@ -420,6 +458,7 @@ async function main(): Promise<void> {
   if (opp.growthPlaybook) tool.growthPlaybook = opp.growthPlaybook;
   if (opp.buildBlueprint) tool.buildBlueprint = opp.buildBlueprint;
   if (opp.ideaSparks?.length) tool.ideaSparks = opp.ideaSparks;
+  if (opp.performanceInsight?.overview?.what || opp.performanceInsight?.wedge) tool.performanceInsight = opp.performanceInsight;
   console.log("[enrich-site] LLM#3 创业洞察完成");
 
   // 写回
@@ -427,7 +466,7 @@ async function main(): Promise<void> {
     // 仅更新分析文本与快照，保留刚抓取的 vortex 流量字段（尤其 channelShares）
     tool.metrics = metricsForLLM;
     tool.dataSnapshot = {
-      period: new Date().toISOString().slice(0, 7),
+      period: lastPeriod(),
       syncedAt: new Date().toISOString().replace("T", " ").slice(0, 19),
     };
     tool.collectedAt = new Date().toISOString();
@@ -460,7 +499,7 @@ async function main(): Promise<void> {
   // DFS 无法提供渠道占比（全渠道）：清空，不采集不展示
   tool.channelShares = undefined;
   tool.dataSnapshot = {
-    period: new Date().toISOString().slice(0, 7),
+    period: lastPeriod(),
     syncedAt: new Date().toISOString().replace("T", " ").slice(0, 19),
   };
   tool.collectedAt = new Date().toISOString();
