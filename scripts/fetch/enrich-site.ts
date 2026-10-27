@@ -146,7 +146,7 @@ const SYSTEM_INSIGHT = `你是面向个人开发者创业者的 AI 产品分析�
 const SYSTEM_OPPORTUNITY = `你是面向个人开发者创业者的创业顾问。基于给定数据，输出「这个赛道/产品值不值得入场」的行动建议。输出 JSON：
 - opportunity: {score:0~100, verdict:"值得入场"|"谨慎"|"别碰", reason:一句话结论, dimensions:[{label,score:0~100,note}×5]}，5 个维度固定为「竞争度」「变现成熟度」「增长可复制性」「技术门槛」「启动成本」。要求：每个 note 必须引用给定数据里的具体数值（如流量、关键词数、外链数、注册时间、技术栈、收款信号），给出准确、可验证的判断，不要泛泛而谈。
 - monetizationBlueprint: {model,tiers[string],paymentDetected[string],pricingAdvice}
-- growthPlaybook: {coldStart,channels[string],copyable[string 值得抄],avoid[string 是坑别踩]}
+- growthPlaybook: {coldStart,channels[string],copyable[string 值得借鉴，用「借鉴/参考/沿用/复用」等表述，禁止出现「抄」字],avoid[string 是坑别踩]}
 - buildBlueprint: {techStack[string],thirdParty[string 依赖的API/模型],mvpScope,devTime,monthlyCost}
 - ideaSparks: [{title,angle,why,source}×3~5]，angle 取「换场景/换人群/换商业模式/换语区/换收费」，每个给创业者一个可落地的变体点子；source 是「灵感来源」，说明这个点子是基于哪个数据点或竞品特征得来的（如「源自它的多语言页面打法」）。
 只输出 JSON。`;
@@ -156,6 +156,7 @@ const SYSTEM_OPPORTUNITY = `你是面向个人开发者创业者的创业顾问�
 async function main(): Promise<void> {
   const domain = parseDomain();
   const dry = process.argv.includes("--dry");
+  const analysisOnly = process.argv.includes("--analysis-only");
   console.log(`[enrich-site] 目标：${domain}${dry ? "（dry-run）" : ""}`);
 
   const tools = loadTools();
@@ -165,12 +166,27 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  // 1) 自建爬虫：页面结构 + 技术栈 + 收款信号 + 定价线索 + RDAP 注册时间
+  // 抓取相关变量（analysis-only 时保留 tool 中的最新值，供输入 LLM）
   let pageStructure = tool.pageStructure;
   let siteAudit = tool.siteAudit;
   let paymentDetected: string[] = [];
   let registeredAt = tool.metrics?.registeredAt;
   let homeHtml = "";
+  let metrics = tool.metrics;
+  let trend = tool.trend;
+  let keywords = tool.keywords;
+  let geo = tool.geoDistribution;
+  let backlinks = tool.backlinks;
+  let competitors = tool.observations?.competitors ?? [];
+  let relatedKeywords = tool.relatedKeywords ?? [];
+  let searchTraffic = tool.searchTraffic;
+  let keywordCount = tool.keywordCount;
+  let rankDistribution = tool.rankDistribution ?? [];
+  let phUpvotes = tool.phUpvotes;
+  let phComments = tool.phComments;
+
+  if (!analysisOnly) {
+  // 1) 自建爬虫：页面结构 + 技术栈 + 收款信号 + 定价线索 + RDAP 注册时间
   try {
     const { html, headers, finalUrl } = await fetchHome(tool.url);
     homeHtml = html;
@@ -212,16 +228,6 @@ async function main(): Promise<void> {
 
   // 2) DataForSEO：流量（clickstream）/ 关键词 / 排名分布 / 外链 / 竞品 / 相关关键词
   // 注：DFS 只能提供「搜索流量」口径（clickstream_etv），总访问量/渠道占比无来源 → 不采集、不展示
-  let metrics = tool.metrics;
-  let trend = tool.trend;
-  let keywords = tool.keywords;
-  let geo = tool.geoDistribution;
-  let backlinks = tool.backlinks;
-  let competitors = tool.observations?.competitors ?? [];
-  let relatedKeywords = tool.relatedKeywords ?? [];
-  let searchTraffic = tool.searchTraffic;
-  let keywordCount = tool.keywordCount;
-  let rankDistribution = tool.rankDistribution ?? [];
 
   if (hasDataForSEO()) {
     try {
@@ -291,8 +297,6 @@ async function main(): Promise<void> {
   }
 
   // 3) Product Hunt 信号
-  let phUpvotes = tool.phUpvotes;
-  let phComments = tool.phComments;
   try {
     const ph = await searchPH(tool.name);
     if (ph) {
@@ -305,23 +309,38 @@ async function main(): Promise<void> {
     /* ignore */
   }
 
+  }
+
   // 4) LLM 生成（三次调用）
   if (!hasLLM()) {
     console.error("[enrich-site] 未配置 DEEPSEEK_API_KEY");
     process.exit(1);
   }
 
+  // 以最新 vortex 流量为准（analysis-only 时 legacy metrics 仍是旧值，必须覆盖）
+  const tm = tool.trafficMetrics;
+  const metricsForLLM = tm
+    ? {
+        monthlyVisits: tm.monthlyVisits,
+        organicVisits: tm.organicSearchVisits,
+        momGrowth: tm.monthlyVisitsGrowth,
+        registeredAt: tool.metrics?.registeredAt,
+      }
+    : metrics;
+
   const inputData = {
     // 只喂「我们自己采集的真实数据」，不喂任何哥伦布种子字段
     officialTitle: pageStructure?.title,
     officialDescription: pageStructure?.metaDescription,
-    metrics,
+    metrics: metricsForLLM,
     trend: trend?.slice(-7),
     keywords: keywords?.slice(0, 10),
     relatedKeywords: relatedKeywords?.slice(0, 15),
-    keywordCount,
+    keywordCount: keywords?.length ?? keywordCount,
     rankDistribution,
     geo,
+    engagement: tool.engagement ?? null,
+    ranks: tool.ranks ?? null,
     backlinks: backlinks
       ? { total: backlinks.total, refDomains: backlinks.refDomains, dofollow: backlinks.totalDofollowShare }
       : null,
@@ -335,6 +354,7 @@ async function main(): Promise<void> {
     phComments,
   };
 
+  if (!analysisOnly) {
   // 调用 1：基础标签
   const basic = await chatJSON<{
     descriptionZh?: string;
@@ -359,6 +379,7 @@ async function main(): Promise<void> {
   tool.tagGroups = basic.tagGroups ?? [];
   await sleep(300);
   console.log(`[enrich-site] LLM#1 基础：${tool.description}`);
+  }
 
   // 调用 2：AI 解读 + 观察（完全替换，不保留旧值）
   const insight = await chatJSON<{
@@ -400,6 +421,23 @@ async function main(): Promise<void> {
   console.log("[enrich-site] LLM#3 创业洞察完成");
 
   // 写回
+  if (analysisOnly) {
+    // 仅更新分析文本与快照，保留刚抓取的 vortex 流量字段（尤其 channelShares）
+    tool.metrics = metricsForLLM;
+    tool.dataSnapshot = {
+      period: new Date().toISOString().slice(0, 7),
+      syncedAt: new Date().toISOString().replace("T", " ").slice(0, 19),
+    };
+    tool.collectedAt = new Date().toISOString();
+    if (dry) {
+      console.log("[enrich-site] dry-run，未写入");
+    } else {
+      saveTools(tools);
+      console.log(`[enrich-site] 已写入 ${domain}（仅分析文本）`);
+    }
+    return;
+  }
+
   tool.metrics = metrics;
   tool.trend = trend;
   tool.keywords = keywords;

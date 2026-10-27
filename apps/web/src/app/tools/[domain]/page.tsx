@@ -182,6 +182,7 @@ export default async function ToolDetailPage({
 
   const ai = tool.aiInsight;
   const tm = tool.trafficMetrics;
+  const eg = tool.engagement;
   const b = tool.backlinks;
   const audit = tool.siteAudit;
   const ps = tool.pageStructure;
@@ -328,7 +329,12 @@ export default async function ToolDetailPage({
                 <Stat label={dict.metrics.referralVisits} value={tm?.referralVisits !== undefined ? formatCount(tm.referralVisits) : undefined} />
                 <Stat label={dict.metrics.socialVisits} value={tm?.socialVisits !== undefined ? formatCount(tm.socialVisits) : undefined} />
                 <Stat label={dict.metrics.monthlyPageviews} value={tm?.monthlyPageviews !== undefined ? formatCount(tm.monthlyPageviews) : undefined} />
-                <Stat label={dict.metrics.avgVisitDuration} value={formatDuration(tm?.avgVisitDurationSec)} />
+                <Stat
+                  label={dict.traffic.bounceRate}
+                  value={eg?.bounceRate !== undefined ? `${eg.bounceRate}%` : undefined}
+                  success={(eg?.bounceRate ?? 100) <= 45}
+                />
+                <Stat label={dict.traffic.pagesPerVisit} value={eg?.pagesPerVisit !== undefined ? String(eg.pagesPerVisit) : undefined} />
               </div>
             }
             right={

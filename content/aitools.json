@@ -20,7 +20,7 @@
     "launchedAt": "2025-12-08",
     "launchedAtEstimated": true,
     "firstSeenAt": "2026-10-22T09:00:00.000Z",
-    "collectedAt": "2026-10-26T08:53:51.351Z",
+    "collectedAt": "2026-10-26T12:03:06.208Z",
     "verified": "verified",
     "sourceType": "manual",
     "sourceUrl": "https://picvo.ai",
@@ -44,14 +44,14 @@
       "音频生成"
     ],
     "metrics": {
-      "monthlyVisits": 16,
-      "organicVisits": 16,
-      "momGrowth": 1500,
+      "monthlyVisits": 5503,
+      "organicVisits": 1600,
+      "momGrowth": 6083.1,
       "registeredAt": "2025-12-08"
     },
     "dataSnapshot": {
       "period": "2026-10",
-      "syncedAt": "2026-10-23 10:35:31"
+      "syncedAt": "2026-10-26 12:03:06"
     },
     "trend": [
       {
@@ -128,46 +128,47 @@
       }
     ],
     "aiInsight": {
-      "question": "Picvo AI 这个「聚合多模型的一站式 AI 创作平台」现在值得做吗？",
-      "intro": "Picvo AI 是一个 2025 年 12 月才注册、目前月访问仅 16 次的极早期项目，主打把视频、图像、音乐、配音四类生成能力与十余个前沿模型聚合进一个 Dashboard，用统一积分计费。",
-      "before": "以前做 AI 视频/图像工具，要么自研模型，要么单点接入一个模型做垂直工具，用户需要为不同模态、不同模型分别注册、分别付费，工具切换成本高。",
-      "now": "现在 Picvo 用「一个登录、一套积分、四种媒体类型」把 Sora/Veo/Seedance/Nano Banana 等模型打包成工作台，页面已具备完整定价（$9.9/$19.9/$34.9）、FAQ、三步流程与模型对比，产品叙事相当完整。",
-      "comparison": "相比之下，它的产品包装成熟度远超其流量阶段：SEO 仅 1 个关键词排 21-30 名、月访问 16，说明「聚合层」的进入门槛低、竞争激烈，真正的胜负手在分发与品牌，而非功能堆叠。",
+      "question": "Picvo AI 这类「聚合多模型的一站式 AI 创作平台」还值得个人开发者切入吗？",
+      "intro": "Picvo AI 是一个 2025 年 12 月才注册、2026 年 8 月才出现流量的新站，主打把视频、图片、音乐、配音十多个模型聚合进一个 Dashboard，用统一积分计费。它目前月访问仅 5503，但环比增速 6083%，属于典型的「极早期高斜率」样本。",
+      "before": "以前做 AI 创作工具，要么自研模型（成本极高），要么只接一个模型做单点工具（如只做图或只做视频），用户需要为不同媒介分别订阅多个产品。",
+      "now": "现在 Picvo 走的是「模型聚合 + 统一积分 + 多媒介输出」路线，页面明确列出 Pro/Basic/Max/Pro Max 四档价格（$9.9/$19.9/$34.9 等），并用「Ten-Plus Top Models, One Login」作为核心卖点，把 Veo 3.1、Seedance 2.0 等热门模型当作流量入口。",
+      "comparison": "相比之下，单点工具胜在深度和品牌，聚合平台胜在「少切换、少订阅、一次充值全用」。Picvo 的差异化不在模型本身，而在工作流整合与计费体验，这恰好是个人开发者可以低成本复制的层。",
       "audiences": [
-        "需要批量产出短视频/图片的内容创作者与自媒体团队",
-        "想低成本试遍多模型的 AI 爱好者与独立开发者",
-        "需要商用素材但不想订阅多个工具的小型营销团队"
+        "需要批量产出短视频/图文素材的中小内容团队",
+        "不想同时订阅 Sora、Veo、Midjourney 的独立创作者",
+        "做 AI 工具导航或套壳产品的独立开发者",
+        "需要商用素材但预算有限的电商/广告从业者"
       ],
       "hooks": [
         {
-          "title": "一个积分打通四类媒体",
-          "desc": "视频、图像、音乐、配音共用余额，直击多订阅痛点"
+          "title": "一个积分钱包，打通四种媒介",
+          "desc": "用户最烦的是「每个工具都要单独充值」，统一积分是聚合类产品最强的留存钩子。"
         },
         {
-          "title": "十余模型同台对比",
-          "desc": "Side-by-Side 模型对比降低用户选型决策成本"
+          "title": "蹭热门模型关键词做冷启动",
+          "desc": "veo 3.1 月搜索 10 万+、vibes ai 15 万+，新站靠这些词在 21-30 名拿到首批自然流量。"
         },
         {
-          "title": "免费额度+日更积分",
-          "desc": "Daily Free Credit 是低门槛获客的天然钩子"
+          "title": "免费额度 + 三步入門降低决策成本",
+          "desc": "页面用「Daily Free Credit」和「Three Steps」把试用门槛压到最低，适合冷启动转化。"
         },
         {
-          "title": "4K 与音画同步",
-          "desc": "面向商用交付的清晰度与声音同步卖点"
+          "title": "模型对比页是天然 SEO 资产",
+          "desc": "「Side-by-Side Model Comparison」这类内容能持续吃长尾词，是低成本获客的抓手。"
         }
       ],
       "willingness": {
         "level": "中等",
         "score": 2,
-        "reason": "页面已挂出 $9.9-$34.9 三档定价与积分体系，付费意愿信号存在，但未检测到实际支付通道，且聚合类工具同质化严重，用户为「省事」付费的意愿中等。"
+        "reason": "页面已出现 $9.9/$19.9/$34.9 三档定价线索，说明有明确付费设计；但 paymentDetected 为空、无公开收入信号，付费意愿尚未被验证，属于「有定价、无证据」阶段。"
       },
-      "growthDriver": "增长驱动来自「多模型聚合+统一积分」的省事叙事，以及免费积分降低试用门槛；但当前 1500% 的环比增长只是从 1 到 16 的基数效应，尚不构成真实增长曲线。",
-      "acquisition": "获客打法应是 SEO 长尾（text to speech video generator、nano banana 2 generator 等模型词）+ 免费额度裂变 + Discord 社群；目前关键词仅 1 个进榜，SEO 几乎未起量，渠道仍处冷启动。",
-      "trafficQuality": "月访问 16、全部为自然流量，样本过小无法判断质量；关键词多为模型名与工具名，意图偏「找工具」，转化意图尚可但量级可忽略。",
-      "moat": "壁垒薄弱：聚合层无自有模型，依赖上游 API，功能可被快速复制，真正的护城河只能来自品牌、工作流体验与社区。",
-      "moatBadge": "弱壁垒",
-      "monetization": "订阅制+积分消耗：Basic $9.9、Pro $19.9、Max $34.9，按渲染与模型消耗积分，免费日更积分做漏斗。",
-      "monetizationBadge": "证据明确",
+      "growthDriver": "增长主要由「热门模型关键词 + 新站收录红利」驱动：veo 3.1（10.2 万搜索）、vibes ai（15.1 万搜索）、ai music generator（11.1 万搜索）贡献了主要自然流量，而品牌词 picova ai 仅 140 搜索量，说明增长几乎全部来自蹭词而非品牌。",
+      "acquisition": "打法很清晰：用 Next.js + Vercel 快速上线，围绕高搜索量的模型名做落地页和对比内容，靠 Google 自然搜索拿长尾流量；Discord 社群做留存，免费积分做转化钩子。属于「SEO 蹭词 + 免费试用」的轻获客模型。",
+      "trafficQuality": "流量质量偏弱：跳出率 36.8% 尚可，但每次访问仅 1.1 页，说明用户看完落地页就走，未深入产品；美国 36.9%、印度 32.2%、荷兰 19.6%，地域分散且印度占比偏高，付费转化预期需打折。",
+      "moat": "壁垒很薄。模型是第三方的，工作流整合可被复制，真正的资产只有 SEO 排名和品牌认知，而品牌词搜索量仅 140，护城河尚未形成。",
+      "moatBadge": "壁垒薄弱",
+      "monetization": "订阅制 + 积分消耗：Basic $9.9、Pro $19.9、Max $34.9、Pro Max 更高档，统一积分覆盖所有模型，另有每日免费额度做漏斗入口。",
+      "monetizationBadge": "有定价未验证",
       "analyzedAt": "2026-10"
     },
     "tagGroups": [
@@ -597,26 +598,24 @@
     },
     "observations": {
       "practices": [
-        "用「一个 Dashboard + 一套积分」把多模型、多模态打包，显著降低用户工具切换成本",
-        "定价三档清晰（$9.9/$19.9/$34.9）并配 Daily Free Credit，形成低门槛试用漏斗",
-        "页面结构完整：H1/H2 覆盖场景、三步流程、模型对比、FAQ，SEO 内容底子扎实",
-        "技术栈 Next.js + Vercel，上线快、迭代成本低，适合早期快速试错"
+        "用高搜索量模型名（veo 3.1、vibes ai）做落地页蹭自然流量，新站 3 个月做到 5503 月访问",
+        "统一积分钱包覆盖视频/图片/音乐/配音，降低多工具订阅的决策摩擦",
+        "页面结构完整：H2 覆盖卖点、流程、对比、定价、FAQ，SEO 友好（2204 词、73 内链）",
+        "提供每日免费积分 + 三步入門流程，把试用门槛压到最低"
       ],
       "concerns": [
-        "月访问仅 16、仅 1 个关键词排 21-30 名，产品与流量严重脱节，冷启动风险高",
-        "未检测到实际支付通道，定价页可能只是「意向展示」，变现闭环未验证",
-        "聚合模式依赖上游模型 API，成本与可用性受制于人，同质化竞争激烈",
-        "注册于 2025-12，品牌与域名信任度几乎为零，商用承诺缺乏背书"
+        "品牌词搜索量仅 140，增长几乎全靠蹭词，关键词排名仅 1 个词在 21-30 名，流量稳定性差",
+        "paymentDetected 为空，定价页存在但无实际收款证据，付费转化未验证",
+        "每次访问仅 1.1 页、跳出率 36.8%，用户看完即走，产品留存存疑",
+        "模型依赖第三方，一旦上游涨价或断供，商业模式直接受冲击"
       ],
       "competitors": [
-        "softonic.com",
-        "mindvideo.ai",
-        "vidpexai.com",
         "invideo.io",
-        "getimg.ai",
-        "pixeldojo.ai",
         "pollo.ai",
-        "goenhance.ai"
+        "getimg.ai",
+        "mindvideo.ai",
+        "goenhance.ai",
+        "softonic.com"
       ]
     },
     "screenshotDesktopUrl": "/screenshots/picvo.ai.png",
@@ -624,121 +623,117 @@
     "opportunity": {
       "score": 38,
       "verdict": "谨慎",
-      "reason": "月访问仅16、注册不足一年、无外链数据、关键词仅1个排名21-30名，但已有$9.9-$34.9定价信号和Next.js/Vercel轻量栈，属于极早期聚合型AI工具站，可低成本试水但竞争极度拥挤。",
+      "reason": "聚合型AI创作平台赛道拥挤且无支付信号，但6083%月增长和$9.9-$34.9定价线索显示需求真实，适合作为流量套利或垂直场景切入口而非正面竞争。",
       "dimensions": [
         {
           "label": "竞争度",
-          "score": 15,
-          "note": "竞品含invideo.io、pollo.ai、getimg.ai等成熟平台，且关键词如'text to speech video generator'、'nano banana 2 generator'均为红海词，Picvo仅1个关键词排21-30名，无差异化壁垒。"
+          "score": 25,
+          "note": "竞品列表含invideo.io、pollo.ai、getimg.ai等8个成熟平台，且关键词'vibes ai'月搜索151490、'ai music generator'111220，巨头已占据心智，Picvo自身仅1个关键词进21-30名。"
         },
         {
           "label": "变现成熟度",
           "score": 45,
-          "note": "页面已出现$9.9/$19.9/$34.9三档定价线索和'Daily Free Credit'免费额度机制，但paymentDetected为空，无实际收款验证，变现处于设计阶段而非验证阶段。"
+          "note": "页面出现$9.9/$19.9/$34.9三档定价线索和'One Credit Balance'积分体系，但paymentDetected为空，无实际收款验证；注册仅2025-12-08，变现闭环未证实。"
         },
         {
           "label": "增长可复制性",
-          "score": 40,
-          "note": "月访问16、momGrowth 1500%仅因基数极低（从1到16），趋势显示2026年5-8月均为0，9月才1次访问，增长不可归因于可复制策略；无外链数据、无GEO分布，SEO打法尚未验证。"
+          "score": 55,
+          "note": "月访问5503、环比增长6083.1%来自2026-08的89起步，基数极低；自然流量仅1600（占比29%），主要靠品牌词'picova ai'（140搜索量）和蹭'Veo 3.1'（102460搜索量）等大词，可复制但脆弱。"
         },
         {
           "label": "技术门槛",
-          "score": 20,
-          "note": "技术栈为Next.js+Vercel+Webpack，纯前端聚合层，依赖Seedance 2.0、Sora、Veo、Nano Banana 2等第三方模型API，无自研模型，门槛极低、易被复制。"
+          "score": 30,
+          "note": "技术栈为Next.js+Vercel+Webpack，无自研模型，纯API聚合；页面H2明确'Ten-Plus Top Models'，依赖第三方视频/图像/音乐/语音模型，护城河极低。"
         },
         {
           "label": "启动成本",
-          "score": 75,
-          "note": "注册于2025-12-08，Vercel托管+Next.js，页面仅2204词、7张图、73内链，MVP可在数周内以低月费上线，启动成本对个人开发者友好。"
+          "score": 70,
+          "note": "Vercel+Next.js可快速部署，外链仅1个（discord.gg）、图片7张、结构化数据仅WebApplication，MVP可两周内上线；但需承担多模型API调用成本，且4K输出和'Most Renders Finish Under a Minute'暗示算力开销不低。"
         }
       ]
     },
     "monetizationBlueprint": {
-      "model": "订阅制SaaS + 积分制（credit-based）混合，免费额度引流、按档位解锁模型与4K输出",
+      "model": "订阅制积分包（SaaS + Credits）",
       "tiers": [
-        "Basic $9.9/月：基础积分、标准分辨率、有限模型",
-        "Pro $19.9/月：更高积分、4K输出、全部模型",
-        "Max $34.9/月：最高积分、优先渲染、商用授权",
-        "Pro Max（价格未披露）：团队/高频商用档"
+        "Basic $9.9/月：含基础积分，覆盖图像与低分辨率视频",
+        "Pro $19.9/月：含更多积分，支持4K输出与商用授权",
+        "Max $34.9/月：高积分池，优先渲染队列",
+        "Pro Max（价格未披露）：团队/高频创作者档"
       ],
       "paymentDetected": [],
-      "pricingAdvice": "沿用$9.9/$19.9/$34.9三档锚定，但需把'Daily Free Credit'做成注册即送、按天重置的钩子；建议增加年付8折和'按次购买积分包'降低首单门槛，并在定价页明确商用授权范围（当前仅写'Commercial Use Subject to Terms'，模糊会流失B端）。"
+      "pricingAdvice": "沿用三档锚定结构，但将$9.9设为引流档并明确积分消耗表（视频按秒扣、图像按张扣），用'Daily Free Credit'降低注册门槛；支付侧需补Stripe/Paddle订阅+积分包一次性购买双通道，避免仅靠订阅导致低客单用户流失。"
     },
     "growthPlaybook": {
-      "coldStart": "以'多模型聚合+单积分'为卖点，先在Reddit/Discord AI创作社区发免费额度邀请码，用Seedance 2.0、Nano Banana 2等新模型关键词做落地页，抢新模型搜索红利；同步提交Product Hunt和AI工具目录站获取首批外链。",
+      "coldStart": "先以'Veo 3.1 / Wan 3.0 / Seedance 2.0'等热门模型名做程序化落地页承接搜索流量（参考Picvo用'Veo 3.1'102460搜索量蹭到90访问），再以免费日积分+Discord社区做种子用户留存。",
       "channels": [
-        "SEO长尾：围绕'seedream video generator'、'wan 2.6 ai video generator'、'nano banana 2 generator'等新模型词做对比页和教程页",
-        "AI工具导航站与目录收录（替代当前缺失的外链）",
-        "Discord社区运营（站点已外链discord.gg，应把社区做成留存与UGC渠道）",
-        "YouTube/TikTok短演示：'一句话生成视频+配音+音乐'的成品对比",
-        "Product Hunt首发与AI Newsletter投放"
+        "SEO长尾：为每个接入模型建独立对比页（参考其H3'Side-by-Side Model Comparison'）",
+        "品牌词防御：注册'picova ai'类变体域名并投放低价品牌词",
+        "Discord社区：复用其唯一外链discord.gg做用户反馈与模板分享",
+        "免费积分裂变：'Daily Free Credit'驱动注册，配合水印分享",
+        "多语区落地页：其geo中印度占32.2%、荷兰19.6%，可做本地化页面"
       ],
       "copyable": [
-        "抄它的'Ten-Plus Top Models. One Dashboard'聚合叙事，把多模型对比做成表格页吃搜索流量",
-        "抄它的三档定价+Daily Free Credit免费钩子结构",
-        "抄它的FAQ长尾布局（8个FAQ覆盖模型差异、商用、取消订阅等决策问题）",
-        "抄它的WebApplication结构化数据，提升搜索富摘要"
+        "借鉴其'One Credit Balance Covers Every Picvo Model'的统一积分叙事，降低用户多工具切换成本",
+        "参考其H2'Three Steps From Idea to Finished Asset'的三步流程文案，简化上手路径",
+        "沿用其FAQ结构（8个问题覆盖模型差异、渲染速度、商用授权、取消政策），直接降低客服成本",
+        "复用其'4K Output on Supported Paid Tiers'的档位差异化卖点，把高分辨率作为付费钩子"
       ],
       "avoid": [
-        "别只做'All-in-One'泛词首页——Picvo月访问仅16证明泛词无竞争力",
-        "别在无外链、无GEO的情况下重投SEO内容，先解决收录与权重",
-        "别把商用授权写成'Subject to Terms'模糊表述，会劝退付费B端",
-        "别同时铺视频/图像/音乐/语音四条线，MVP阶段聚焦一个高频场景"
+        "别只做纯聚合无自研：技术栈无模型、外链仅1个，一旦上游API涨价或断供即崩",
+        "别忽视自然流量占比低：organic仅1600/5503，付费或社交流一旦停就归零",
+        "别在无支付验证前重投广告：paymentDetected为空，先小预算测转化再放量",
+        "别硬刚'invideo.io'等成熟竞品的大词，改打长尾模型对比词"
       ]
     },
     "buildBlueprint": {
       "techStack": [
-        "Next.js（App Router）",
-        "Vercel托管",
-        "Tailwind CSS",
-        "Stripe/Paddle订阅与积分计费",
-        "PostgreSQL（Supabase/Neon）存用户与积分账本",
-        "对象存储（S3/R2）存生成产物"
+        "Next.js（沿用其技术栈，SSR利于SEO）",
+        "Vercel部署（复用其托管方案）",
+        "Tailwind CSS + shadcn/ui 快速出UI",
+        "PostgreSQL + Prisma 存用户与积分",
+        "Stripe/Paddle 订阅计费"
       ],
       "thirdParty": [
-        "Seedance 2.0 / Seedream 视频与图像模型API",
-        "Nano Banana 2 图像生成API",
-        "Wan 2.6 视频生成API",
-        "Sora / Veo 视频API（按可用性接入）",
-        "TTS语音合成API（如ElevenLabs类）",
-        "音乐生成API",
-        "Stripe/Paddle支付",
-        "Google Analytics + GTM"
+        "视频生成：Veo 3.1 / Wan 3.0 / Seedance 2.0 API",
+        "图像生成：Stable Diffusion / Flux API",
+        "音乐生成：Suno / Udio API",
+        "语音合成：ElevenLabs API",
+        "鉴权：Clerk 或 NextAuth"
       ],
-      "mvpScope": "单页工作台：选模型→输入提示词/上传图→生成→下载；积分余额与三档订阅；免费每日额度；模型对比页与FAQ页做SEO；暂不做团队协作与API开放。",
-      "devTime": "个人开发者4-6周可上线MVP（2周前端工作台+1周计费积分+1周模型接入+1-2周SEO页与测试）",
-      "monthlyCost": "Vercel Pro约$20 + 数据库$0-25 + 对象存储$5-15 + 模型API按量（初期$50-200）+ 域名与邮件$5，合计约$80-265/月"
+      "mvpScope": "单页Dashboard聚合文生视频、图生视频、文生图、AI音乐四个入口；统一积分扣费；三档订阅+日免费积分；模型对比页与FAQ；Discord社区入口。不做4K和团队协作，先验证付费转化。",
+      "devTime": "2-3周（1名全栈）",
+      "monthlyCost": "$150-$400（Vercel Pro约$20 + 数据库$25 + 各模型API按量$100-$300 + 域名/邮件$10）"
     },
     "ideaSparks": [
       {
-        "title": "新模型首发抢注站：每个新模型一个独立落地页",
+        "title": "垂直电商商品视频生成器",
         "angle": "换场景",
-        "why": "Picvo关键词里'seedream video generator'、'wan 2.6 ai video generator'、'nano banana 2 generator'都是新模型词，搜索竞争低、需求即时；为每个新模型做'是什么+怎么用+免费试'单页，可在模型发布窗口期低成本获客。",
-        "source": "源自Picvo关键词列表中的新模型长尾词与它'Ten-Plus Top Models'的聚合定位"
+        "why": "Picvo主打通用创作，但电商卖家需要的是'上传商品图→生成15秒带货视频'的确定性流程，可收更高客单（$49/月）且复购强。",
+        "source": "源自其H3'AI Video — Text, Image, Reference & Footage Inputs'的图生视频能力，但未针对电商场景做模板化封装。"
       },
       {
-        "title": "面向中文/东南亚语区的多模型视频工作台",
+        "title": "印度/东南亚语区本地化AI创作工具",
         "angle": "换语区",
-        "why": "Picvo页面pageLang仅en、GEO为空，说明未做本地化；中文、印尼语、越南语创作者对'图生视频+配音'需求强，本地化界面+本地支付（支付宝/GCash）可避开英文红海。",
-        "source": "源自siteAudit中pageLang='en'且geo为空的数据点"
+        "why": "Picvo流量中印度占32.2%、荷兰19.6%，但页面仅en单语；做印地语/印尼语界面+本地支付（UPI）可吃下被忽视的增量市场。",
+        "source": "源自其geo数据：India 32.2%份额却无本地化页面，pageLang仅'en'。"
       },
       {
-        "title": "电商商品图→短视频带货生成器",
-        "angle": "换人群",
-        "why": "Picvo主打泛创作者'all-in-one'，月访问16证明泛人群打不动；聚焦淘宝/Shopify卖家，输入商品图直接输出15秒带货视频+配音+字幕，付费意愿明确、可按条收费。",
-        "source": "源自Picvo的'AI Video — Image Inputs'能力与$9.9-$34.9订阅定价，但缺乏垂直场景"
-      },
-      {
-        "title": "按次付费的'模型比价+代生成'微服务",
+        "title": "按次付费的模型对比工作台",
         "angle": "换商业模式",
-        "why": "Picvo用订阅+积分，但paymentDetected为空、未验证收款；个人开发者可做'同一提示词跑3个模型、按次收$0.5-2'的比价代生成，零订阅压力、现金流快，且天然产生对比内容做SEO。",
-        "source": "源自Picvo的'Side-by-Side Model Comparison'功能点与三档订阅定价线索"
+        "why": "Picvo用订阅+积分，但轻度用户不愿月付；做'同一prompt并排跑3个模型、按次$0.5付费'可截流比价用户，再向上卖订阅。",
+        "source": "源自其H3'Side-by-Side Model Comparison'和'Ten-Plus Engines on One Plan'的聚合卖点，但订阅门槛挡住了尝鲜者。"
       },
       {
-        "title": "商用授权清晰的B端视频素材订阅",
+        "title": "AI音乐+配音的短视频口播工具",
+        "angle": "换人群",
+        "why": "Picvo四类媒体全做但每类不深；聚焦'脚本→AI配音→配乐→字幕'的口播视频流水线，服务YouTube/TikTok创作者，单点打穿。",
+        "source": "源自其H2'Original Music & Lifelike AI Voices'和关键词'ai music generator'月搜111220的高需求，但产品未做口播场景闭环。"
+      },
+      {
+        "title": "白标API转售给 agency",
         "angle": "换收费",
-        "why": "Picvo仅写'Commercial Use Subject to Terms'，商用边界模糊；做'明确商用授权+发票+团队席位'的B端套餐（$49-99/月），把合规当卖点，可承接被Picvo模糊条款劝退的广告/电商团队。",
-        "source": "源自Picvo FAQ中'Can I use Picvo renders in paid work?'与'Commercial Use Subject to Terms'的模糊表述"
+        "why": "Picvo无自研模型、纯聚合，agency需要的是可贴牌、按席位收费的创作后台；做白标+$99/席位/月，比C端订阅更稳。",
+        "source": "源自其技术栈Next.js+Vercel+第三方模型API的轻资产结构，证明聚合层可被白标复用。"
       }
     ],
     "relatedKeywords": [],
@@ -755,20 +750,20 @@
     ],
     "moduleInsights": {
       "performance": {
-        "analysis": "月访问 16、自然流量 16，环比 +1500% 实为 1→16 的基数效应；页面 2204 词、73 条内链、结构化数据仅 WebApplication，产品完成度高但流量几乎为零。",
-        "soWhat": "产品做完不等于有人用，先验证分发再谈功能。"
+        "analysis": "月访问 5503，自然流量 1600（占比约 29%），跳出率 36.8%，每次访问仅 1.1 页，全球排名 380 万名开外，属于极早期站点。",
+        "soWhat": "早期站看留存不看流量，1.1 页说明产品承接力不足。"
       },
       "growth": {
-        "analysis": "趋势显示 2026 年 5-8 月访问为 0，9 月 1 次、10 月 16 次，处于刚被收录的极早期；1500% 增长不具统计意义。",
-        "soWhat": "早期增长看渠道是否可复制，而非单月倍数。"
+        "analysis": "2026 年 7 月访问为 0，8 月 89，9 月冲到 5503，环比增速 6083%，但基数极低，且自然流量在趋势中显示为 0，增长主要来自非自然渠道或统计口径差异。",
+        "soWhat": "高增速是低基数幻觉，需观察第 4-6 个月能否稳住。"
       },
       "keywords": {
-        "analysis": "仅 1 个关键词进入 21-30 名，词表集中在模型名（seedream、wan 2.6、nano banana 2）与工具词（text to speech video generator），说明靠模型热词蹭流量，尚未建立品类词。",
-        "soWhat": "抢模型热词能起量，但需尽快占住品类词。"
+        "analysis": "5 个关键词中，品牌词 picova ai 仅 140 搜索量、贡献 130 流量；veo 3.1（10.2 万搜索）贡献 90 流量，vibes ai（15.1 万搜索）仅 30，ai music generator（11.1 万搜索）仅 20，排名分布仅 1 个词在 21-30 名。",
+        "soWhat": "流量靠蹭大词但排名靠后，长尾词布局是下一步关键。"
       },
       "competition": {
-        "analysis": "竞品含 invideo.io、pollo.ai 等成熟聚合/视频工具及多家中小站点，聚合层玩家众多；Picvo 无自有模型、无品牌，处于竞争格局最底端。",
-        "soWhat": "聚合赛道拥挤，差异化工作流或垂直场景才是活路。"
+        "analysis": "竞品包括 invideo.io、pollo.ai、getimg.ai 等成熟聚合/单点工具，Picvo 全球排名 380 万，与竞品差距悬殊；其差异化仅在「四媒介 + 统一积分」的整合层。",
+        "soWhat": "正面拼模型拼不过，只能在细分工作流和定价上找缝隙。"
       }
     },
     "trafficMetrics": {
