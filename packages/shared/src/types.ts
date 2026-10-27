@@ -228,6 +228,9 @@ export interface MonetizationBlueprint {
   model: string;                    // 商业模式：订阅 + 积分 等
   tiers: string[];                  // 定价阶梯摘要
   paymentDetected: string[];        // 收款平台检测：Stripe / Paddle / LemonSqueezy
+  monthlyRevenueSignal?: number;    // 估算月收入信号（美元）：访问量 × 付款转化率 × 客单价，行业基准估算，仅体现收入量级，非真实收入
+  paymentConversionRate?: number;   // 采用的付款转化率基准（如 0.02 表示 2%）
+  revenueAov?: number;              // 采用的客单价（美元）：定价线索中位数，无则行业默认
   pricingAdvice: string;            // 「你起步怎么定价」建议
 }
 

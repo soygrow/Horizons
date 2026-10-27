@@ -57,6 +57,21 @@
     },
     "trend": [
       {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
         "date": "2026-07",
         "total": 0,
         "organic": 0
@@ -663,6 +678,9 @@
         "Pro Max（价格未披露）：团队/高频创作者档"
       ],
       "paymentDetected": [],
+      "monthlyRevenueSignal": 2190,
+      "paymentConversionRate": 0.02,
+      "revenueAov": 19.9,
       "pricingAdvice": "沿用三档锚定结构，但将$9.9设为引流档并明确积分消耗表（视频按秒扣、图像按张扣），用'Daily Free Credit'降低注册门槛；支付侧需补Stripe/Paddle订阅+积分包一次性购买双通道，避免仅靠订阅导致低客单用户流失。"
     },
     "growthPlaybook": {

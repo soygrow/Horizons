@@ -20,6 +20,7 @@ import {
   auditSite,
   fetchRegistrationDate,
   detectPaymentSignals,
+  estimateRevenueSignal,
 } from "./sources/site-audit";
 import { detectPricing } from "./sources/pricing";
 import {
@@ -367,6 +368,14 @@ async function main(): Promise<void> {
       }
     : metrics;
 
+  // 月收入信号估算：总访问量（vortex 优先，回退 DFS 搜索流量）× 付款转化率 × 客单价（定价线索中位数）
+  const revenueEstimate = estimateRevenueSignal({
+    monthlyVisits: tm?.monthlyVisits ?? metrics?.monthlyVisits,
+    paymentDetected,
+    pricingClues: siteAudit?.pricingClues,
+    categories: tool.categories,
+  });
+
   const inputData = {
     // 只喂「我们自己采集的真实数据」，不喂任何哥伦布种子字段
     officialTitle: pageStructure?.title,
@@ -389,6 +398,9 @@ async function main(): Promise<void> {
       ? { title: pageStructure.title, h1: pageStructure.h1, h2: pageStructure.h2, h3: pageStructure.h3 }
       : null,
     paymentDetected,
+    monthlyRevenueSignal: revenueEstimate.monthlyRevenue,
+    paymentConversionRate: revenueEstimate.rate,
+    revenueAov: revenueEstimate.aov,
     phUpvotes,
     phComments,
   };
@@ -453,6 +465,10 @@ async function main(): Promise<void> {
       paymentDetected: opp.monetizationBlueprint.paymentDetected?.length
         ? opp.monetizationBlueprint.paymentDetected
         : paymentDetected,
+      // 收入信号由我们自己的流量 × 转化率 × 客单价估算（真实可验证，不被 LLM 改写）
+      monthlyRevenueSignal: revenueEstimate.monthlyRevenue,
+      paymentConversionRate: revenueEstimate.rate,
+      revenueAov: revenueEstimate.aov,
     };
   }
   if (opp.growthPlaybook) tool.growthPlaybook = opp.growthPlaybook;

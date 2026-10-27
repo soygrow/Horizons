@@ -266,3 +266,59 @@ export async function detectPaymentSignals(homeUrl: string, homeHtml: string): P
   const html = pools.join("\n");
   return PAYMENT_PROVIDERS.filter((p) => p.pattern.test(html)).map((p) => p.label);
 }
+
+/* ----------------------- 收入信号估算 ----------------------- */
+
+export interface RevenueSignalEstimate {
+  /** 估算月收入信号（美元）：月访问量 × 付款转化率 × 客单价；无访问量或付费证据时为 undefined */
+  monthlyRevenue?: number;
+  /** 采用的付款转化率基准（0.02 = 2%） */
+  rate: number;
+  /** 采用的客单价（美元）：定价线索中位数，无则行业默认 */
+  aov: number;
+}
+
+/**
+ * 估算「月收入信号」：把月访问量按行业付款转化率 × 客单价折算，作为收入预算参考的估算量级。
+ * 注意：这是流量 + 定价推导的估算值，只能体现收入量级，不是真实收入（真实收入只有商户自己的收款后台才有）。
+ */
+export function estimateRevenueSignal(opts: {
+  monthlyVisits?: number;
+  paymentDetected?: string[];
+  pricingClues?: string[];
+  categories?: string[];
+}): RevenueSignalEstimate {
+  const rate = pickConversionRate(opts.categories);
+  const aov = pickAov(opts.pricingClues, opts.categories);
+  // 付费证据：检测到支付商 或 有定价线索（有明确定价即可视为存在付费模式）
+  const hasMonetization = !!opts.paymentDetected?.length || !!opts.pricingClues?.length;
+  if (!hasMonetization) return { rate, aov };
+  const visits = opts.monthlyVisits;
+  // 没有访问量口径（DFS 仅搜索流量且过小 / 未接入 SimilarWeb）→ 不编造
+  if (!visits || visits < 1) return { rate, aov };
+  return { monthlyRevenue: Math.round(visits * rate * aov), rate, aov };
+}
+
+/** 按赛道给一个合理的付款转化率基准（仅作估算，非真实值） */
+function pickConversionRate(categories?: string[]): number {
+  const c = (categories ?? []).join(" ").toLowerCase();
+  if (/(ecommerce|shop|store|电商|购物|marketplace)/.test(c)) return 0.03; // 电商结算转化偏高
+  if (/(chat|writing|coding|productivity|video|image|audio|voice|ai)/.test(c)) return 0.02; // SaaS/订阅偏低
+  return 0.025; // 默认
+}
+
+/** 客单价：优先取定价线索的中位数，无则按赛道给行业默认值（仅作估算） */
+function pickAov(pricingClues?: string[], categories?: string[]): number {
+  const nums = (pricingClues ?? [])
+    .map((p) => parseFloat(String(p).replace(/[^0-9.]/g, "")))
+    .filter((n) => Number.isFinite(n) && n >= 5 && n <= 100000);
+  if (nums.length) {
+    nums.sort((a, b) => a - b);
+    const mid = Math.floor(nums.length / 2);
+    return nums.length % 2 ? nums[mid] : Math.round((nums[mid - 1] + nums[mid]) / 2);
+  }
+  const c = (categories ?? []).join(" ").toLowerCase();
+  if (/(ecommerce|shop|store|电商|购物|marketplace)/.test(c)) return 50; // 电商客单偏高
+  if (/(chat|writing|coding|productivity|video|image|audio|voice|ai)/.test(c)) return 20; // SaaS/订阅客单
+  return 25; // 默认
+}

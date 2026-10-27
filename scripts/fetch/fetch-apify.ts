@@ -50,6 +50,26 @@ function toMonth(date: string | undefined): string | undefined {
   return mm ? `${y}-${mm}` : undefined;
 }
 
+/** 统一为「最近 6 个自然月」：以最大月为基准往前数 6 个月，缺失月份补 0（新站无历史时为 0 流量，真实） */
+function last6Months(trend: TrafficTrendPoint[]): TrafficTrendPoint[] {
+  if (trend.length === 0) return [];
+  const sorted = [...trend].sort((a, b) => (a.date < b.date ? -1 : 1));
+  const [ly, lm] = sorted[sorted.length - 1].date.split("-").map(Number);
+  const months: string[] = [];
+  let y = ly;
+  let m = lm;
+  for (let i = 0; i < 6; i++) {
+    months.unshift(`${y}-${String(m).padStart(2, "0")}`);
+    m -= 1;
+    if (m === 0) {
+      m = 12;
+      y -= 1;
+    }
+  }
+  const byDate = new Map(sorted.map((t) => [t.date, t]));
+  return months.map((d) => byDate.get(d) ?? { date: d, total: 0, organic: 0 });
+}
+
 async function main(): Promise<void> {
   const domain = parseDomain();
   const dry = process.argv.includes("--dry");
@@ -106,13 +126,14 @@ async function main(): Promise<void> {
         }));
     }
 
-    // 流量趋势（近 3 个月总访问量历史）
-    const trend: TrafficTrendPoint[] = (item.monthlyVisits ?? [])
+    // 流量趋势：统一为最近 6 个自然月（新站无历史月份补 0，真实反映从 0 起步）
+    const rawTrend: TrafficTrendPoint[] = (item.monthlyVisits ?? [])
       .map((m) => {
         const date = toMonth(m.month);
         return date ? { date, total: m.visits ?? 0, organic: 0 } : null;
       })
       .filter((t): t is TrafficTrendPoint => t !== null);
+    const trend = last6Months(rawTrend);
     if (trend.length >= 2) tool.trend = trend;
 
     console.log(

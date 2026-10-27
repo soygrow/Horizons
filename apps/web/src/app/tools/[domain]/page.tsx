@@ -614,7 +614,21 @@ export default async function ToolDetailPage({
                     </div>
                     <div className="rounded-xl bg-surface-2 px-4 py-3">
                       <span className="text-xs text-ink-muted">{t.payment}</span>
-                      {mb.paymentDetected?.length ? (
+                      {mb.monthlyRevenueSignal ? (
+                        <>
+                          <p className="mt-1 text-2xl font-semibold tabular-nums text-ink">
+                            {formatCount(mb.monthlyRevenueSignal)}
+                          </p>
+                          <p className="mt-0.5 text-xs text-ink-muted">
+                            {t.paymentNote}
+                          </p>
+                          {mb.paymentDetected?.length ? (
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {mb.paymentDetected.map((p) => <Badge key={p}>{p}</Badge>)}
+                            </div>
+                          ) : null}
+                        </>
+                      ) : mb.paymentDetected?.length ? (
                         <div className="mt-1.5 flex flex-wrap gap-2">
                           {mb.paymentDetected.map((p) => <Badge key={p}>{p}</Badge>)}
                         </div>

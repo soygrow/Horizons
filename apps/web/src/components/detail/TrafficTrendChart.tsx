@@ -105,6 +105,19 @@ export function TrafficTrendChart({ points }: { points: TrafficTrendPoint[] }) {
           strokeWidth="2"
           strokeLinejoin="round"
         />
+        {/* 每月数值标签（常驻可见） */}
+        {points.map((p, i) => (
+          <text
+            key={`v-${p.date}`}
+            x={chart.x(i)}
+            y={Math.max(chart.y(p.total) - 6, PAD.top + 8)}
+            textAnchor="middle"
+            fontSize="10"
+            style={{ fill: "var(--c-ink-secondary)" }}
+          >
+            {formatCount(p.total)}
+          </text>
+        ))}
         <path
           d={chart.line("organic")}
           fill="none"
