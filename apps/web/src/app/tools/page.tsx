@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { tools, allCategories, derivePricingModel } from "@/lib/data";
 import { SearchInput } from "@/components/SearchInput";
 import { FilterGroup } from "@/components/FilterGroup";
-import { ToolTableHead } from "@/components/ToolTableHead";
-import { ToolRow } from "@/components/ToolRow";
+import { ToolListHead } from "@/components/ToolListHead";
+import { ToolListRow } from "@/components/ToolListRow";
 import { Pagination } from "@/components/Pagination";
 import { PaywallBanner } from "@/components/PaywallBanner";
 import type { AITool } from "@horizons/shared";
@@ -175,17 +175,19 @@ export default async function ToolsPage({
       </div>
 
       {/* 列表 */}
-      <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-surface">
-        <ToolTableHead />
-        {rows.length > 0 ? (
-          rows.map((t, i) => (
-            <ToolRow key={t.id} tool={t} rank={(page - 1) * PAGE_SIZE + i + 1} />
-          ))
-        ) : (
-          <div className="px-4 py-16 text-center">
-            <p className="text-sm text-ink-muted">没有符合条件的工具</p>
-          </div>
-        )}
+      <div className="mt-4 overflow-x-auto rounded-2xl border border-border bg-surface">
+        <div className="min-w-[1080px]">
+          <ToolListHead />
+          {rows.length > 0 ? (
+            rows.map((t, i) => (
+              <ToolListRow key={t.id} tool={t} rank={(page - 1) * PAGE_SIZE + i + 1} />
+            ))
+          ) : (
+            <div className="px-4 py-16 text-center">
+              <p className="text-sm text-ink-muted">没有符合条件的工具</p>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mt-6">

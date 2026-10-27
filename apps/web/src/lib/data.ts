@@ -83,6 +83,43 @@ export function sparklinePoints(tool: AITool): number[] | null {
   return vals.map((v) => (v - min) / range);
 }
 
+/** 流量趋势 sparkline 点：基于 trend.total，取最近 maxPoints 个月；无数据返回 null */
+export function trafficSparklinePoints(tool: AITool, maxPoints = 6): number[] | null {
+  const t = tool.trend;
+  if (!t || t.length < 2) return null;
+  const sorted = [...t].sort((a, b) => a.date.localeCompare(b.date)).slice(-maxPoints);
+  const vals = sorted.map((p) => p.total);
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+  const range = max - min || 1;
+  return vals.map((v) => (v - min) / range);
+}
+
+/** 月访问量：vortex(SimilarWeb) 优先，回退 DFS metrics */
+export function getMonthlyVisits(tool: AITool): number | undefined {
+  return tool.trafficMetrics?.monthlyVisits ?? tool.metrics?.monthlyVisits;
+}
+
+/** 环比增长 %：vortex 优先，回退 DFS metrics */
+export function getMoMGrowth(tool: AITool): number | undefined {
+  return tool.trafficMetrics?.monthlyVisitsGrowth ?? tool.metrics?.momGrowth;
+}
+
+/** 自然搜索量：vortex 优先，回退 DFS metrics */
+export function getOrganicVisits(tool: AITool): number | undefined {
+  return tool.trafficMetrics?.organicSearchVisits ?? tool.metrics?.organicVisits;
+}
+
+/** 域名权重（DR）：数值 + 展示标签 */
+export function getDomainWeight(tool: AITool): { value?: number; label?: string } {
+  return { value: tool.metrics?.domainWeight, label: tool.metrics?.domainWeightLabel };
+}
+
+/** 注册 / 上线时间：launchedAt 优先，回退 WHOIS registeredAt */
+export function getLaunchedAt(tool: AITool): string | undefined {
+  return tool.launchedAt ?? tool.metrics?.registeredAt;
+}
+
 /** 分页 */
 export function paginate<T>(list: T[], page: number, pageSize: number): T[] {
   return list.slice((page - 1) * pageSize, page * pageSize);
