@@ -12,7 +12,7 @@ function niceMax(v: number): number {
   if (v <= 0) return 1;
   const exp = Math.floor(Math.log10(v));
   const base = Math.pow(10, exp);
-  const n = Math.ceil(v / base * 2) / 2 * base;
+  const n = Math.ceil((v / base) * 2) / 2 * base;
   return n;
 }
 
@@ -30,7 +30,6 @@ function smoothPath(pts: { x: number; y: number }[]): string {
     slopes[i] = (pts[i + 1].y - pts[i].y) / dx[i];
   }
 
-  // 各点切线：拐点处归零，单调段取加权调和平均
   const m: number[] = new Array(n);
   m[0] = slopes[0];
   m[n - 1] = slopes[n - 2];
@@ -55,8 +54,19 @@ function smoothPath(pts: { x: number; y: number }[]): string {
   return d;
 }
 
-/** 流量趋势：双系列折线（总访问量 / 自然搜索），轻量 SVG + hover tooltip */
-export function TrafficTrendChart({ points }: { points: TrafficTrendPoint[] }) {
+/**
+ * 趋势图：
+ * - variant="traffic"：双系列折线（总访问量 / 自然搜索），用于工具详情
+ * - variant="stars"：单系列（星标趋势），用于 GitHub 详情
+ */
+export function TrafficTrendChart({
+  points,
+  variant = "traffic",
+}: {
+  points: TrafficTrendPoint[];
+  variant?: "traffic" | "stars";
+}) {
+  const isStars = variant === "stars";
   const [hover, setHover] = useState<number | null>(null);
 
   const chart = useMemo(() => {
@@ -90,7 +100,7 @@ export function TrafficTrendChart({ points }: { points: TrafficTrendPoint[] }) {
         viewBox={`0 0 ${W} ${H}`}
         className="h-auto w-full"
         role="img"
-        aria-label="流量趋势图"
+        aria-label={isStars ? "星标趋势图" : "流量趋势图"}
         onMouseMove={onMove}
         onMouseLeave={() => setHover(null)}
       >
@@ -118,7 +128,7 @@ export function TrafficTrendChart({ points }: { points: TrafficTrendPoint[] }) {
           </g>
         ))}
 
-        {/* X 轴月份 */}
+        {/* X 轴日期 */}
         {points.map((p, i) => {
           const step = Math.ceil(points.length / 8);
           if (i % step !== 0 && i !== points.length - 1) return null;
@@ -136,36 +146,35 @@ export function TrafficTrendChart({ points }: { points: TrafficTrendPoint[] }) {
           );
         })}
 
-        {/* 总访问量面积 + 双折线 */}
+        {/* 面积 + 主折线 */}
         <path d={chart.area} fill="var(--c-primary)" opacity="0.06" />
-        <path
-          d={chart.line("total")}
-          fill="none"
-          stroke="var(--c-primary)"
-          strokeWidth="2"
-          strokeLinejoin="round"
-        />
-        {/* 每月数值标签（常驻可见） */}
-        {points.map((p, i) => (
-          <text
-            key={`v-${p.date}`}
-            x={chart.x(i)}
-            y={Math.max(chart.y(p.total) - 6, PAD.top + 8)}
-            textAnchor="middle"
-            fontSize="10"
-            style={{ fill: "var(--c-ink-secondary)" }}
-          >
-            {formatCount(p.total)}
-          </text>
-        ))}
-        <path
-          d={chart.line("organic")}
-          fill="none"
-          stroke="var(--c-ocean)"
-          strokeWidth="2"
-          strokeDasharray="5 3"
-          strokeLinejoin="round"
-        />
+        <path d={chart.line("total")} fill="none" stroke="var(--c-primary)" strokeWidth="2" strokeLinejoin="round" />
+
+        {/* 数值标签（流量视图常驻；星标窄图不显示以免拥挤） */}
+        {!isStars &&
+          points.map((p, i) => (
+            <text
+              key={`v-${p.date}`}
+              x={chart.x(i)}
+              y={Math.max(chart.y(p.total) - 6, PAD.top + 8)}
+              textAnchor="middle"
+              fontSize="10"
+              style={{ fill: "var(--c-ink-secondary)" }}
+            >
+              {formatCount(p.total)}
+            </text>
+          ))}
+
+        {!isStars && (
+          <path
+            d={chart.line("organic")}
+            fill="none"
+            stroke="var(--c-ocean)"
+            strokeWidth="2"
+            strokeDasharray="5 3"
+            strokeLinejoin="round"
+          />
+        )}
 
         {/* hover 指示 */}
         {hover !== null ? (
@@ -179,7 +188,9 @@ export function TrafficTrendChart({ points }: { points: TrafficTrendPoint[] }) {
               strokeWidth="1"
             />
             <circle cx={chart.x(hover)} cy={chart.y(points[hover].total)} r="3.5" fill="var(--c-primary)" />
-            <circle cx={chart.x(hover)} cy={chart.y(points[hover].organic)} r="3.5" fill="var(--c-ocean)" />
+            {!isStars ? (
+              <circle cx={chart.x(hover)} cy={chart.y(points[hover].organic)} r="3.5" fill="var(--c-ocean)" />
+            ) : null}
           </g>
         ) : null}
       </svg>
@@ -187,18 +198,22 @@ export function TrafficTrendChart({ points }: { points: TrafficTrendPoint[] }) {
       <div className="mt-2 flex items-center justify-center gap-5 text-xs text-ink-secondary">
         <span className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-[2px] bg-primary" aria-hidden />
-          总访问量
+          {isStars ? "星标" : "总访问量"}
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-[2px] bg-ocean" aria-hidden />
-          自然搜索
-        </span>
+        {!isStars ? (
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-[2px] bg-ocean" aria-hidden />
+            自然搜索
+          </span>
+        ) : null}
       </div>
 
       {/* tooltip */}
       <div className="mt-1 h-5 text-center text-xs tabular-nums text-ink-muted" aria-live="polite">
         {active
-          ? `${active.date} · 总访问量 ${formatCount(active.total)} · 自然搜索 ${formatCount(active.organic)}`
+          ? isStars
+            ? `${active.date} · 星标 ${formatCount(active.total)}`
+            : `${active.date} · 总访问量 ${formatCount(active.total)} · 自然搜索 ${formatCount(active.organic)}`
           : ""}
       </div>
     </div>

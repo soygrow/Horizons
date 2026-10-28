@@ -29,30 +29,129 @@ export function hasDataForSEO(): boolean {
   return getCreds() !== null;
 }
 
-async function request<T = unknown>(path: string, body: unknown[]): Promise<T> {
+interface DfsResponse {
+  status_code?: number;
+  status_message?: string;
+  tasks?: Array<{
+    id?: string;
+    status_code?: number;
+    status_message?: string;
+    result?: Array<Record<string, unknown>>;
+  }>;
+}
+
+class HttpError extends Error {
+  constructor(
+    readonly status: number,
+    path: string,
+  ) {
+    super(`DataForSEO ${path} 失败：HTTP ${status}`);
+  }
+}
+
+/** 单次 HTTP 调用（POST 带 body，GET 不带） */
+async function send(path: string, body?: unknown[]): Promise<DfsResponse> {
   const creds = getCreds();
   if (!creds) throw new Error("未配置 DATAFORSEO_LOGIN / DATAFORSEO_PASSWORD");
   const auth = `Basic ${Buffer.from(`${creds.login}:${creds.password}`).toString("base64")}`;
 
   const res = await fetch(`https://api.dataforseo.com/v3/${path}`, {
-    method: "POST",
+    method: body ? "POST" : "GET",
     headers: {
       Authorization: auth,
-      "Content-Type": "application/json",
+      ...(body ? { "Content-Type": "application/json" } : {}),
       "User-Agent": config.userAgent,
     },
-    body: JSON.stringify(body),
+    body: body ? JSON.stringify(body) : undefined,
   });
-  if (!res.ok) throw new Error(`DataForSEO ${path} 失败：HTTP ${res.status}`);
-  const data = (await res.json()) as {
-    status_code?: number;
-    status_message?: string;
-    tasks?: Array<{ result?: Array<Record<string, unknown>> }>;
-  };
+  if (!res.ok) throw new HttpError(res.status, path);
+  const data = (await res.json()) as DfsResponse;
   if (data.status_code && data.status_code >= 30000) {
     throw new Error(`DataForSEO 错误 ${data.status_code}: ${data.status_message ?? ""}`);
   }
-  return data as T;
+  return data;
+}
+
+/* ------------------------------- 队列策略 -------------------------------
+ * 2026-10 实测：DataForSEO Labs / Backlinks / Domain Analytics 全系端点
+ * 只有 live，没有 standard 队列（task_post 一律返回 40400 Not Found）。
+ * 因此默认走 live；DFS_QUEUE=standard 仅供将来端点支持时启用，
+ * 探明不支持的端点会缓存到 liveOnly，后续直接走 live，不再重复试探。
+ * 真正的降本手段是 bulk 端点（一次请求多域名），见 bulk-estimate.ts。
+ * ---------------------------------------------------------------------- */
+
+/** task_post 不被支持（端点无 standard 队列）时抛出，用于触发回退 */
+class QueueUnsupportedError extends Error {}
+
+/** 已确认无 standard 队列的端点前缀，避免每次请求都白跑一次 404 */
+const liveOnly = new Set<string>();
+
+const POLL_INTERVAL_MS = Number(process.env.DFS_POLL_MS ?? 5000);
+const QUEUE_TIMEOUT_MS = Number(process.env.DFS_QUEUE_TIMEOUT_MS ?? 15 * 60 * 1000);
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+async function liveRequest<T>(path: string, body: unknown[]): Promise<T> {
+  return (await send(path, body)) as T;
+}
+
+async function standardRequest<T>(path: string, body: unknown[]): Promise<T> {
+  const postPath = path.replace(/\/live$/, "/task_post");
+  if (postPath === path) return liveRequest<T>(path, body); // 非 /live 结尾，保持原样
+
+  let posted: DfsResponse;
+  try {
+    posted = await send(postPath, body);
+  } catch (e) {
+    if (e instanceof HttpError && e.status === 404) {
+      throw new QueueUnsupportedError("task_post 不存在（HTTP 404）");
+    }
+    throw e;
+  }
+
+  const taskId = posted.tasks?.[0]?.id;
+  if (!taskId) {
+    const code = posted.tasks?.[0]?.status_code ?? posted.status_code ?? 0;
+    throw new QueueUnsupportedError(
+      `task_post 未返回任务 ID（${code} ${posted.tasks?.[0]?.status_message ?? posted.status_message ?? ""}）`,
+    );
+  }
+
+  const getPath = `${postPath.replace(/\/task_post$/, "/task_get")}/${taskId}`;
+  const deadline = Date.now() + QUEUE_TIMEOUT_MS;
+
+  while (Date.now() < deadline) {
+    await sleep(POLL_INTERVAL_MS);
+    const got = await send(getPath);
+    const task = got.tasks?.[0];
+    // 有 result 即已完成（standard 队列排队中时 result 为 null）
+    if (Array.isArray(task?.result)) return got as T;
+    const code = task?.status_code ?? 0;
+    // 40601/40602 是「排队中/处理中」，其余 >=40000 视为任务失败
+    if (code >= 40000 && code !== 40601 && code !== 40602) {
+      throw new Error(`standard 任务失败 ${code}: ${task?.status_message ?? ""}`);
+    }
+  }
+  throw new Error(`standard 队列等待超时（${QUEUE_TIMEOUT_MS / 1000}s）`);
+}
+
+async function request<T = unknown>(path: string, body: unknown[]): Promise<T> {
+  const mode = (process.env.DFS_QUEUE ?? "live").toLowerCase();
+  const base = path.replace(/\/live$/, "");
+  if (mode !== "standard" || liveOnly.has(base)) return liveRequest<T>(path, body);
+
+  try {
+    return await standardRequest<T>(path, body);
+  } catch (e) {
+    if (e instanceof QueueUnsupportedError) {
+      liveOnly.add(base);
+      console.warn(`[dfs] ${base} 无 standard 队列，后续改用 live：${e.message}`);
+      return liveRequest<T>(path, body);
+    }
+    throw e;
+  }
 }
 
 export interface SearchTraffic {

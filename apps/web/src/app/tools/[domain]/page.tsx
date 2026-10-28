@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { tools, getToolByDomain } from "@/lib/data";
+import { tools, getToolByDomain, getMoMGrowth } from "@/lib/data";
 import { CopyDataButton } from "@/components/detail/CopyDataButton";
 import { FavoriteButton } from "@/components/detail/FavoriteButton";
 import { ScreenshotLightbox } from "@/components/detail/ScreenshotLightbox";
@@ -33,18 +33,31 @@ function SectionHeader({ no, title, desc }: { no: string; title: string; desc: s
   );
 }
 
-/** 指标卡（value 为空时显示「待获取」） */
-function Stat({ label, value, success }: { label: string; value?: string; success?: boolean }) {
+/** 指标卡（value 为空时显示 placeholder + 悬浮说明，默认「待获取」） */
+function Stat({
+  label,
+  value,
+  success,
+  placeholder,
+  hint,
+}: {
+  label: string;
+  value?: string;
+  success?: boolean;
+  placeholder?: string;
+  hint?: string;
+}) {
   const pending = !value;
   return (
     <div className="flex flex-col gap-1 rounded-lg border border-border p-4">
       <span className="text-xs text-ink-muted">{label}</span>
       <span
+        title={pending ? hint : undefined}
         className={`text-lg font-semibold tabular-nums ${
           pending ? "text-ink-muted" : success ? "text-success" : "text-ink"
         }`}
       >
-        {pending ? dict.analysis.pending : value}
+        {pending ? (placeholder ?? "n/a") : value}
       </span>
     </div>
   );
@@ -58,11 +71,24 @@ function formatDuration(sec?: number): string | undefined {
   return s ? `${m} 分 ${s} 秒` : `${m} 分钟`;
 }
 
-/** 「待获取」占位块 */
-function Pending({ text = dict.analysis.pending }: { text?: string }) {
+/** 内容型占位块（AI 分析尚未生成时用） */
+function Pending({ text = dict.analysis.awaitingAI }: { text?: string }) {
   return (
     <div className="flex h-32 items-center justify-center rounded-xl border border-dashed border-border">
       <span className="text-sm text-ink-muted">{text}</span>
+    </div>
+  );
+}
+
+/** 数据型空态：结构/数值数据缺失时统一显示 n/a，与内容型「待获取」区分 */
+function NoData({ note }: { note?: string }) {
+  return (
+    <div
+      title={note ?? dict.analysis.noData}
+      className="flex h-32 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-border"
+    >
+      <span className="text-sm tabular-nums text-ink-muted">n/a</span>
+      <span className="text-xs text-ink-muted/70">{note ?? dict.analysis.noData}</span>
     </div>
   );
 }
@@ -188,6 +214,8 @@ export default async function ToolDetailPage({
   const td = tool.trafficDecrypt;
   const tm = tool.trafficMetrics;
   const m = tool.metrics;
+  // 环比：上月基数为 0 / 无上月快照时为 undefined，页面按「—」呈现
+  const mom = getMoMGrowth(tool);
   const b = tool.backlinks;
   const audit = tool.siteAudit;
   const ps = tool.pageStructure;
@@ -342,13 +370,23 @@ export default async function ToolDetailPage({
           )}
           {/* 7 项核心指标（通栏单行，无外框） */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-            <Stat label={dict.metrics.monthlyVisits} value={m?.monthlyVisits !== undefined ? formatCount(m.monthlyVisits) : undefined} />
+            <Stat
+              label={dict.metrics.monthlyVisits}
+              value={m?.monthlyVisits !== undefined ? formatCount(m.monthlyVisits) : undefined}
+              placeholder="n/a"
+            />
             <Stat
               label={dict.metrics.monthlyVisitsGrowth}
-              value={m?.momGrowth !== undefined ? `${m.momGrowth > 0 ? "+" : ""}${m.momGrowth}%` : undefined}
-              success={(m?.momGrowth ?? 0) > 0}
+              value={mom !== undefined ? `${mom > 0 ? "+" : ""}${mom}%` : undefined}
+              success={(mom ?? 0) > 0}
+              placeholder="n/a"
+              hint="上月无数据或基数为 0，无法计算环比"
             />
-            <Stat label={dict.metrics.organicSearchVisits} value={m?.organicVisits !== undefined ? formatCount(m.organicVisits) : undefined} />
+            <Stat
+              label={dict.metrics.organicSearchVisits}
+              value={m?.organicVisits !== undefined ? formatCount(m.organicVisits) : undefined}
+              placeholder="n/a"
+            />
             <Stat
               label={dict.metrics.organicShare}
               value={
@@ -356,8 +394,13 @@ export default async function ToolDetailPage({
                   ? `${Math.round((m.organicVisits / m.monthlyVisits) * 1000) / 10}%`
                   : undefined
               }
+              placeholder="n/a"
             />
-            <Stat label={dict.metrics.directVisits} value={tm?.directVisits !== undefined ? formatCount(tm.directVisits) : undefined} />
+            <Stat
+              label={dict.metrics.directVisits}
+              value={tm?.directVisits !== undefined ? formatCount(tm.directVisits) : undefined}
+              placeholder="n/a"
+            />
             <Stat
               label={dict.metrics.domainWeight}
               value={
@@ -367,8 +410,10 @@ export default async function ToolDetailPage({
                     : formatCount(m.domainWeight)
                   : undefined
               }
+              placeholder="n/a"
+              hint="未采集到该站的域名权重"
             />
-            <Stat label={dict.metrics.registeredAt} value={m?.registeredAt} />
+            <Stat label={dict.metrics.registeredAt} value={m?.registeredAt} placeholder="n/a" />
           </div>
 
           {/* 数据下方：结构化分析 */}
@@ -459,7 +504,7 @@ export default async function ToolDetailPage({
                 </div>
               </>
             ) : (
-              <Pending text={`${t.scoreLabel} · ${dict.analysis.pending}`} />
+              <NoData />
             )}
           </div>
         </section>
@@ -479,7 +524,7 @@ export default async function ToolDetailPage({
                   title={dict.traffic.trend}
                   extra={<span className="text-sm text-ink-muted">{tf(dict.traffic.monthsRange, { count: trend.length })}</span>}
                 >
-                  {trend.length >= 2 ? <TrafficTrendChart points={trend} /> : <Pending text={dict.traffic.noHistory} />}
+                  {trend.length >= 2 ? <TrafficTrendChart points={trend} /> : <NoData note={dict.traffic.noHistory} />}
                 </SubCard>
 
                 {/* 3.2 流量结构 */}
@@ -487,7 +532,7 @@ export default async function ToolDetailPage({
                   {channelItems.length ? (
                     <Bars items={channelItems.map((c) => ({ label: c.label, value: c.value, suffix: "%" }))} />
                   ) : (
-                    <Pending text={`${dict.traffic.sources} · ${dict.analysis.pending}`} />
+                    <NoData />
                   )}
                 </SubCard>
 
@@ -496,7 +541,7 @@ export default async function ToolDetailPage({
                   {geo.length ? (
                     <Bars items={geo.map((g) => ({ label: g.country, value: g.share, suffix: "%" }))} />
                   ) : (
-                    <Pending text={`${dict.traffic.countries} · ${dict.analysis.pending}`} />
+                    <NoData />
                   )}
                 </SubCard>
 
@@ -507,11 +552,11 @@ export default async function ToolDetailPage({
                       <div className="grid grid-cols-2 gap-4">
                         <div className="rounded-lg border border-border p-4">
                           <span className="text-xs text-ink-muted">{dict.traffic.globalRank}</span>
-                          <p className="text-2xl font-semibold tabular-nums text-ink">{ranks.global ? ranks.global.toLocaleString("en-US") : "—"}</p>
+                          <p className="text-2xl font-semibold tabular-nums text-ink">{ranks.global ? ranks.global.toLocaleString("en-US") : "n/a"}</p>
                         </div>
                         <div className="rounded-lg border border-border p-4">
                           <span className="text-xs text-ink-muted">{dict.traffic.countryRank}</span>
-                          <p className="text-2xl font-semibold tabular-nums text-ink">{ranks.country ? ranks.country.toLocaleString("en-US") : "—"}</p>
+                          <p className="text-2xl font-semibold tabular-nums text-ink">{ranks.country ? ranks.country.toLocaleString("en-US") : "n/a"}</p>
                         </div>
                       </div>
                     ) : null}
@@ -530,9 +575,9 @@ export default async function ToolDetailPage({
                             {keywords.slice(0, 8).map((k) => (
                               <tr key={k.term} className="border-t border-border">
                                 <td className="py-2.5 text-ink">{k.term}</td>
-                                <td className="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">{k.volume ? formatCount(k.volume) : "—"}</td>
-                                <td className="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">{k.cpc ? `$${k.cpc}` : "—"}</td>
-                                <td className="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">{k.traffic ?? "—"}</td>
+                                <td className="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">{k.volume ? formatCount(k.volume) : "n/a"}</td>
+                                <td className="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">{k.cpc ? `$${k.cpc}` : "n/a"}</td>
+                                <td className="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">{k.traffic ?? "n/a"}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -548,7 +593,7 @@ export default async function ToolDetailPage({
                       </div>
                     ) : null}
                     {!keywords.length && !rankDistribution.length && !ranks?.global && !ranks?.country ? (
-                      <Pending text={`${dict.traffic.searchRanks} · ${dict.analysis.pending}`} />
+                      <NoData />
                     ) : null}
                   </div>
                 </SubCard>
@@ -584,7 +629,7 @@ export default async function ToolDetailPage({
                       ))}
                     </>
                   ) : (
-                    <Pending text={`${dict.sections.traffic.title} · ${dict.analysis.pending}`} />
+                    <Pending text={`${dict.sections.traffic.title} · ${dict.analysis.awaitingAI}`} />
                   )}
                 </div>
               </div>
@@ -662,7 +707,7 @@ export default async function ToolDetailPage({
                   ) : null}
                 </div>
               ) : (
-                <div className="mt-4"><Pending text={`${t.monetization} · ${dict.analysis.pending}`} /></div>
+                <div className="mt-4"><Pending text={`${t.monetization} · ${dict.analysis.awaitingAI}`} /></div>
               )}
             </div>
 
@@ -726,7 +771,7 @@ export default async function ToolDetailPage({
                   </div>
                 </div>
               ) : (
-                <div className="mt-4"><Pending text={`${t.growth} · ${dict.analysis.pending}`} /></div>
+                <div className="mt-4"><Pending text={`${t.growth} · ${dict.analysis.awaitingAI}`} /></div>
               )}
             </div>
           </div>
@@ -775,7 +820,7 @@ export default async function ToolDetailPage({
                     ) : null}
                   </div>
                 ) : (
-                  <div className="mt-4"><Pending text={`${t.build} · ${dict.analysis.pending}`} /></div>
+                  <div className="mt-4"><Pending text={`${t.build} · ${dict.analysis.awaitingAI}`} /></div>
                 )}
               </div>
             }
@@ -836,7 +881,7 @@ export default async function ToolDetailPage({
                     ) : null}
                   </div>
                 ) : (
-                  <div className="mt-4"><Pending text={`${dict.evidence.pageAudit} · ${dict.analysis.pending}`} /></div>
+                  <div className="mt-4"><NoData note={dict.evidence.pageAudit} /></div>
                 )}
               </div>
             }
@@ -867,7 +912,7 @@ export default async function ToolDetailPage({
               ))}
             </div>
           ) : (
-            <Pending text={`${t.sparks} · ${dict.analysis.pending}`} />
+            <Pending text={`${t.sparks} · ${dict.analysis.awaitingAI}`} />
           )}
 
           {competitors.length ? (

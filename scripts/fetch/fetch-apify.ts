@@ -82,8 +82,9 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  // 1. 8 指标（vortex 主 → lergassy 备选 → DFS 自然搜索兜底）
-  const metrics = await fetchTrafficMetrics(domain);
+  // 1. vortex 只跑一次：既供 8 指标，也供渠道/国家/排名/关键词/趋势
+  const item = await fetchVortex(domain);
+  const metrics = await fetchTrafficMetrics(domain, item);
   if (!metrics?.monthlyVisits) {
     console.error(`[apify] ${domain} 无有效流量数据`);
     process.exit(1);
@@ -91,8 +92,21 @@ async function main(): Promise<void> {
   console.log("[apify] 8 指标：", JSON.stringify(metrics, null, 2));
   tool.trafficMetrics = metrics;
 
-  // 2. vortex 完整数据：渠道 / 国家 / 排名 / 关键词 / 趋势
-  const item = await fetchVortex(domain);
+  // 核心指标与 vortex 对齐：月访问量 / 自然搜索 / 环比同源，
+  // 避免 enrich-site 写入的 DFS「搜索流量」口径与总访问量混在一张卡上
+  tool.metrics = {
+    ...(tool.metrics ?? {}),
+    monthlyVisits: metrics.monthlyVisits,
+    organicVisits: metrics.organicSearchVisits,
+    organicShare:
+      metrics.monthlyVisits && metrics.organicSearchVisits
+        ? Math.round((metrics.organicSearchVisits / metrics.monthlyVisits) * 1000) / 10
+        : undefined,
+    directVisits: metrics.directVisits,
+    momGrowth: metrics.monthlyVisitsGrowth,
+  };
+
+  // 2. 复用同一份 vortex 结果，不再二次调用 actor
   if (item) {
     // 渠道份额（0-1 → %）
     const channelShares: Partial<Record<ChannelKey, number>> = {};
@@ -127,14 +141,35 @@ async function main(): Promise<void> {
     }
 
     // 流量趋势：统一为最近 6 个自然月（新站无历史月份补 0，真实反映从 0 起步）
+    // vortex 只给每月总访问量，自然搜索按「最新月自然搜索占比」等比推算（无占比时记 0）
+    const organicShare =
+      metrics.monthlyVisits && metrics.organicSearchVisits
+        ? metrics.organicSearchVisits / metrics.monthlyVisits
+        : 0;
     const rawTrend: TrafficTrendPoint[] = (item.monthlyVisits ?? [])
       .map((m) => {
         const date = toMonth(m.month);
-        return date ? { date, total: m.visits ?? 0, organic: 0 } : null;
+        if (!date) return null;
+        const total = m.visits ?? 0;
+        return {
+          date,
+          total,
+          organic: total > 0 && organicShare > 0 ? Math.round(total * organicShare) : 0,
+        };
       })
       .filter((t): t is TrafficTrendPoint => t !== null);
     const trend = last6Months(rawTrend);
     if (trend.length >= 2) tool.trend = trend;
+    else if (metrics.monthlyVisits && metrics.snapshotMonth) {
+      // 主 actor 无分月明细时，至少保留一个真实月份的点，不编造历史
+      tool.trend = [
+        {
+          date: metrics.snapshotMonth,
+          total: metrics.monthlyVisits,
+          organic: metrics.organicSearchVisits ?? 0,
+        },
+      ];
+    }
 
     console.log(
       `[apify] 渠道 ${Object.keys(channelShares).length} 个｜国家 ${tool.geoDistribution?.length ?? 0} 个｜关键词 ${tool.keywords?.length ?? 0} 个｜趋势 ${trend.length} 个月`,

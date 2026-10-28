@@ -1,36 +1,31 @@
-const cols: { label: string; align?: "left" | "center" | "right" }[] = [
-  { label: "排名", align: "left" },
-  { label: "名称", align: "left" },
-  { label: "描述", align: "left" },
-  { label: "流量趋势", align: "center" },
-  { label: "分类", align: "left" },
-  { label: "月访问量", align: "right" },
-  { label: "环比增长", align: "right" },
-  { label: "自然搜索量", align: "right" },
-  { label: "域名权重", align: "right" },
-  { label: "注册时间", align: "right" },
+const cols: string[] = [
+  "#",
+  "名称",
+  "描述",
+  "流量趋势",
+  "分类",
+  "月访问量",
+  "环比增长",
+  "自然搜索量",
+  "域名权重",
+  "注册时间",
 ];
 
-const GRID =
-  "grid-cols-[2.5rem_minmax(0,1.3fr)_minmax(0,1.4fr)_5rem_minmax(0,1fr)_5.5rem_4.5rem_5.5rem_4rem_5.5rem]";
+/**
+ * 列宽：描述列用 1fr 吃掉剩余空间，把右侧 5 个指标列推到最右，
+ * 同时多出来的宽度自动给到「描述」与「流量趋势」。
+ */
+export const TOOL_GRID =
+  "grid-cols-[1.5rem_9.5rem_minmax(0,1fr)_6rem_5.5rem_4.5rem_4.5rem_5rem_4.5rem_5rem]";
 
 export function ToolListHead() {
   return (
     <div
-      className={`grid gap-4 border-b border-border bg-surface/60 px-4 py-2.5 text-xs font-medium text-ink-muted sm:px-5 ${GRID}`}
+      className={`grid gap-3 border-b-2 border-border bg-surface-2 px-4 py-3 text-[13px] font-semibold text-ink-secondary sm:px-5 ${TOOL_GRID}`}
     >
       {cols.map((c, i) => (
-        <span
-          key={i}
-          className={
-            c.align === "right"
-              ? "text-right"
-              : c.align === "center"
-                ? "text-center"
-                : ""
-          }
-        >
-          {c.label}
+        <span key={c} className={`whitespace-nowrap ${i === 2 ? "text-left" : "text-center"}`}>
+          {c}
         </span>
       ))}
     </div>

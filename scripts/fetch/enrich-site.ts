@@ -12,6 +12,7 @@ import type {
   ModuleInsight,
   PerformanceInsight,
   TagGroup,
+  TrafficDecrypt,
 } from "@horizons/shared";
 import "./config"; // 加载 .env.local
 import { config, getProductHuntToken } from "./config";
@@ -23,6 +24,7 @@ import {
   estimateRevenueSignal,
 } from "./sources/site-audit";
 import { detectPricing } from "./sources/pricing";
+import { extractContact } from "./sources/contact";
 import {
   hasDataForSEO,
   fetchKeywords,
@@ -217,6 +219,7 @@ async function main(): Promise<void> {
   let rankDistribution = tool.rankDistribution ?? [];
   let phUpvotes = tool.phUpvotes;
   let phComments = tool.phComments;
+  let pricingPlans = tool.pricing;
 
   if (!analysisOnly) {
   // 1) 自建爬虫：页面结构 + 技术栈 + 收款信号 + 定价线索 + RDAP 注册时间
@@ -245,6 +248,7 @@ async function main(): Promise<void> {
     try {
       const pricing = await detectPricing(tool.url, homeHtml);
       if (pricing?.length) {
+        pricingPlans = pricing;
         siteAudit = { ...(siteAudit ?? {}), pricingClues: pricing.map((p) => p.price) };
       }
     } catch {
@@ -288,14 +292,23 @@ async function main(): Promise<void> {
         return Math.round(((lastTotal - prev) / prev) * 1000) / 10;
       })();
 
+      // 权重口径：已有 Ahrefs DR（0~100）优先保留，避免被 DFS rank（0~1000）覆盖造成口径漂移
+      const prevWeight = tool.metrics?.domainWeight;
+      const keepDR = tool.metrics?.domainWeightLabel === "DR" && prevWeight !== undefined;
+      // rank=0 视为「未采到等级」；0 本身是 DR 的有效值，不在此清空
+      const dfsWeight = bk && bk.domainWeight > 0 ? bk.domainWeight : undefined;
       metrics = {
         monthlyVisits: total,
         organicVisits: organic,
         momGrowth,
-        domainWeight: bk?.domainWeight,
+        domainWeight: keepDR ? prevWeight : dfsWeight,
+        domainWeightLabel: keepDR ? "DR" : dfsWeight !== undefined ? "权重" : undefined,
         registeredAt, // 优先 RDAP
       };
-      trend = hist;
+      // 趋势优先级：vortex（总访问量，本站已有 ≥2 个月）> DFS 搜索流量历史。
+      // DFS 在无搜索流量时会给全 0 月份，也不能用来覆盖真实趋势。
+      const hasVortexTrend = !!tool.trafficMetrics && (tool.trend?.length ?? 0) >= 2;
+      if (!hasVortexTrend && hist.some((p) => p.total > 0)) trend = hist;
       keywords = kw;
       geo = g;
       keywordCount = histResult.keywordCount;
@@ -437,6 +450,7 @@ async function main(): Promise<void> {
     aiInsight?: AiInsight;
     observations?: Observations;
     moduleInsights?: ModuleInsight;
+    trafficDecrypt?: TrafficDecrypt;
   }>(SYSTEM_INSIGHT, buildInput(tool, inputData), 6000);
   if (insight.aiInsight) {
     tool.aiInsight = {
@@ -446,6 +460,7 @@ async function main(): Promise<void> {
   }
   if (insight.moduleInsights) tool.moduleInsights = insight.moduleInsights;
   if (insight.observations) tool.observations = insight.observations;
+  if (insight.trafficDecrypt) tool.trafficDecrypt = insight.trafficDecrypt;
   await sleep(300);
   console.log("[enrich-site] LLM#2 解读完成");
 
@@ -495,7 +510,9 @@ async function main(): Promise<void> {
     return;
   }
 
-  tool.metrics = metrics;
+  // 月访问量口径：vortex（总访问量）优先，DFS 只补两者都缺的字段。
+  // 若直接写 metrics，会把「总访问量」覆盖成「搜索流量」，页面卡片口径就变了。
+  tool.metrics = tm ? { ...metrics, ...metricsForLLM } : metrics;
   tool.trend = trend;
   tool.keywords = keywords;
   tool.geoDistribution = geo;
@@ -506,14 +523,22 @@ async function main(): Promise<void> {
   tool.rankDistribution = rankDistribution;
   tool.pageStructure = pageStructure;
   tool.siteAudit = siteAudit;
+  // 技术栈 / 定价 / 联系方式与 siteAudit 同源（同一次首页抓取），在这里一并写回，
+  // 免得为了这三个字段再跑一遍 enrich.ts（重复抓首页 + 重复检测）
+  if (siteAudit?.techStack?.length) tool.techStack = siteAudit.techStack;
+  if (pricingPlans?.length) tool.pricing = pricingPlans;
+  if (!tool.contact && homeHtml) {
+    const c = extractContact(homeHtml, tool.url);
+    if (c) tool.contact = c;
+  }
   tool.phUpvotes = phUpvotes;
   tool.phComments = phComments;
   // 真实竞品优先于 LLM 猜的竞品
   if (competitors.length) {
     tool.observations = { ...(tool.observations ?? {}), competitors };
   }
-  // DFS 无法提供渠道占比（全渠道）：清空，不采集不展示
-  tool.channelShares = undefined;
+  // 渠道占比只有 vortex 能给：已跑过 apify 的站要保留，否则先 apify 后 enrich 会把渠道清空
+  if (!tool.trafficMetrics) tool.channelShares = undefined;
   tool.dataSnapshot = {
     period: lastPeriod(),
     syncedAt: new Date().toISOString().replace("T", " ").slice(0, 19),

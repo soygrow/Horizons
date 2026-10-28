@@ -144,10 +144,13 @@ export function extractTrafficMetrics(item: SimilarwebRawItem): TrafficMetrics {
   const visits = item.monthlyVisits ?? 0;
   const shareOf = (source: string): number | null | undefined =>
     item.trafficSources?.find((t) => t.source === source)?.share;
+  // 该 actor 只给变化率、无分月明细：0 无法区分「真零增长」与「上月无数据」，
+  // 按用户规则一律视为无数据（页面显示 n/a），避免把无基数写成 0%
+  const change = item.monthlyVisitsChange;
 
   return {
     monthlyVisits: visits > 0 ? visits : undefined,
-    monthlyVisitsGrowth: normalizeGrowth(item.monthlyVisitsChange),
+    monthlyVisitsGrowth: change === 0 ? undefined : normalizeGrowth(change),
     organicSearchVisits: shareToVisits(visits, shareOf("organic")),
     directVisits: shareToVisits(visits, shareOf("direct")),
     referralVisits: shareToVisits(visits, shareOf("referrals")),
@@ -342,11 +345,15 @@ export async function fetchDomainRating(domain: string): Promise<number | null> 
  * 主入口：vortex（字段最全）→ lergassy 备选 → DataForSEO 自然搜索兜底。
  * 自然搜索份额 Apify 拿不到时，用 DataForSEO domain_rank_overview 的 organic.etv 补齐。
  */
-export async function fetchTrafficMetrics(domain: string): Promise<TrafficMetrics | null> {
+export async function fetchTrafficMetrics(
+  domain: string,
+  /** 调用方已拿到的 vortex 结果，传 undefined 才会真正发起 actor 调用（避免同一域名跑两次） */
+  preloaded?: VortexItem | null,
+): Promise<TrafficMetrics | null> {
   let m: TrafficMetrics | null = null;
 
   // 1. 主 Actor：vortex_data（完整渠道份额）
-  const v = await fetchVortex(domain);
+  const v = preloaded !== undefined ? preloaded : await fetchVortex(domain);
   if (v) m = extractVortex(v);
 
   // 2. 备选：lergassy（若 vortex 无有效月访问量）

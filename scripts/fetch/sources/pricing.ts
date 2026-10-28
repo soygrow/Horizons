@@ -35,8 +35,16 @@ async function tryFetchText(url: string): Promise<string | null> {
 }
 
 function extractPrices(html: string): string[] {
+  // 先剥掉 script/style/注释：Next.js RSC payload 里的 "$20" 是 chunk 引用符，
+  // 直接正则会把它当成 20 美元，污染定价判断
+  const visible = html
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, " ");
+
   const seen = new Set<string>();
-  for (const m of html.matchAll(PRICE_RE)) {
+  for (const m of visible.matchAll(PRICE_RE)) {
     const symbol = m[1] === "US$" ? "$" : m[1];
     const amount = parseFloat(m[2]);
     // 过滤明显噪音：$1/$2 等多是「from $1」「per 1k credits」等非定价表述

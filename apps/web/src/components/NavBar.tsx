@@ -4,18 +4,13 @@ import { ThemeToggle } from "./ThemeToggle";
 
 const channels: { label: string; href: string; soon?: boolean }[] = [
   { label: "AI工具榜", href: "/tools" },
-  { label: "AI好公司", href: "#", soon: true },
-  { label: "AI行业报告", href: "#", soon: true },
-  { label: "AI出海周刊", href: "#", soon: true },
-  { label: "AI编程热榜", href: "#", soon: true },
-  { label: "Changelog", href: "#", soon: true },
-  { label: "Support", href: "#", soon: true },
+  { label: "GitHub榜", href: "/github" },
 ];
 
 export function NavBar() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-canvas/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-sm font-bold text-white">

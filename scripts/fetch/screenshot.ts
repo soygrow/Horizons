@@ -53,22 +53,41 @@ async function getBrowser(): Promise<Browser> {
   }
 }
 
+/** --domain a.com,b.com 只处理指定域名（逗号分隔） */
+function parseDomains(): string[] {
+  const i = process.argv.indexOf("--domain");
+  if (i < 0 || !process.argv[i + 1]) return [];
+  return process.argv[i + 1].toLowerCase().split(",").map((d) => d.trim()).filter(Boolean);
+}
+
 async function main(): Promise<void> {
   fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
   const tools = loadTools();
   const limit = parseLimit();
+  const only = parseDomains();
   const browser = await getBrowser();
 
   let done = 0;
   let captured = 0;
+  let restored = 0;
   try {
     for (const t of tools) {
+      if (only.length && !only.includes(t.domain)) continue;
       if (limit > 0 && done >= limit) break;
       done++;
 
-      const missing = VIEWPORTS.filter(
-        (vp) => !fs.existsSync(path.join(SCREENSHOT_DIR, `${t.domain}${vp.suffix}.png`)),
-      );
+      const missing = VIEWPORTS.filter((vp) => {
+        const file = path.join(SCREENSHOT_DIR, `${t.domain}${vp.suffix}.png`);
+        if (fs.existsSync(file)) {
+          // 图片已存在但字段丢失：仅补写字段，不重复截图
+          if (!t[vp.field]) {
+            t[vp.field] = `/screenshots/${t.domain}${vp.suffix}.png`;
+            restored++;
+          }
+          return false;
+        }
+        return true;
+      });
       if (missing.length === 0) continue; // 桌面 + 移动都已有，跳过
 
       try {
@@ -97,7 +116,7 @@ async function main(): Promise<void> {
   }
 
   saveTools(tools);
-  console.log(`[shot] 完成：处理 ${done} 个，新截图 ${captured} 张`);
+  console.log(`[shot] 完成：处理 ${done} 个，新截图 ${captured} 张，补写字段 ${restored} 个`);
 }
 
 main().catch((e) => {

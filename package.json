@@ -12,6 +12,7 @@
     "deploy:api": "pnpm --filter @horizons/api deploy",
     "fetch": "tsx scripts/fetch/index.ts",
     "fetch:dry": "tsx scripts/fetch/index.ts --dry",
+    "refresh": "tsx scripts/fetch/refresh.ts",
     "enrich": "tsx scripts/fetch/enrich.ts",
     "enrich:dry": "tsx scripts/fetch/enrich.ts --dry",
     "dataforseo": "tsx scripts/fetch/dataforseo.ts",
@@ -20,6 +21,7 @@
     "ph:oauth": "tsx scripts/fetch/ph-oauth.ts"
   },
   "devDependencies": {
+    "@horizons/shared": "workspace:*",
     "playwright": "^1.64.1",
     "tldts": "^7.4.19",
     "tsx": "^4.23.15",

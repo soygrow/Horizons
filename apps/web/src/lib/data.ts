@@ -1,7 +1,11 @@
-import type { AITool, PricingModel } from "@horizons/shared";
+import { compareByScore, computeProductScore } from "@horizons/shared";
+import type { AITool, PricingModel, GitHubRepo, ProductScore } from "@horizons/shared";
 import toolsData from "@content/aitools.json";
+import githubData from "@content/github.json";
 
 export const tools = toolsData as AITool[];
+const gh = githubData as unknown as { updatedAt: string; repos: GitHubRepo[] };
+export const githubRepos = gh.repos ?? [];
 
 export const allCategories = [
   "AI Chat",
@@ -120,6 +124,57 @@ export function getLaunchedAt(tool: AITool): string | undefined {
   return tool.launchedAt ?? tool.metrics?.registeredAt;
 }
 
+/** 分类中文名（当前仅中文页面使用，英文页面后续补齐） */
+export const categoryLabels: Record<string, string> = {
+  "AI Chat": "AI 对话",
+  Automation: "自动化",
+  Coding: "编程开发",
+  "Data & Analytics": "数据与分析",
+  "Image Gen": "图像生成",
+  Marketing: "营销",
+  Other: "其他",
+  Productivity: "效率",
+  Video: "视频",
+  "Voice & Audio": "语音与音频",
+  Writing: "写作",
+  Agent: "智能体",
+  Inference: "模型推理",
+  RAG: "知识库检索",
+};
+
+/** 旧数据里的无信息量占位语，读到后忽略 */
+const LEGACY_TAGLINE = /能收钱的小产品/;
+
+/**
+ * 项目简介：优先真实中文定位（精编 / 大模型生成），
+ * 没有就回落到 GitHub 上的原始项目简介，保证每条都不一样。
+ */
+export function repoIntro(r: GitHubRepo): string {
+  const tagline = r.insight?.taglineZh?.trim();
+  if (tagline && !LEGACY_TAGLINE.test(tagline)) return tagline;
+  const desc = r.description?.trim();
+  if (desc) return desc;
+  return `${categoryLabel(r.categories[0] ?? "Other")} 方向的开源项目`;
+}
+
+/** 上手难度（情报优先，默认中） */
+export function repoDifficulty(r: GitHubRepo): "低" | "中" | "高" {
+  return r.insight?.difficulty ?? "中";
+}
+
+export function categoryLabel(cat: string): string {
+  return categoryLabels[cat] ?? cat;
+}
+
+/** 自然搜索占比 %：metrics.organicShare 优先，否则由自然搜索量 / 月访问量推算 */
+export function getOrganicShare(tool: AITool): number | undefined {
+  if (tool.metrics?.organicShare !== undefined) return tool.metrics?.organicShare;
+  const o = getOrganicVisits(tool);
+  const v = getMonthlyVisits(tool);
+  if (o !== undefined && v && v > 0) return (o / v) * 100;
+  return undefined;
+}
+
 /** 分页 */
 export function paginate<T>(list: T[], page: number, pageSize: number): T[] {
   return list.slice((page - 1) * pageSize, page * pageSize);
@@ -141,4 +196,102 @@ export function getBoards() {
       }))
       .filter((b) => b.items.length > 0),
   };
+}
+
+/* ------------------------------- GitHub 榜单 ------------------------------- */
+
+export const allGithubCategories = [
+  "AI Chat",
+  "Image Gen",
+  "Video",
+  "Voice & Audio",
+  "Writing",
+  "Coding",
+  "Automation",
+  "Marketing",
+  "Productivity",
+  "Data & Analytics",
+  "Agent",
+  "Inference",
+  "RAG",
+  "Other",
+] as const;
+
+export function getRepoByFullName(fullName: string): GitHubRepo | undefined {
+  return githubRepos.find((r) => r.fullName === fullName);
+}
+
+/** 综合得分：优先用采集时算好的，缺失时前端兜底计算（保证榜单永远有分） */
+export function repoScore(r: GitHubRepo): ProductScore {
+  return r.productScore ?? computeProductScore(r);
+}
+
+/** 得分等级配色 */
+export const scoreGradeTone: Record<ProductScore["grade"], string> = {
+  S: "border-emerald-500/40 bg-emerald-500/10 text-emerald-500",
+  A: "border-primary/40 bg-primary/10 text-primary",
+  B: "border-amber-500/40 bg-amber-500/10 text-amber-500",
+  C: "border-border bg-surface-2 text-ink-muted",
+};
+
+/** 榜单默认顺序：综合得分降序 */
+export function getReposByScore(): GitHubRepo[] {
+  return [...githubRepos].sort(compareByScore);
+}
+
+/** 最近更新距今多少天 */
+export function repoUpdatedDays(r: GitHubRepo): number | null {
+  if (!r.pushedAt) return null;
+  const t = Date.parse(r.pushedAt);
+  if (Number.isNaN(t)) return null;
+  return Math.max(0, Math.round((Date.now() - t) / 86_400_000));
+}
+
+export function getGithubLanguages(): string[] {
+  const set = new Set<string>();
+  githubRepos.forEach((r) => r.language && set.add(r.language));
+  return [...set].sort();
+}
+
+/** 近 N 天 Star 增量 %；历史不足返回 null */
+export function computeStarGrowth(repo: GitHubRepo, days: number): number | null {
+  const h = [...(repo.history ?? [])].sort((a, b) => a.date.localeCompare(b.date));
+  if (h.length < 2) return null;
+  const last = h[h.length - 1];
+  const target =
+    h.find((p) => (Date.parse(last.date) - Date.parse(p.date)) / 86_400_000 >= days - 1) ??
+    h[0];
+  const prev = target.stars;
+  if (prev <= 0) return null;
+  return Math.round(((last.stars - prev) / prev) * 1000) / 10;
+}
+
+/** Star 趋势 sparkline 点（0-1 归一化），取最近 maxPoints 天 */
+export function starSparklinePoints(repo: GitHubRepo, maxPoints = 30): number[] | null {
+  const h = [...(repo.history ?? [])]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-maxPoints);
+  if (h.length < 2) return null;
+  const vals = h.map((p) => p.stars);
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+  const range = max - min || 1;
+  return vals.map((v) => (v - min) / range);
+}
+
+/** 是否宽松许可证（可商用） */
+const PERMISSIVE = new Set([
+  "MIT",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "Unlicense",
+  "MPL-2.0",
+  "ISC",
+  "0BSD",
+  "MIT-0",
+]);
+export function isPermissiveLicense(repo: GitHubRepo): boolean {
+  const spdx = repo.license?.spdx;
+  return !!spdx && PERMISSIVE.has(spdx);
 }

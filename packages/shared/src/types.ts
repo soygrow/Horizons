@@ -406,3 +406,119 @@ export interface SessionUser {
   name: string | null;
   avatarUrl: string | null;
 }
+
+/** GitHub 榜单：每日一手数值快照（日维度采集，体现项目快速变化） */
+export interface GitHubSnapshot {
+  date: string; // YYYY-MM-DD
+  stars: number;
+  forks: number;
+  openIssues: number;
+}
+
+/** 面向创业者/独立开发者的一个可落地产品方向 */
+export interface BuildIdea {
+  title: string; // 产品方向名
+  audience: string; // 目标用户
+  product: string; // 具体做什么
+  monetization: string; // 怎么赚钱
+  effort: string; // 工作量（人力/周期）
+  stackHint?: string; // 技术要点
+}
+
+/** 路径阶段：验证 → 起步 → 变现 → 增长 */
+export type BuildPhase = "验证" | "起步" | "变现" | "增长";
+
+/** 落地步骤 */
+export interface BuildStep {
+  step: string;
+  detail: string;
+  phase?: BuildPhase; // 所属阶段
+  output?: string; // 该步产出物
+  duration?: string; // 预计耗时（如 2-3 天）
+}
+
+/** 预期效果（可量化） */
+export interface ExpectedEffect {
+  metric: string;
+  value: string;
+}
+
+/** 中文创业情报（DeepSeek 生成；面向想动手做产品的人） */
+export interface GitHubInsight {
+  taglineZh: string; // 一句话中文定位
+  whatZh: string; // 它是什么、核心能力（中文，替代英文原文）
+  capabilities: string[]; // 核心能力标签
+  buildIdeas: BuildIdea[]; // 能做出什么产品（3-4 个）
+  buildSteps: BuildStep[]; // 怎么做（分步骤）
+  effects: ExpectedEffect[]; // 能有什么效果
+  moat: string; // 护城河 / 差异化
+  risks: string[]; // 风险
+  techNotes: string; // 技术要点 / 集成方式
+  difficulty: "低" | "中" | "高"; // 上手难度
+  timeToMvp: string; // 做出 MVP 的周期
+  costToMvp: string; // MVP 阶段月成本
+  competitors?: string[]; // 竞品 / 参考
+  differentiators?: string[]; // 差异化切入点
+}
+
+/** 综合得分构成项（用于详情页说明「分是怎么来的」） */
+export interface ScorePart {
+  key: "heat" | "growth" | "dev" | "commercial" | "active" | "effort";
+  label: string; // 中文名，如「热度」
+  weight: number; // 权重（满分 100 中的占比）
+  value: number; // 该项归一值 0-100
+  points: number; // 加权后实际得分
+  note: string; // 该项的判定依据
+}
+
+/** 综合得分：用这个项目做出一款「有收益产品」的可能性（0-100） */
+export interface ProductScore {
+  score: number; // 综合分 0-100
+  grade: "S" | "A" | "B" | "C"; // 等级
+  summary: string; // 一句话结论
+  parts: ScorePart[]; // 6 项构成
+  model: string; // 模型版本
+  computedAt: string; // 计算时间
+}
+
+/** GitHub 榜单仓库条目：零付费流量接口，全部来自 GitHub 官方 API + 解读 */
+export interface GitHubRepo {
+  fullName: string; // owner/repo（主键）
+  owner: string;
+  repo: string;
+  name: string;
+  description?: string;
+  htmlUrl: string;
+  homepage?: string;
+  avatarUrl?: string;
+  language?: string;
+  languages?: Record<string, number>; // 语言占比
+  topics?: string[];
+  license?: { spdx?: string; name?: string };
+  createdAt?: string;
+  pushedAt?: string;
+  stars: number;
+  forks: number;
+  openIssues: number;
+  watchers?: number;
+  contributorsCount?: number;
+  commitActivity?: number[]; // 近 52 周每周提交数
+  readme?: string;
+  readmeSummary?: string;
+  categories: string[]; // 用途分类（mapCategories 规则）
+  heatScore: number; // 热度分 0-100
+  // 解读（LLM 生成或本地启发式；本期本地生成，后续 LLM 增强）
+  what?: string;
+  useCases?: { title: string; how: string }[];
+  risks?: string;
+  focusOpportunity?: string;
+  buildBlueprint?: BuildBlueprint;
+  ideaSparks?: IdeaSpark[];
+  // 中文创业情报（LLM 生成，面向想动手做产品的人）
+  insight?: GitHubInsight;
+  // 综合得分（做产品的收益可能性，用于榜单排序与详情页展示）
+  productScore?: ProductScore;
+  // 日维度采集历史
+  history: GitHubSnapshot[];
+  lastCrawledAt: string;
+}
