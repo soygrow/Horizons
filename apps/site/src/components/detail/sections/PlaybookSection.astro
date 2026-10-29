@@ -1,0 +1,152 @@
+---
+/** 05 怎么复制：建站蓝图 + 页面审计 */
+import SectionHeader from "../SectionHeader.astro";
+import Split from "../Split.astro";
+import Badge from "../Badge.astro";
+import NoData from "../NoData.astro";
+import Pending from "../Pending.astro";
+import { getDict } from "../../../../../web/src/lib/i18n";
+
+interface Props {
+  tool: Record<string, any>;
+}
+
+const dict = getDict("zh");
+const t = dict.opportunity;
+const { tool } = Astro.props;
+const bb = tool.buildBlueprint;
+const audit = tool.siteAudit;
+const ps = tool.pageStructure;
+---
+
+<section id="playbook" class="flex scroll-mt-36 flex-col gap-10">
+  <SectionHeader
+    no={dict.sections.playbook.no}
+    title={dict.sections.playbook.title}
+    desc={dict.sections.playbook.desc}
+  />
+  <Split>
+    <div slot="left" class="rounded-2xl border border-border bg-surface p-6">
+      <h3 class="text-base font-semibold text-ink">{t.build}</h3>
+      {
+        bb ? (
+          <div class="mt-4 flex flex-col gap-4">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <span class="text-xs text-ink-muted">{t.devTime}</span>
+                <p class="text-sm font-medium text-ink">{bb.devTime}</p>
+              </div>
+              <div>
+                <span class="text-xs text-ink-muted">{t.monthlyCost}</span>
+                <p class="text-sm font-medium text-ink">{bb.monthlyCost}</p>
+              </div>
+            </div>
+            {bb.techStack?.length ? (
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs text-ink-muted">{t.techStack}</span>
+                {bb.techStack.map((s: string) => (
+                  <Badge>{s}</Badge>
+                ))}
+              </div>
+            ) : null}
+            {bb.thirdParty?.length ? (
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs text-ink-muted">{t.thirdParty}</span>
+                {bb.thirdParty.map((s: string) => (
+                  <Badge>{s}</Badge>
+                ))}
+              </div>
+            ) : null}
+            {bb.mvpScope ? (
+              <div>
+                <span class="text-xs text-ink-muted">{t.mvpScope}</span>
+                <p class="mt-1 text-sm leading-relaxed text-ink-secondary">{bb.mvpScope}</p>
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <div class="mt-4">
+            <Pending text={`${t.build} · ${dict.analysis.awaitingAI}`} />
+          </div>
+        )
+      }
+    </div>
+
+    <div slot="right" class="rounded-2xl border border-border bg-surface p-6">
+      <h3 class="text-base font-semibold text-ink">{dict.evidence.pageAudit}</h3>
+      {
+        audit ? (
+          <div class="mt-4 flex flex-col gap-4">
+            <div class="flex flex-wrap gap-2">
+              {audit.techStack?.map((s: string) => <Badge>{s}</Badge>)}
+              {audit.analytics?.map((s: string) => <Badge>{s}</Badge>)}
+            </div>
+            {ps ? (
+              <details class="group rounded-lg border border-border">
+                <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-medium text-ink">
+                  {dict.monetization.pageDetail}
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    class="transition group-open:rotate-180"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </summary>
+                <div class="border-t border-border p-4">
+                  <dl class="grid gap-3 md:grid-cols-2">
+                    {audit.wordCount !== undefined ? (
+                      <div>
+                        <dt class="text-xs text-ink-muted">{dict.monetization.wordCount}</dt>
+                        <dd class="text-sm tabular-nums text-ink">{audit.wordCount}</dd>
+                      </div>
+                    ) : null}
+                    {audit.pageLang ? (
+                      <div>
+                        <dt class="text-xs text-ink-muted">{dict.monetization.pageLang}</dt>
+                        <dd class="text-sm text-ink">{audit.pageLang}</dd>
+                      </div>
+                    ) : null}
+                    {audit.internalLinks !== undefined ? (
+                      <div>
+                        <dt class="text-xs text-ink-muted">{dict.monetization.internalLinks}</dt>
+                        <dd class="text-sm tabular-nums text-ink">{audit.internalLinks}</dd>
+                      </div>
+                    ) : null}
+                    {audit.outboundLinks !== undefined ? (
+                      <div>
+                        <dt class="text-xs text-ink-muted">{dict.monetization.outboundLinks}</dt>
+                        <dd class="text-sm tabular-nums text-ink">{audit.outboundLinks}</dd>
+                      </div>
+                    ) : null}
+                    {audit.structuredData?.length ? (
+                      <div class="md:col-span-2">
+                        <dt class="text-xs text-ink-muted">{dict.monetization.structuredData}</dt>
+                        <dd class="mt-1 flex flex-wrap gap-2">
+                          {audit.structuredData.map((s: string) => (
+                            <Badge>{s}</Badge>
+                          ))}
+                        </dd>
+                      </div>
+                    ) : null}
+                  </dl>
+                </div>
+              </details>
+            ) : null}
+          </div>
+        ) : (
+          <div class="mt-4">
+            <NoData note={dict.evidence.pageAudit} />
+          </div>
+        )
+      }
+    </div>
+  </Split>
+</section>

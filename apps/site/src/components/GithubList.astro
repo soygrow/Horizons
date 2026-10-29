@@ -1,0 +1,136 @@
+---
+import SearchInput from "./SearchInput.astro";
+import FilterGroup from "./FilterGroup.astro";
+import RepoListHead from "./RepoListHead.astro";
+import Pagination from "./Pagination.astro";
+import { fillRank } from "../lib/row-html";
+import { categoryLabel } from "../lib/labels";
+import { repoRows, repoFilters } from "../lib/dataset";
+import type { RepoRow } from "../lib/types";
+
+interface Props {
+  rows: RepoRow[];
+  page: number;
+  totalItems: number;
+  totalPages: number;
+  pageSize?: number;
+}
+
+const { rows, page, totalItems, totalPages, pageSize = 20 } = Astro.props;
+
+const total = repoRows.length;
+const topCount = repoRows.filter((r) => r.grade === "S" || r.grade === "A").length;
+const permissiveCount = repoRows.filter((r) => r.permissive).length;
+const easyCount = repoRows.filter((r) => r.diff === "低").length;
+const avgScore = repoRows.reduce((s, r) => s + r.score, 0) / (total || 1);
+
+const catOptions = [
+  { value: "All", label: "全部" },
+  ...repoFilters.categories.map((c) => ({ value: c.value, label: categoryLabel(c.value) })),
+];
+const langOptions = [
+  { value: "All", label: "全部" },
+  ...repoFilters.languages.map((l) => ({ value: l.value, label: l.value })),
+];
+const diffOptions = [
+  { value: "All", label: "全部" },
+  { value: "低", label: "低" },
+  { value: "中", label: "中" },
+  { value: "高", label: "高" },
+];
+const licenseOptions = [
+  { value: "All", label: "全部" },
+  { value: "yes", label: "可商用" },
+  { value: "no", label: "需确认" },
+];
+
+const sorts = [
+  { value: "score", label: "按综合得分" },
+  { value: "stars", label: "按星标" },
+  { value: "7d", label: "近 7 天增速" },
+  { value: "30d", label: "近 30 天增速" },
+];
+---
+
+<header>
+  <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">GitHub 榜</h1>
+  <p class="mt-2 text-sm text-ink-secondary">
+    给想做产品却没想法的人：这些开源项目能被做成什么、怎么做、能带来什么效果。
+  </p>
+  <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+    <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-secondary">
+      共 {total} 个可开发项目
+    </span>
+    <span class="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-emerald-500">
+      S/A 级 {topCount} 个
+    </span>
+    <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-secondary">
+      可商用 {permissiveCount} 个
+    </span>
+    <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-secondary">
+      低难度 {easyCount} 个
+    </span>
+    <span class="rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-primary">
+      平均综合得分 {avgScore.toFixed(1)}
+    </span>
+  </div>
+  <p class="mt-3 text-xs leading-relaxed text-ink-muted">
+    综合得分 = 热度 15 + 增长 15 + 可开发性 20 + 商业化 30 + 活跃度 10 + 落地门槛 10，衡量「用它做出一款有收益产品的可能性」。无官网项目同样收录，仅在商业化项少计分。
+  </p>
+  <div class="mt-5">
+    <SearchInput placeholder="搜索项目 / 描述 / owner" />
+  </div>
+</header>
+
+<div class="mt-6 space-y-3">
+  <FilterGroup title="用途" param="cat" options={catOptions} current="All" />
+  <FilterGroup title="语言" param="lang" options={langOptions} current="All" />
+  <FilterGroup title="上手难度" param="diff" options={diffOptions} current="All" />
+  <FilterGroup title="可商用" param="license" options={licenseOptions} current="All" />
+</div>
+
+<div class="mt-6 flex items-center justify-between">
+  <span class="text-sm text-ink-muted" id="list-meta">
+    显示 {rows.length} 项，共 {totalItems} 项 / {totalPages} 页
+  </span>
+  <div class="flex items-center gap-1" id="list-sorts">
+    {sorts.map((s) => (
+      <a
+        href="#"
+        data-sort={s.value}
+        class:list={[
+          "rounded-full px-3 py-1 text-xs font-medium transition",
+          s.value === "score"
+            ? "bg-primary text-white"
+            : "border border-border bg-surface text-ink-secondary hover:text-ink",
+        ]}
+      >
+        {s.label}
+      </a>
+    ))}
+  </div>
+</div>
+
+<div class="mt-4 overflow-x-auto rounded-2xl border border-border bg-surface">
+  <div class="min-w-[1200px]">
+    <RepoListHead />
+    <div id="list-rows">
+      {rows.map((r, i) => <Fragment set:html={fillRank(r.h, (page - 1) * pageSize + i + 1)} />)}
+    </div>
+    <div id="list-empty" class="hidden px-4 py-16 text-center">
+      <p class="text-sm text-ink-muted">没有符合条件的项目</p>
+    </div>
+  </div>
+</div>
+
+<div class="mt-6" id="list-pager" data-base-path="/github" data-page-size={pageSize}>
+  {
+    totalPages > 1 && (
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        buildHref={(p) => (p === 1 ? "/github" : `/github/page/${p}`)}
+      />
+    )
+  }
+</div>

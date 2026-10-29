@@ -1,0 +1,59 @@
+---
+/**
+ * 工具图标：DuckDuckGo favicon，失败时降级为域名哈希配色的首字母方块。
+ * 现有实现用 React state 处理 onError；这里用内联 onerror 直接切换，避免运行时框架。
+ */
+interface Props {
+  domain: string;
+  name: string;
+  size?: "md" | "lg";
+}
+
+const { domain, name, size = "md" } = Astro.props;
+
+const palette = [
+  "bg-indigo-500/20 text-indigo-300",
+  "bg-violet-500/20 text-violet-300",
+  "bg-sky-500/20 text-sky-300",
+  "bg-emerald-500/20 text-emerald-300",
+  "bg-rose-500/20 text-rose-300",
+  "bg-amber-500/20 text-amber-300",
+];
+
+function hash(str: string): number {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+const cls = size === "lg" ? "h-14 w-14 text-xl" : "h-10 w-10 text-base";
+const px = size === "lg" ? 56 : 40;
+const initial = (name || domain).charAt(0).toUpperCase();
+const color = palette[hash(domain) % palette.length];
+const iconId = `ico-${domain.replace(/[^a-z0-9]/gi, "")}`;
+---
+
+<span class="relative inline-flex shrink-0">
+  <img
+    id={iconId}
+    src={`https://icons.duckduckgo.com/ip3/${domain}.ico`}
+    alt={`${name} icon`}
+    width={px}
+    height={px}
+    loading="lazy"
+    decoding="async"
+    class:list={[cls, "shrink-0 rounded-xl border border-border bg-surface object-contain p-1"]}
+    onerror={`this.style.display='none';var f=document.getElementById('${iconId}-fb');if(f)f.style.display='flex';`}
+  />
+  <span
+    id={`${iconId}-fb`}
+    style="display:none"
+    class:list={[
+      cls,
+      "shrink-0 items-center justify-center rounded-xl font-semibold",
+      color,
+    ]}
+  >
+    {initial}
+  </span>
+</span>

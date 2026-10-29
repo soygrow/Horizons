@@ -1,0 +1,153 @@
+---
+/** 详情页 Hero + sticky 锚点导航 */
+import Badge from "./Badge.astro";
+import { getDict } from "../../../../web/src/lib/i18n";
+
+interface Props {
+  tool: Record<string, any>;
+  markdown: string;
+}
+
+const dict = getDict("zh");
+const { tool, markdown } = Astro.props;
+
+const heroShots = [
+  tool.screenshotDesktopUrl ? { src: tool.screenshotDesktopUrl, caption: dict.hero.desktop } : null,
+  tool.screenshotMobileUrl ? { src: tool.screenshotMobileUrl, caption: dict.hero.mobile } : null,
+].filter((s): s is { src: string; caption: string } => s !== null);
+
+const NAV: [string, string][] = [
+  ["#performance", dict.anchorNav.performance],
+  ["#opportunity", dict.anchorNav.opportunity],
+  ["#traffic", dict.anchorNav.traffic],
+  ["#business", dict.anchorNav.business],
+  ["#playbook", dict.anchorNav.playbook],
+  ["#ideas", dict.anchorNav.ideas],
+];
+---
+
+<section class="border-b border-border bg-frost py-8 md:py-12">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6">
+    <header class="flex flex-col-reverse gap-8 lg:flex-row lg:items-center lg:gap-14">
+      <div class="flex min-w-0 flex-1 flex-col gap-6">
+        <div class="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-3">
+          <h1 class="max-w-full truncate text-3xl font-semibold text-ink">{tool.domain}</h1>
+          <a
+            href={tool.url}
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            class="inline-flex h-9 shrink-0 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-white transition hover:bg-primary-hover"
+          >
+            {dict.hero.visitSite}
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M15 3h6v6"></path>
+              <path d="M10 14 21 3"></path>
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            </svg>
+          </a>
+          <button
+            type="button"
+            data-fav={tool.domain}
+            class="inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-border bg-surface px-4 text-sm font-medium text-ink-secondary transition hover:border-primary/40 hover:text-ink"
+          >
+            收藏
+          </button>
+          <button
+            type="button"
+            data-copy-markdown={markdown}
+            class="inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-border bg-surface px-4 text-sm font-medium text-ink-secondary transition hover:border-primary/40 hover:text-ink"
+          >
+            复制数据
+          </button>
+        </div>
+
+        <p class="max-w-2xl text-lg leading-relaxed text-ink-secondary">{tool.description}</p>
+
+        <div class="flex flex-col gap-3">
+          {
+            tool.featureTags?.length ? (
+              <div class="flex flex-wrap items-center gap-2.5">
+                {tool.featureTags.map((tag: string) => (
+                  <Badge>{tag}</Badge>
+                ))}
+              </div>
+            ) : null
+          }
+          {
+            tool.categoryTags?.length ? (
+              <div class="flex flex-wrap items-center gap-2">
+                {tool.categoryTags.map((tag: string) => (
+                  <Badge>{tag}</Badge>
+                ))}
+              </div>
+            ) : null
+          }
+        </div>
+      </div>
+
+      {
+        heroShots.length > 0 ? (
+          <div class="w-full shrink-0 lg:w-[520px]">
+            <div class="flex items-start gap-3">
+              {heroShots.map((s, i) => (
+                <figure class="flex min-w-0 flex-col gap-2" style={`width: ${i === 0 ? "72%" : "28%"}`}>
+                  <button
+                    type="button"
+                    data-lightbox={s.src}
+                    class="group relative block overflow-hidden rounded-xl border border-border bg-surface-2"
+                    aria-label={`查看${s.caption}大图`}
+                  >
+                    <img
+                      src={s.src}
+                      alt={s.caption}
+                      class="h-auto w-full object-cover transition group-hover:opacity-95"
+                      loading="lazy"
+                    />
+                  </button>
+                  <figcaption class="text-center text-xs text-ink-muted">{s.caption}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div class="hidden aspect-[16/10] w-full shrink-0 items-center justify-center rounded-xl border border-dashed border-border text-sm text-ink-muted lg:flex lg:w-[520px]">
+            {dict.hero.screenshotPending}
+          </div>
+        )
+      }
+    </header>
+  </div>
+</section>
+
+<nav class="sticky inset-x-0 top-16 z-30 border-b border-border bg-canvas/95 backdrop-blur">
+  <div class="mx-auto flex max-w-7xl px-4 sm:px-6">
+    <span class="hidden max-w-[12rem] shrink-0 truncate py-2.5 text-sm font-medium text-ink lg:block">
+      {tool.domain}
+    </span>
+    <span class="hidden h-4 w-px shrink-0 self-center bg-border lg:block"></span>
+    <ul class="flex min-w-0 items-center gap-1 overflow-x-auto">
+      {
+        NAV.map(([href, label]) => (
+          <li class="shrink-0">
+            <a
+              href={href}
+              class="block whitespace-nowrap rounded-full px-3 py-1.5 text-sm text-ink-secondary transition hover:bg-surface-2 hover:text-ink"
+            >
+              {label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</nav>

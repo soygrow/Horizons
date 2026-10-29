@@ -1,0 +1,91 @@
+---
+import SearchInput from "./SearchInput.astro";
+import FilterSelect from "./FilterSelect.astro";
+import { categoryLabel } from "../lib/labels";
+import type { ToolFilters } from "../lib/types";
+
+interface Props {
+  filters: ToolFilters;
+  current?: {
+    q?: string;
+    cat?: string;
+    visits?: string;
+    growth?: string;
+    org?: string;
+    reg?: string;
+  };
+}
+
+const { filters, current = {} } = Astro.props;
+const cat = current.cat ?? "All";
+
+const visitOptions = [
+  { value: "all", label: "全部" },
+  { value: "lt1k", label: "1K 以下" },
+  { value: "1k10k", label: "1K–10K" },
+  { value: "10k100k", label: "10K–100K" },
+  { value: "100k1m", label: "100K–1M" },
+  { value: "gt1m", label: "1M 以上" },
+];
+const growthOptions = [
+  { value: "all", label: "全部" },
+  { value: "neg", label: "下降" },
+  { value: "0_50", label: "0–50%" },
+  { value: "50_200", label: "50–200%" },
+  { value: "gt200", label: "200% 以上" },
+];
+const orgOptions = [
+  { value: "all", label: "全部" },
+  { value: "lt10", label: "10% 以下" },
+  { value: "10_30", label: "10–30%" },
+  { value: "30_60", label: "30–60%" },
+  { value: "gt60", label: "60% 以上" },
+];
+const regOptions = [
+  { value: "all", label: "全部" },
+  { value: "3m", label: "近 3 个月" },
+  { value: "6m", label: "近 6 个月" },
+  { value: "1y", label: "近 1 年" },
+  { value: "gt1y", label: "1 年以上" },
+];
+---
+
+<div class="mt-6 space-y-4">
+  <SearchInput value={current.q ?? ""} />
+
+  <div class="flex flex-wrap gap-2">
+    <button
+      type="button"
+      data-cat="All"
+      class:list={[
+        "rounded-full px-3 py-1.5 text-sm transition",
+        cat === "All"
+          ? "bg-primary text-white"
+          : "border border-border bg-surface text-ink-secondary hover:text-ink",
+      ]}
+    >
+      全部
+    </button>
+    {filters.categories.map((c) => (
+      <button
+        type="button"
+        data-cat={c.value}
+        class:list={[
+          "rounded-full px-3 py-1.5 text-sm transition",
+          cat === c.value
+            ? "bg-primary text-white"
+            : "border border-border bg-surface text-ink-secondary hover:text-ink",
+        ]}
+      >
+        {categoryLabel(c.value)}
+      </button>
+    ))}
+  </div>
+
+  <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <FilterSelect title="月访问量" param="visits" options={visitOptions} current={current.visits ?? "all"} />
+    <FilterSelect title="环比增长" param="growth" options={growthOptions} current={current.growth ?? "all"} />
+    <FilterSelect title="自然搜索占比" param="org" options={orgOptions} current={current.org ?? "all"} />
+    <FilterSelect title="注册时间" param="reg" options={regOptions} current={current.reg ?? "all"} />
+  </div>
+</div>

@@ -1,0 +1,19 @@
+---
+/** 小标签：与 apps/web/src/app/github/[owner]/[repo]/page.tsx 的 Chip 一致 */
+interface Props {
+  tone?: "muted" | "primary" | "warn" | "ok";
+}
+
+const TONE: Record<NonNullable<Props["tone"]>, string> = {
+  primary: "border-primary/30 bg-primary/10 text-primary",
+  warn: "border-amber-500/30 bg-amber-500/10 text-amber-500",
+  ok: "border-emerald-500/30 bg-emerald-500/10 text-emerald-500",
+  muted: "border-border bg-surface-2 text-ink-secondary",
+};
+
+const { tone = "muted" } = Astro.props;
+---
+
+<span class={`inline-flex h-[22px] w-fit items-center rounded-full border px-2.5 text-[11px] ${TONE[tone]}`}>
+  <slot />
+</span>

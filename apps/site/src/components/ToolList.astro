@@ -1,0 +1,45 @@
+---
+import ToolListHead from "./ToolListHead.astro";
+import Pagination from "./Pagination.astro";
+import { fillRank } from "../lib/row-html";
+import type { ToolRow } from "../lib/types";
+
+interface Props {
+  rows: ToolRow[];
+  page: number;
+  totalItems: number;
+  totalPages: number;
+  basePath?: string;
+  pageSize?: number;
+}
+
+const { rows, page, totalItems, totalPages, basePath = "/tools", pageSize = 20 } = Astro.props;
+---
+
+<p class="mt-6 text-sm text-ink-muted" id="list-meta">
+  显示 {rows.length} 项，共 {totalItems} 项 / {totalPages} 页
+</p>
+
+<div class="mt-4 overflow-x-auto rounded-2xl border border-border bg-surface">
+  <div class="min-w-[1080px]">
+    <ToolListHead />
+    <div id="list-rows">
+      {rows.map((t, i) => <Fragment set:html={fillRank(t.h, (page - 1) * pageSize + i + 1)} />)}
+    </div>
+    <div id="list-empty" class="hidden px-4 py-16 text-center">
+      <p class="text-sm text-ink-muted">没有符合条件的工具</p>
+    </div>
+  </div>
+</div>
+
+<div class="mt-6" id="list-pager" data-base-path={basePath} data-page-size={pageSize}>
+  {
+    totalPages > 1 && (
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        buildHref={(p) => (p === 1 ? basePath : `${basePath}/page/${p}`)}
+      />
+    )
+  }
+</div>

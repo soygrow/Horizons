@@ -1,0 +1,69 @@
+---
+/** 02 怎么做：阶段概览 + 时间轴 */
+import RepoSection from "../RepoSection.astro";
+
+interface Props {
+  insight: Record<string, any> | undefined;
+}
+
+const { insight } = Astro.props;
+const steps: any[] = insight?.buildSteps ?? [];
+
+const PHASE_STYLE: Record<string, { dot: string; chip: string }> = {
+  验证: { dot: "bg-sky-400", chip: "border-sky-400/30 bg-sky-400/10 text-sky-400" },
+  起步: { dot: "bg-primary", chip: "border-primary/30 bg-primary/10 text-primary" },
+  变现: { dot: "bg-emerald-500", chip: "border-emerald-500/30 bg-emerald-500/10 text-emerald-500" },
+  增长: { dot: "bg-amber-500", chip: "border-amber-500/30 bg-amber-500/10 text-amber-500" },
+};
+
+const PHASE_ORDER = ["验证", "起步", "变现", "增长"];
+const phases = PHASE_ORDER.map((p) => ({ p, n: steps.filter((s) => s.phase === p).length })).filter((x) => x.n > 0);
+---
+
+<RepoSection no="02" title="怎么做" desc="按阶段推进：先验证，再起步，然后变现与增长">
+  {
+    steps.length ? (
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center gap-1.5">
+          {phases.map(({ p, n }, i) => (
+            <span class="flex items-center gap-1.5">
+              {i > 0 ? <span class="text-[11px] text-ink-muted">→</span> : null}
+              <span class={`rounded-full border px-2 py-0.5 text-[11px] ${PHASE_STYLE[p]?.chip ?? ""}`}>
+                {p} · {n}
+              </span>
+            </span>
+          ))}
+        </div>
+
+        <ol class="relative ml-1 space-y-4 border-l border-border pl-5">
+          {steps.map((s) => {
+            const st = s.phase ? PHASE_STYLE[s.phase] : undefined;
+            return (
+              <li class="relative">
+                <span
+                  class={`absolute -left-[26px] top-1 h-2.5 w-2.5 rounded-full ring-2 ring-surface ${st?.dot ?? "bg-ink-muted"}`}
+                />
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <h3 class="text-sm font-semibold text-ink">{s.step}</h3>
+                  {s.phase ? (
+                    <span class={`rounded-full border px-1.5 py-0.5 text-[10px] ${st?.chip ?? ""}`}>{s.phase}</span>
+                  ) : null}
+                  {s.duration ? <span class="text-[11px] text-ink-muted">约 {s.duration}</span> : null}
+                </div>
+                <p class="mt-1 text-xs leading-relaxed text-ink-secondary">{s.detail}</p>
+                {s.output ? (
+                  <p class="mt-1 text-[11px] text-ink-muted">
+                    <span class="text-ink-secondary">产出：</span>
+                    {s.output}
+                  </p>
+                ) : null}
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    ) : (
+      <p class="text-sm text-ink-muted">情报生成中。</p>
+    )
+  }
+</RepoSection>

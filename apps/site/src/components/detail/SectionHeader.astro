@@ -1,0 +1,15 @@
+---
+interface Props {
+  no: string;
+  title: string;
+  desc: string;
+}
+
+const { no, title, desc } = Astro.props;
+---
+
+<header class="flex flex-col gap-2 border-b border-border pb-5">
+  <span class="text-xs tabular-nums tracking-widest text-ink-muted">{no}</span>
+  <h2 class="text-xl font-semibold text-ink">{title}</h2>
+  <p class="max-w-2xl text-sm text-ink-muted">{desc}</p>
+</header>

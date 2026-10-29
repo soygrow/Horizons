@@ -1,0 +1,19 @@
+---
+/** GitHub 详情页的区块容器：编号 + 标题 + 说明 */
+interface Props {
+  no: string;
+  title: string;
+  desc?: string;
+}
+
+const { no, title, desc } = Astro.props;
+---
+
+<section class="rounded-2xl border border-border bg-surface">
+  <header class="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-border px-5 py-3.5">
+    <span class="text-[11px] tabular-nums tracking-widest text-ink-muted">{no}</span>
+    <h2 class="text-base font-semibold text-ink">{title}</h2>
+    {desc ? <p class="text-xs text-ink-muted">{desc}</p> : null}
+  </header>
+  <div class="p-5"><slot /></div>
+</section>

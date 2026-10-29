@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "horizons-site",
+  "compatibility_date": "2026-10-01",
+  // 2026-10-29 切换：新站接管主域，旧 Next 站（horizons-web）不再持有该路由
+  "routes": [
+    {
+      "pattern": "horizons.tools/*",
+      "zone_name": "horizons.tools"
+    }
+  ],
+  "assets": {
+    "directory": "./dist",
+    // 保持与现有站一致的 URL 形态（无尾斜杠，不做 301）
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}

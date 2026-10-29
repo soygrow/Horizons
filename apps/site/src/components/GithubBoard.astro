@@ -1,0 +1,101 @@
+---
+/** 首页 GitHub 榜：与 apps/web/src/components/GithubBoard.tsx 一致 */
+import { formatCount } from "../lib/format";
+import { categoryLabel, scoreGradeTone } from "../lib/labels";
+import type { RepoRow } from "../lib/types";
+
+interface Props {
+  items: RepoRow[];
+  total: number;
+}
+
+const { items, total } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+<section class="mt-10">
+  <div class="flex items-end justify-between gap-4">
+    <div>
+      <h2 class="text-xl font-bold tracking-tight text-ink">GitHub 开源榜</h2>
+      <p class="mt-1 text-sm text-ink-muted">
+        从 {total} 个开源 AI 项目里，按「做成一款有收益产品的可能性」排序
+      </p>
+    </div>
+    <a
+      href="/github"
+      class="shrink-0 text-sm font-medium text-primary transition hover:text-primary-hover"
+    >
+      查看全部 →
+    </a>
+  </div>
+
+  <div class="mt-4 overflow-hidden rounded-2xl border border-border bg-surface">
+    {
+      items.map((repo, i) => (
+        <a
+          href={`/github/${repo.owner}/${repo.repo}`}
+          class="group flex items-center gap-3 border-b border-border px-4 py-3 transition last:border-b-0 hover:bg-surface-2 sm:px-5"
+        >
+          <span class="w-6 shrink-0 text-sm font-semibold text-ink-muted tabular-nums">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+
+          {repo.avatar ? (
+            <img
+              src={repo.avatar}
+              alt=""
+              loading="lazy"
+              class="h-8 w-8 shrink-0 rounded-md border border-border bg-surface-2 object-cover"
+            />
+          ) : (
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-surface-2 text-[10px] font-semibold text-ink-muted">
+              {(repo.owner || "?").charAt(0).toUpperCase()}
+            </span>
+          )}
+
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <h3 class="truncate text-sm font-semibold text-ink group-hover:text-primary">
+                {repo.fullName}
+              </h3>
+              {repo.cats.slice(0, 2).map((c) => (
+                <span class="hidden shrink-0 rounded-md border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] leading-4 text-ink-secondary sm:inline">
+                  {categoryLabel(c)}
+                </span>
+              ))}
+            </div>
+            <p class="mt-0.5 line-clamp-1 text-xs leading-snug text-ink-secondary">{repo.intro}</p>
+          </div>
+
+          <div class="hidden shrink-0 flex-col items-end gap-0.5 sm:flex">
+            <span class="text-xs text-ink-secondary tabular-nums">★ {formatCount(repo.stars)}</span>
+            <span
+              class:list={[
+                "text-[11px] tabular-nums",
+                repo.g30 === null
+                  ? "text-ink-muted"
+                  : repo.g30 >= 0
+                    ? "text-emerald-500"
+                    : "text-rose-400",
+              ]}
+            >
+              {repo.g30 !== null ? `30天 ${repo.g30 > 0 ? "+" : ""}${repo.g30}%` : "—"}
+            </span>
+          </div>
+
+          <div class="w-14 shrink-0 text-center">
+            <div class="flex items-baseline justify-center gap-1">
+              <span class="text-sm font-bold text-ink tabular-nums">{repo.score.toFixed(1)}</span>
+              <span class:list={["rounded border px-1 text-[10px] font-semibold", scoreGradeTone[repo.grade]]}>
+                {repo.grade}
+              </span>
+            </div>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</section>
+  )
+}

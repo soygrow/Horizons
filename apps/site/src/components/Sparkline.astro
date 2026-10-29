@@ -1,0 +1,71 @@
+---
+/** 与现有 Sparkline.tsx 逐像素一致：平滑贝塞尔 + 面积填充 + 末点圆点 */
+interface Props {
+  points: number[] | null;
+  width?: number;
+  height?: number;
+}
+
+const { points, width = 72, height = 26 } = Astro.props;
+
+function smoothPath(pts: { x: number; y: number }[]): string {
+  const n = pts.length;
+  if (n < 2) return "";
+  if (n === 2) return `M${pts[0].x},${pts[0].y} L${pts[1].x},${pts[1].y}`;
+  let d = `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+  for (let i = 1; i < n - 1; i++) {
+    const xc = (pts[i].x + pts[i + 1].x) / 2;
+    const yc = (pts[i].y + pts[i + 1].y) / 2;
+    d += ` Q${pts[i].x.toFixed(1)},${pts[i].y.toFixed(1)} ${xc.toFixed(1)},${yc.toFixed(1)}`;
+  }
+  d += ` L${pts[n - 1].x.toFixed(1)},${pts[n - 1].y.toFixed(1)}`;
+  return d;
+}
+
+const mid = height / 2;
+const pts = points ? points.map((p) => p / 100) : null;
+const step = pts ? width / (pts.length - 1) : 0;
+const coords = pts ? pts.map((p, i) => ({ x: i * step, y: height - p * (height - 4) - 2 })) : [];
+const d = smoothPath(coords);
+const last = coords[coords.length - 1];
+---
+
+{!pts ? (
+  <svg
+    width={width}
+    height={height}
+    viewBox={`0 0 ${width} ${height}`}
+    class="text-ink-muted"
+    aria-label="趋势待积累"
+  >
+    <line
+      x1="0"
+      y1={mid}
+      x2={width}
+      y2={mid}
+      stroke="currentColor"
+      stroke-width="1"
+      stroke-dasharray="3 3"
+      opacity="0.4"
+    />
+  </svg>
+) : (
+  <svg
+    width={width}
+    height={height}
+    viewBox={`0 0 ${width} ${height}`}
+    class="text-accent"
+    aria-label="流量趋势"
+  >
+    <path d={`${d} L${width},${height} L0,${height} Z`} fill="currentColor" opacity="0.12" />
+    <path
+      d={d}
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+    />
+    <circle cx={last.x} cy={last.y} r="2" fill="currentColor" />
+  </svg>
+)}

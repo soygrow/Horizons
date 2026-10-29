@@ -1,0 +1,154 @@
+---
+/** 01 产品表现 */
+import SectionHeader from "../SectionHeader.astro";
+import Stat from "../Stat.astro";
+import InsightCard from "../InsightCard.astro";
+import { getDict } from "../../../../../web/src/lib/i18n";
+import { formatCount } from "../../../lib/format";
+
+interface Props {
+  tool: Record<string, any>;
+}
+
+const dict = getDict("zh");
+const { tool } = Astro.props;
+
+const m = tool.metrics;
+const tm = tool.trafficMetrics;
+const mom = tm?.monthlyVisitsGrowth ?? m?.momGrowth;
+const pi = tool.performanceInsight;
+const ds = tool.dataSnapshot;
+const collectedAt = tool.collectedAt;
+const fmtTime = (s?: string) => (s ? s.slice(0, 19).replace("T", " ") : "");
+---
+
+<section id="performance" class="flex scroll-mt-36 flex-col gap-10">
+  <SectionHeader
+    no={dict.sections.performance.no}
+    title={dict.sections.performance.title}
+    desc={dict.sections.performance.desc}
+  />
+
+  {
+    (ds?.period || collectedAt) && (
+      <div class="-my-5 flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-ink-muted">
+        {ds?.period && (
+          <span class="inline-flex items-center gap-1.5">
+            <span class="text-ink-secondary">{dict.sections.performance.snapshot}</span>
+            {ds.period}
+          </span>
+        )}
+        {collectedAt && (
+          <span class="inline-flex items-center gap-1.5">
+            <span class="text-ink-secondary">{dict.sections.performance.updated}</span>
+            {fmtTime(collectedAt)}
+          </span>
+        )}
+      </div>
+    )
+  }
+
+  <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+    <Stat
+      label={dict.metrics.monthlyVisits}
+      value={m?.monthlyVisits !== undefined ? formatCount(m.monthlyVisits) : undefined}
+    />
+    <Stat
+      label={dict.metrics.monthlyVisitsGrowth}
+      value={mom !== undefined ? `${mom > 0 ? "+" : ""}${mom}%` : undefined}
+      success={(mom ?? 0) > 0}
+      hint="上月无数据或基数为 0，无法计算环比"
+    />
+    <Stat
+      label={dict.metrics.organicSearchVisits}
+      value={m?.organicVisits !== undefined ? formatCount(m.organicVisits) : undefined}
+    />
+    <Stat
+      label={dict.metrics.organicShare}
+      value={
+        m?.organicVisits !== undefined && m?.monthlyVisits
+          ? `${Math.round((m.organicVisits / m.monthlyVisits) * 1000) / 10}%`
+          : undefined
+      }
+    />
+    <Stat
+      label={dict.metrics.directVisits}
+      value={tm?.directVisits !== undefined ? formatCount(tm.directVisits) : undefined}
+    />
+    <Stat
+      label={dict.metrics.domainWeight}
+      value={
+        m?.domainWeight !== undefined
+          ? m.domainWeightLabel && m.domainWeightLabel !== "权重"
+            ? `${formatCount(m.domainWeight)}（${m.domainWeightLabel}）`
+            : formatCount(m.domainWeight)
+          : undefined
+      }
+      hint="未采集到该站的域名权重"
+    />
+    <Stat label={dict.metrics.registeredAt} value={m?.registeredAt} />
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <div class="rounded-2xl border border-border bg-surface p-6">
+      <div class="mb-5 flex items-center gap-2.5">
+        <span class="h-4 w-1 rounded-full bg-primary" aria-hidden="true"></span>
+        <h3 class="text-sm font-semibold text-ink">{dict.performanceInsight.highlightTag}</h3>
+      </div>
+      <dl class="grid gap-x-10 gap-y-5 sm:grid-cols-2">
+        {
+          [
+            { k: dict.performanceInsight.what, v: pi?.overview?.what },
+            { k: dict.performanceInsight.pain, v: pi?.overview?.pain },
+            { k: dict.performanceInsight.can, v: pi?.overview?.can },
+            { k: dict.performanceInsight.trait, v: pi?.overview?.trait },
+          ].map(({ k, v }) => (
+            <div class="min-w-0">
+              <dt class="text-xs font-medium text-ink-muted">{k}</dt>
+              <dd class="mt-1.5 text-sm leading-relaxed break-words text-ink">
+                {v ?? dict.performanceInsight.pending}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-3">
+      <InsightCard
+        title={dict.performanceInsight.wedge}
+        sub={dict.performanceInsight.wedgeSub}
+        text={pi?.wedge}
+      />
+      <InsightCard
+        title={dict.performanceInsight.model}
+        sub={dict.performanceInsight.modelSub}
+        text={pi?.model}
+      />
+      <InsightCard
+        title={dict.performanceInsight.moat}
+        sub={dict.performanceInsight.moatSub}
+        text={pi?.moat}
+      />
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-3">
+      <InsightCard
+        title={dict.performanceInsight.trafficTruth}
+        sub={dict.performanceInsight.trafficTruthSub}
+        text={pi?.trafficTruth}
+      />
+      <InsightCard
+        title={dict.performanceInsight.growthEdge}
+        sub={dict.performanceInsight.growthEdgeSub}
+        text={pi?.growthEdge}
+      />
+      <InsightCard
+        title={dict.performanceInsight.newPlayerEntry}
+        sub={dict.performanceInsight.newPlayerEntrySub}
+        text={pi?.newPlayerEntry}
+        tag={pi?.entryTag}
+      />
+    </div>
+  </div>
+</section>

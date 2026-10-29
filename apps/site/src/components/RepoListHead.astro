@@ -1,0 +1,25 @@
+---
+import { REPO_GRID } from "../lib/row-html";
+
+const cols = [
+  { label: "#", center: false },
+  { label: "项目", center: false },
+  { label: "综合得分", center: true },
+  { label: "星标趋势", center: true },
+  { label: "星标", center: true },
+  { label: "近 30 天", center: true },
+  { label: "语言", center: true },
+  { label: "用途", center: true },
+  { label: "最后提交", center: true },
+  { label: "许可", center: true },
+];
+---
+
+<div
+  class:list={[
+    "grid items-center gap-3 border-b border-border px-4 py-2.5 text-xs text-ink-muted sm:px-5",
+    REPO_GRID,
+  ]}
+>
+  {cols.map((c) => <span class={c.center ? "text-center" : ""}>{c.label}</span>)}
+</div>

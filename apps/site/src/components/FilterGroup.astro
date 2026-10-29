@@ -1,0 +1,29 @@
+---
+interface Props {
+  title: string;
+  param: string;
+  options: { value: string; label: string }[];
+  current?: string;
+}
+
+const { title, param, options, current = "All" } = Astro.props;
+---
+
+<div class="flex flex-wrap items-center gap-2">
+  <span class="mr-1 text-xs font-medium text-ink-muted">{title}</span>
+  {options.map((o) => (
+    <a
+      href="#"
+      data-filter-btn={param}
+      data-value={o.value}
+      class:list={[
+        "rounded-full px-3 py-1 text-xs font-medium transition",
+        current === o.value
+          ? "bg-primary text-white"
+          : "border border-border bg-surface text-ink-secondary hover:text-ink",
+      ]}
+    >
+      {o.label}
+    </a>
+  ))}
+</div>

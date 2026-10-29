@@ -1,0 +1,15 @@
+---
+/** 站点图标（Google s2 favicon） */
+interface Props {
+  domain: string;
+}
+
+const { domain } = Astro.props;
+---
+
+<img
+  src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
+  alt=""
+  class="h-4 w-4 shrink-0 rounded-sm bg-surface-2"
+  loading="lazy"
+/>

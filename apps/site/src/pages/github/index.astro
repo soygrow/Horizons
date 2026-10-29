@@ -1,0 +1,23 @@
+---
+import Base from "../../layouts/Base.astro";
+import GithubList from "../../components/GithubList.astro";
+import { repoRows, PAGE_SIZE, totalPages } from "../../lib/dataset";
+
+const tp = totalPages(repoRows.length);
+const pageRows = repoRows.slice(0, PAGE_SIZE);
+
+const title = "GitHub 榜 · Horizons";
+const description =
+  "给想做产品却没想法的人：这些开源项目能被做成什么、怎么做、能带来什么效果。综合得分由热度、增长、可开发性、商业化、活跃度与落地门槛构成。";
+---
+
+<Base title={title} description={description}>
+  <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+    <GithubList rows={pageRows} page={1} totalItems={repoRows.length} totalPages={tp} pageSize={PAGE_SIZE} />
+  </div>
+
+  <script>
+    import { initReposFilter } from "../../scripts/repo-filter";
+    initReposFilter();
+  </script>
+</Base>

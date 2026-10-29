@@ -1,0 +1,53 @@
+---
+import "../styles/globals.css";
+import NavBar from "../components/NavBar.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = "Horizons — 发现值得关注的 AI 工具",
+  description = "用可追溯的信号，追踪值得关注的 AI 工具榜单——热度、定价、趋势，一目了然。",
+  noindex = false,
+} = Astro.props;
+
+const SITE = "https://horizons.tools";
+// 站点 URL 统一无尾斜杠：/tools/ → /tools，根路径保持 /
+const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const canonical = new URL(pathname, SITE).href;
+
+// 首屏前同步主题，避免浅/深色闪烁（与现有站逻辑一致）
+const themeInit = `(function(){try{var t=localStorage.getItem("theme")||"light";if(t==="dark"){document.documentElement.classList.add("dark");}}catch(e){}})();`;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Horizons" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0d12" media="(prefers-color-scheme: dark)" />
+    <script is:inline set:html={themeInit} />
+  </head>
+  <body class="antialiased">
+    <div class="flex min-h-screen flex-col">
+      <NavBar />
+      <main class="flex-1"><slot /></main>
+      <SiteFooter />
+    </div>
+  </body>
+</html>

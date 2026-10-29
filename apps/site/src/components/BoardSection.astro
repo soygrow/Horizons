@@ -1,0 +1,41 @@
+---
+/** 首页榜单板块：与 apps/web/src/components/BoardSection.tsx 一致 */
+import ToolRowCompact from "./ToolRowCompact.astro";
+import type { ToolRow } from "../lib/types";
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  items: ToolRow[];
+  viewAllHref?: string;
+}
+
+const { title, subtitle, items, viewAllHref } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <section class="mt-10">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold tracking-tight text-ink">{title}</h2>
+          {subtitle && <p class="mt-1 text-sm text-ink-muted">{subtitle}</p>}
+        </div>
+        {viewAllHref && (
+          <a
+            href={viewAllHref}
+            class="shrink-0 text-sm font-medium text-primary transition hover:text-primary-hover"
+          >
+            查看全部 →
+          </a>
+        )}
+      </div>
+
+      <div class="mt-4 overflow-hidden rounded-2xl border border-border bg-surface">
+        {items.map((t, i) => (
+          <ToolRowCompact tool={t} rank={i + 1} />
+        ))}
+      </div>
+    </section>
+  )
+}

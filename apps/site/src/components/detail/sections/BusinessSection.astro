@@ -1,0 +1,163 @@
+---
+/** 04 这门生意：变现蓝图 + 增长复盘 */
+import SectionHeader from "../SectionHeader.astro";
+import Badge from "../Badge.astro";
+import Pending from "../Pending.astro";
+import { getDict } from "../../../../../web/src/lib/i18n";
+import { formatCount } from "../../../lib/format";
+
+interface Props {
+  tool: Record<string, any>;
+}
+
+const dict = getDict("zh");
+const t = dict.opportunity;
+const { tool } = Astro.props;
+const mb = tool.monetizationBlueprint;
+const gp = tool.growthPlaybook;
+---
+
+<section id="business" class="flex scroll-mt-36 flex-col gap-10">
+  <SectionHeader
+    no={dict.sections.business.no}
+    title={dict.sections.business.title}
+    desc={dict.sections.business.desc}
+  />
+  <div class="flex flex-col gap-6">
+    <div class="rounded-2xl border border-border bg-surface p-6">
+      <h3 class="text-base font-semibold text-ink">{t.monetization}</h3>
+      {
+        mb ? (
+          <div class="mt-4 flex flex-col gap-5">
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div class="rounded-xl bg-surface-2 px-4 py-3">
+                <span class="text-xs text-ink-muted">{t.model}</span>
+                <p class="mt-1 text-sm font-medium leading-relaxed break-words text-ink">{mb.model}</p>
+              </div>
+              <div class="rounded-xl bg-surface-2 px-4 py-3">
+                <span class="text-xs text-ink-muted">{t.payment}</span>
+                {mb.monthlyRevenueSignal ? (
+                  <>
+                    <p class="mt-1 text-2xl font-semibold tabular-nums text-ink">
+                      {formatCount(mb.monthlyRevenueSignal)}
+                    </p>
+                    <p class="mt-0.5 text-xs text-ink-muted">{t.paymentNote}</p>
+                    {mb.paymentDetected?.length ? (
+                      <div class="mt-2 flex flex-wrap gap-2">
+                        {mb.paymentDetected.map((p: string) => (
+                          <Badge>{p}</Badge>
+                        ))}
+                      </div>
+                    ) : null}
+                  </>
+                ) : mb.paymentDetected?.length ? (
+                  <div class="mt-1.5 flex flex-wrap gap-2">
+                    {mb.paymentDetected.map((p: string) => (
+                      <Badge>{p}</Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <p class="mt-1 text-sm text-ink-muted">未检测到</p>
+                )}
+              </div>
+            </div>
+            {mb.tiers?.length ? (
+              <div>
+                <span class="text-xs text-ink-muted">{t.tiers}</span>
+                <ul class="mt-2 grid gap-2 sm:grid-cols-2">
+                  {mb.tiers.map((tier: string) => (
+                    <li class="rounded-lg border border-border px-3 py-2 text-sm leading-relaxed break-words text-ink-secondary">
+                      {tier}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {mb.pricingAdvice ? (
+              <div class="rounded-lg border border-primary/20 bg-primary-soft px-4 py-3">
+                <span class="text-xs font-medium text-primary">{t.pricingAdvice}</span>
+                <p class="mt-1 text-sm leading-relaxed break-words text-ink-secondary">
+                  {mb.pricingAdvice}
+                </p>
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <div class="mt-4">
+            <Pending text={`${t.monetization} · ${dict.analysis.awaitingAI}`} />
+          </div>
+        )
+      }
+    </div>
+
+    <div class="rounded-2xl border border-border bg-surface p-6">
+      <h3 class="text-base font-semibold text-ink">{t.growth}</h3>
+      {
+        gp ? (
+          <div class="mt-4 flex flex-col gap-5">
+            {gp.coldStart ? (
+              <div class="rounded-xl bg-surface-2 px-4 py-3">
+                <span class="text-xs text-ink-muted">{t.coldStart}</span>
+                <p class="mt-1 text-sm leading-relaxed break-words text-ink-secondary">{gp.coldStart}</p>
+              </div>
+            ) : null}
+            <div class="grid gap-6 border-t border-border pt-5 md:grid-cols-2 xl:grid-cols-3">
+              {gp.channels?.length ? (
+                <div class="flex min-w-0 flex-col gap-3">
+                  <h4 class="text-xs font-medium uppercase tracking-[0.14em] text-primary">{t.channels}</h4>
+                  <ul class="flex flex-col gap-2.5">
+                    {gp.channels.map((c: string) => (
+                      <li class="flex items-start gap-2 text-sm">
+                        <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
+                        <span class="min-w-0 flex-1 leading-relaxed break-words text-ink-secondary">{c}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {gp.copyable?.length ? (
+                <div class="flex min-w-0 flex-col gap-3">
+                  <h4 class="text-xs font-medium uppercase tracking-[0.14em] text-success">{t.copyable}</h4>
+                  <ul class="flex flex-col gap-2.5">
+                    {gp.copyable.map((c: string) => (
+                      <li class="flex items-start gap-2 text-sm">
+                        <span class="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-success-soft text-success" aria-hidden="true">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m5 12 5 5L20 7" />
+                          </svg>
+                        </span>
+                        <span class="min-w-0 flex-1 leading-relaxed break-words text-ink-secondary">{c}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {gp.avoid?.length ? (
+                <div class="flex min-w-0 flex-col gap-3">
+                  <h4 class="text-xs font-medium uppercase tracking-[0.14em] text-danger">{t.avoid}</h4>
+                  <ul class="flex flex-col gap-2.5">
+                    {gp.avoid.map((c: string) => (
+                      <li class="flex items-start gap-2 text-sm">
+                        <span class="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-danger-soft text-danger" aria-hidden="true">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6 6 18" />
+                            <path d="m6 6 12 12" />
+                          </svg>
+                        </span>
+                        <span class="min-w-0 flex-1 leading-relaxed break-words text-ink-secondary">{c}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        ) : (
+          <div class="mt-4">
+            <Pending text={`${t.growth} · ${dict.analysis.awaitingAI}`} />
+          </div>
+        )
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,34 @@
+---
+import Base from "../../layouts/Base.astro";
+import ToolFilterBar from "../../components/ToolFilterBar.astro";
+import ToolList from "../../components/ToolList.astro";
+import { toolRows, toolFilters, PAGE_SIZE, sortByHeat, totalPages } from "../../lib/dataset";
+
+const rows = sortByHeat(toolRows);
+const tp = totalPages(rows.length);
+const pageRows = rows.slice(0, PAGE_SIZE);
+
+const title = "AI工具榜 · Horizons";
+const description =
+  "按可追溯信号排序的高密度榜单，实时追踪值得关注的 AI 工具：月访问量、环比增长、自然搜索占比与域名权重。";
+---
+
+<Base title={title} description={description}>
+  <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+    <header>
+      <h1 class="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">AI 工具站榜单</h1>
+      <p class="mt-2 max-w-2xl text-sm text-ink-secondary">
+        按可追溯信号排序的高密度榜单，实时追踪值得关注的 AI 工具。
+      </p>
+    </header>
+
+    <ToolFilterBar filters={toolFilters} />
+
+    <ToolList rows={pageRows} page={1} totalItems={rows.length} totalPages={tp} basePath="/tools" pageSize={PAGE_SIZE} />
+  </div>
+
+  <script>
+    import { initToolsFilter } from "../../scripts/tool-filter";
+    initToolsFilter();
+  </script>
+</Base>

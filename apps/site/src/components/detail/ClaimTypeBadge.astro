@@ -1,0 +1,17 @@
+---
+/** 结论类型：已验证事实 / 合理推断 / 待验证假设 */
+import { claimTypeMeta } from "../../../../web/src/lib/trends";
+
+interface Props {
+  type: string;
+}
+
+const { type } = Astro.props;
+const meta = claimTypeMeta[type as keyof typeof claimTypeMeta];
+---
+
+<span
+  class={`inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${meta.cls}`}
+>
+  {meta.label}
+</span>

@@ -1,0 +1,22 @@
+---
+/** 趋势词表头：10 列，GRID 必须与 lib/row-html.ts 的 TREND_GRID 一致 */
+import { TREND_GRID } from "../lib/row-html";
+---
+
+<div
+  class:list={[
+    "grid items-center gap-3 border-b border-border px-4 py-2.5 text-xs text-ink-muted sm:px-5",
+    TREND_GRID,
+  ]}
+>
+  <span>#</span>
+  <span>关键词 / 标准名称</span>
+  <span>类别</span>
+  <span>趋势状态</span>
+  <span>增长（近 7 天）</span>
+  <span>可信度</span>
+  <span>为什么值得关注</span>
+  <span>可能的机会</span>
+  <span class="text-center">趋势/机会</span>
+  <span class="text-center">更新</span>
+</div>

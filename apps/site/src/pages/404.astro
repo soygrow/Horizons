@@ -1,0 +1,44 @@
+---
+/** 404 页：Cloudflare assets 的 not_found_handling=404-page 会直出本页（状态码仍为 404） */
+import Base from "../layouts/Base.astro";
+import SearchInput from "../components/SearchInput.astro";
+
+const title = "页面不存在 · Horizons";
+const description = "你访问的页面不存在或已移动。可以回到首页，或从 AI 工具榜、GitHub 榜、AI 趋势词榜单继续浏览。";
+
+const channels = [
+  { label: "AI工具榜", href: "/tools" },
+  { label: "GitHub榜", href: "/github" },
+  { label: "AI趋势词榜单", href: "/trends" },
+];
+---
+
+<Base title={title} description={description} noindex>
+  <section class="mx-auto flex max-w-3xl flex-col items-center px-4 py-24 text-center sm:px-6">
+    <p class="text-xs font-medium tracking-[0.3em] text-ink-muted">404</p>
+    <h1 class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">这个页面不存在</h1>
+    <p class="mt-3 max-w-xl text-sm leading-relaxed text-ink-secondary">
+      链接可能已经失效，或者对应的工具、仓库已从当期榜单中移出。换个入口试试：
+    </p>
+
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-2 text-sm">
+      {
+        channels.map((c) => (
+          <a
+            href={c.href}
+            class="rounded-full border border-border bg-surface px-4 py-2 text-ink-secondary transition hover:text-ink"
+          >
+            {c.label}
+          </a>
+        ))
+      }
+      <a href="/" class="rounded-full bg-primary px-4 py-2 font-medium text-white transition hover:opacity-90">
+        回到首页
+      </a>
+    </div>
+
+    <div class="mt-10 w-full max-w-md">
+      <SearchInput action="/tools" placeholder="搜索工具名称 / 关键词" />
+    </div>
+  </section>
+</Base>

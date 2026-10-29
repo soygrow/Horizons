@@ -1,0 +1,30 @@
+---
+import Base from "../../../layouts/Base.astro";
+import GithubList from "../../../components/GithubList.astro";
+import { repoRows, PAGE_SIZE, totalPages } from "../../../lib/dataset";
+
+const tp = totalPages(repoRows.length);
+
+export function getStaticPaths() {
+  return Array.from({ length: Math.max(0, totalPages(repoRows.length) - 1) }, (_, i) => ({
+    params: { n: String(i + 2) },
+  }));
+}
+
+const page = Number(Astro.params.n);
+const pageRows = repoRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+const title = `GitHub 榜 第 ${page} 页 · Horizons`;
+const description = "给想做产品却没想法的人：这些开源项目能被做成什么、怎么做、能带来什么效果。";
+---
+
+<Base title={title} description={description}>
+  <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+    <GithubList rows={pageRows} page={page} totalItems={repoRows.length} totalPages={tp} pageSize={PAGE_SIZE} />
+  </div>
+
+  <script>
+    import { initReposFilter } from "../../../scripts/repo-filter";
+    initReposFilter();
+  </script>
+</Base>

@@ -4,12 +4,7 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-10-01",
   "compatibility_flags": ["nodejs_compat"],
-  "routes": [
-    {
-      "pattern": "horizons.tools/*",
-      "zone_name": "horizons.tools"
-    }
-  ],
+  // 2026-10-29 起主域路由移交 horizons-site（apps/site），本 Worker 仅作回滚备胎，不再绑路由
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"

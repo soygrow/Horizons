@@ -1,0 +1,97 @@
+---
+/** GitHub 仓库详情：与 apps/web/src/app/github/[owner]/[repo]/page.tsx 逐块对齐 */
+import Base from "../../../layouts/Base.astro";
+import RepoHero from "../../../components/detail/RepoHero.astro";
+import RepoIdeasSection from "../../../components/detail/sections/RepoIdeasSection.astro";
+import RepoStepsSection from "../../../components/detail/sections/RepoStepsSection.astro";
+import RepoEffectsSection from "../../../components/detail/sections/RepoEffectsSection.astro";
+import RepoRiskSection from "../../../components/detail/sections/RepoRiskSection.astro";
+import RepoAside from "../../../components/detail/RepoAside.astro";
+import { formatCount } from "../../../lib/format";
+import { languageShares, starGrowth, starTrendPoints } from "../../../lib/repo";
+
+export async function getStaticPaths() {
+  const mods = import.meta.glob("../../../../../../content/dist/github/detail/*.json", {
+    eager: true,
+  }) as Record<string, { data: Record<string, any>; derived: Record<string, any> }>;
+  return Object.values(mods).map((mod) => ({
+    params: { owner: mod.data.owner, repo: mod.data.repo },
+    props: { repo: mod.data, derived: mod.derived },
+  }));
+}
+
+const { repo, derived } = Astro.props as {
+  repo: Record<string, any>;
+  derived: Record<string, any>;
+};
+
+const ins = repo.insight;
+const score = repo.productScore ?? { score: derived.score, grade: derived.grade };
+const grade: "S" | "A" | "B" | "C" = score.grade;
+const scoreTone: "ok" | "primary" | "warn" | "muted" =
+  grade === "S" ? "ok" : grade === "A" ? "primary" : grade === "B" ? "warn" : "muted";
+const diffTone: "ok" | "warn" | "muted" =
+  ins?.difficulty === "低" ? "ok" : ins?.difficulty === "高" ? "warn" : "muted";
+
+const growth7 = starGrowth(repo.history, 7);
+const growth30 = starGrowth(repo.history, 30);
+const points = starTrendPoints(repo.history);
+const languages = languageShares(repo.languages);
+const commit: number[] = repo.commitActivity ?? [];
+
+const growthText = (v: number | null) => (v !== null ? `${v > 0 ? "+" : ""}${v}%` : "—");
+
+const metrics: { label: string; value: string; hint?: string; tone?: string }[] = [
+  { label: "综合得分", value: score.score.toFixed(1), hint: `${grade} 级 · 满分 100`, tone: scoreTone },
+  { label: "星标", value: formatCount(repo.stars), tone: "primary" },
+  { label: "复刻", value: formatCount(repo.forks) },
+  { label: "贡献者", value: repo.contributorsCount !== undefined ? formatCount(repo.contributorsCount) : "—" },
+  { label: "近 30 天增速", value: growthText(growth30), tone: growth30 !== null && growth30 >= 0 ? "ok" : "muted" },
+  { label: "上手难度", value: ins?.difficulty ?? "—", tone: diffTone },
+  { label: "做出首版", value: ins?.timeToMvp ?? "—" },
+  { label: "首版月成本", value: ins?.costToMvp ?? "—" },
+];
+
+/** 与源站 Stat 的 tone 口径一致：muted 回落到常规字色 */
+const toneClass = (tone?: string) =>
+  tone === "primary" ? "text-primary" : tone === "ok" ? "text-emerald-500" : tone === "warn" ? "text-amber-500" : "text-ink";
+---
+
+<Base title={`${repo.fullName} · GitHub 榜`} description={derived.intro}>
+  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <RepoHero repo={repo} derived={derived} />
+
+    <!-- 关键指标条 -->
+    <section class="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-8">
+      {
+        metrics.map((m) => (
+          <div class="rounded-xl border border-border bg-surface-2/60 px-3.5 py-2.5">
+            <div class="text-[11px] text-ink-muted">{m.label}</div>
+            <div class={`mt-0.5 text-base font-semibold tabular-nums ${toneClass(m.tone)}`}>{m.value}</div>
+            {m.hint ? <div class="mt-0.5 text-[11px] text-ink-muted">{m.hint}</div> : null}
+          </div>
+        ))
+      }
+    </section>
+
+    <!-- 主体：左内容 + 右数据 -->
+    <div class="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_336px]">
+      <div class="space-y-5">
+        <RepoIdeasSection insight={ins} />
+        <RepoStepsSection insight={ins} />
+        <RepoEffectsSection insight={ins} />
+        <RepoRiskSection insight={ins} />
+      </div>
+
+      <RepoAside
+        repo={repo}
+        derived={derived}
+        growth7={growth7}
+        growth30={growth30}
+        points={points}
+        languages={languages}
+        commit={commit}
+      />
+    </div>
+  </div>
+</Base>

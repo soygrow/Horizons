@@ -1,0 +1,26 @@
+---
+/** 横向条形（排名分布用 count，渠道/国家用 share 百分比） */
+interface Props {
+  items: { label: string; value: number; suffix?: string }[];
+}
+
+const { items } = Astro.props;
+const max = Math.max(...items.map((i) => i.value), 1);
+---
+
+<ul class="flex flex-col gap-2.5">
+  {
+    items.map((it) => (
+      <li class="flex items-center gap-3">
+        <span class="w-20 shrink-0 text-xs text-ink-secondary">{it.label}</span>
+        <div class="h-2 flex-1 overflow-hidden rounded-full bg-surface-2">
+          <div class="h-full rounded-full bg-primary" style={`width: ${(it.value / max) * 100}%`} />
+        </div>
+        <span class="w-14 text-right text-xs tabular-nums text-ink-muted">
+          {it.value}
+          {it.suffix ?? ""}
+        </span>
+      </li>
+    ))
+  }
+</ul>

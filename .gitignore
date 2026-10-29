@@ -49,3 +49,11 @@ content/backup/
 
 # 前端派生数据（由 scripts/build/web-data.mjs 生成）
 content/github-web.json
+
+# Astro 静态站（apps/site）构建产物与类型缓存
+apps/site/dist/
+apps/site/.astro/
+
+# 榜单产物（由 scripts/build/artifacts.ts 生成，pnpm deploy 时自动重算）
+content/dist/
+apps/site/public/data/

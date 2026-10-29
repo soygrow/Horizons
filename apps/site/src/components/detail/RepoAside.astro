@@ -1,0 +1,181 @@
+---
+/** GitHub 详情页右侧数据栏：得分构成 / 星标趋势 / 提交活跃 / 语言占比 / 项目档案 / 竞品 */
+import TrafficTrendChart from "./TrafficTrendChart.astro";
+import Chip from "./Chip.astro";
+import { categoryLabel, scoreGradeTone } from "../../lib/labels";
+import { formatDateZh } from "../../lib/format";
+
+interface Props {
+  repo: Record<string, any>;
+  derived: Record<string, any>;
+  growth7: number | null;
+  growth30: number | null;
+  points: { date: string; total: number; organic: number }[];
+  languages: [string, number][];
+  commit: number[];
+}
+
+const { repo, derived, growth7, growth30, points, languages, commit } = Astro.props;
+
+const score = repo.productScore ?? { score: derived.score, grade: derived.grade, summary: "", parts: [] };
+const grade: "S" | "A" | "B" | "C" = score.grade;
+const parts: any[] = score.parts ?? [];
+const commitRecent = commit.slice(-4).reduce((a, b) => a + b, 0);
+const permissive = !!derived.permissive;
+const competitors: string[] = repo.insight?.competitors ?? [];
+
+const growthText = (v: number | null) => (v !== null ? `${v > 0 ? "+" : ""}${v}%` : "—");
+---
+
+<aside class="space-y-4 self-start lg:sticky lg:top-20">
+  <!-- 综合得分构成 -->
+  <div class="rounded-2xl border border-border bg-surface p-4">
+    <div class="flex items-baseline justify-between">
+      <h3 class="text-sm font-semibold text-ink">综合得分构成</h3>
+      <span class="text-[11px] text-ink-muted">满分 100</span>
+    </div>
+    <div class="mt-2 flex items-end gap-2">
+      <span class="text-3xl font-bold tabular-nums text-primary">{score.score.toFixed(1)}</span>
+      <span class={`mb-1 rounded border px-1.5 py-0.5 text-[11px] font-semibold ${scoreGradeTone[grade]}`}>
+        {grade} 级
+      </span>
+    </div>
+    <p class="mt-1 text-[11px] leading-relaxed text-ink-secondary">{score.summary}</p>
+    <ul class="mt-3 space-y-2">
+      {
+        parts.map((p) => (
+          <li title={p.note}>
+            <div class="flex items-center justify-between text-[11px]">
+              <span class="text-ink-secondary">
+                {p.label}
+                <span class="ml-1 text-ink-muted">{p.weight}%</span>
+              </span>
+              <span class="tabular-nums text-ink-muted">{p.points.toFixed(1)} 分</span>
+            </div>
+            <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-2">
+              <div class="h-full rounded-full bg-primary/70" style={`width: ${Math.max(2, p.value)}%`} />
+            </div>
+            <p class="mt-0.5 truncate text-[10px] text-ink-muted">{p.note}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-3 text-[10px] leading-relaxed text-ink-muted">
+      得分用于衡量「用它做出一款有收益产品的可能性」，榜单按此排序；无官网项目同样收录，只在商业化项少计分。
+    </p>
+  </div>
+
+  <!-- 星标趋势 -->
+  <div class="rounded-2xl border border-border bg-surface p-4">
+    <div class="flex items-baseline justify-between">
+      <h3 class="text-sm font-semibold text-ink">星标趋势（近 30 天）</h3>
+      <div class="flex gap-2 text-[11px]">
+        <span class={growth7 !== null && growth7 >= 0 ? "text-emerald-500" : "text-ink-muted"}>
+          7 天 {growthText(growth7)}
+        </span>
+        <span class={growth30 !== null && growth30 >= 0 ? "text-emerald-500" : "text-ink-muted"}>
+          30 天 {growthText(growth30)}
+        </span>
+      </div>
+    </div>
+    <div class="mt-2">
+      {
+        points.length >= 2 ? (
+          <TrafficTrendChart points={points} variant="stars" />
+        ) : (
+          <p class="py-6 text-center text-xs text-ink-muted">趋势积累中</p>
+        )
+      }
+    </div>
+  </div>
+
+  <!-- 提交活跃 -->
+  <div class="rounded-2xl border border-border bg-surface p-4">
+    <h3 class="text-sm font-semibold text-ink">提交活跃（近 52 周）</h3>
+    <div class="mt-3">
+      {
+        commit.length ? (
+          <div class="flex h-16 items-end gap-[2px]">
+            {commit.map((v) => (
+              <div
+                title={`${v} 次提交`}
+                class="flex-1 rounded-sm bg-primary/60"
+                style={`height: ${Math.max(4, (v / Math.max(...commit, 1)) * 100)}%`}
+              />
+            ))}
+          </div>
+        ) : (
+          <p class="text-xs text-ink-muted">暂无数据</p>
+        )
+      }
+    </div>
+    <p class="mt-2 text-[11px] text-ink-muted">
+      {commit.length ? `近 4 周合计 ${commitRecent} 次提交` : "未采集到提交数据"}
+    </p>
+  </div>
+
+  <!-- 语言占比 -->
+  <div class="rounded-2xl border border-border bg-surface p-4">
+    <h3 class="text-sm font-semibold text-ink">语言占比</h3>
+    {
+      languages.length ? (
+        <ul class="mt-3 space-y-2">
+          {languages.map(([name, pct]) => (
+            <li>
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-ink-secondary">{name}</span>
+                <span class="tabular-nums text-ink-muted">{pct}%</span>
+              </div>
+              <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-2">
+                <div class="h-full rounded-full bg-primary/70" style={`width: ${pct}%`} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="mt-2 text-[11px] text-ink-muted">该项目以 {repo.language ?? "未知语言"} 为主</p>
+      )
+    }
+  </div>
+
+  <!-- 项目档案 -->
+  <div class="rounded-2xl border border-border bg-surface p-4">
+    <h3 class="text-sm font-semibold text-ink">项目档案</h3>
+    <dl class="mt-3 space-y-2 text-xs">
+      <div class="flex justify-between gap-3">
+        <dt class="text-ink-muted">许可证</dt>
+        <dd class="text-right text-ink-secondary">
+          {repo.license ? (repo.license.spdx ?? repo.license.name) : "未知"}
+          <span class={permissive ? "ml-1 text-emerald-500" : "ml-1 text-amber-500"}>{permissive ? "可商用" : "需确认"}</span>
+        </dd>
+      </div>
+      <div class="flex justify-between gap-3">
+        <dt class="text-ink-muted">创建时间</dt>
+        <dd class="text-right text-ink-secondary">{repo.createdAt ? formatDateZh(repo.createdAt) : "—"}</dd>
+      </div>
+      <div class="flex justify-between gap-3">
+        <dt class="text-ink-muted">最近提交</dt>
+        <dd class="text-right text-ink-secondary">{repo.pushedAt ? formatDateZh(repo.pushedAt) : "—"}</dd>
+      </div>
+      <div class="flex justify-between gap-3">
+        <dt class="text-ink-muted">用途分类</dt>
+        <dd class="text-right text-ink-secondary">
+          {(repo.categories ?? []).map((c: string) => categoryLabel(c)).join(" / ")}
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  {
+    competitors.length ? (
+      <div class="rounded-2xl border border-border bg-surface p-4">
+        <h3 class="text-sm font-semibold text-ink">竞品 / 参考</h3>
+        <div class="mt-2.5 flex flex-wrap gap-1.5">
+          {competitors.map((c) => (
+            <Chip>{c}</Chip>
+          ))}
+        </div>
+      </div>
+    ) : null
+  }
+</aside>

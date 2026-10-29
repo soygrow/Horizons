@@ -1,0 +1,16 @@
+---
+/** 子模块卡片：标题 + 右侧附加信息 + 内容 */
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<div class="rounded-2xl border border-border bg-surface p-6">
+  <div class="flex items-baseline justify-between">
+    <h3 class="font-medium text-ink">{title}</h3>
+    <slot name="extra" />
+  </div>
+  <div class="mt-4"><slot /></div>
+</div>

@@ -1,0 +1,29 @@
+---
+/** 列宽：描述列吃剩余空间，右侧 5 个指标列推到最右（与 ToolListRow 必须一致） */
+export const TOOL_GRID =
+  "grid-cols-[1.5rem_9.5rem_minmax(0,1fr)_6rem_5.5rem_4.5rem_4.5rem_5rem_4.5rem_5rem]";
+
+const cols: string[] = [
+  "#",
+  "名称",
+  "描述",
+  "流量趋势",
+  "分类",
+  "月访问量",
+  "环比增长",
+  "自然搜索量",
+  "域名权重",
+  "注册时间",
+];
+---
+
+<div
+  class:list={[
+    "grid gap-3 border-b-2 border-border bg-surface-2 px-4 py-3 text-[13px] font-semibold text-ink-secondary sm:px-5",
+    TOOL_GRID,
+  ]}
+>
+  {cols.map((c, i) => (
+    <span class:list={["whitespace-nowrap", i === 2 ? "text-left" : "text-center"]}>{c}</span>
+  ))}
+</div>

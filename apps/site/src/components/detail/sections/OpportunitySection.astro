@@ -1,0 +1,74 @@
+---
+/** 02 值不值得做 */
+import SectionHeader from "../SectionHeader.astro";
+import NoData from "../NoData.astro";
+import { getDict } from "../../../../../web/src/lib/i18n";
+
+interface Props {
+  tool: Record<string, any>;
+}
+
+const dict = getDict("zh");
+const t = dict.opportunity;
+const { tool } = Astro.props;
+const opp = tool.opportunity;
+
+const VERDICT_STYLE: Record<string, string> = {
+  值得入场: "bg-success-soft text-success",
+  谨慎: "bg-warning-soft text-warning",
+  别碰: "bg-danger-soft text-danger",
+};
+---
+
+<section id="opportunity" class="flex scroll-mt-36 flex-col gap-10">
+  <SectionHeader
+    no={dict.sections.opportunity.no}
+    title={dict.sections.opportunity.title}
+    desc={dict.sections.opportunity.desc}
+  />
+  <div class="rounded-2xl border border-border bg-surface p-6 sm:p-8">
+    {
+      opp ? (
+        <>
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+            <div class="flex items-baseline gap-1.5">
+              <span class="text-4xl font-bold tabular-nums leading-none text-ink">{opp.score}</span>
+              <span class="text-base text-ink-muted">{t.scoreOf}</span>
+            </div>
+            <span
+              class={`inline-flex items-center rounded-full px-3.5 py-1 text-base font-semibold ${VERDICT_STYLE[opp.verdict] ?? "bg-surface-2 text-ink-secondary"}`}
+            >
+              {opp.verdict}
+            </span>
+            {opp.reason ? (
+              <p class="min-w-[14rem] flex-1 text-sm leading-relaxed text-ink-secondary">{opp.reason}</p>
+            ) : null}
+          </div>
+          <div class="mt-7 flex flex-col gap-1">
+            <h4 class="text-sm font-semibold text-ink">{t.dimensions}</h4>
+            <p class="text-xs text-ink-muted">{t.dimensionsHint}</p>
+          </div>
+          <div class="mt-4 grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-5">
+            {(opp.dimensions ?? []).map((d: any) => (
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-baseline justify-between text-xs">
+                  <span class="font-medium text-ink-secondary">{d.label}</span>
+                  <span class="font-semibold tabular-nums text-ink">{d.score}</span>
+                </div>
+                <div class="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
+                  <div
+                    class="h-full rounded-full bg-primary"
+                    style={`width: ${Math.max(0, Math.min(100, d.score))}%`}
+                  />
+                </div>
+                {d.note ? <p class="text-xs leading-relaxed text-ink-muted">{d.note}</p> : null}
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <NoData />
+      )
+    }
+  </div>
+</section>

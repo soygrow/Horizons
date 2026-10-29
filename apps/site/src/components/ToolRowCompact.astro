@@ -1,0 +1,65 @@
+---
+/** 首页榜单行：与 apps/web/src/components/ToolRow.tsx 逐类名一致（响应式 4 列 → lg 9 列） */
+import ToolIcon from "./ToolIcon.astro";
+import VerifiedBadge from "./VerifiedBadge.astro";
+import Sparkline from "./Sparkline.astro";
+import PricingTag from "./PricingTag.astro";
+import GrowthBadge from "./GrowthBadge.astro";
+import { formatDate } from "../lib/format";
+import type { ToolRow } from "../lib/types";
+
+interface Props {
+  tool: ToolRow;
+  rank: number;
+}
+
+const { tool, rank } = Astro.props;
+---
+
+<a
+  href={`/tools/${tool.domain}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="group grid grid-cols-[2rem_auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3 transition hover:bg-surface-2 sm:px-5 lg:grid-cols-[2.5rem_2.75rem_minmax(0,1.1fr)_minmax(0,1.5fr)_4.5rem_4.5rem_4.5rem_5.5rem_5rem] lg:gap-4"
+>
+  <span class="text-sm font-semibold text-ink-muted tabular-nums lg:text-base">
+    {String(rank).padStart(2, "0")}
+  </span>
+
+  <ToolIcon domain={tool.domain} name={tool.name} />
+
+  <div class="min-w-0">
+    <div class="flex items-center gap-1.5">
+      <h3 class="truncate text-sm font-semibold text-ink group-hover:text-primary">{tool.name}</h3>
+      {tool.verified === "verified" && <VerifiedBadge />}
+    </div>
+    <p class="mt-0.5 flex items-center gap-1 text-xs text-ink-muted">
+      <span class="truncate">{tool.domain}</span>
+    </p>
+  </div>
+
+  <div class="hidden min-w-0 lg:block">
+    <p class="line-clamp-2 text-sm leading-snug text-ink-secondary">{tool.desc}</p>
+  </div>
+
+  <div class="hidden lg:block">
+    <Sparkline points={tool.spark} width={64} height={24} />
+  </div>
+
+  <div class="hidden text-sm text-ink-secondary tabular-nums lg:block">
+    {tool.scale ?? <span class="text-ink-muted">—</span>}
+  </div>
+
+  <div class="hidden lg:block">
+    <PricingTag model={tool.pricing} />
+  </div>
+
+  <div class="text-right">
+    <div class="text-lg font-semibold leading-none text-ink tabular-nums">{tool.heat}</div>
+    <div class="mt-1 hidden lg:block">
+      <GrowthBadge growth={tool.growth} />
+    </div>
+  </div>
+
+  <div class="hidden text-right text-xs text-ink-muted lg:block">{formatDate(tool.collectedAt)}</div>
+</a>

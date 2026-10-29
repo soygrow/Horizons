@@ -1,0 +1,67 @@
+---
+import Base from "../layouts/Base.astro";
+import SearchInput from "../components/SearchInput.astro";
+import GithubBoard from "../components/GithubBoard.astro";
+import BoardSection from "../components/BoardSection.astro";
+import TestimonialWall from "../components/TestimonialWall.astro";
+import FaqAccordion from "../components/FaqAccordion.astro";
+import { homeData } from "../lib/dataset";
+
+const { stats, toolsHot, toolsNewest, byCategory, githubTop } = homeData;
+const ghDate = stats.githubUpdatedAt ? stats.githubUpdatedAt.slice(0, 10) : "";
+---
+
+<Base>
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgba(91,91,214,0.18),transparent)]">
+    </div>
+    <div class="relative mx-auto max-w-6xl px-4 py-20 text-center sm:px-6 sm:py-28">
+      <h1 class="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-ink sm:text-5xl">
+        发现正在崛起的 AI 工具
+      </h1>
+      <p class="mx-auto mt-5 max-w-xl text-base text-ink-secondary">
+        两个榜：AI 工具榜看真实产品形态，GitHub 榜看开源项目能做成什么生意。 每个条目都标注指标来源与数据日期。
+      </p>
+      <div class="mt-8 flex justify-center">
+        <SearchInput value="" />
+      </div>
+      <p class="mt-6 text-sm text-ink-muted">
+        已收录 {stats.tools} 个 AI 工具 · {stats.repos} 个开源项目
+        {ghDate ? ` · 榜单数据更新于 ${ghDate}` : ""}
+      </p>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <GithubBoard items={githubTop} total={stats.repos} />
+
+    <BoardSection
+      title="热度榜"
+      subtitle={`按热度分排序的前 ${toolsHot.length} 个工具`}
+      items={toolsHot}
+      viewAllHref="/tools"
+    />
+    <BoardSection
+      title="新星榜"
+      subtitle={`近期新收录的前 ${toolsNewest.length} 个工具`}
+      items={toolsNewest}
+      viewAllHref="/tools?sort=recent"
+    />
+
+    {
+      byCategory.map((b) => (
+        <BoardSection
+          title={b.category}
+          subtitle={`该分类共 ${b.total} 个工具，按热度取前 ${b.items.length} 个`}
+          items={b.items}
+          viewAllHref={`/tools?cat=${encodeURIComponent(b.category)}`}
+        />
+      ))
+    }
+  </div>
+
+  <TestimonialWall />
+  <FaqAccordion />
+</Base>

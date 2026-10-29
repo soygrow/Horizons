@@ -1,0 +1,54 @@
+---
+interface Props {
+  page: number;
+  totalPages: number;
+  buildHref: (p: number) => string;
+}
+
+const { page, totalPages, buildHref } = Astro.props;
+
+const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+const visible = pages.filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1);
+---
+
+{
+  totalPages > 1 && (
+    <nav class="flex items-center justify-center gap-1.5">
+      <a
+        href={buildHref(Math.max(1, page - 1))}
+        aria-disabled={page === 1}
+        class="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-ink-secondary transition hover:text-ink"
+      >
+        上一页
+      </a>
+
+      {visible.map((p, i) => {
+        const prev = visible[i - 1];
+        const ellipsis = prev && p - prev > 1;
+        return (
+          <span class="flex items-center gap-1.5">
+            {ellipsis ? <span class="text-ink-muted">…</span> : null}
+            <a
+              href={buildHref(p)}
+              class={
+                p === page
+                  ? "rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-white"
+                  : "rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-ink-secondary transition hover:text-ink"
+              }
+            >
+              {p}
+            </a>
+          </span>
+        );
+      })}
+
+      <a
+        href={buildHref(Math.min(totalPages, page + 1))}
+        aria-disabled={page === totalPages}
+        class="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-ink-secondary transition hover:text-ink"
+      >
+        下一页
+      </a>
+    </nav>
+  )
+}

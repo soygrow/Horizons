@@ -1,0 +1,8 @@
+---
+/** 左右布局容器（65:35） */
+---
+
+<div class="grid gap-6 lg:grid-cols-[65fr_35fr] lg:gap-8">
+  <div class="min-w-0"><slot name="left" /></div>
+  <div class="min-w-0"><slot name="right" /></div>
+</div>

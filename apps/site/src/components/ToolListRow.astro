@@ -1,0 +1,81 @@
+---
+import Sparkline from "./Sparkline.astro";
+import ToolIcon from "./ToolIcon.astro";
+import { TOOL_GRID } from "./ToolListHead.astro";
+import { categoryLabel } from "../lib/labels";
+import { formatCount, formatDateShort } from "../lib/format";
+import type { ToolRow } from "../lib/types";
+
+interface Props {
+  tool: ToolRow;
+}
+
+const { tool } = Astro.props;
+---
+
+<a
+  href={`/tools/${tool.domain}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  class:list={[
+    "group grid items-center gap-3 border-b border-border px-4 py-3 transition hover:bg-surface-2 sm:px-5",
+    TOOL_GRID,
+  ]}
+>
+  <span class="text-center text-sm font-semibold text-ink-muted tabular-nums">
+    {String(tool.rank).padStart(2, "0")}
+  </span>
+
+  <div class="flex min-w-0 items-center justify-start gap-2.5">
+    <ToolIcon domain={tool.domain} name={tool.name} />
+    <div class="min-w-0">
+      <div class="flex items-center gap-1.5">
+        <h3 class="truncate text-sm font-semibold text-ink group-hover:text-primary">{tool.name}</h3>
+      </div>
+      <p class="mt-0.5 truncate text-xs text-ink-muted">{tool.domain}</p>
+    </div>
+  </div>
+
+  <p class="line-clamp-2 text-left text-sm leading-snug text-ink-secondary">{tool.desc}</p>
+
+  <div class="flex justify-center">
+    <Sparkline points={tool.spark} width={88} height={28} />
+  </div>
+
+  <div class="flex flex-col items-center gap-1">
+    {tool.cats.slice(0, 2).map((c) => (
+      <span class="whitespace-nowrap rounded-md border border-border px-1.5 py-0.5 text-[11px] text-ink-secondary">
+        {categoryLabel(c)}
+      </span>
+    ))}
+  </div>
+
+  <div class="text-center text-sm text-ink-secondary tabular-nums">
+    {tool.visits !== null ? formatCount(tool.visits) : "n/a"}
+  </div>
+
+  <div
+    title={tool.mom === null ? "上月无数据，无法计算环比" : undefined}
+    class:list={[
+      "text-center text-sm tabular-nums",
+      tool.mom === null ? "text-ink-muted" : tool.mom >= 0 ? "text-accent" : "text-rose-400",
+    ]}
+  >
+    {tool.mom !== null ? `${tool.mom > 0 ? "+" : ""}${tool.mom}%` : "n/a"}
+  </div>
+
+  <div class="text-center text-sm text-ink-secondary tabular-nums">
+    {tool.organic !== null ? formatCount(tool.organic) : "n/a"}
+  </div>
+
+  <div
+    title={tool.dr === null ? "未采集到域名权重" : undefined}
+    class="text-center text-sm text-ink-secondary tabular-nums"
+  >
+    {tool.dr !== null ? `${formatCount(tool.dr)} ${tool.drLabel ?? "DR"}` : "n/a"}
+  </div>
+
+  <div class="whitespace-nowrap text-center text-sm text-ink-secondary tabular-nums">
+    {formatDateShort(tool.launchedAt)}
+  </div>
+</a>

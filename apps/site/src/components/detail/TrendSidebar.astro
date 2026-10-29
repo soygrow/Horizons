@@ -1,0 +1,169 @@
+---
+/** 趋势详情页侧栏 */
+import TrendStatusBadge from "./TrendStatusBadge.astro";
+import {
+  formatDateShort,
+} from "../../lib/format";
+import {
+  OPPORTUNITY_WEIGHTS,
+  TREND_WEIGHTS,
+  getRelatedTrends,
+  sourceKindLabels,
+  trendCategoryLabels,
+  trendDataMode,
+} from "../../../../web/src/lib/trends";
+
+interface Props {
+  trend: any;
+  samples: number;
+  scored: boolean;
+  tv: number;
+  op: number;
+}
+
+const { trend, samples, scored, tv, op } = Astro.props;
+const related = getRelatedTrends(trend, 4);
+
+const trendRows = TREND_WEIGHTS.map((w) => ({
+  label: w.label,
+  weight: w.weight,
+  value: trend.trendParts[w.key],
+}));
+const oppRows = OPPORTUNITY_WEIGHTS.map((w) => ({
+  label: w.label,
+  weight: w.weight,
+  value: trend.oppParts[w.key],
+}));
+---
+
+<aside class="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
+  <div class="rounded-2xl border border-border bg-surface p-5">
+    <h2 class="text-sm font-semibold text-ink">评分构成</h2>
+    <div class="mt-3 flex flex-col gap-4">
+      {
+        [
+          { title: `趋势强度 T = ${scored ? tv.toFixed(1) : "—"}`, rows: trendRows },
+          { title: `机会潜力 O = ${scored ? op.toFixed(1) : "—"}`, rows: oppRows },
+        ].map((block) => (
+          <div>
+            <h3 class="text-xs font-medium text-ink-muted">{block.title}</h3>
+            <ul class="mt-2 flex flex-col gap-2">
+              {block.rows.map((r) => (
+                <li class="flex items-center gap-2">
+                  <span class="w-[6.5rem] shrink-0 truncate text-xs text-ink-secondary">{r.label}</span>
+                  <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2">
+                    <div class="h-full rounded-full bg-primary/70" style={`width: ${r.value}%`} />
+                  </div>
+                  <span class="w-8 shrink-0 text-right text-xs tabular-nums text-ink">{r.value}</span>
+                  <span class="w-9 shrink-0 text-right text-[10px] tabular-nums text-ink-muted">
+                    {Math.round(r.weight * 100)}%
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-3 border-t border-border pt-3 text-[11px] leading-relaxed text-ink-muted">
+      权重是第一版假设，需要用历史表现回测校准；数据不足时不评分。
+    </p>
+  </div>
+
+  <div class="rounded-2xl border border-border bg-surface p-5">
+    <h2 class="text-sm font-semibold text-ink">数据来源</h2>
+    <div class="mt-3 flex flex-col gap-2">
+      {
+        (trend.sources ?? []).map((s: any) => (
+          <a
+            href={s.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex items-start gap-2 rounded-lg border border-border bg-surface-2/40 px-2.5 py-2 transition hover:border-primary/40"
+          >
+            <div class="min-w-0">
+              <div class="truncate text-xs font-medium text-ink group-hover:text-primary">{s.label}</div>
+              <div class="truncate text-[11px] text-ink-muted">
+                {s.site ?? s.url}
+                {[sourceKindLabels[s.kind], s.publishedAt].filter(Boolean).length
+                  ? ` · ${[sourceKindLabels[s.kind], s.publishedAt].filter(Boolean).join(" · ")}`
+                  : ""}
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+
+  {
+    trend.relatedQueries?.length ? (
+      <div class="rounded-2xl border border-border bg-surface p-5">
+        <h2 class="text-sm font-semibold text-ink">相关查询</h2>
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          {trend.relatedQueries.map((q: string) => (
+            <span class="rounded-md border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-secondary">
+              {q}
+            </span>
+          ))}
+        </div>
+      </div>
+    ) : null
+  }
+
+  {
+    trend.competitors?.length ? (
+      <div class="rounded-2xl border border-border bg-surface p-5">
+        <h2 class="text-sm font-semibold text-ink">现有产品 / 竞品</h2>
+        <ul class="mt-3 flex flex-col gap-1.5 text-xs text-ink-secondary">
+          {trend.competitors.map((c: string) => (
+            <li>· {c}</li>
+          ))}
+        </ul>
+      </div>
+    ) : null
+  }
+
+  <div class="rounded-2xl border border-border bg-surface p-5">
+    <h2 class="text-sm font-semibold text-ink">采集档案</h2>
+    <dl class="mt-3 flex flex-col gap-2 text-xs">
+      {
+        [
+          ["首次发现", formatDateShort(trend.firstSeenAt)],
+          ["最近采集", formatDateShort(trend.lastSeenAt)],
+          ["数据快照", formatDateShort(trend.updatedAt)],
+          ["地区", trend.region],
+          ["采样点", `${samples} 个 / 步长 ${trend.series.stepDays} 天`],
+          ["数据集", trendDataMode === "seed" ? "结构演示（seed）" : "生产采集（live）"],
+        ].map(([k, v]) => (
+          <div class="flex items-center justify-between gap-3">
+            <dt class="text-ink-muted">{k}</dt>
+            <dd class="tabular-nums text-ink-secondary">{v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+
+  <div class="rounded-2xl border border-border bg-surface p-5">
+    <h2 class="text-sm font-semibold text-ink">相近趋势</h2>
+    <div class="mt-3 flex flex-col gap-2">
+      {
+        related.map((r: any) => (
+          <a
+            href={`/trends/${r.slug}`}
+            class="flex items-center justify-between gap-2 rounded-lg border border-border bg-surface-2/40 px-2.5 py-2 transition hover:border-primary/40"
+          >
+            <span class="min-w-0">
+              <span class="block truncate text-xs font-medium text-ink">{r.normalizedName}</span>
+              <span class="block truncate text-[11px] text-ink-muted">
+                {trendCategoryLabels[r.category]}
+              </span>
+            </span>
+            <TrendStatusBadge status={r.status} />
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</aside>

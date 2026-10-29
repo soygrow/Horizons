@@ -1,0 +1,32 @@
+---
+/** 03 能有什么效果 + 护城河 */
+import RepoSection from "../RepoSection.astro";
+
+interface Props {
+  insight: Record<string, any> | undefined;
+}
+
+const { insight } = Astro.props;
+const effects: any[] = insight?.effects ?? [];
+---
+
+<RepoSection no="03" title="能有什么效果" desc="可量化的预期，帮助你判断值不值得做">
+  <div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+    {
+      effects.map((e) => (
+        <div class="rounded-xl border border-border bg-surface-2/40 px-3.5 py-2.5">
+          <div class="text-[11px] text-ink-muted">{e.metric}</div>
+          <div class="mt-0.5 text-base font-semibold text-primary">{e.value}</div>
+        </div>
+      ))
+    }
+  </div>
+  {
+    insight?.moat ? (
+      <div class="mt-3 rounded-xl border border-primary/25 bg-primary/5 p-3.5">
+        <p class="text-xs font-medium text-primary">护城河 / 差异化</p>
+        <p class="mt-1 text-sm leading-relaxed text-ink">{insight.moat}</p>
+      </div>
+    ) : null
+  }
+</RepoSection>

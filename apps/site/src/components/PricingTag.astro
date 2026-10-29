@@ -1,0 +1,30 @@
+---
+import { pricingModelLabels, type PricingModel } from "../lib/labels";
+
+interface Props {
+  model?: PricingModel | null;
+}
+
+const { model } = Astro.props;
+
+const styles: Record<PricingModel, string> = {
+  free: "bg-accent-soft text-accent",
+  freemium: "bg-primary-soft text-primary",
+  paid: "bg-violet-500/15 text-violet-300",
+};
+---
+
+{
+  !model ? (
+    <span class="text-xs text-ink-muted">—</span>
+  ) : (
+    <span
+      class:list={[
+        "inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium",
+        styles[model],
+      ]}
+    >
+      {pricingModelLabels[model]}
+    </span>
+  )
+}

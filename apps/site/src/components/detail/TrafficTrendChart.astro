@@ -1,0 +1,176 @@
+---
+/**
+ * 流量趋势折线：源站为交互式 React 组件，静态站用同样几何与配色做静态版
+ * （单调三次平滑 + 面积 + 双系列虚线），保留全部数值标签。
+ */
+import { formatCount } from "../../lib/format";
+
+interface Point {
+  date: string;
+  total: number;
+  organic: number;
+}
+
+interface Props {
+  points: Point[];
+  /** traffic：双系列（总访问量 / 自然搜索）；stars：单系列（星标趋势） */
+  variant?: "traffic" | "stars";
+}
+
+const W = 760;
+const H = 260;
+const PAD = { top: 16, right: 16, bottom: 28, left: 48 };
+
+const { points, variant = "traffic" } = Astro.props;
+const isStars = variant === "stars";
+
+const niceMax = (v: number): number => {
+  if (v <= 0) return 1;
+  const exp = Math.floor(Math.log10(v));
+  const base = Math.pow(10, exp);
+  return (Math.ceil((v / base) * 2) / 2) * base;
+};
+
+/** Fritsch–Carlson 单调三次，等价 d3 curveMonotoneX */
+function smoothPath(pts: { x: number; y: number }[]): string {
+  const n = pts.length;
+  if (n === 0) return "";
+  if (n === 1) return `M${pts[0].x},${pts[0].y}`;
+  if (n === 2) return `M${pts[0].x},${pts[0].y} L${pts[1].x},${pts[1].y}`;
+
+  const dx: number[] = [];
+  const slopes: number[] = [];
+  for (let i = 0; i < n - 1; i++) {
+    dx[i] = pts[i + 1].x - pts[i].x;
+    slopes[i] = (pts[i + 1].y - pts[i].y) / dx[i];
+  }
+
+  const m: number[] = new Array(n);
+  m[0] = slopes[0];
+  m[n - 1] = slopes[n - 2];
+  for (let i = 1; i < n - 1; i++) {
+    if (slopes[i - 1] * slopes[i] <= 0) {
+      m[i] = 0;
+    } else {
+      const w1 = 2 * dx[i] + dx[i - 1];
+      const w2 = dx[i] + 2 * dx[i - 1];
+      m[i] = (w1 + w2) / (w1 / slopes[i - 1] + w2 / slopes[i]);
+    }
+  }
+
+  let d = `M${pts[0].x},${pts[0].y}`;
+  for (let i = 0; i < n - 1; i++) {
+    const cx1 = pts[i].x + dx[i] / 3;
+    const cy1 = pts[i].y + (m[i] * dx[i]) / 3;
+    const cx2 = pts[i + 1].x - dx[i] / 3;
+    const cy2 = pts[i + 1].y - (m[i + 1] * dx[i]) / 3;
+    d += ` C${cx1.toFixed(1)},${cy1.toFixed(1)} ${cx2.toFixed(1)},${cy2.toFixed(1)} ${pts[i + 1].x},${pts[i + 1].y}`;
+  }
+  return d;
+}
+
+const yMax = niceMax(Math.max(...points.map((p) => Math.max(p.total, p.organic ?? 0)), 1));
+const plotW = W - PAD.left - PAD.right;
+const plotH = H - PAD.top - PAD.bottom;
+
+const x = (i: number) => PAD.left + (points.length === 1 ? plotW / 2 : (i * plotW) / (points.length - 1));
+const y = (v: number) => H - PAD.bottom - (Math.max(0, v) / yMax) * plotH;
+
+const toCoords = (key: "total" | "organic") =>
+  points.map((p, i) => ({ x: x(i), y: y(p[key] ?? 0) }));
+
+const totalCoords = toCoords("total");
+const organicCoords = toCoords("organic");
+const line = smoothPath(totalCoords);
+const organicLine = smoothPath(organicCoords);
+const area = `${line} L${x(points.length - 1)},${H - PAD.bottom} L${x(0)},${H - PAD.bottom} Z`;
+const yTicks = [0, 0.25, 0.5, 0.75, 1].map((r) => r * yMax);
+const labelStep = Math.max(1, Math.ceil(points.length / 8));
+---
+
+<svg viewBox={`0 0 ${W} ${H}`} class="h-auto w-full" role="img" aria-label={isStars ? "星标趋势图" : "流量趋势图"}>
+  {
+    yTicks.map((tick) => (
+      <g>
+        <line
+          x1={PAD.left}
+          x2={W - PAD.right}
+          y1={y(tick)}
+          y2={y(tick)}
+          class="stroke-border"
+          stroke-width="1"
+          stroke-dasharray={tick === 0 ? undefined : "4 4"}
+        />
+        <text
+          x={PAD.left - 8}
+          y={y(tick) + 4}
+          text-anchor="end"
+          class="fill-current text-ink-muted"
+          font-size="11"
+        >
+          {formatCount(Math.round(tick))}
+        </text>
+      </g>
+    ))
+  }
+
+  {
+    points.map((p, i) =>
+      i % labelStep === 0 || i === points.length - 1 ? (
+        <text
+          x={x(i)}
+          y={H - 8}
+          text-anchor="middle"
+          class="fill-current text-ink-muted"
+          font-size="11"
+        >
+          {p.date.slice(2).replace("-", "/")}
+        </text>
+      ) : null,
+    )
+  }
+
+  <path d={area} class="fill-primary" opacity="0.06"></path>
+  <path d={line} class="stroke-primary" fill="none" stroke-width="2" stroke-linejoin="round"></path>
+
+  {
+    !isStars &&
+      points.map((p, i) => (
+        <text
+          x={x(i)}
+          y={Math.max(y(p.total) - 6, PAD.top + 8)}
+          text-anchor="middle"
+          font-size="10"
+          class="fill-current text-ink-secondary"
+        >
+          {formatCount(p.total)}
+        </text>
+      ))
+  }
+
+  {
+    !isStars && (
+      <path
+        d={organicLine}
+        class="stroke-ocean"
+        fill="none"
+        stroke-width="2"
+        stroke-dasharray="5 3"
+        stroke-linejoin="round"
+      />
+    )
+  }
+</svg>
+
+<div class="mt-2 flex items-center justify-center gap-5 text-xs text-ink-secondary">
+  <span class="flex items-center gap-1.5">
+    <span class="h-2 w-2 rounded-[2px] bg-primary" aria-hidden></span>{isStars ? "星标" : "总访问量"}
+  </span>
+  {
+    !isStars && (
+      <span class="flex items-center gap-1.5">
+        <span class="h-2 w-2 rounded-[2px] bg-ocean" aria-hidden></span>自然搜索
+      </span>
+    )
+  }
+</div>

@@ -1,0 +1,23 @@
+---
+/** 指标卡：value 为空时显示 placeholder + 悬浮说明 */
+interface Props {
+  label: string;
+  value?: string;
+  success?: boolean;
+  placeholder?: string;
+  hint?: string;
+  /** 显式配色（如增长红绿），优先于 success */
+  tone?: string;
+}
+
+const { label, value, success, placeholder = "n/a", hint, tone: toneProp } = Astro.props;
+const pending = !value;
+const tone = pending ? "text-ink-muted" : (toneProp ?? (success ? "text-success" : "text-ink"));
+---
+
+<div class="flex flex-col gap-1 rounded-lg border border-border p-4">
+  <span class="text-xs text-ink-muted">{label}</span>
+  <span title={pending ? hint : undefined} class={`text-lg font-semibold tabular-nums ${tone}`}>
+    {pending ? placeholder : value}
+  </span>
+</div>

@@ -1,0 +1,15 @@
+---
+/** 内容型占位块（AI 分析尚未生成时用） */
+import { getDict } from "../../../../web/src/lib/i18n";
+
+interface Props {
+  text?: string;
+}
+
+const dict = getDict("zh");
+const { text = dict.analysis.awaitingAI } = Astro.props;
+---
+
+<div class="flex h-32 items-center justify-center rounded-xl border border-dashed border-border">
+  <span class="text-sm text-ink-muted">{text}</span>
+</div>

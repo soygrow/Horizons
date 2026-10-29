@@ -1,0 +1,30 @@
+---
+/** 评价墙：与 apps/web/src/components/TestimonialWall.tsx 一致（CSS columns 瀑布流） */
+import testimonials from "../../../../content/testimonials.json";
+---
+
+<section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+  <h2 class="text-center text-2xl font-bold tracking-tight text-ink sm:text-3xl">来自真实用户的评价</h2>
+  <p class="mt-3 text-center text-xs text-ink-muted">以下为示例评价，上线后将替换为真实用户反馈。</p>
+
+  <div class="mt-8 columns-1 gap-4 sm:columns-2 lg:columns-3">
+    {
+      testimonials.map((t) => (
+        <figure class="mb-4 break-inside-avoid rounded-2xl border border-border bg-surface p-5">
+          <blockquote class="text-sm leading-relaxed text-ink-secondary">{t.text}</blockquote>
+          <figcaption class="mt-4 flex items-center gap-3">
+            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary">
+              {t.author.charAt(0)}
+            </span>
+            <div>
+              <p class="text-sm font-medium text-ink">{t.author}</p>
+              <p class="text-xs text-ink-muted">
+                {t.role} · {t.platform}
+              </p>
+            </div>
+          </figcaption>
+        </figure>
+      ))
+    }
+  </div>
+</section>

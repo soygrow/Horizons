@@ -1,0 +1,84 @@
+---
+/** 06 你能做什么：灵感卡 + 竞品 */
+import SectionHeader from "../SectionHeader.astro";
+import Badge from "../Badge.astro";
+import Pending from "../Pending.astro";
+import Favicon from "../Favicon.astro";
+import { getDict } from "../../../../../web/src/lib/i18n";
+
+interface Props {
+  tool: Record<string, any>;
+}
+
+const dict = getDict("zh");
+const t = dict.opportunity;
+const { tool } = Astro.props;
+const sparks: any[] = tool.ideaSparks ?? [];
+const competitors: string[] = tool.observations?.competitors ?? [];
+---
+
+<section id="ideas" class="flex scroll-mt-36 flex-col gap-10">
+  <SectionHeader
+    no={dict.sections.ideas.no}
+    title={dict.sections.ideas.title}
+    desc={dict.sections.ideas.desc}
+  />
+
+  {
+    sparks.length ? (
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {sparks.map((s) => (
+          <div class="flex flex-col gap-2.5 rounded-xl border border-border bg-surface p-5 transition hover:border-primary/40">
+            <h4 class="text-sm font-semibold text-ink">{s.title}</h4>
+            {s.angle ? <Badge>{s.angle}</Badge> : null}
+            {s.why ? <p class="text-sm leading-relaxed text-ink-secondary">{s.why}</p> : null}
+            {s.source ? (
+              <div class="mt-auto flex items-start gap-1.5 border-t border-border pt-2.5 text-xs text-ink-muted">
+                <span class="shrink-0 font-medium text-primary">{dict.analysis.ideaSource}</span>
+                <span>{s.source}</span>
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+    ) : (
+      <Pending text={`${t.sparks} · ${dict.analysis.awaitingAI}`} />
+    )
+  }
+
+  {
+    competitors.length ? (
+      <div class="rounded-2xl border border-border bg-surface p-6">
+        <h3 class="text-base font-semibold text-ink">{dict.observations.competitors}</h3>
+        <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {competitors.map((c) => (
+            <a
+              href={`https://${c}`}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              class="flex items-center gap-2.5 rounded-xl border border-border bg-surface-2 px-4 py-3 transition hover:border-primary/40 hover:bg-surface"
+            >
+              <Favicon domain={c} />
+              <span class="min-w-0 flex-1 truncate text-sm font-medium text-ink">{c}</span>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                class="shrink-0 text-ink-muted"
+              >
+                <path d="M7 7h10v10" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </a>
+          ))}
+        </div>
+      </div>
+    ) : null
+  }
+</section>

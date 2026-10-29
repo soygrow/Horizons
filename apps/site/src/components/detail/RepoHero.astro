@@ -1,0 +1,100 @@
+---
+/** GitHub 仓库详情 Hero：与 apps/web/src/app/github/[owner]/[repo]/page.tsx 对齐 */
+import Chip from "./Chip.astro";
+import { categoryLabel } from "../../lib/labels";
+import { formatCount, formatDateZh } from "../../lib/format";
+
+interface Props {
+  repo: Record<string, any>;
+  derived: Record<string, any>;
+}
+
+const { repo, derived } = Astro.props;
+
+const ins = repo.insight;
+const score = repo.productScore ?? { score: derived.score, grade: derived.grade };
+const grade: "S" | "A" | "B" | "C" = score.grade;
+const scoreTone: "ok" | "primary" | "warn" | "muted" =
+  grade === "S" ? "ok" : grade === "A" ? "primary" : grade === "B" ? "warn" : "muted";
+const diffTone: "ok" | "warn" | "muted" =
+  ins?.difficulty === "低" ? "ok" : ins?.difficulty === "高" ? "warn" : "muted";
+const capabilities: string[] = ins?.capabilities ?? [];
+const licenseName = repo.license?.spdx ?? repo.license?.name;
+---
+
+<section class="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+  <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+    <div class="min-w-0 flex-1">
+      <div class="flex items-start gap-3">
+        {
+          repo.avatarUrl ? (
+            <img
+              src={repo.avatarUrl}
+              alt={repo.owner}
+              loading="lazy"
+              decoding="async"
+              class="mt-0.5 h-11 w-11 rounded-xl border border-border"
+            />
+          ) : null
+        }
+        <div class="min-w-0">
+          <h1 class="truncate text-xl font-bold tracking-tight text-ink sm:text-2xl">{repo.fullName}</h1>
+          <p class="mt-1 line-clamp-2 text-base font-medium text-primary">{derived.intro}</p>
+        </div>
+      </div>
+
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        <Chip tone={scoreTone}>综合得分 {score.score.toFixed(1)} · {grade} 级</Chip>
+        <Chip tone="primary">⭐ 星标 {formatCount(repo.stars)}</Chip>
+        <Chip>🍴 复刻 {formatCount(repo.forks)}</Chip>
+        {repo.language ? <Chip>{repo.language}</Chip> : null}
+        {licenseName ? <Chip>{licenseName}</Chip> : null}
+        {ins ? <Chip tone={diffTone}>上手难度：{ins.difficulty}</Chip> : null}
+        {ins ? <Chip>首版：{ins.timeToMvp}</Chip> : null}
+        {ins ? <Chip>月成本：{ins.costToMvp}</Chip> : null}
+      </div>
+
+      <p class="mt-4 text-sm leading-relaxed text-ink-secondary">
+        {ins?.whatZh ?? `${categoryLabel(repo.categories?.[0] ?? "Other")}方向的开源项目，中文情报生成中。`}
+      </p>
+
+      {
+        capabilities.length ? (
+          <div class="mt-3 flex flex-wrap gap-1.5">
+            {capabilities.map((c) => (
+              <span class="rounded-md border border-border px-1.5 py-0.5 text-[11px] text-ink-secondary">{c}</span>
+            ))}
+          </div>
+        ) : null
+      }
+    </div>
+
+    <div class="flex shrink-0 flex-col gap-2 md:w-44">
+      <a
+        href={repo.htmlUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover"
+      >
+        在 GitHub 查看
+      </a>
+      {
+        repo.homepage ? (
+          <a
+            href={repo.homepage}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center rounded-lg border border-border px-4 py-2 text-sm text-ink-secondary transition hover:text-ink"
+          >
+            官网 / 演示
+          </a>
+        ) : null
+      }
+      <div class="rounded-lg border border-border bg-surface-2/60 px-3 py-2 text-[11px] leading-relaxed text-ink-muted">
+        数据来自 GitHub 官方接口
+        <br />
+        最近同步 {repo.lastCrawledAt ? formatDateZh(repo.lastCrawledAt) : "—"}
+      </div>
+    </div>
+  </div>
+</section>
