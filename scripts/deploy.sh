@@ -25,7 +25,7 @@ for arg in "$@"; do
     web|api|all) TARGET="$arg" ;;
     --dry) DRY=1 ;;
     --migrate) MIGRATE=1 ;;
-    -h|--help) sed -n '1,20p' "${BASH_SOURCE[0]}" | grep '^#' | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,19p' "${BASH_SOURCE[0]}" | grep '^#' | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "未知参数：$arg（可用：web | api | all | --dry | --migrate）" >&2; exit 1 ;;
   esac
 done
@@ -106,7 +106,8 @@ fi
 log "线上验收（$SITE）"
 fail=0
 for path in / /tools /github; do
-  code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 25 "$SITE$path" || echo 000)
+  code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$SITE$path" 2>/dev/null || true)
+  code=${code:-000}
   if [ "$code" = "200" ]; then
     ok "$path → 200"
   else
