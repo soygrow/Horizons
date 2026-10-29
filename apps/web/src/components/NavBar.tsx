@@ -5,6 +5,7 @@ import { ThemeToggle } from "./ThemeToggle";
 const channels: { label: string; href: string; soon?: boolean }[] = [
   { label: "AI工具榜", href: "/tools" },
   { label: "GitHub榜", href: "/github" },
+  { label: "AI趋势词榜单", href: "/trends" },
 ];
 
 export function NavBar() {
@@ -43,12 +44,6 @@ export function NavBar() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <AuthButton />
-          <Link
-            href="/#subscribe"
-            className="hidden rounded-lg px-3 py-2 text-sm font-medium text-ink-secondary transition hover:text-ink sm:block"
-          >
-            订阅
-          </Link>
           <Link
             href="/#submit"
             className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover"

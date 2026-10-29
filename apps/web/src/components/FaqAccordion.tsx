@@ -4,7 +4,7 @@ export function FaqAccordion() {
   return (
     <section id="faq" className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
       <h2 className="text-center text-2xl font-bold tracking-tight text-ink sm:text-3xl">
-        关于数据来源、订阅与收录标准
+        关于数据来源与收录标准
       </h2>
       <div className="mt-8 space-y-3">
         {faq.map((item, i) => (

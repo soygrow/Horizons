@@ -399,6 +399,154 @@ export interface AITool {
   performanceInsight?: PerformanceInsight;                // 01 产品表现结构化分析（高光结论 + 六宫格）
 }
 
+// ---------------------------------------------------------------------------
+// AI 趋势词榜单（/trends）：搜索趋势证据 + 机会判断
+// 口径见 docs/12-AI趋势词榜单方案.md；Google Trends 为 0-100 归一化相对热度，
+// 不是搜索次数，前端禁止据此推算月搜索量。
+// ---------------------------------------------------------------------------
+
+/** 一级类别（准入范围，broadtech 需更严格准入） */
+export type TrendCategory =
+  | "model"
+  | "tool"
+  | "agent"
+  | "devtech"
+  | "usecase"
+  | "business"
+  | "broadtech";
+
+/** 趋势阶段：正在爆发 / 持续增长 / 新词观察 / 热度回落 */
+export type TrendStatus = "breaking" | "gaining" | "new" | "cooling";
+
+/** 趋势可信度：自定义证据等级，非 Google 官方指标 */
+export type TrendConfidence = "high" | "medium" | "low";
+
+/** 数据来源类型 */
+export type TrendSourceKind =
+  | "google_trends"
+  | "official"
+  | "news"
+  | "community"
+  | "repo"
+  | "serp";
+
+/** 可追溯的数据来源 */
+export interface TrendSourceRef {
+  label: string;
+  url: string;
+  site?: string;
+  kind: TrendSourceKind;
+  publishedAt?: string; // 证据发布日期 YYYY-MM-DD
+}
+
+/** 结论类型：已验证事实 / 合理推断 / 待验证假设 */
+export type ClaimType = "fact" | "inference" | "hypothesis";
+
+/** 事件与原因（趋势拐点的可能解释） */
+export interface TrendEvidence {
+  claim: string;
+  claimType: ClaimType;
+  date?: string;
+  detail?: string;
+  sources: TrendSourceRef[];
+}
+
+/** 搜索意图分组 */
+export type TrendIntentKey =
+  | "learn"
+  | "howto"
+  | "problem"
+  | "compare"
+  | "price"
+  | "alternative";
+
+export interface TrendIntent {
+  intent: TrendIntentKey;
+  share?: number; // 意图占比 %（相关搜索词聚类）
+  queries: string[];
+}
+
+/** 机会方向 */
+export type TrendOpportunityType = "content" | "product" | "opensource" | "feature";
+
+export interface TrendOpportunity {
+  type: TrendOpportunityType;
+  title: string;
+  why: string; // 依据：必须挂真实搜索意图 / 竞争 / 用户反馈
+  effort?: string; // 独立开发可行性
+  evidence?: string;
+}
+
+/** 下一步行动 */
+export type TrendActionVerdict = "research" | "content" | "mvp" | "watch";
+
+export interface TrendNextAction {
+  verdict: TrendActionVerdict;
+  action: string;
+  reason: string; // 依据
+  uncertainty?: string; // 不确定性
+}
+
+/** 趋势强度分构成（各 0-100，权重 30/25/20/15/10） */
+export interface TrendScoreParts {
+  growth: number; // 增长幅度
+  persistence: number; // 持续性
+  breakout: number; // 爆发强度
+  novelty: number; // 新颖度
+  reliability: number; // 数据可靠性
+}
+
+/** 机会潜力分构成（各 0-100，权重 30/25/20/15/10） */
+export interface OpportunityScoreParts {
+  demand: number; // 用户需求证据
+  wedge: number; // 可切入空间
+  seo: number; // 搜索与内容机会
+  feasibility: number; // 独立开发可行性
+  timing: number; // 趋势时机
+}
+
+/** 搜索兴趣序列（Google Trends 风格 0-100，配采样起点与步长） */
+export interface TrendSeries {
+  start: string; // 首个采样日 YYYY-MM-DD
+  stepDays: number; // 采样步长（天）
+  values: number[]; // 0-100 归一化相对热度
+}
+
+/** 趋势词榜单条目 */
+export interface AITrend {
+  slug: string;
+  keyword: string; // 原始查询词
+  normalizedName: string; // 标准名称（产品 / 模型 / 能力名）
+  category: TrendCategory;
+  region: string; // 地区代码：US / CN / global
+  status: TrendStatus;
+  confidence: TrendConfidence;
+  why: string; // 一句话：为什么升温 + 证据
+  intentSummary?: string; // 需求侧结论
+  firstSeenAt: string; // 首次发现，后续更新不覆盖
+  lastSeenAt: string; // 最近一次成功采集
+  updatedAt: string; // 数据快照时间
+  series: TrendSeries;
+  trendParts: TrendScoreParts;
+  oppParts: OpportunityScoreParts;
+  sources: TrendSourceRef[]; // 趋势数据源（Explore / Trending now …）
+  evidence: TrendEvidence[]; // 事件与原因
+  intents: TrendIntent[]; // 搜索意图
+  relatedQueries?: string[]; // 相关查询
+  competitors?: string[]; // 现有产品 / 竞品
+  opportunities: TrendOpportunity[];
+  actions: TrendNextAction[];
+}
+
+/** 榜单数据集（content/trends.json） */
+export interface TrendDataset {
+  updatedAt: string;
+  /** seed=结构演示数据；live=已接入真实采集 */
+  mode: "seed" | "live";
+  region: string;
+  keywords: AITrend[];
+}
+
 /** 登录会话中的用户信息（前后端共享） */
 export interface SessionUser {
   id: string;

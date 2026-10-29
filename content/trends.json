@@ -1,0 +1,757 @@
+{
+  "updatedAt": "2026-10-29T02:10:00Z",
+  "mode": "seed",
+  "region": "US",
+  "keywords": [
+    {
+      "slug": "claude-skills",
+      "keyword": "claude skills",
+      "normalizedName": "Claude Skills",
+      "category": "agent",
+      "region": "US",
+      "status": "breaking",
+      "confidence": "high",
+      "why": "官方把 Skills 定义为可复用的指令与资源包后，搜索兴趣从基线 13 抬到 90 以上，连续 7 天高于基线，并同步出现大量「怎么做」类长尾词。",
+      "intentSummary": "需求集中在「怎么做一个 Skill」「和 MCP 有什么区别」「有没有现成模板」，属于典型的早期使用型需求。",
+      "firstSeenAt": "2026-10-22",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-09-30",
+        "stepDays": 1,
+        "values": [8, 9, 8, 10, 9, 11, 10, 12, 11, 10, 12, 13, 12, 14, 13, 15, 14, 16, 15, 17, 16, 18, 22, 34, 52, 68, 79, 86, 91, 94]
+      },
+      "trendParts": { "growth": 94, "persistence": 74, "breakout": 90, "novelty": 88, "reliability": 86 },
+      "oppParts": { "demand": 88, "wedge": 76, "seo": 72, "feasibility": 82, "timing": 86 },
+      "sources": [
+        { "label": "Google Trends · Explore（30 天，US）", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=claude%20skills", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "Google Trends · Trending now", "url": "https://trends.google.com/trending?geo=US&hours=24", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "Anthropic 官方发布", "url": "https://www.anthropic.com/news", "site": "anthropic.com", "kind": "official", "publishedAt": "2026-10-16" }
+      ],
+      "evidence": [
+        {
+          "claim": "官方文档把 Skills 定义为可复用的指令与资源包，可在 Claude 应用与 API 侧调用。",
+          "claimType": "fact",
+          "date": "2026-10-16",
+          "detail": "这是趋势成立的前提事实：能力真实存在，且有官方文档可核验。",
+          "sources": [{ "label": "Anthropic 官方发布", "url": "https://www.anthropic.com/news", "site": "anthropic.com", "kind": "official", "publishedAt": "2026-10-16" }]
+        },
+        {
+          "claim": "搜索拐点与教程类内容集中出现的时间重合，推测主要增量来自想动手做一个 Skill 的开发者。",
+          "claimType": "inference",
+          "date": "2026-10-24",
+          "detail": "时间相关不等于因果；相关查询里 howto 占比最高，是支撑该推断的主要证据。",
+          "sources": [
+            { "label": "Google Trends · 相关查询", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=claude%20skills", "site": "trends.google.com", "kind": "google_trends" },
+            { "label": "开发者社区讨论", "url": "https://news.ycombinator.com/", "site": "news.ycombinator.com", "kind": "community" }
+          ]
+        }
+      ],
+      "intents": [
+        { "intent": "learn", "share": 30, "queries": ["what are claude skills", "claude skills 是什么"] },
+        { "intent": "howto", "share": 42, "queries": ["claude skills tutorial", "how to create a claude skill", "claude skills example"] },
+        { "intent": "compare", "share": 20, "queries": ["claude skills vs mcp", "claude skills vs subagents"] },
+        { "intent": "alternative", "share": 8, "queries": ["claude skills marketplace"] }
+      ],
+      "relatedQueries": ["claude skills tutorial", "claude skills example", "how to create a claude skill", "claude skills vs mcp", "claude skills marketplace"],
+      "competitors": ["Anthropic 官方文档", "社区 Skills 合集仓库"],
+      "opportunities": [
+        { "type": "content", "title": "Skills 实战教程：从 0 写一个可复用 Skill", "why": "howto 意图占 42%，现有内容多为官方文档转述，缺少可跑通的完整示例。", "effort": "1–2 天", "evidence": "相关查询中 tutorial / example 类词稳定出现" },
+        { "type": "product", "title": "Skills 模板库 + 一键导入", "why": "用户反复搜索 example 与 marketplace，说明缺「拿来即用」的分发入口，官方未提供模板市场。", "effort": "1–2 周", "evidence": "alternative 意图指向 marketplace 类查询" },
+        { "type": "opensource", "title": "Skills 目录站（按场景分类 + 可用性评分）", "why": "适合先用开源目录占位验证需求，再决定是否做增值 SaaS。", "effort": "3–5 天", "evidence": "GitHub 上 Skills 相关仓库数量快速增长" }
+      ],
+      "actions": [
+        { "verdict": "content", "action": "先写 3 篇 Skills 教程（入门 / 实战 / 与 MCP 对比）验证搜索需求", "reason": "howto + compare 意图合计 62%，内容验证成本最低。", "uncertainty": "教程流量可能在 4–6 周后被官方文档吸收。" },
+        { "verdict": "research", "action": "同步验证模板库假设：观察 Skills 仓库的 star 与 issue 增速", "reason": "product 与 opensource 机会都押在「模板分发」这一个假设上。", "uncertainty": "缺少模板下载量的直接证据，只能用仓库活跃度代理。" }
+      ]
+    },
+    {
+      "slug": "ai-browser-agent",
+      "keyword": "ai browser agent",
+      "normalizedName": "AI 浏览器 Agent",
+      "category": "agent",
+      "region": "US",
+      "status": "breaking",
+      "confidence": "high",
+      "why": "浏览器 Agent 相关搜索连续 10 天高于基线且未见回落，曲线平滑，属于产品化落地期的持续升温。",
+      "intentSummary": "「哪个好用」「能不能自动填表 / 登录」「安全吗」三类需求并存，对比与问题解决意图最重。",
+      "firstSeenAt": "2026-10-20",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-09-30",
+        "stepDays": 1,
+        "values": [12, 13, 12, 14, 13, 12, 14, 15, 14, 13, 15, 16, 15, 17, 16, 18, 17, 19, 18, 20, 19, 21, 26, 38, 49, 58, 66, 73, 78, 84]
+      },
+      "trendParts": { "growth": 88, "persistence": 82, "breakout": 84, "novelty": 70, "reliability": 88 },
+      "oppParts": { "demand": 84, "wedge": 68, "seo": 76, "feasibility": 58, "timing": 80 },
+      "sources": [
+        { "label": "Google Trends · Explore（30 天，US）", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20browser%20agent", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "Google 官方博客", "url": "https://blog.google/technology/google-deepmind/", "site": "blog.google", "kind": "official" }
+      ],
+      "evidence": [
+        {
+          "claim": "多家浏览器与 Agent 产品在同一窗口内发布了「让 Agent 直接操作网页」的能力。",
+          "claimType": "fact",
+          "date": "2026-10-21",
+          "detail": "可作为趋势落地的产品侧依据，但具体哪一次发布带动搜索，需要更细的分日数据。",
+          "sources": [{ "label": "官方产品更新", "url": "https://blog.google/technology/google-deepmind/", "site": "blog.google", "kind": "official", "publishedAt": "2026-10-21" }]
+        },
+        {
+          "claim": "增长更像「持续被搜索」而非单次新闻脉冲，因为 30 天内没有出现快速回落的尖峰。",
+          "claimType": "inference",
+          "date": "2026-10-28",
+          "detail": "依据是序列形态与连续高于基线的天数，属于对趋势形态的判断。",
+          "sources": [{ "label": "Google Trends · Explore", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20browser%20agent", "site": "trends.google.com", "kind": "google_trends" }]
+        }
+      ],
+      "intents": [
+        { "intent": "learn", "share": 28, "queries": ["what is a browser agent", "ai browser agent 是什么"] },
+        { "intent": "compare", "share": 32, "queries": ["best ai browser agent", "browser agent vs browser extension"] },
+        { "intent": "problem", "share": 40, "queries": ["ai agent fill forms", "browser agent login automation", "is browser agent safe"] }
+      ],
+      "relatedQueries": ["best ai browser agent", "browser agent automation", "ai agent fill form", "browser use agent"],
+      "competitors": ["浏览器厂商自带 Agent", "开源 browser-use 类项目"],
+      "opportunities": [
+        { "type": "content", "title": "主流浏览器 Agent 横向对比 + 实测录屏", "why": "compare 意图占 32%，用户正在做选择，不是在了解概念。", "effort": "2–3 天" },
+        { "type": "product", "title": "垂直场景浏览器 Agent（后台批量操作 / 报表导出）", "why": "problem 意图集中在表单与登录流程，通用 Agent 在垂直后台场景仍不稳定。", "effort": "3–4 周", "evidence": "相关查询含 fill forms / login automation" },
+        { "type": "feature", "title": "给现有 SaaS 加「Agent 操作层」", "why": "中小团队更愿意在已有产品上加能力，而不是换一套工具。", "effort": "1–2 周" }
+      ],
+      "actions": [
+        { "verdict": "research", "action": "先拆解 3 个高频卡点（登录态、验证码、跨页表单）确认技术可行性", "reason": "产品机会成立与否取决于这些卡点能否被绕开。", "uncertainty": "反自动化策略随时变化，方案可能被平台规则打断。" },
+        { "verdict": "content", "action": "先发一篇对比页承接 compare 意图", "reason": "对比类搜索已有明确流量，1 周内可产出。", "uncertainty": "对比内容同质化严重，需要真实实测才有差异。" }
+      ]
+    },
+    {
+      "slug": "nano-banana-pro",
+      "keyword": "nano banana pro",
+      "normalizedName": "Nano Banana Pro",
+      "category": "tool",
+      "region": "US",
+      "status": "breaking",
+      "confidence": "medium",
+      "why": "图像模型新版本带动「怎么用 / 在哪用 / 和上一代比」的搜索，曲线持续抬升且未见回落，但相关查询以消费端玩法为主。",
+      "intentSummary": "玩法教程与免费入口需求最强，商业意图较弱；对独立开发者更像流量机会而非产品机会。",
+      "firstSeenAt": "2026-10-19",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-09-30",
+        "stepDays": 1,
+        "values": [6, 7, 9, 8, 10, 12, 11, 13, 15, 14, 16, 18, 17, 19, 21, 20, 24, 28, 26, 30, 34, 38, 44, 52, 61, 70, 76, 82, 88, 90]
+      },
+      "trendParts": { "growth": 82, "persistence": 88, "breakout": 78, "novelty": 80, "reliability": 62 },
+      "oppParts": { "demand": 66, "wedge": 26, "seo": 42, "feasibility": 60, "timing": 55 },
+      "sources": [
+        { "label": "Google Trends · Explore（30 天，US）", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=nano%20banana%20pro", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "Google 官方博客", "url": "https://blog.google/technology/google-deepmind/", "site": "blog.google", "kind": "official" }
+      ],
+      "evidence": [
+        {
+          "claim": "该名称是图像模型新版本在社区中的叫法，官方已确认模型可用。",
+          "claimType": "fact",
+          "date": "2026-10-19",
+          "detail": "名称是非官方昵称，标准化时必须与官方模型名做映射，否则同一产品会被拆成两个词。",
+          "sources": [{ "label": "Google 官方博客", "url": "https://blog.google/technology/google-deepmind/", "site": "blog.google", "kind": "official", "publishedAt": "2026-10-19" }]
+        },
+        {
+          "claim": "搜索增量主要来自「免费使用 / 提示词模板」需求，而不是 API 或集成需求。",
+          "claimType": "inference",
+          "date": "2026-10-27",
+          "detail": "依据是相关查询构成；缺少关键词规划数据，无法确认各词绝对量级。",
+          "sources": [{ "label": "Google Trends · 相关查询", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=nano%20banana%20pro", "site": "trends.google.com", "kind": "google_trends" }]
+        }
+      ],
+      "intents": [
+        { "intent": "learn", "share": 26, "queries": ["what is nano banana pro", "nano banana pro vs nano banana"] },
+        { "intent": "howto", "share": 48, "queries": ["nano banana pro prompts", "nano banana pro tutorial", "nano banana pro 怎么用"] },
+        { "intent": "price", "share": 14, "queries": ["nano banana pro free", "nano banana pro pricing"] },
+        { "intent": "alternative", "share": 12, "queries": ["nano banana pro alternative"] }
+      ],
+      "relatedQueries": ["nano banana pro prompts", "nano banana pro free", "nano banana pro tutorial", "nano banana pro vs nano banana"],
+      "competitors": ["同类图像生成模型", "提示词社区站"],
+      "opportunities": [
+        { "type": "content", "title": "提示词模板合集（按场景分类）", "why": "howto 意图接近一半，模板类内容最容易承接。", "effort": "1 天" },
+        { "type": "feature", "title": "给现有图像工具加「同名模型」选项", "why": "搜「怎么用」的用户往往已在用某个工具，替换成本低。", "effort": "3–5 天" },
+        { "type": "product", "title": "垂直场景批量出图（电商图 / 社媒图）", "why": "消费端玩法需求强，但通用生成已被大厂覆盖，只能在垂直交付上做差异。", "effort": "2–3 周" }
+      ],
+      "actions": [
+        { "verdict": "content", "action": "先做模板合集页，承接 howto 与 price 两类搜索", "reason": "两类意图合计 62%，且可在 1 天内上线。", "uncertainty": "模型热度衰减快，内容可能只吃到 2–4 周流量。" },
+        { "verdict": "watch", "action": "观察 7 天后是否仍有 howto 增量，再决定是否做垂直工具", "reason": "消费端热词的留存率通常低于开发者工具。", "uncertainty": "缺少真实搜索量，无法判断绝对规模是否值得投入。" }
+      ]
+    }
+  ,
+    {
+      "slug": "mcp-server-hosting",
+      "keyword": "mcp server hosting",
+      "normalizedName": "MCP Server 托管",
+      "category": "devtech",
+      "region": "US",
+      "status": "breaking",
+      "confidence": "high",
+      "why": "MCP 生态从「本地跑一个 server」转向「托管给团队用」，搜索在 7 天内翻了三倍，同期社区出现大量部署与鉴权讨论。",
+      "intentSummary": "核心需求是「怎么部署到线上」「多个客户端怎么共用」「鉴权和权限怎么管」，属于开发落地型需求。",
+      "firstSeenAt": "2026-10-18",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-09-30",
+        "stepDays": 1,
+        "values": [7, 8, 7, 9, 8, 10, 9, 11, 10, 9, 11, 12, 11, 13, 12, 14, 13, 15, 14, 16, 15, 17, 20, 28, 39, 50, 58, 65, 71, 76]
+      },
+      "trendParts": { "growth": 84, "persistence": 78, "breakout": 80, "novelty": 74, "reliability": 90 },
+      "oppParts": { "demand": 82, "wedge": 74, "seo": 66, "feasibility": 70, "timing": 78 },
+      "sources": [
+        { "label": "Google Trends · Explore（30 天，US）", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=mcp%20server%20hosting", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "MCP 官方文档", "url": "https://modelcontextprotocol.io/docs", "site": "modelcontextprotocol.io", "kind": "official" },
+        { "label": "GitHub 托管相关仓库", "url": "https://github.com/trending", "site": "github.com", "kind": "repo" }
+      ],
+      "evidence": [
+        {
+          "claim": "MCP 协议文档提供了 server 的传输与鉴权说明，但托管属于使用者自行解决的部分。",
+          "claimType": "fact",
+          "date": "2026-10-10",
+          "detail": "这决定了「托管」是一个真实存在的空白环节，而不是凭空想象的需求。",
+          "sources": [{ "label": "MCP 官方文档", "url": "https://modelcontextprotocol.io/docs", "site": "modelcontextprotocol.io", "kind": "official", "publishedAt": "2026-10-10" }]
+        },
+        {
+          "claim": "搜索增长与「团队共用 MCP server」的讨论同期出现，推测需求从个人玩转向团队部署。",
+          "claimType": "hypothesis",
+          "date": "2026-10-26",
+          "detail": "目前只有定性讨论与搜索形态支撑，缺少部署量类数据，因此按待验证假设处理。",
+          "sources": [{ "label": "开发者社区讨论", "url": "https://news.ycombinator.com/", "site": "news.ycombinator.com", "kind": "community" }]
+        }
+      ],
+      "intents": [
+        { "intent": "howto", "share": 44, "queries": ["how to host mcp server", "mcp server docker deploy", "remote mcp server url"] },
+        { "intent": "problem", "share": 34, "queries": ["mcp server authentication", "mcp server multiple clients"] },
+        { "intent": "compare", "share": 22, "queries": ["mcp server vs api", "hosted mcp vs local mcp"] }
+      ],
+      "relatedQueries": ["remote mcp server", "mcp server docker", "mcp server authentication", "hosted mcp"],
+      "competitors": ["云厂商的 MCP 托管方案", "开源 mcp-proxy 类项目"],
+      "opportunities": [
+        { "type": "product", "title": "MCP Server 托管服务（鉴权 + 多客户端接入 + 日志）", "why": "howto 与 problem 意图合计 78%，且官方明确不管托管，缺口具体。", "effort": "3–4 周", "evidence": "相关查询含 authentication / multiple clients" },
+        { "type": "content", "title": "远程 MCP 部署指南（Docker / 云函数 / 鉴权）", "why": "教程是这一阶段最强的引流资产，可直接验证托管需求强度。", "effort": "2 天" },
+        { "type": "opensource", "title": "轻量 mcp-proxy（本地 server 转远程）", "why": "先用开源件积累用户，再向托管服务转化，门槛最低。", "effort": "1 周" }
+      ],
+      "actions": [
+        { "verdict": "research", "action": "先看现有开源方案的 issue 高频问题，确认托管的具体卡点", "reason": "托管机会的定价与功能边界取决于卡点归属（鉴权 / 稳定 / 观测）。", "uncertainty": "云厂商可能把托管做成免费基础能力，压缩付费空间。" },
+        { "verdict": "content", "action": "同步发部署教程，用搜索流量验证需求规模", "reason": "教程产出快，且能直接观察停留与转化。", "uncertainty": "搜索热度可能随协议版本变化而波动。" }
+      ]
+    },
+    {
+      "slug": "vibe-coding",
+      "keyword": "vibe coding",
+      "normalizedName": "Vibe Coding",
+      "category": "devtech",
+      "region": "US",
+      "status": "gaining",
+      "confidence": "high",
+      "why": "该词已过爆发期，但 30 天内稳定上行、持续高于基线，属于「稳定的存量需求」而非短期热点。",
+      "intentSummary": "从「这是什么」转向「怎么做得更好 / 有什么坑」，说明用户已开始实践，教程与工具评测需求并存。",
+      "firstSeenAt": "2026-09-12",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-09-30",
+        "stepDays": 1,
+        "values": [22, 24, 23, 26, 25, 28, 27, 30, 29, 32, 31, 34, 33, 36, 35, 38, 37, 40, 39, 42, 41, 44, 46, 48, 50, 53, 55, 58, 61, 64]
+      },
+      "trendParts": { "growth": 68, "persistence": 90, "breakout": 62, "novelty": 45, "reliability": 92 },
+      "oppParts": { "demand": 80, "wedge": 62, "seo": 84, "feasibility": 60, "timing": 40 },
+      "sources": [
+        { "label": "Google Trends · Explore（30 天，US）", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=vibe%20coding", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "Google Trends · 相关查询", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=vibe%20coding", "site": "trends.google.com", "kind": "google_trends" }
+      ],
+      "evidence": [
+        {
+          "claim": "该概念已被主流开发者媒体与工具厂商广泛使用，不再是单一来源的造词。",
+          "claimType": "fact",
+          "date": "2026-09-28",
+          "detail": "概念普及是搜索能维持高位的前提，也意味着信息差红利已基本消失。",
+          "sources": [{ "label": "开发者社区讨论", "url": "https://news.ycombinator.com/", "site": "news.ycombinator.com", "kind": "community", "publishedAt": "2026-09-28" }]
+        },
+        {
+          "claim": "搜索意图正从概念了解转向问题解决，说明实践者比例在上升。",
+          "claimType": "inference",
+          "date": "2026-10-25",
+          "detail": "依据是 problem 类相关查询占比提升，但缺少分时段意图对比数据。",
+          "sources": [{ "label": "Google Trends · 相关查询", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=vibe%20coding", "site": "trends.google.com", "kind": "google_trends" }]
+        }
+      ],
+      "intents": [
+        { "intent": "learn", "share": 24, "queries": ["what is vibe coding", "vibe coding 是什么"] },
+        { "intent": "problem", "share": 38, "queries": ["vibe coding problems", "vibe coding security issues", "vibe coding code review"] },
+        { "intent": "compare", "share": 26, "queries": ["vibe coding vs pair programming", "best vibe coding tools"] },
+        { "intent": "alternative", "share": 12, "queries": ["vibe coding alternatives"] }
+      ],
+      "relatedQueries": ["vibe coding tools", "vibe coding security", "vibe coding tutorial", "vibe coding problems"],
+      "competitors": ["AI 编程工具官方博客", "开发者内容站"],
+      "opportunities": [
+        { "type": "content", "title": "Vibe Coding 的 10 个真实翻车案例与补救方法", "why": "problem 意图最高，且现有内容多为鼓吹式介绍，缺少失败样本。", "effort": "2–3 天" },
+        { "type": "product", "title": "AI 生成代码的审查清单工具（CI 集成）", "why": "用户已经在担心可维护性与安全，但目前只有文章没有工具。", "effort": "2–3 周", "evidence": "相关查询含 security / code review" },
+        { "type": "content", "title": "工具横评（含真实项目跑通率）", "why": "compare 意图稳定存在，横评可长期吃搜索。", "effort": "3–4 天" }
+      ],
+      "actions": [
+        { "verdict": "content", "action": "优先做问题解决型内容，别再做概念科普", "reason": "learn 意图仅 24% 且在下滑，概念类内容竞争已过度。", "uncertainty": "该词可能被更新的术语替代，内容有半衰期。" },
+        { "verdict": "mvp", "action": "如要做工具，先做「PR 审查清单」这一最小切口", "reason": "需求证据来自 problem 查询，且实现范围可控。", "uncertainty": "代码审查工具与现有 CI/CD 厂商功能重叠。" }
+      ]
+    }
+  ,
+    {
+      "slug": "ai-slide-generator",
+      "keyword": "ai slide generator",
+      "normalizedName": "AI 演示文稿生成",
+      "category": "usecase",
+      "region": "US",
+      "status": "gaining",
+      "confidence": "high",
+      "why": "30 天内从 18 稳步升到 52，多次采样点高于基线，属于典型的「工具替代型」稳定需求，而非事件驱动。",
+      "intentSummary": "「哪个好用 / 免费 / 能不能导出 PPTX」三类问题最集中，替代与价格意图明显。",
+      "firstSeenAt": "2026-08-30",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-09-30",
+        "stepDays": 1,
+        "values": [18, 19, 21, 20, 22, 24, 23, 25, 27, 26, 28, 30, 29, 31, 33, 32, 34, 36, 35, 37, 39, 38, 40, 42, 44, 43, 45, 47, 49, 52]
+      },
+      "trendParts": { "growth": 58, "persistence": 88, "breakout": 55, "novelty": 40, "reliability": 90 },
+      "oppParts": { "demand": 86, "wedge": 44, "seo": 88, "feasibility": 74, "timing": 42 },
+      "sources": [
+        { "label": "Google Trends · Explore（30 天，US）", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20slide%20generator", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "Google Trends · 相关查询", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20slide%20generator", "site": "trends.google.com", "kind": "google_trends" }
+      ],
+      "evidence": [
+        {
+          "claim": "该品类已有多个成熟商业产品，搜索需求对应的是「换一个更好用的」，而非全新需求。",
+          "claimType": "fact",
+          "date": "2026-09-20",
+          "detail": "这意味着流量大但竞争充分，切入点必须是具体交付差异。",
+          "sources": [{ "label": "搜索结果首页", "url": "https://www.google.com/search?q=ai+slide+generator", "site": "google.com", "kind": "serp", "publishedAt": "2026-09-20" }]
+        },
+        {
+          "claim": "增长稳定且无尖峰，判断为持续性需求而非营销脉冲。",
+          "claimType": "inference",
+          "date": "2026-10-28",
+          "detail": "依据是 30 天内 20 多个采样点均高于基线，形态平滑。",
+          "sources": [{ "label": "Google Trends · Explore", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20slide%20generator", "site": "trends.google.com", "kind": "google_trends" }]
+        }
+      ],
+      "intents": [
+        { "intent": "compare", "share": 34, "queries": ["best ai slide generator", "ai slide generator comparison"] },
+        { "intent": "alternative", "share": 28, "queries": ["ai slide generator alternative", "免费 ai 做 ppt"] },
+        { "intent": "price", "share": 22, "queries": ["ai slide generator free", "ai slide generator pricing"] },
+        { "intent": "howto", "share": 16, "queries": ["export pptx from ai slides"] }
+      ],
+      "relatedQueries": ["ai presentation maker", "ai slide generator free", "ai ppt generator", "best ai slides"],
+      "competitors": ["成熟 PPT 生成 SaaS", "办公套件自带 AI"],
+      "opportunities": [
+        { "type": "content", "title": "对比页：按导出格式、模板质量、中文支持横评", "why": "compare + alternative 意图合计 62%，且竞争者的差异点恰好可量化。", "effort": "2–3 天" },
+        { "type": "product", "title": "垂直场景出稿（融资路演 / 教学课件）", "why": "通用工具很难覆盖行业结构与话术，垂直模板是可切的具体缺口。", "effort": "3–4 周" },
+        { "type": "feature", "title": "给现有内容工具加「一键出稿」", "why": "已有文档沉淀的团队更愿意在熟悉工具里生成演示稿。", "effort": "1–2 周" }
+      ],
+      "actions": [
+        { "verdict": "content", "action": "先做对比 + 模板页组合，验证 SEO 转化", "reason": "该词搜索意图以选择为主，内容可直接承接。", "uncertainty": "大厂产品更新会快速改变对比结论，需持续维护。" },
+        { "verdict": "watch", "action": "暂缓做通用 PPT 工具，观察垂直场景词的表现", "reason": "通用赛道竞争充分，独立开发者起量成本高。", "uncertainty": "缺少各竞品的实际付费转化数据。" }
+      ]
+    },
+    {
+      "slug": "llm-gateway",
+      "keyword": "llm gateway",
+      "normalizedName": "LLM Gateway",
+      "category": "devtech",
+      "region": "US",
+      "status": "gaining",
+      "confidence": "medium",
+      "why": "多模型并用成为常态后，「网关 / 路由 / 统一计费」类搜索稳步上升，但绝对热度仍偏小，属开发者长尾需求。",
+      "intentSummary": "需求集中在「怎么统一多家模型的 key 与计费」「怎么做故障切换」，属于基础设施型需求。",
+      "firstSeenAt": "2026-09-05",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-09-30",
+        "stepDays": 1,
+        "values": [10, 11, 10, 12, 11, 13, 12, 14, 13, 15, 16, 15, 17, 18, 17, 19, 20, 19, 21, 22, 23, 22, 24, 25, 26, 27, 28, 30, 31, 33]
+      },
+      "trendParts": { "growth": 62, "persistence": 78, "breakout": 58, "novelty": 52, "reliability": 66 },
+      "oppParts": { "demand": 70, "wedge": 66, "seo": 58, "feasibility": 78, "timing": 55 },
+      "sources": [
+        { "label": "Google Trends · Explore（30 天，US）", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=llm%20gateway", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "GitHub 开源网关项目", "url": "https://github.com/trending", "site": "github.com", "kind": "repo" }
+      ],
+      "evidence": [
+        {
+          "claim": "存在多个开源网关实现，说明需求真实但已有免费替代。",
+          "claimType": "fact",
+          "date": "2026-10-05",
+          "detail": "开源替代会压制付费意愿，必须靠托管与观测能力区分。",
+          "sources": [{ "label": "GitHub 开源项目", "url": "https://github.com/trending", "site": "github.com", "kind": "repo", "publishedAt": "2026-10-05" }]
+        },
+        {
+          "claim": "搜索增长可能来自多模型策略普及，而非单次产品发布。",
+          "claimType": "hypothesis",
+          "date": "2026-10-26",
+          "detail": "缺少企业侧采购数据，只能从开发者讨论中推断。",
+          "sources": [{ "label": "开发者社区讨论", "url": "https://news.ycombinator.com/", "site": "news.ycombinator.com", "kind": "community" }]
+        }
+      ],
+      "intents": [
+        { "intent": "learn", "share": 26, "queries": ["what is an llm gateway"] },
+        { "intent": "howto", "share": 40, "queries": ["llm gateway setup", "llm gateway fallback routing", "unified api for llm providers"] },
+        { "intent": "compare", "share": 34, "queries": ["llm gateway vs proxy", "open source llm gateway"] }
+      ],
+      "relatedQueries": ["open source llm gateway", "llm router", "ai gateway", "llm gateway pricing"],
+      "competitors": ["开源网关项目", "云厂商 AI 网关"],
+      "opportunities": [
+        { "type": "content", "title": "自建 vs 托管网关的决策指南（含成本测算）", "why": "compare 意图 34%，决策类内容在开发者群体中转化稳定。", "effort": "2 天" },
+        { "type": "product", "title": "面向小团队的托管网关（统一 key + 用量看板）", "why": "开源件解决了功能但没解决运维与合规，托管有空间。", "effort": "3–4 周" },
+        { "type": "opensource", "title": "轻量 SDK：多provider 自动降级", "why": "先做被依赖的库，再向上做服务。", "effort": "1 周" }
+      ],
+      "actions": [
+        { "verdict": "research", "action": "先确认开源方案的缺口（观测、额度、合规）", "reason": "付费点必须建立在开源做不到的地方。", "uncertainty": "该词热度基数小，可能不足以支撑独立产品。" },
+        { "verdict": "content", "action": "同步写决策指南积累开发者流量", "reason": "内容成本低，可用于验证真实需求规模。", "uncertainty": "开发者内容转化周期长。" }
+      ]
+    }
+  ,
+    {
+      "slug": "ai-voice-agent",
+      "keyword": "ai voice agent",
+      "normalizedName": "AI 语音 Agent",
+      "category": "agent",
+      "region": "US",
+      "status": "gaining",
+      "confidence": "high",
+      "why": "从「AI 客服」到「语音 Agent」的用词迁移带来稳步增长，30 天内持续高于基线，且相关查询里出现明确的企业落地词。",
+      "intentSummary": "需求集中在「怎么搭一个能接电话的 Agent」「延迟和打断怎么处理」「按分钟怎么计价」。",
+      "firstSeenAt": "2026-09-02",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-09-30",
+        "stepDays": 1,
+        "values": [16, 17, 19, 18, 20, 22, 21, 23, 25, 24, 26, 28, 27, 29, 31, 30, 32, 34, 33, 35, 37, 36, 38, 40, 42, 44, 46, 48, 51, 54]
+      },
+      "trendParts": { "growth": 66, "persistence": 86, "breakout": 60, "novelty": 48, "reliability": 88 },
+      "oppParts": { "demand": 82, "wedge": 62, "seo": 72, "feasibility": 64, "timing": 62 },
+      "sources": [
+        { "label": "Google Trends · Explore（30 天，US）", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20voice%20agent", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "语音模型官方文档", "url": "https://platform.openai.com/docs", "site": "platform.openai.com", "kind": "official" }
+      ],
+      "evidence": [
+        {
+          "claim": "主流模型厂商已提供实时语音 API，使「低延迟电话 Agent」具备工程可行性。",
+          "claimType": "fact",
+          "date": "2026-09-18",
+          "detail": "技术可用是这一轮需求增长的前提条件。",
+          "sources": [{ "label": "语音 API 文档", "url": "https://platform.openai.com/docs", "site": "platform.openai.com", "kind": "official", "publishedAt": "2026-09-18" }]
+        },
+        {
+          "claim": "增长来自企业侧落地需求，而非消费端尝鲜。",
+          "claimType": "inference",
+          "date": "2026-10-27",
+          "detail": "依据是相关查询包含预约、外呼、客服等业务词。",
+          "sources": [{ "label": "Google Trends · 相关查询", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20voice%20agent", "site": "trends.google.com", "kind": "google_trends" }]
+        }
+      ],
+      "intents": [
+        { "intent": "howto", "share": 38, "queries": ["how to build ai voice agent", "ai voice agent latency"] },
+        { "intent": "compare", "share": 30, "queries": ["best ai voice agent platform", "voice agent vs ivr"] },
+        { "intent": "price", "share": 22, "queries": ["ai voice agent pricing per minute"] },
+        { "intent": "problem", "share": 10, "queries": ["voice agent interruption handling"] }
+      ],
+      "relatedQueries": ["ai receptionist", "voice agent pricing", "ai phone agent", "realtime voice api"],
+      "competitors": ["语音 Agent SaaS", "CPaaS 厂商语音机器人"],
+      "opportunities": [
+        { "type": "product", "title": "垂直行业语音接待（诊所 / 维修 / 预约）", "why": "通用平台无法覆盖行业话术与排期系统，垂直交付才是可切的缺口。", "effort": "4 周", "evidence": "相关查询含 appointment / booking 类词" },
+        { "type": "content", "title": "自建语音 Agent 的延迟优化指南", "why": "howto 意图最集中，且工程细节是现有内容薄弱处。", "effort": "2–3 天" },
+        { "type": "feature", "title": "给现有客服系统加语音入口", "why": "企业已有工单与知识库，增量接入比整体替换更现实。", "effort": "2–3 周" }
+      ],
+      "actions": [
+        { "verdict": "research", "action": "先选 1 个垂直行业，验证话术与系统对接成本", "reason": "垂直落地的瓶颈在业务系统而不是模型。", "uncertainty": "行业客户的采购周期长，短期难验证付费。" },
+        { "verdict": "content", "action": "同步发延迟优化教程积累开发者线索", "reason": "技术内容可直接吸引正在选型的团队。", "uncertainty": "模型厂商文档更新会削弱教程的长期价值。" }
+      ]
+    },
+    {
+      "slug": "gemini-3-flash",
+      "keyword": "gemini 3 flash",
+      "normalizedName": "Gemini 3 Flash",
+      "category": "model",
+      "region": "US",
+      "status": "new",
+      "confidence": "low",
+      "why": "新版本名称刚被搜索，14 天内从 0 升到 66，但历史数据不足，无法判断是版本热度还是持续需求。",
+      "intentSummary": "目前以「是什么 / 免费额度 / 和 pro 的区别」为主，属于发布期了解型需求。",
+      "firstSeenAt": "2026-10-18",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-10-16",
+        "stepDays": 1,
+        "values": [0, 0, 3, 8, 14, 21, 26, 33, 38, 44, 51, 57, 62, 66]
+      },
+      "trendParts": { "growth": 54, "persistence": 46, "breakout": 48, "novelty": 96, "reliability": 32 },
+      "oppParts": { "demand": 58, "wedge": 34, "seo": 62, "feasibility": 44, "timing": 70 },
+      "sources": [
+        { "label": "Google Trends · Explore（14 天，US）", "url": "https://trends.google.com/trends/explore?date=today%201-m&geo=US&q=gemini%203%20flash", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "Google 官方博客", "url": "https://blog.google/technology/google-deepmind/", "site": "blog.google", "kind": "official" }
+      ],
+      "evidence": [
+        {
+          "claim": "官方已发布该模型版本，名称对应真实产品。",
+          "claimType": "fact",
+          "date": "2026-10-17",
+          "detail": "新版本发布是新词出现的直接原因，但发布热度通常只有 3–7 天。",
+          "sources": [{ "label": "Google 官方博客", "url": "https://blog.google/technology/google-deepmind/", "site": "blog.google", "kind": "official", "publishedAt": "2026-10-17" }]
+        },
+        {
+          "claim": "当前搜索以版本了解为主，尚不确定是否形成长期需求。",
+          "claimType": "hypothesis",
+          "date": "2026-10-28",
+          "detail": "历史采样点仅 14 个，基线不稳定，按新词观察处理。",
+          "sources": [{ "label": "Google Trends · Explore", "url": "https://trends.google.com/trends/explore?date=today%201-m&geo=US&q=gemini%203%20flash", "site": "trends.google.com", "kind": "google_trends" }]
+        }
+      ],
+      "intents": [
+        { "intent": "learn", "share": 46, "queries": ["what is gemini 3 flash", "gemini 3 flash vs pro"] },
+        { "intent": "price", "share": 30, "queries": ["gemini 3 flash free tier", "gemini 3 flash pricing"] },
+        { "intent": "howto", "share": 24, "queries": ["gemini 3 flash api example"] }
+      ],
+      "relatedQueries": ["gemini 3 flash pricing", "gemini 3 flash vs pro", "gemini api free"],
+      "competitors": ["同代小模型", "上一代 Flash 版本"],
+      "opportunities": [
+        { "type": "content", "title": "版本对比与迁移指南（Flash vs Pro）", "why": "learn 意图占 46%，且版本迁移内容有明确长尾。", "effort": "1 天" },
+        { "type": "feature", "title": "给现有产品提供模型切换开关", "why": "开发者换模型的真实痛点是配置与回滚，而不是模型本身。", "effort": "3–5 天" }
+      ],
+      "actions": [
+        { "verdict": "watch", "action": "先观察 7 天，看热度是否回落到基线", "reason": "版本发布类新词通常在 1–2 周内衰减。", "uncertainty": "采样点不足，暂不给出分数结论。" },
+        { "verdict": "content", "action": "可低成本产出一篇对比文，承接发布期搜索", "reason": "内容成本低，即使短命也能验证流量。", "uncertainty": "官方文档可能很快覆盖同样的对比信息。" }
+      ]
+    }
+  ,
+    {
+      "slug": "openai-agentkit",
+      "keyword": "openai agentkit",
+      "normalizedName": "OpenAI AgentKit",
+      "category": "agent",
+      "region": "US",
+      "status": "new",
+      "confidence": "medium",
+      "why": "官方 Agent 开发套件发布后搜索从 0 升到 65，涨势未停，但只有 14 天数据，稳定性待观察。",
+      "intentSummary": "需求集中在「怎么部署 / 和现有 SDK 的关系 / 有没有模板」，属于开发者上手型需求。",
+      "firstSeenAt": "2026-10-17",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-10-16",
+        "stepDays": 1,
+        "values": [0, 4, 9, 15, 22, 28, 34, 40, 45, 50, 54, 58, 62, 65]
+      },
+      "trendParts": { "growth": 56, "persistence": 50, "breakout": 52, "novelty": 90, "reliability": 48 },
+      "oppParts": { "demand": 66, "wedge": 54, "seo": 60, "feasibility": 62, "timing": 68 },
+      "sources": [
+        { "label": "Google Trends · Explore（14 天，US）", "url": "https://trends.google.com/trends/explore?date=today%201-m&geo=US&q=openai%20agentkit", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "OpenAI 官方文档", "url": "https://platform.openai.com/docs", "site": "platform.openai.com", "kind": "official" }
+      ],
+      "evidence": [
+        {
+          "claim": "官方提供了 Agent 构建与编排的套件，名称对应真实产品能力。",
+          "claimType": "fact",
+          "date": "2026-10-17",
+          "detail": "产品真实存在是准入的前提，避免把社区造词当趋势。",
+          "sources": [{ "label": "OpenAI 官方文档", "url": "https://platform.openai.com/docs", "site": "platform.openai.com", "kind": "official", "publishedAt": "2026-10-17" }]
+        },
+        {
+          "claim": "涨势未停说明需求仍在扩散，但不足以证明长期留存。",
+          "claimType": "inference",
+          "date": "2026-10-28",
+          "detail": "14 个采样点刚过最低观测要求，仍需 2–3 周才能判断基线。",
+          "sources": [{ "label": "Google Trends · Explore", "url": "https://trends.google.com/trends/explore?date=today%201-m&geo=US&q=openai%20agentkit", "site": "trends.google.com", "kind": "google_trends" }]
+        }
+      ],
+      "intents": [
+        { "intent": "howto", "share": 42, "queries": ["openai agentkit tutorial", "agentkit deploy"] },
+        { "intent": "compare", "share": 34, "queries": ["agentkit vs assistants api", "agentkit vs langgraph"] },
+        { "intent": "learn", "share": 24, "queries": ["what is openai agentkit"] }
+      ],
+      "relatedQueries": ["agentkit workflow", "openai agents sdk", "agentkit tutorial"],
+      "competitors": ["其他 Agent 编排框架", "官方 Assistants API"],
+      "opportunities": [
+        { "type": "content", "title": "AgentKit 迁移指南（从 Assistants API 过来）", "why": "compare 意图占 34%，迁移是真实存在的决策场景。", "effort": "2 天" },
+        { "type": "opensource", "title": "AgentKit 常用工作流模板集合", "why": "howto 意图最集中，模板能直接降低上手成本。", "effort": "4–5 天" },
+        { "type": "product", "title": "Agent 运行可视化 / 调试面板", "why": "官方套件偏构建，观测与回放仍是空白。", "effort": "3 周" }
+      ],
+      "actions": [
+        { "verdict": "content", "action": "先写迁移与上手两篇内容，抢早期搜索", "reason": "新词窗口期内容竞争最小，成本最低。", "uncertainty": "官方文档可能快速补齐，挤压内容空间。" },
+        { "verdict": "watch", "action": "观察 14 天后是否形成稳定基线，再判断是否做工具", "reason": "当前数据不足以支撑产品结论。", "uncertainty": "官方套件迭代快，工具可能被内置功能替代。" }
+      ]
+    },
+    {
+      "slug": "ai-slop-detector",
+      "keyword": "ai slop detector",
+      "normalizedName": "AI 内容检测",
+      "category": "tool",
+      "region": "US",
+      "status": "new",
+      "confidence": "low",
+      "why": "低质 AI 内容泛滥带来的检测需求正在出现，但只有 12 个采样点，暂不评分，仅作观察。",
+      "intentSummary": "需求集中在「怎么判断这段文字是不是 AI 写的」「有没有浏览器插件」，工具与插件意图为主。",
+      "firstSeenAt": "2026-10-18",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-10-18",
+        "stepDays": 1,
+        "values": [0, 0, 2, 5, 9, 13, 18, 24, 29, 35, 41, 46]
+      },
+      "trendParts": { "growth": 60, "persistence": 48, "breakout": 50, "novelty": 88, "reliability": 34 },
+      "oppParts": { "demand": 56, "wedge": 50, "seo": 58, "feasibility": 72, "timing": 64 },
+      "sources": [
+        { "label": "Google Trends · Explore（12 天，US）", "url": "https://trends.google.com/trends/explore?date=today%201-m&geo=US&q=ai%20slop%20detector", "site": "trends.google.com", "kind": "google_trends" }
+      ],
+      "evidence": [
+        {
+          "claim": "相关讨论真实存在，但「ai slop」本身是社区口语，边界模糊。",
+          "claimType": "fact",
+          "date": "2026-10-20",
+          "detail": "术语不稳定意味着同一需求可能分散在多个说法里，需继续合并变体。",
+          "sources": [{ "label": "社区讨论", "url": "https://news.ycombinator.com/", "site": "news.ycombinator.com", "kind": "community", "publishedAt": "2026-10-20" }]
+        },
+        {
+          "claim": "检测类工具受技术限制，用户可能很快流失。",
+          "claimType": "hypothesis",
+          "date": "2026-10-27",
+          "detail": "检测准确率无法验证，暂无证据支持该判断。",
+          "sources": [{ "label": "搜索结果", "url": "https://www.google.com/search?q=ai+slop+detector", "site": "google.com", "kind": "serp" }]
+        }
+      ],
+      "intents": [
+        { "intent": "howto", "share": 44, "queries": ["how to detect ai generated text", "ai slop detector extension"] },
+        { "intent": "learn", "share": 34, "queries": ["what is ai slop"] },
+        { "intent": "alternative", "share": 22, "queries": ["ai detector alternative"] }
+      ],
+      "relatedQueries": ["ai generated text detector", "ai slop meaning", "detect ai writing"],
+      "competitors": ["老牌 AI 检测工具"],
+      "opportunities": [
+        { "type": "content", "title": "为什么 AI 检测工具不可靠：原理与局限", "why": "learn 与 howto 意图合计 78%，科普型内容能承接。", "effort": "1–2 天" },
+        { "type": "feature", "title": "浏览器插件：标注疑似 AI 段落", "why": "插件形态与「看到就想判断」的场景匹配。", "effort": "1 周" }
+      ],
+      "actions": [
+        { "verdict": "watch", "action": "先不投入，继续观察 2 周并合并同义变体", "reason": "采样点不足 14 个，分数不可计算，强行排名会误导。", "uncertainty": "术语可能被新说法替代。" },
+        { "verdict": "content", "action": "可写一篇原理解读作为低成本试水", "reason": "内容成本低，可同时观察搜索留存。", "uncertainty": "该话题争议大，容易引来负面讨论。" }
+      ]
+    }
+  ,
+    {
+      "slug": "ai-gpu-rental",
+      "keyword": "ai gpu rental",
+      "normalizedName": "AI GPU 租用",
+      "category": "broadtech",
+      "region": "US",
+      "status": "new",
+      "confidence": "low",
+      "why": "算力成本压力带来的租用需求在上升，但该词与「显卡租赁」「云 GPU」等多个说法分散，需先合并变体再判断。",
+      "intentSummary": "需求集中在「哪家便宜 / 按小时怎么计费」，价格与服务商对比意图为主，竞争已相当充分。",
+      "firstSeenAt": "2026-10-17",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-10-16",
+        "stepDays": 1,
+        "values": [12, 13, 15, 14, 16, 18, 17, 21, 24, 27, 30, 33, 36, 38]
+      },
+      "trendParts": { "growth": 50, "persistence": 52, "breakout": 44, "novelty": 64, "reliability": 36 },
+      "oppParts": { "demand": 48, "wedge": 40, "seo": 38, "feasibility": 30, "timing": 46 },
+      "sources": [
+        { "label": "Google Trends · Explore（14 天，US）", "url": "https://trends.google.com/trends/explore?date=today%201-m&geo=US&q=ai%20gpu%20rental", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "搜索结果首页", "url": "https://www.google.com/search?q=ai+gpu+rental", "site": "google.com", "kind": "serp" }
+      ],
+      "evidence": [
+        {
+          "claim": "搜索结果首页几乎被服务商平台占据，属于成熟交易型需求。",
+          "claimType": "fact",
+          "date": "2026-10-22",
+          "detail": "这一事实直接压低「内容机会」判断：新站很难挤进交易型结果。",
+          "sources": [{ "label": "搜索结果", "url": "https://www.google.com/search?q=ai+gpu+rental", "site": "google.com", "kind": "serp", "publishedAt": "2026-10-22" }]
+        },
+        {
+          "claim": "该词热度可能被其他同义说法分流，当前曲线不代表真实需求总量。",
+          "claimType": "hypothesis",
+          "date": "2026-10-28",
+          "detail": "需要先做变体合并（cloud gpu / gpu 租赁）再判断，当前不做结论。",
+          "sources": [{ "label": "Google Trends · 相关查询", "url": "https://trends.google.com/trends/explore?date=today%201-m&geo=US&q=ai%20gpu%20rental", "site": "trends.google.com", "kind": "google_trends" }]
+        }
+      ],
+      "intents": [
+        { "intent": "price", "share": 46, "queries": ["gpu rental price per hour", "cheapest gpu cloud"] },
+        { "intent": "compare", "share": 38, "queries": ["gpu rental vs own gpu", "best gpu rental service"] },
+        { "intent": "learn", "share": 16, "queries": ["what is gpu rental"] }
+      ],
+      "relatedQueries": ["cloud gpu pricing", "gpu rental hourly", "h100 rental"],
+      "competitors": ["云厂商 GPU 实例", "算力租赁平台"],
+      "opportunities": [
+        { "type": "content", "title": "GPU 租用价格对比表（按卡型 / 按小时）", "why": "price 意图占 46%，价格信息本身就是需求。", "effort": "2–3 天" },
+        { "type": "product", "title": "多云 GPU 比价与自动切换", "why": "比价是真实需求，但需要持续采集与结算能力，独立开发难度高。", "effort": "6 周+" }
+      ],
+      "actions": [
+        { "verdict": "watch", "action": "先完成变体合并，暂不作为独立机会跟进", "reason": "术语分散且竞争充分，当前证据不足以支撑投入。", "uncertainty": "若合并后热度显著上升，结论需要重算。" },
+        { "verdict": "content", "action": "如要做，仅做比价表这一轻量形态", "reason": "比价页与搜索意图最贴合，维护成本可控。", "uncertainty": "价格变动频繁，内容需要持续更新。" }
+      ]
+    },
+    {
+      "slug": "prompt-caching",
+      "keyword": "prompt caching",
+      "normalizedName": "Prompt Caching",
+      "category": "devtech",
+      "region": "US",
+      "status": "cooling",
+      "confidence": "high",
+      "why": "该能力已成为主流模型的标准配置，搜索在 30 天内从峰值 82 回落到 41，接近但尚未跌破基线。",
+      "intentSummary": "需求已从「怎么用」转为「能省多少 / 怎么计费」，属于优化型存量需求。",
+      "firstSeenAt": "2026-06-10",
+      "lastSeenAt": "2026-10-29",
+      "updatedAt": "2026-10-29T02:10:00Z",
+      "series": {
+        "start": "2026-09-30",
+        "stepDays": 1,
+        "values": [42, 45, 48, 52, 58, 63, 68, 72, 75, 78, 80, 82, 79, 76, 72, 70, 68, 66, 64, 61, 59, 57, 52, 50, 48, 46, 44, 43, 41, 41]
+      },
+      "trendParts": { "growth": 22, "persistence": 30, "breakout": 24, "novelty": 20, "reliability": 92 },
+      "oppParts": { "demand": 62, "wedge": 40, "seo": 46, "feasibility": 66, "timing": 18 },
+      "sources": [
+        { "label": "Google Trends · Explore（30 天，US）", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=prompt%20caching", "site": "trends.google.com", "kind": "google_trends" },
+        { "label": "官方文档", "url": "https://platform.openai.com/docs", "site": "platform.openai.com", "kind": "official" }
+      ],
+      "evidence": [
+        {
+          "claim": "主流模型厂商均已原生支持上下文缓存，能力不再是差异化点。",
+          "claimType": "fact",
+          "date": "2026-09-15",
+          "detail": "功能普及会让搜索从「了解」转向「成本计算」，热度自然回落。",
+          "sources": [{ "label": "官方文档", "url": "https://platform.openai.com/docs", "site": "platform.openai.com", "kind": "official", "publishedAt": "2026-09-15" }]
+        },
+        {
+          "claim": "回落是功能成熟而非需求消失，因为搜索仍显著高于半年前水平。",
+          "claimType": "inference",
+          "date": "2026-10-26",
+          "detail": "依据是 30 天前的基线水平，缺少更长的历史序列做对照。",
+          "sources": [{ "label": "Google Trends · Explore", "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=prompt%20caching", "site": "trends.google.com", "kind": "google_trends" }]
+        }
+      ],
+      "intents": [
+        { "intent": "howto", "share": 40, "queries": ["prompt caching how it works", "cache hit rate"] },
+        { "intent": "price", "share": 36, "queries": ["prompt caching cost savings", "prompt caching pricing"] },
+        { "intent": "compare", "share": 24, "queries": ["prompt caching vs fine tuning"] }
+      ],
+      "relatedQueries": ["prompt caching cost", "context caching", "cache hit rate"],
+      "competitors": ["各厂商内建缓存", "网关类产品的缓存功能"],
+      "opportunities": [
+        { "type": "content", "title": "缓存命中率优化清单", "why": "howto 与 price 意图合计 76%，且属于长期有效的基础知识。", "effort": "1–2 天" },
+        { "type": "feature", "title": "给网关类产品加缓存收益看板", "why": "用户真正关心的是省了多少钱，而不是机制本身。", "effort": "1–2 周" }
+      ],
+      "actions": [
+        { "verdict": "watch", "action": "不作为新方向投入，仅保留内容维护", "reason": "趋势处于回落段，时机分最低。", "uncertainty": "新一代模型若改变缓存计费方式，可能重新带动热度。" }
+      ]
+    }
+  ]
+}

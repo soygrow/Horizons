@@ -7,8 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "opennext:build": "opennextjs-cloudflare build",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "opennext:build": "node ../../scripts/build/web-data.mjs && opennextjs-cloudflare build",
+    "deploy": "node ../../scripts/build/web-data.mjs && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "prebuild": "node ../../scripts/build/web-data.mjs",
+    "predev": "node ../../scripts/build/web-data.mjs"
   },
   "dependencies": {
     "@horizons/shared": "workspace:*",

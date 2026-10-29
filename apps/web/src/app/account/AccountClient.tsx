@@ -35,7 +35,7 @@ export function AccountClient() {
       <div className="mx-auto max-w-md px-4 py-20 text-center sm:px-6">
         <h1 className="text-2xl font-bold tracking-tight text-ink">尚未登录</h1>
         <p className="mt-2 text-sm text-ink-secondary">
-          登录后即可管理你的账户、订阅与收藏。
+          登录后即可管理你的账户与收藏。
         </p>
         <a
           href="/api/auth/google"
@@ -66,11 +66,6 @@ export function AccountClient() {
           </p>
           <p className="truncate text-sm text-ink-secondary">{user.email}</p>
         </div>
-      </div>
-
-      <div className="mt-4 rounded-2xl border border-border bg-surface p-6">
-        <h2 className="text-sm font-semibold text-ink">订阅</h2>
-        <p className="mt-2 text-sm text-ink-muted">订阅功能即将上线，敬请期待。</p>
       </div>
 
       <div className="mt-6 flex items-center gap-3">

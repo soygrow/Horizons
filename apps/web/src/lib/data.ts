@@ -1,11 +1,13 @@
 import { compareByScore, computeProductScore } from "@horizons/shared";
 import type { AITool, PricingModel, GitHubRepo, ProductScore } from "@horizons/shared";
 import toolsData from "@content/aitools.json";
-import githubData from "@content/github.json";
+import githubData from "@content/github-web.json";
 
 export const tools = toolsData as AITool[];
 const gh = githubData as unknown as { updatedAt: string; repos: GitHubRepo[] };
 export const githubRepos = gh.repos ?? [];
+/** GitHub 榜数据快照时间（页面上如实展示） */
+export const githubUpdatedAt = gh.updatedAt ?? "";
 
 export const allCategories = [
   "AI Chat",
@@ -181,21 +183,35 @@ export function paginate<T>(list: T[], page: number, pageSize: number): T[] {
 }
 
 /** 首页多榜单切片 */
+/**
+ * 首页榜单数据：跟随当前库内实际分布（175 个工具），
+ * 分类板块只取工具数最多的 6 个分类，避免首页拉出十几个半空板块。
+ */
 export function getBoards() {
   const sorted = getToolsSorted();
   const newest = [...tools].sort((a, b) =>
     b.firstSeenAt.localeCompare(a.firstSeenAt),
   );
+  const byCategory = allCategories
+    .map((cat) => {
+      const items = sorted.filter((t) => t.categories.includes(cat));
+      return { category: cat, total: items.length, items: items.slice(0, 8) };
+    })
+    .filter((b) => b.total > 0)
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 6);
   return {
-    hot: sorted.slice(0, 8),
-    newest: newest.slice(0, 8),
-    byCategory: allCategories
-      .map((cat) => ({
-        category: cat,
-        items: sorted.filter((t) => t.categories.includes(cat)).slice(0, 5),
-      }))
-      .filter((b) => b.items.length > 0),
+    hot: sorted.slice(0, 10),
+    newest: newest.slice(0, 10),
+    byCategory,
   };
+}
+
+/** 首页 GitHub 榜：按综合得分取前 N，附得分与分级 */
+export function getGithubTop(limit = 8) {
+  return getReposByScore()
+    .slice(0, limit)
+    .map((repo) => ({ repo, score: repoScore(repo) }));
 }
 
 /* ------------------------------- GitHub 榜单 ------------------------------- */

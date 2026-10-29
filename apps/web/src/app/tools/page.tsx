@@ -14,12 +14,12 @@ import { FilterSelect } from "@/components/FilterSelect";
 import { ToolListHead } from "@/components/ToolListHead";
 import { ToolListRow } from "@/components/ToolListRow";
 import { Pagination } from "@/components/Pagination";
-import { PaywallBanner } from "@/components/PaywallBanner";
+
 import type { AITool } from "@horizons/shared";
 
 export const metadata: Metadata = { title: "AI工具榜" };
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 20;
 
 const visitOptions = [
   { value: "all", label: "全部" },
@@ -235,10 +235,6 @@ export default async function ToolsPage({
           totalPages={totalPages}
           makeHref={(p) => buildHref(query, { page: p })}
         />
-      </div>
-
-      <div className="mt-10">
-        <PaywallBanner total={tools.length} />
       </div>
     </div>
   );

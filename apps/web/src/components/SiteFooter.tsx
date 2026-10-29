@@ -5,6 +5,7 @@ const columns: { title: string; links: { label: string; href: string }[] }[] = [
     title: "产品",
     links: [
       { label: "AI工具榜", href: "/tools" },
+      { label: "AI趋势词榜单", href: "/trends" },
       { label: "提交产品", href: "/#submit" },
       { label: "Changelog", href: "#" },
     ],

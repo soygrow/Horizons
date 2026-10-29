@@ -1,12 +1,19 @@
-import { tools, getBoards } from "@/lib/data";
+import { tools, githubRepos, githubUpdatedAt, getBoards, getGithubTop } from "@/lib/data";
 import { SearchInput } from "@/components/SearchInput";
 import { BoardSection } from "@/components/BoardSection";
+import { GithubBoard } from "@/components/GithubBoard";
 import { TestimonialWall } from "@/components/TestimonialWall";
 import { FaqAccordion } from "@/components/FaqAccordion";
-import { SubscribeCta } from "@/components/SubscribeCta";
+
+/** 2026-10-29T02:21:27.449Z → 2026-10-29 */
+function fmtDate(iso: string): string {
+  return iso ? iso.slice(0, 10) : "";
+}
 
 export default function Home() {
   const boards = getBoards();
+  const ghTop = getGithubTop(8);
+  const ghDate = fmtDate(githubUpdatedAt);
 
   return (
     <div>
@@ -18,29 +25,33 @@ export default function Home() {
             发现正在崛起的 AI 工具
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base text-ink-secondary">
-            用可追溯的真实信号——热度、定价、趋势与收录时间——追踪值得关注的
-            AI 产品，而不是靠猜。
+            两个榜：AI 工具榜看真实产品形态，GitHub 榜看开源项目能做成什么生意。
+            每个条目都标注指标来源与数据日期。
           </p>
           <div className="mt-8 flex justify-center">
             <SearchInput defaultValue="" />
           </div>
           <p className="mt-6 text-sm text-ink-muted">
-            已追踪 {tools.length} 个工具 · 数据来自公开官方接口与人工整理
+            已收录 {tools.length} 个 AI 工具 · {githubRepos.length} 个开源项目
+            {ghDate ? ` · 榜单数据更新于 ${ghDate}` : ""}
           </p>
         </div>
       </section>
 
-      {/* 多榜单分区 */}
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        {/* GitHub 榜 */}
+        <GithubBoard items={ghTop} total={githubRepos.length} />
+
+        {/* AI 工具榜分区 */}
         <BoardSection
           title="热度榜"
-          subtitle="按热度分排序的精选工具"
+          subtitle={`按热度分排序的前 ${boards.hot.length} 个工具`}
           items={boards.hot}
           viewAllHref="/tools"
         />
         <BoardSection
           title="新星榜"
-          subtitle="近期新收录的工具"
+          subtitle={`近期新收录的前 ${boards.newest.length} 个工具`}
           items={boards.newest}
           viewAllHref="/tools?sort=recent"
         />
@@ -49,7 +60,7 @@ export default function Home() {
           <BoardSection
             key={b.category}
             title={b.category}
-            subtitle="该分类下热度最高的工具"
+            subtitle={`该分类共 ${b.total} 个工具，按热度取前 ${b.items.length} 个`}
             items={b.items}
             viewAllHref={`/tools?cat=${encodeURIComponent(b.category)}`}
           />
@@ -61,9 +72,6 @@ export default function Home() {
 
       {/* FAQ */}
       <FaqAccordion />
-
-      {/* 订阅 CTA */}
-      <SubscribeCta />
     </div>
   );
 }
