@@ -1,7 +1,7 @@
 /**
- * AI 趋势词榜：浏览器端筛选 / 搜索 / 排序 / 分页
+ * AI 趋势词榜：浏览器端筛选 / 搜索 / 排序 / 分页。
  * 过滤与排序口径对齐 apps/web/src/app/trends/page.tsx。
- * 默认（无 q/cat/status/conf）展示静态渲染的三区视图，一旦筛选切到列表视图。
+ * 页面只有一个列表：阶段（爆/增长/新/回落）是筛选条件，首屏静态渲染第 1 页，这里接管后续交互。
  */
 type Row = {
   slug: string;
@@ -10,6 +10,9 @@ type Row = {
   category: string;
   status: string;
   confidence: string;
+  rank: number;
+  overall: number;
+  sortOverall: number;
   sortTrend: number;
   sortOpp: number;
   sortGrowth: number;
@@ -20,7 +23,10 @@ type Row = {
 
 const DATA_URL = "/data/trends.json";
 
-const pad = (n: number) => String(n).padStart(2, "0");
+/** 与静态首屏一致的默认排序：综合得分 → 趋势强度 → slug（保证结果可复现） */
+function byOverall(a: Row, b: Row): number {
+  return b.sortOverall - a.sortOverall || b.sortTrend - a.sortTrend || a.slug.localeCompare(b.slug);
+}
 
 const chipCls = (active: boolean) =>
   active
@@ -50,13 +56,11 @@ function pagerHtml(page: number, total: number): string {
 }
 
 export function initTrendsFilter() {
-  const def = document.getElementById("trends-default");
-  const filteredBox = document.getElementById("trends-filtered");
   const rowsBox = document.getElementById("trends-rows");
   const empty = document.getElementById("trends-empty");
   const pager = document.getElementById("trends-pager");
   const meta = document.getElementById("trends-meta");
-  if (!def || !filteredBox || !rowsBox || !pager || !meta) return;
+  if (!rowsBox || !pager || !meta) return;
 
   const pageSize = Number(pager.dataset.pageSize || 20);
   let cache: Row[] | null = null;
@@ -65,12 +69,6 @@ export function initTrendsFilter() {
   const chips = [...document.querySelectorAll<HTMLAnchorElement>("[data-filter-btn]")];
   const sortBtns = [...document.querySelectorAll<HTMLAnchorElement>("[data-sort]")];
   const statusLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-link-status]")];
-
-  const isDefaultView = (p: URLSearchParams) =>
-    !(p.get("q") || "").trim() &&
-    (p.get("cat") || "All") === "All" &&
-    (p.get("status") || "all") === "all" &&
-    (p.get("conf") || "all") === "all";
 
   async function load(): Promise<Row[]> {
     if (!cache) {
@@ -96,8 +94,8 @@ export function initTrendsFilter() {
     const cat = p.get("cat") || "All";
     const status = p.get("status") || "all";
     const conf = p.get("conf") || "all";
-    const sort = p.get("sort") || "trend";
-    const whole = isDefaultView(p);
+    const sort = p.get("sort") || "overall";
+    const filtered = Boolean(q) || cat !== "All" || status !== "all" || conf !== "all";
 
     if (search && document.activeElement !== search) search.value = p.get("q") || "";
     // "All" / "all" / 缺省都视为「全部」
@@ -107,20 +105,8 @@ export function initTrendsFilter() {
       c.className = chipCls(active);
     });
     sortBtns.forEach((b) => {
-      b.className = chipCls((p.get("sort") || "trend") === b.dataset.sort);
+      b.className = chipCls(sort === b.dataset.sort);
     });
-
-    def.classList.toggle("hidden", !whole);
-    filteredBox.classList.toggle("hidden", whole);
-
-    if (whole) {
-      rowsBox.innerHTML = "";
-      pager.innerHTML = "";
-      empty?.classList.add("hidden");
-      meta.textContent =
-        "默认按三区展示：新词值得观察，持续增长适合做内容，快速爆发可能需要立即行动。";
-      return;
-    }
 
     const all = await load();
     const list = all.filter((r) => {
@@ -131,22 +117,25 @@ export function initTrendsFilter() {
       return true;
     });
 
+    // 数据不足（sortOverall = -1）自然沉底
     list.sort((a, b) => {
       if (sort === "opp") return b.sortOpp - a.sortOpp;
       if (sort === "growth") return b.sortGrowth - a.sortGrowth;
       if (sort === "newest") return b.firstSeenAt.localeCompare(a.firstSeenAt);
-      return b.sortTrend - a.sortTrend;
+      if (sort === "trend") return b.sortTrend - a.sortTrend;
+      return byOverall(a, b);
     });
 
     const total = Math.max(1, Math.ceil(list.length / pageSize));
     const page = Math.min(Math.max(1, Number(p.get("page") || 1)), total);
     const slice = list.slice((page - 1) * pageSize, page * pageSize);
 
-    rowsBox.innerHTML = slice
-      .map((r, i) => r.h.replace("%R%", pad((page - 1) * pageSize + i + 1)))
-      .join("");
+    // 名次已随行 HTML 内联（全站名次），翻页 / 筛选都不重排编号
+    rowsBox.innerHTML = slice.map((r) => r.h).join("");
     empty?.classList.toggle("hidden", slice.length > 0);
-    meta.textContent = `筛选结果 ${list.length} 个 · 第 ${page} / ${total} 页`;
+    meta.textContent = filtered
+      ? `筛选结果 ${list.length} 个 · 第 ${page} / ${total} 页`
+      : `共 ${list.length} 个关键词 · 第 ${page} / ${total} 页`;
     pager.innerHTML = pagerHtml(page, total);
   }
 
@@ -166,10 +155,11 @@ export function initTrendsFilter() {
   sortBtns.forEach((b) =>
     b.addEventListener("click", (e) => {
       e.preventDefault();
-      setParam("sort", b.dataset.sort || "trend");
+      setParam("sort", b.dataset.sort || "overall");
     }),
   );
 
+  // 顶部状态胶囊：等价于「阶段」筛选
   statusLinks.forEach((a) =>
     a.addEventListener("click", (e) => {
       e.preventDefault();
@@ -194,6 +184,9 @@ export function initTrendsFilter() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  // 首屏是静态渲染的三区视图；带筛选参数进入时立即切成列表视图
-  if (!isDefaultView(new URLSearchParams(location.search))) void render();
+  // 首屏静态渲染第 1 页；脚本接管后补上分页器与元信息
+  void render().catch(() => {
+    // 数据加载失败时保留服务端渲染的结果
+    meta.textContent = "数据加载失败，当前为静态首屏";
+  });
 }

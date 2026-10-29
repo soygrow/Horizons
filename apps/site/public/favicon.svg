@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Horizons">
+  <title>Horizons</title>
+  <defs>
+    <linearGradient id="fv-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1479F7" />
+      <stop offset="0.52" stop-color="#3A45F6" />
+      <stop offset="1" stop-color="#5B1EF3" />
+    </linearGradient>
+    <mask id="fv-gap" maskUnits="userSpaceOnUse" x="0" y="0" width="320" height="140">
+      <rect width="320" height="140" fill="#fff" />
+      <path d="M266 8 Q272.6 30.4 295 36 Q272.6 41.6 266 64 Q259.4 41.6 237 36 Q259.4 30.4 266 8 Z" fill="#000" />
+    </mask>
+  </defs>
+
+  <rect width="64" height="64" rx="15" fill="url(#fv-bg)" />
+
+  <g transform="translate(8 21.4) scale(0.15)">
+    <g mask="url(#fv-gap)">
+      <path
+        d="M77 94 L77 48 C77 25 112 10 158 10 C204 10 244 20 254 46 C261 63 265 80 266 94 C216 75 126 75 77 94 Z"
+        fill="#ffffff"
+      />
+    </g>
+    <path d="M4 135 C74 68 234 68 313 131 C214 93 64 100 4 135 Z" fill="#ffffff" />
+    <path
+      d="M266 13 Q270.9 31.1 289 36 Q270.9 40.9 266 59 Q261.1 40.9 243 36 Q261.1 31.1 266 13 Z"
+      fill="#ffffff"
+    />
+  </g>
+</svg>

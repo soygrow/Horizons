@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Horizons">
+  <title>Horizons</title>
+  <defs>
+    <linearGradient id="ai-bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1479F7" />
+      <stop offset="0.52" stop-color="#3A45F6" />
+      <stop offset="1" stop-color="#5B1EF3" />
+    </linearGradient>
+    <radialGradient id="ai-shine" cx="150" cy="70" r="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5FA6FF" stop-opacity="0.55" />
+      <stop offset="1" stop-color="#5FA6FF" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="ai-dome" x1="190" y1="10" x2="268" y2="92" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" />
+      <stop offset="0.55" stop-color="#ffffff" />
+      <stop offset="1" stop-color="#FFDCA8" />
+    </linearGradient>
+    <mask id="ai-gap" maskUnits="userSpaceOnUse" x="0" y="0" width="320" height="140">
+      <rect width="320" height="140" fill="#fff" />
+      <path d="M266 8 Q272.6 30.4 295 36 Q272.6 41.6 266 64 Q259.4 41.6 237 36 Q259.4 30.4 266 8 Z" fill="#000" />
+    </mask>
+  </defs>
+
+  <rect width="512" height="512" rx="116" fill="url(#ai-bg)" />
+  <rect width="512" height="512" rx="116" fill="url(#ai-shine)" />
+
+  <g transform="translate(56 168) scale(1.25)">
+    <g mask="url(#ai-gap)">
+      <path
+        d="M77 94 L77 48 C77 25 112 10 158 10 C204 10 244 20 254 46 C261 63 265 80 266 94 C216 75 126 75 77 94 Z"
+        fill="url(#ai-dome)"
+      />
+    </g>
+    <path d="M4 135 C74 68 234 68 313 131 C214 93 64 100 4 135 Z" fill="#ffffff" />
+    <path
+      d="M266 13 Q270.9 31.1 289 36 Q270.9 40.9 266 59 Q261.1 40.9 243 36 Q261.1 31.1 266 13 Z"
+      fill="#ffffff"
+    />
+  </g>
+</svg>

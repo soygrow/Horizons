@@ -40,15 +40,29 @@
   --color-data-4: var(--c-data-4);
   --color-data-5: var(--c-data-5);
 
+  /* 品牌色板（《Horizons.tools 品牌视觉指南》） */
+  --color-brand-blue: var(--c-brand-blue);
+  --color-brand-violet: var(--c-brand-violet);
+  --color-brand-amber: var(--c-brand-amber);
+  --color-brand-deep: var(--c-brand-deep);
+
   --color-background: var(--c-canvas);
   --color-foreground: var(--c-ink);
 }
 
 /* ------------------------------ 浅色（默认） ------------------------------ */
 :root {
-  --c-primary: #2563eb;
-  --c-primary-hover: #1d4fd8;
-  --c-primary-soft: rgba(37, 99, 235, 0.1);
+  /* 品牌四色：数据 / 洞察 / 增长 / 未来 */
+  --c-brand-blue: #0866fa;
+  --c-brand-violet: #703ff4;
+  --c-brand-amber: #feb55d;
+  --c-brand-deep: #0c1f50;
+  /* 品牌渐变（logo 穹顶同款：蓝 → 紫 → 橙） */
+  --brand-gradient: linear-gradient(100deg, #0866fa 0%, #5b3cf3 52%, #feb55d 100%);
+
+  --c-primary: #0866fa;
+  --c-primary-hover: #0657d8;
+  --c-primary-soft: rgba(8, 102, 250, 0.1);
 
   --c-canvas: #ffffff;
   --c-surface: #ffffff;
@@ -56,9 +70,9 @@
   --c-border: #e5e9f0;
   --c-border-strong: #d3d9e3;
 
-  --c-ink: #171c26;
-  --c-ink-secondary: #4b5563;
-  --c-ink-muted: #8a93a3;
+  --c-ink: #101e3c;
+  --c-ink-secondary: #47587a;
+  --c-ink-muted: #8792a6;
 
   --c-accent: #16a34a;
   --c-accent-soft: rgba(22, 163, 74, 0.1);
@@ -74,18 +88,19 @@
   --c-warning: #d97706;
   --c-warning-soft: rgba(217, 119, 6, 0.1);
 
-  --c-data-1: #cde5f5;
-  --c-data-2: #9ecfeb;
-  --c-data-3: #64b0dd;
-  --c-data-4: #3493cd;
-  --c-data-5: #1478b8;
+  /* 图表蓝阶：与品牌「数据」蓝 #0866fa 同源 */
+  --c-data-1: #d5e3ff;
+  --c-data-2: #a8c4fe;
+  --c-data-3: #719ffb;
+  --c-data-4: #3d78f8;
+  --c-data-5: #0866fa;
 }
 
 /* --------------------------------- 深色 --------------------------------- */
 .dark {
-  --c-primary: #5b5bd6;
-  --c-primary-hover: #6b6be0;
-  --c-primary-soft: rgba(91, 91, 214, 0.16);
+  --c-primary: #4d8cff;
+  --c-primary-hover: #66a0ff;
+  --c-primary-soft: rgba(77, 140, 255, 0.16);
 
   --c-canvas: #0b0d12;
   --c-surface: #12151c;

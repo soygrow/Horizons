@@ -63,7 +63,7 @@ export interface RepoRow {
 
 export interface HomeData {
   generatedAt: string;
-  stats: { tools: number; repos: number; githubUpdatedAt: string };
+  stats: { tools: number; repos: number; trends: number; githubUpdatedAt: string };
   toolsHot: ToolRow[];
   toolsNewest: ToolRow[];
   byCategory: { category: string; total: number; items: ToolRow[] }[];
@@ -97,17 +97,22 @@ export interface TrendRow {
   scored: boolean;
   tv: number;
   op: number;
+  /** 综合得分 S = 0.6T + 0.4O */
+  overall: number;
+  /** 全站名次；采样点不足为 0（展示「—」，不参与排名） */
+  rank: number;
   oppTypes: { label: string; cls: string }[];
   oppCount: number;
   updatedShort: string;
   /** 已完成排序所需的数值 */
   sortTrend: number;
   sortOpp: number;
+  sortOverall: number;
   sortGrowth: number;
   firstSeenAt: string;
   /** 搜索用的小写文本（keyword + 名称 + why + 意图 + 关联词） */
   hay: string;
-  /** 预渲染行 HTML（排名为 %R% 占位，用 fillRank 填充） */
+  /** 预渲染行 HTML（趋势榜名次已内联，无需 fillRank） */
   h: string;
 }
 

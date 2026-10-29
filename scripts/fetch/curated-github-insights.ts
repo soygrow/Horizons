@@ -4,7 +4,9 @@ import type { GitHubInsight } from "@horizons/shared";
  * 人工精编的「中文创业情报」（样板质量）。
  * 用于重点打磨的项目，质量优先于 LLM/启发式生成；被 enrich-github-insight.ts 优先采用。
  */
+import { CURATED_INSIGHTS_EXTRA } from "./curated-github-insights-extra";
 export const CURATED_INSIGHTS: Record<string, GitHubInsight> = {
+  ...CURATED_INSIGHTS_EXTRA,
   "harry0703/MoneyPrinterTurbo": {
     taglineZh: "输入一个主题，几分钟生成一条可发布的短视频",
     whatZh:
@@ -101,5 +103,197 @@ export const CURATED_INSIGHTS: Record<string, GitHubInsight> = {
     costToMvp: "￥200-800/月（LLM + TTS + 存储）",
     competitors: ["剪映 / CapCut 的 AI 成片", "Opus Clip", "开源的 ShortGPT"],
     differentiators: ["只做 1 个垂直行业，模板更懂行", "按结果交付（可发布成片）而非卖工具", "本地化配音与小语种"],
+  },
+
+  "nexu-io/open-design": {
+    taglineZh: "本地优先的开源 AI 设计工作区，提示词直接出可交付界面",
+    whatZh: "桌面端协作画布，用自然语言/手稿生成原型、网页、App、PPT、动效与图，多 agent 同工程协作，支持设计系统与代码导出，可 BYOK 接任意模型，定位 Figma 平替。",
+    capabilities: ["提示词转 UI", "多 agent 协作画布", "设计系统统一", "代码导出", "本地优先"],
+    buildIdeas: [
+      { title: "落地页设计外包工厂", audience: "缺设计师的 SaaS 与本地服务商", product: "48 小时交付「可点原型 + 前端代码」，按行业沉淀模板。", monetization: "￥1500-6000/页，或 ￥3000/月包 4 改版。", effort: "1 人 / 2 周", stackHint: "模板库 + 导出静态站" },
+      { title: "一句话生成品牌官网", audience: "独立开发者、外贸站、门店", product: "三个问题生成整站页面与文案，导出并托管。", monetization: "￥99-299/年托管费。", effort: "2 人 / 4 周", stackHint: "Astro 静态导出 + 对象存储" },
+    ],
+    buildSteps: [
+      { step: "跑通并测出稿质量", detail: "配自有 Key，用 3 个真实需求各出一版，记录改稿次数与代码可用率。", phase: "验证", output: "3 版样张 + 质量基线", duration: "2 天" },
+      { step: "锁定可验收交付物", detail: "把「可点原型 + 可跑代码」定成标准交付与验收口径，形成报价单。", phase: "验证", output: "报价单 + 交付模板", duration: "2 天" },
+      { step: "沉淀模板压工期", detail: "常用区块模板化，只换品牌层，把单页工期压到 1 天。", phase: "变现", output: "模板库 + 导出脚本", duration: "2-3 周" },
+    ],
+    effects: [{ metric: "单页交付周期", value: "5-7 天 → 1-2 天" }, { metric: "毛利率", value: "75%+" }],
+    moat: "壁垒在行业模板库与验收标准，工具本身开源可替代。",
+    risks: ["复杂交互仍需人工兜底，别承诺零人力。", "客户常要 Figma 源文件，交付形态需兼容。"],
+    techNotes: "桌面端 + 本地存储；BYOK 接 OpenAI 兼容模型；建议自建网关核算成本。",
+    difficulty: "低", timeToMvp: "1-2 周", costToMvp: "￥300-1200/月",
+    competitors: ["Figma + AI 插件", "v0 / Lovable"], differentiators: ["按整站交付而非卖订阅", "只做一个行业的设计语言"],
+  },
+  "confident-ai/deepeval": {
+    taglineZh: "像写单测一样给 LLM 应用写评测，CI 里拦住效果回退",
+    whatZh: "pytest 风格的 LLM 评测框架，内置幻觉、RAG 忠实度、工具调用正确性等 40+ 指标，可本地跑、可接 CI 做回归门禁，把「上线后变差」变成可复现的测试用例。",
+    capabilities: ["pytest 风格用例", "40+ 评测指标", "合成测试集", "CI 回归门禁", "多模型对比"],
+    buildIdeas: [
+      { title: "AI 产品上线质检服务", audience: "即将上线的客服/知识库/agent 团队", product: "搭评测集 + 指标 + CI 门禁，交付效果基线与每版自动质检。", monetization: "￥2-6 万搭建 + ￥3000/月托管。", effort: "1-2 人 / 3 周", stackHint: "真实日志采样 + GitHub Actions" },
+      { title: "行业评测集订阅", audience: "垂直 RAG 厂商（医疗/法律/金融）", product: "卖行业评估数据集与评分口径，可直接跑分出选型依据。", monetization: "￥5000-2 万/套 + 年度更新。", effort: "2 人 / 6 周", stackHint: "专家标注 + 指标封装" },
+    ],
+    buildSteps: [
+      { step: "造 50 条测试集", detail: "从真实问题里抽 50 条，写标准答案与评分要点。", phase: "验证", output: "带黄金答案的测试集", duration: "2-3 天" },
+      { step: "接进 CI 门禁", detail: "分数跌超阈值阻断合并，输出趋势报表。", phase: "起步", output: "CI 门禁 + 趋势看板", duration: "1 周" },
+    ],
+    effects: [{ metric: "发版回退事故", value: "-60~80%" }, { metric: "人工抽检工时", value: "-70%" }],
+    moat: "壁垒是行业测试集与评分口径，以及和发版流程的绑定。",
+    risks: ["裁判模型漂移会误导结论。", "客户不愿给真实日志，测试集代表性不足。"],
+    techNotes: "pip 安装；建议用国产模型当裁判控成本，结果落时序库看趋势。",
+    difficulty: "低", timeToMvp: "1 周", costToMvp: "￥200-800/月",
+    competitors: ["Ragas", "promptfoo"], differentiators: ["按行业卖数据集", "绑定发版流程做长期托管"],
+  },
+  "vespa-engine/vespa": {
+    taglineZh: "向量 + 张量 + 全文混检，一个引擎搞定 AI 搜索与排序",
+    whatZh: "雅虎开源的大规模检索排序引擎，单个查询可混检稠密/稀疏向量、张量（多向量）与 BM25，再叠加在线 ML 排序与实时特征，适合「检索+推荐+个性化」一体的复杂场景。",
+    capabilities: ["混合检索", "在线 ML 排序表达式", "近实时索引", "多阶段 ranking", "亿级文档低延迟"],
+    buildIdeas: [
+      { title: "垂直行业站内搜索 SaaS", audience: "SKU 过万的电商与 B2B 目录站", product: "自然语言找货 + 个性化排序 + 同义词纠错，按查询量收费。", monetization: "￥2000/月起 + 按万次查询计费。", effort: "2-3 人 / 6 周", stackHint: "点击日志回流做排序特征" },
+      { title: "企业知识检索中台", audience: "文档与工单量大的中大型企业", product: "统一文档/工单/Wiki，给内部 AI 助手提供带权限的高召回接口。", monetization: "项目制 ￥10-30 万 + 年运维。", effort: "3 人 / 8 周", stackHint: "权限过滤字段 + 混合排序" },
+    ],
+    buildSteps: [
+      { step: "最小 schema 跑通混检", detail: "Docker 起服务，导入 10 万条真实数据，跑通 BM25 + 向量混合查询。", phase: "验证", output: "可查实例 + 延迟基线", duration: "3-4 天" },
+      { step: "排序特征化并 A/B", detail: "把点击/加购/成交转成排序特征，做 A/B 验证收益。", phase: "起步", output: "排序表达式 + A/B 报告", duration: "2-3 周" },
+    ],
+    effects: [{ metric: "搜索点击率", value: "+10~25%" }, { metric: "P99 延迟", value: "百毫秒级" }],
+    moat: "壁垒在排序特征工程与行业数据回流，基础设施本身可替换。",
+    risks: ["集群调优门槛高，需要专人运维。", "客户已有 ES，迁移阻力大。"],
+    techNotes: "Docker/K8s；schema 定义字段与 ranking profile；HTTP/JSON 查询。",
+    difficulty: "高", timeToMvp: "1-2 个月", costToMvp: "￥1000-3000/月",
+    competitors: ["Elasticsearch + 向量插件", "Algolia"], differentiators: ["只做垂直行业相关性调优", "排序收益可分成"],
+  },
+  "TokenRhythm/opensquilla": {
+    taglineZh: "同样预算更高智能密度的长任务 agent",
+    whatZh: "主打 token 效率的通用 agent：上下文压缩、记忆分层、工具结果裁剪 + MCP 技能体系，让同样预算支撑更多有效推理，适合研究、运维、报表这类长任务。",
+    capabilities: ["上下文压缩", "记忆分层", "MCP 技能", "长任务编排", "成本可控"],
+    buildIdeas: [
+      { title: "长任务 agent 托管", audience: "跑大量研报/舆情/竞品分析的团队", product: "定时长任务流水线，按报告份数收费。", monetization: "￥99-499/份 或 ￥1999/月。", effort: "2 人 / 4 周", stackHint: "定时任务 + 报告模板" },
+      { title: "agent 降本改造服务", audience: "agent 已上线但账单失控的公司", product: "审计 token 花费并替换为高效上下文方案，按节省额分成。", monetization: "首月节省额 30-50%。", effort: "1-2 人 / 3 周", stackHint: "调用链埋点 + 缓存复用" },
+    ],
+    buildSteps: [
+      { step: "复现一条真实长任务", detail: "选 20 步以上任务，记录 token 消耗与成功率基线。", phase: "验证", output: "成本基线", duration: "2-3 天" },
+      { step: "压成本且质量不掉", detail: "逐项对比压缩后的成本与质量，找可接受压缩比。", phase: "验证", output: "降本 40%+ 配置", duration: "1 周" },
+    ],
+    effects: [{ metric: "单任务 token 成本", value: "-40~70%" }, { metric: "长任务成功率", value: "80%+" }],
+    moat: "省下来的账单就是护城河，效率工程可量化卖钱。",
+    risks: ["压缩过度丢关键信息，需按任务分档。", "模型降价会削弱卖点。"],
+    techNotes: "Python；支持 MCP 工具与自定义技能；外挂成本埋点便于向客户证明降本。",
+    difficulty: "中", timeToMvp: "1-2 周", costToMvp: "￥500-2000/月",
+    competitors: ["LangGraph", "OpenHands"], differentiators: ["降本做成可分成服务", "只做长任务不做通用对话"],
+  },
+  "NVIDIA/garak": {
+    taglineZh: "给 LLM 应用做红队体检：自动探测越狱、注入与泄露",
+    whatZh: "NVIDIA 维护的 LLM 漏洞扫描器，内置上百个探针（幻觉、数据泄露、提示注入、越狱、毒性、编码绕过），可对整条应用链路扫描并输出漏洞报告，常被当作上线安全门禁与合规材料。",
+    capabilities: ["上百攻击探针", "越狱/注入/泄露检测", "链路级扫描", "漏洞报告", "可接 CI"],
+    buildIdeas: [
+      { title: "AI 应用安全体检报告", audience: "有对外 AI 功能的产品团队", product: "扫描输出「风险清单 + 修复建议 + 复测」，作为上线与投标材料。", monetization: "￥8000-3 万/次，年度复测 ￥5 万起。", effort: "1-2 人 / 3 周", stackHint: "自定义业务探针 + 报告模板" },
+      { title: "提示注入防护网关", audience: "银行/政务等有对外助手的客户", product: "前置检测注入与敏感泄露并拦截审计。", monetization: "￥1999/月起按调用计费。", effort: "2-3 人 / 6 周", stackHint: "探针蒸馏成轻量分类器" },
+    ],
+    buildSteps: [
+      { step: "跑一轮全量扫描", detail: "按业务影响排序高危项，附复现用例。", phase: "验证", output: "高危清单 + 复现", duration: "2-3 天" },
+      { step: "把漏洞固化成回归用例", detail: "每个已修复项接进发版流程自动复测。", phase: "起步", output: "安全回归套件", duration: "1-2 周" },
+    ],
+    effects: [{ metric: "上线前高危发现", value: "平均 5-15 项" }, { metric: "安全评审周期", value: "-50%" }],
+    moat: "壁垒是业务化探针与报告口径，开源扫描器只是起点。",
+    risks: ["未授权扫描有法律风险，必须前置授权。", "客户多当一次性支出，复购靠监管压力。"],
+    techNotes: "Python CLI，可扫 REST API 与本地模型；报告 JSON 可转 PDF。",
+    difficulty: "中", timeToMvp: "1-2 周", costToMvp: "￥300-1500/月",
+    competitors: ["Giskard", "AI-Infra-Guard"], differentiators: ["垂直行业探针", "按报告与复测收费"],
+  },
+  "BuilderIO/agent-native": {
+    taglineZh: "让 React 应用天生会被 agent 操作：说一句话界面自己长出来",
+    whatZh: "Builder.io 的 agent 原生应用框架：用 React + TS 把界面状态与动作暴露成 agent 可调用能力，agent 能读状态、改界面、跑流程，适合运营后台、报表工具、内部工作台。",
+    capabilities: ["动作注册给 agent", "状态双向绑定", "动作权限与审计", "渐进接入现有应用"],
+    buildIdeas: [
+      { title: "会自己改的运营后台", audience: "电商与内容公司的运营团队", product: "说一句「看上周各渠道 ROI」直接生成带图表的页面。", monetization: "￥3-8 万实施 + ￥2000/月维护。", effort: "2-3 人 / 6 周", stackHint: "现有 BI 接口 + 权限网关" },
+      { title: "垂直业务工作台模板", audience: "律所、诊所、货代等固定流程团队", product: "一句话生成工单、报价、跟进表工作台，按租户交付。", monetization: "￥299-999/月/租户。", effort: "2 人 / 5 周", stackHint: "动作库 + 表单 schema" },
+    ],
+    buildSteps: [
+      { step: "把一个页面 agent 化", detail: "注册该页查询与动作，验证说一句就能操作。", phase: "验证", output: "1 个可用页面 + 录屏", duration: "3-5 天" },
+      { step: "补动作权限与审计", detail: "加权限、二次确认与操作日志，防越权改数据。", phase: "起步", output: "权限矩阵 + 审计日志", duration: "1-2 周" },
+    ],
+    effects: [{ metric: "后台需求交付", value: "2 周 → 1 天" }, { metric: "运营自助率", value: "+50%" }],
+    moat: "壁垒是行业动作库与权限模型，越贴业务越难替代。",
+    risks: ["agent 改数据边界必须收严。", "框架较新，生态仍在演进。"],
+    techNotes: "React + TS；schema 驱动动作注册；自建权限网关与审计。",
+    difficulty: "中", timeToMvp: "2-3 周", costToMvp: "￥500-2000/月",
+    competitors: ["Retool", "v0"], differentiators: ["按行业卖工作台模板", "动作为中心而非页面为中心"],
+  },
+  "Azure-Samples/azure-search-openai-demo": {
+    taglineZh: "微软官方 RAG 样板：带引用与权限的检索问答全链路",
+    whatZh: "微软官方 RAG 参考实现：Azure AI Search 混合检索 + 引用标注 + 多轮改写 + 文档级权限，azd 一键部署。价值在于分块、向量化、检索融合、引用与评估每一步都有最佳实践可抄。",
+    capabilities: ["分块与向量化流水线", "混合检索 + 语义重排", "答案引用可溯源", "多轮会话改写", "文档权限过滤"],
+    buildIdeas: [
+      { title: "企业文档问答交付包", audience: "内部制度/产品文档多的中小企业", product: "接客户文档源，交付带引用的内部问答助手。", monetization: "￥5-15 万项目 + ￥3000/月运维。", effort: "2 人 / 4 周", stackHint: "azd 部署 + 客户鉴权 + 术语词表" },
+      { title: "标书/合同审阅助手", audience: "投标代理与法务外包", product: "条款比对 + 缺失提醒 + 引用定位。", monetization: "￥999/月/席 或 ￥200/份。", effort: "2 人 / 5 周", stackHint: "条款 schema + 差异对比视图" },
+    ],
+    buildSteps: [
+      { step: "真实文档跑通召回", detail: "灌 200 份真实文档，评估召回与引用准确率，先解决找不到。", phase: "验证", output: "召回评估表", duration: "3-5 天" },
+      { step: "补齐权限与兜底", detail: "文档级权限、引用定位、无答案兜底，达到可对内发布。", phase: "起步", output: "可交付版本 + 验收清单", duration: "2-3 周" },
+    ],
+    effects: [{ metric: "问答命中率", value: "75-90%" }, { metric: "首次部署", value: "半天跑通" }],
+    moat: "壁垒是行业词表与文档治理，代码公开。",
+    risks: ["强绑 Azure，多云客户迁移成本高。", "文档脏乱时答不准，需先治理。"],
+    techNotes: "Python + React + Bicep；azd up 一键部署；检索后端可换但引用与权限需自接。",
+    difficulty: "低", timeToMvp: "1-2 周", costToMvp: "￥800-3000/月",
+    competitors: ["Dify", "RAGFlow"], differentiators: ["带引用与权限的企业级交付", "绑定文档治理与运维"],
+  },
+  "mnfst/llm-gateway": {
+    taglineZh: "自托管 LLM 网关：一个地址接所有模型，顺手把账单算清",
+    whatZh: "开源 LLM 统一网关：对外 OpenAI 兼容，对内路由到各家模型，按用户/功能记录 token 与成本，支持 BYOK、预算限额、失败回退与可观测性，适合多模型多团队阶段。",
+    capabilities: ["OpenAI 兼容入口", "多供应商路由回退", "成本核算", "预算限流", "调用追踪"],
+    buildIdeas: [
+      { title: "AI 成本管家 SaaS", audience: "AI 功能上线、月账单过万的团队", product: "接一层网关给出「谁在花、花在哪、怎么省」的看板与建议。", monetization: "￥599-2999/月 或按节省额分成。", effort: "2 人 / 4 周", stackHint: "成本看板 + 模型替换建议" },
+      { title: "多模型容灾合规代理", audience: "金融/政企", product: "统一入口 + 国产模型兜底 + 审计日志。", monetization: "￥5-20 万项目 + 年维护。", effort: "3 人 / 8 周", stackHint: "内网部署 + 审计存证" },
+    ],
+    buildSteps: [
+      { step: "全量接入只看不改", detail: "摸清真实成本结构与失败率。", phase: "验证", output: "成本明细 + 失败率", duration: "2-3 天" },
+      { step: "设预算与回退策略", detail: "超额降级到便宜模型，验证成本与质量平衡。", phase: "起步", output: "预算策略 + 降级规则", duration: "1 周" },
+    ],
+    effects: [{ metric: "模型账单", value: "-20~40%" }, { metric: "故障切换", value: "秒级" }],
+    moat: "壁垒是成本数据积累与合规交付能力。",
+    risks: ["与大厂和网关 SaaS 正面竞争。", "客户担心密钥托管安全。"],
+    techNotes: "TypeScript；OpenAI 兼容代理；建议接自建审计与用量报表。",
+    difficulty: "低", timeToMvp: "1-2 周", costToMvp: "￥200-1000/月",
+    competitors: ["LiteLLM", "Plano"], differentiators: ["成本管家化包装", "合规审计交付"],
+  },
+  "RLinf/RLinf": {
+    taglineZh: "具身与 agentic AI 的强化学习训练底座",
+    whatZh: "面向具身智能与 agent 训练的 RL 基础设施：把环境、并行采样、训练与评测串成流水线，支持 VLA 模型的强化学习后训练，适合做机器人策略与 agent 自我改进。",
+    capabilities: ["可扩展 RL 训练流水线", "VLA 后训练", "并行环境采样", "训练与评测一体"],
+    buildIdeas: [
+      { title: "机器人策略微调服务", audience: "做人形/机械臂的硬件厂商", product: "按任务定制 VLA 策略后训练与真机评测交付。", monetization: "￥10-50 万/项目。", effort: "3-5 人 / 3 个月", stackHint: "仿真环境 + 真机数据回流" },
+      { title: "agent 自我改进训练营", audience: "想让 agent 用经验迭代的团队", product: "用 RL 流程把失败轨迹转成训练信号，做能力迭代。", monetization: "￥5-15 万项目或培训。", effort: "2-3 人 / 6 周", stackHint: "轨迹采集 + 奖励建模" },
+    ],
+    buildSteps: [
+      { step: "跑通一个公开任务", detail: "用内置环境复现论文指标，摸清算力与时间成本。", phase: "验证", output: "复现报告", duration: "1-2 周" },
+      { step: "接客户真实任务与数据", detail: "定义奖励函数与评测集，先做小规模策略改进。", phase: "起步", output: "改进后的策略 + 评测", duration: "3-4 周" },
+    ],
+    effects: [{ metric: "任务成功率", value: "+10~30%" }, { metric: "人工调参工时", value: "-50%" }],
+    moat: "壁垒是场景数据与奖励函数设计，框架本身开源。",
+    risks: ["算力成本高，客户预算难批。", "真机与仿真差异大，落地周期长。"],
+    techNotes: "Python + PyTorch；支持分布式采样；建议先用小模型验证奖励设计。",
+    difficulty: "高", timeToMvp: "1-2 个月", costToMvp: "￥5000-3 万/月（GPU）",
+    competitors: ["VeRL", "OpenRLHF"], differentiators: ["聚焦具身 VLA 后训练", "项目制交付而非卖框架"],
+  },
+  "di-sukharev/opencommit": {
+    taglineZh: "一条命令让 AI 写好 git 提交信息，支持本地模型",
+    whatZh: "命令行工具：暂存区变化后自动生成符合规范的 commit message，支持 Claude/GPT/Ollama 等任意提供商，有 emoji、多语言与自定义模板，团队可统一提交规范。",
+    capabilities: ["一键生成 commit", "多模型与本地 Ollama", "多语言与 emoji", "自定义模板", "团队规范统一"],
+    buildIdeas: [
+      { title: "研发效能小工具集", audience: "10-200 人的研发团队", product: "把 commit/PR/变更日志/发布说明串成自动化工具链，按席售卖。", monetization: "￥19-49/席/月。", effort: "2 人 / 5 周", stackHint: "opencommit + Git 钩子 + 报告" },
+      { title: "代码提交规范咨询", audience: "要做研发度量的中型公司", product: "落地提交规范、变更日志自动生成与效能看板。", monetization: "￥2-5 万项目。", effort: "1 人 / 2 周", stackHint: "钩子 + 统计脚本" },
+    ],
+    buildSteps: [
+      { step: "团队内试用一周", detail: "统一模板与语言，统计提交信息可读性改进与耗时。", phase: "验证", output: "试用报告", duration: "1 周" },
+      { step: "扩到 PR 与发布说明", detail: "把生成能力接到 PR 描述与 changelog。", phase: "起步", output: "自动化流水线", duration: "1-2 周" },
+    ],
+    effects: [{ metric: "提交信息规范率", value: "90%+" }, { metric: "写提交耗时", value: "-80%" }],
+    moat: "壁垒弱，很容易被 IDE 内置能力替代，需向上做成工具链。",
+    risks: ["IDE 与代码平台原生能力挤压空间。", "付费意愿低，需靠团队级合规与看板。"],
+    techNotes: "Node CLI；支持本地 Ollama 免费用；可用 Git prepare-commit-msg 钩子自动触发。",
+    difficulty: "低", timeToMvp: "3-5 天", costToMvp: "￥0-300/月",
+    competitors: ["IDE 内置 AI", "aicommits"], differentiators: ["团队规范与看板", "本地模型零成本"],
   },
 };

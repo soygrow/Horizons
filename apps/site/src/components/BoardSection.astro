@@ -1,41 +1,41 @@
 ---
-/** 首页榜单板块：与 apps/web/src/components/BoardSection.tsx 一致 */
-import ToolRowCompact from "./ToolRowCompact.astro";
-import type { ToolRow } from "../lib/types";
-
+/** 首页榜单板块外壳：标题 + 规模信息 + 「查看全部」，行内容由调用方用 slot 传入 */
 interface Props {
   title: string;
   subtitle?: string;
-  items: ToolRow[];
+  /** 标题右侧的规模/更新时间信息 */
+  meta?: string;
   viewAllHref?: string;
+  viewAllText?: string;
 }
 
-const { title, subtitle, items, viewAllHref } = Astro.props;
+const { title, subtitle, meta, viewAllHref, viewAllText = "查看全部" } = Astro.props;
 ---
 
-{
-  items.length > 0 && (
-    <section class="mt-10">
-      <div class="flex items-end justify-between gap-4">
-        <div>
-          <h2 class="text-xl font-bold tracking-tight text-ink">{title}</h2>
-          {subtitle && <p class="mt-1 text-sm text-ink-muted">{subtitle}</p>}
-        </div>
-        {viewAllHref && (
-          <a
-            href={viewAllHref}
-            class="shrink-0 text-sm font-medium text-primary transition hover:text-primary-hover"
-          >
-            查看全部 →
-          </a>
+<section class="mt-12">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-center gap-2">
+        <h2 class="text-xl font-bold tracking-tight text-ink">{title}</h2>
+        {meta && (
+          <span class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-muted tabular-nums">
+            {meta}
+          </span>
         )}
       </div>
+      {subtitle && <p class="mt-1 text-sm text-ink-muted">{subtitle}</p>}
+    </div>
+    {viewAllHref && (
+      <a
+        href={viewAllHref}
+        class="shrink-0 text-sm font-medium text-primary transition hover:text-primary-hover"
+      >
+        {viewAllText} →
+      </a>
+    )}
+  </div>
 
-      <div class="mt-4 overflow-hidden rounded-2xl border border-border bg-surface">
-        {items.map((t, i) => (
-          <ToolRowCompact tool={t} rank={i + 1} />
-        ))}
-      </div>
-    </section>
-  )
-}
+  <div class="mt-4 overflow-hidden rounded-2xl border border-border bg-surface">
+    <slot />
+  </div>
+</section>

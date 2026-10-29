@@ -1,23 +1,15 @@
 ---
-/** AI 趋势词榜单：默认三区视图静态渲染，筛选/排序/分页由浏览器接管（口径同 apps/web） */
+/**
+ * AI 趋势词榜单：单一列表页。
+ * 阶段（正在爆发 / 持续增长 / 新词观察 / 热度回落）是筛选条件，不是分区；
+ * 首屏由服务端渲染第 1 页，筛选 / 排序 / 分页由浏览器接管（口径同 apps/web）。
+ */
 import Base from "../../layouts/Base.astro";
 import SearchInput from "../../components/SearchInput.astro";
 import FilterGroup from "../../components/FilterGroup.astro";
 import TrendListHead from "../../components/TrendListHead.astro";
-import { trendRows, trendFilters, TREND_SECTION_SIZE } from "../../lib/dataset";
-import { fillRank } from "../../lib/row-html";
+import { trendRows, trendFilters, PAGE_SIZE } from "../../lib/dataset";
 import { formatDateShort } from "../../lib/format";
-
-const SECTIONS = [
-  { status: "breaking", note: "近期增长显著、高于历史基线，且有多时点证据排除单点噪声" },
-  { status: "gaining", note: "不追求单日爆发，但多个时间点持续升温，更适合做稳定选题" },
-  { status: "new", note: "最近才发现、历史数据不足，值得观察但不能宣称已爆发" },
-] as const;
-
-const padded = (n: number) => String(n).padStart(2, "0");
-
-const byStatus = (status: string) =>
-  trendRows.filter((r) => r.status === status).sort((a, b) => b.sortTrend - a.sortTrend);
 
 const countOf = (key: "status" | "confidence", value: string) =>
   trendRows.filter((r) => r[key] === value).length;
@@ -45,10 +37,14 @@ const confOptions = [
   { value: "low", label: "低" },
 ];
 
-const cooling = byStatus("cooling");
+/** 与 scripts/trend-filter.ts 的默认排序保持一致：综合得分 */
+const firstPage = [...trendRows]
+  .sort((a, b) => b.sortOverall - a.sortOverall || b.sortTrend - a.sortTrend || a.slug.localeCompare(b.slug))
+  .slice(0, PAGE_SIZE);
+
 const title = "AI 趋势词榜单 · Horizons";
 const description =
-  "以 Google Trends 搜索证据为基础的 AI 趋势词榜单：区分正在爆发、持续增长与新词观察，并给出为什么升温、可以做什么。";
+  "以 Google Trends 搜索证据为基础的 AI 趋势词榜单：按综合得分排名，可按正在爆发、持续增长、新词观察筛选，并给出为什么升温、可以做什么。";
 ---
 
 <Base title={title} description={description}>
@@ -63,17 +59,34 @@ const description =
         <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-secondary">
           共 {trendRows.length} 个关键词
         </span>
-        <span class="rounded-full border border-rose-400/25 bg-rose-400/10 px-2.5 py-1 text-rose-400">
+        <a
+          href="#"
+          data-link-status="breaking"
+          class="rounded-full border border-rose-400/25 bg-rose-400/10 px-2.5 py-1 text-rose-400 transition hover:border-rose-400/50"
+        >
           正在爆发 {countOf("status", "breaking")}
-        </span>
-        <span
-          class="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-emerald-500"
+        </a>
+        <a
+          href="#"
+          data-link-status="gaining"
+          class="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-emerald-500 transition hover:border-emerald-500/50"
         >
           持续增长 {countOf("status", "gaining")}
-        </span>
-        <span class="rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-primary">
+        </a>
+        <a
+          href="#"
+          data-link-status="new"
+          class="rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-primary transition hover:border-primary/60"
+        >
           新词观察 {countOf("status", "new")}
-        </span>
+        </a>
+        <a
+          href="#"
+          data-link-status="cooling"
+          class="rounded-full border border-border bg-surface-2 px-2.5 py-1 text-ink-muted transition hover:text-ink"
+        >
+          热度回落 {countOf("status", "cooling")}
+        </a>
         <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-secondary">
           高可信度 {countOf("confidence", "high")}
         </span>
@@ -81,15 +94,6 @@ const description =
           快照 {formatDateShort(trendFilters.updatedAt)}
         </span>
       </div>
-
-      {
-        trendFilters.mode === "seed" && (
-          <p class="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs leading-relaxed text-amber-500">
-            当前榜单为「结构演示数据」（seed）：字段结构与计算口径已按正式方案落地，分数由序列确定性计算；
-            接入 Google Trends 采集后标记为 live，提示自动消失。热度数值为 0–100 归一化相对热度，不代表搜索次数。
-          </p>
-        )
-      }
 
       <div class="mt-5">
         <SearchInput value="" action="/trends" placeholder="搜索关键词 / 意图 / 关联词" />
@@ -104,10 +108,17 @@ const description =
 
     <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
       <span id="trends-meta" class="text-sm text-ink-muted">
-        默认按三区展示：新词值得观察，持续增长适合做内容，快速爆发可能需要立即行动。
+        共 {trendRows.length} 个关键词 · 按综合得分排序
       </span>
       <div class="flex items-center gap-1">
-        <a href="#" data-sort="trend" class="rounded-full bg-primary px-3 py-1 text-xs font-medium text-white">
+        <a href="#" data-sort="overall" class="rounded-full bg-primary px-3 py-1 text-xs font-medium text-white">
+          综合得分
+        </a>
+        <a
+          href="#"
+          data-sort="trend"
+          class="rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-ink-secondary transition hover:text-ink"
+        >
           趋势强度
         </a>
         <a
@@ -134,112 +145,43 @@ const description =
       </div>
     </div>
 
-    <!-- 默认视图：三个分区 + 热度回落 -->
-    <div id="trends-default">
-      {
-        SECTIONS.map((section) => {
-          const list = byStatus(section.status).slice(0, TREND_SECTION_SIZE);
-          const total = countOf("status", section.status);
-          const meta = statusMetaOf(section.status);
-          return (
-            <section class="mt-8">
-              <div class="flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <h2 class="flex items-center gap-2 text-lg font-semibold text-ink">
-                    <span class={`h-2 w-2 rounded-full ${meta.dot}`} />
-                    {meta.label}
-                    <span class="text-sm font-normal text-ink-muted">{total} 个</span>
-                  </h2>
-                  <p class="mt-1 text-xs text-ink-muted">{section.note}</p>
-                </div>
-                <a
-                  href={`/trends?status=${section.status}`}
-                  data-link-status={section.status}
-                  class="text-xs text-primary hover:underline"
-                >
-                  查看全部 {total} 个 →
-                </a>
-              </div>
-
-              <div class="mt-3 overflow-x-auto rounded-2xl border border-border bg-surface">
-                <div class="min-w-[1220px]">
-                  <TrendListHead />
-                  {list.length > 0 ? (
-                    list.map((r, i) => <Fragment set:html={fillRank(r.h, i + 1)} />)
-                  ) : (
-                    <div class="px-4 py-10 text-center text-sm text-ink-muted">暂无符合条件的词</div>
-                  )}
-                </div>
-              </div>
-            </section>
-          );
-        })
-      }
-
-      {
-        cooling.length > 0 && (
-          <section class="mt-10">
-            <div class="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <h2 class="flex items-center gap-2 text-lg font-semibold text-ink">
-                  <span class="h-2 w-2 rounded-full bg-ink-muted" />
-                  热度回落
-                  <span class="text-sm font-normal text-ink-muted">{cooling.length} 个</span>
-                </h2>
-                <p class="mt-1 text-xs text-ink-muted">
-                  已低于爆发峰值并向基线回归，仅作参照，不作为机会推荐
-                </p>
-              </div>
-              <a href="/trends?status=cooling" data-link-status="cooling" class="text-xs text-primary hover:underline">
-                查看全部 →
-              </a>
-            </div>
-            <div class="mt-3 overflow-x-auto rounded-2xl border border-border bg-surface">
-              <div class="min-w-[1220px]">
-                <TrendListHead />
-                {cooling.slice(0, TREND_SECTION_SIZE).map((r, i) => (
-                  <Fragment set:html={fillRank(r.h, i + 1)} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )
-      }
-
-      <section class="mt-10 rounded-2xl border border-border bg-surface p-5">
-        <h2 class="text-sm font-semibold text-ink">分数是怎么来的</h2>
-        <div class="mt-3 grid gap-3 text-xs leading-relaxed text-ink-secondary sm:grid-cols-2">
-          <p>
-            <span class="font-medium text-ink">趋势强度 T</span>
-            = 0.30 增长幅度 + 0.25 持续性 + 0.20 爆发强度 + 0.15 新颖度 + 0.10 数据可靠性。 回答「这个词是否值得关注」。
-          </p>
-          <p>
-            <span class="font-medium text-ink">机会潜力 O</span>
-            = 0.30 用户需求证据 + 0.25 可切入空间 + 0.20 搜索与内容机会 + 0.15 独立开发可行性 + 0.10 趋势时机。回答「是否值得投入时间做产品或 SEO」。
-          </p>
+    <!-- 列表：首屏静态渲染第 1 页，浏览器接管后按筛选条件重绘 -->
+    <div class="mt-4 overflow-x-auto rounded-2xl border border-border bg-surface">
+      <div class="min-w-[1220px]">
+        <TrendListHead />
+        <div id="trends-rows">
+          {firstPage.map((r) => <Fragment set:html={r.h} />)}
         </div>
-        <p class="mt-3 border-t border-border pt-3 text-xs leading-relaxed text-ink-muted">
-          两个分数不混用：热度高的词未必是好机会，竞争可能已经饱和。采样点少于 14 个的关键词显示「数据不足」， 不强行评分、不参与排名。
-        </p>
-      </section>
-    </div>
-
-    <!-- 筛选视图：由 scripts/trend-filter.ts 渲染 -->
-    <div id="trends-filtered" class="hidden">
-      <div class="mt-4 overflow-x-auto rounded-2xl border border-border bg-surface">
-        <div class="min-w-[1220px]">
-          <TrendListHead />
-          <div id="trends-rows"></div>
-          <div id="trends-empty" class="hidden px-4 py-16 text-center">
-            <p class="text-sm text-ink-muted">没有匹配的关键词，换个筛选条件试试。</p>
-            <a href="/trends" data-reset class="mt-2 inline-block text-xs text-primary hover:underline">
-              重置筛选
-            </a>
-          </div>
+        <div id="trends-empty" class="hidden px-4 py-16 text-center">
+          <p class="text-sm text-ink-muted">没有匹配的关键词，换个筛选条件试试。</p>
+          <a href="/trends" data-reset class="mt-2 inline-block text-xs text-primary hover:underline">
+            重置筛选
+          </a>
         </div>
       </div>
-      <div class="mt-6" id="trends-pager" data-page-size="20"></div>
     </div>
+    <div class="mt-6" id="trends-pager" data-page-size={PAGE_SIZE}></div>
+
+    <section class="mt-10 rounded-2xl border border-border bg-surface p-5">
+      <h2 class="text-sm font-semibold text-ink">分数是怎么来的</h2>
+      <div class="mt-3 grid gap-3 text-xs leading-relaxed text-ink-secondary sm:grid-cols-3">
+        <p>
+          <span class="font-medium text-ink">综合得分 S</span>
+          = 0.6 × 趋势强度 T + 0.4 × 机会潜力 O，决定列表名次（`#` 是全站名次，筛选不重排）。
+        </p>
+        <p>
+          <span class="font-medium text-ink">趋势强度 T</span>
+          = 0.30 增长幅度 + 0.25 持续性 + 0.20 爆发强度 + 0.15 新颖度 + 0.10 数据可靠性。 回答「这个词是否值得关注」。
+        </p>
+        <p>
+          <span class="font-medium text-ink">机会潜力 O</span>
+          = 0.30 用户需求证据 + 0.25 可切入空间 + 0.20 搜索与内容机会 + 0.15 独立开发可行性 + 0.10 趋势时机。回答「是否值得投入时间做产品或 SEO」。
+        </p>
+      </div>
+      <p class="mt-3 border-t border-border pt-3 text-xs leading-relaxed text-ink-muted">
+        阶段（正在爆发 / 持续增长 / 新词观察 / 热度回落）是筛选条件：切换它只缩小结果集，不改变名次。 采样点少于 14 个的关键词显示「数据不足」，不强行评分、不参与排名。
+      </p>
+    </section>
   </div>
 
   <script>

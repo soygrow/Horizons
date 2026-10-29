@@ -1,33 +1,116 @@
 ---
-/** 搜索框：与 apps/web/src/components/SearchInput.tsx 一致（form GET，无 JS 也能用） */
+/**
+ * 搜索框：form GET，无 JS 也能用
+ * size="lg" 用于首页 hero：大卡片式输入区（textarea + 底部工具条 + 圆形提交按钮）
+ */
 interface Props {
   value?: string;
   placeholder?: string;
   action?: string;
+  size?: "md" | "lg";
 }
 
-const { value = "", placeholder = "搜索名称 / 关键词", action = "/tools" } = Astro.props;
+const { value = "", placeholder = "搜索名称 / 关键词", action = "/tools", size = "md" } = Astro.props;
+const lg = size === "lg";
 ---
 
-<form action={action} method="get" class="relative w-full max-w-md">
-  <svg
-    class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-    aria-hidden="true"
-  >
-    <path
-      fill-rule="evenodd"
-      d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-      clip-rule="evenodd"></path>
-  </svg>
-  <input
-    type="search"
-    name="q"
-    data-search
-    value={value}
-    placeholder={placeholder}
-    autocomplete="off"
-    class="w-full rounded-xl border border-border bg-surface py-2.5 pl-9 pr-4 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-  />
-</form>
+{
+  lg ? (
+    <div class="group relative w-full max-w-2xl">
+      <form action={action} method="get" class="relative block">
+        <div
+          class="relative rounded-2xl border border-border-strong bg-surface-2/60 py-2.5 pl-4 pr-16 backdrop-blur transition duration-200 focus-within:border-primary/45 focus-within:bg-surface focus-within:shadow-[0_10px_40px_-12px_rgba(8,102,250,0.28)] focus-within:ring-4 focus-within:ring-primary/10"
+        >
+          <div class="flex items-center gap-3">
+            <svg
+              class="h-5 w-5 shrink-0 text-ink-muted transition group-focus-within:text-primary"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                clip-rule="evenodd"></path>
+            </svg>
+            <label class="sr-only" for="hero-search">搜索工具 / 开源项目 / 趋势词</label>
+            <textarea
+              id="hero-search"
+              name="q"
+              data-search-lg
+              rows="1"
+              placeholder={placeholder}
+              autocomplete="off"
+              class="max-h-32 min-h-7 w-full resize-none bg-transparent py-1 text-base leading-7 text-ink placeholder:text-ink-muted focus:outline-none"
+            >{value}</textarea>
+          </div>
+
+          <button
+            type="submit"
+            aria-label="搜索"
+            class="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-white shadow-[0_4px_14px_-4px_rgba(8,102,250,0.6)] transition duration-200 hover:bg-primary-hover focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/25 active:scale-95"
+          >
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="M10 16V4M10 4l-5 5M10 4l5 5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  ) : (
+    <div class="group relative w-full max-w-md">
+      <form action={action} method="get" class="relative w-full">
+        <svg
+          class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted transition group-focus-within:text-primary"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+            clip-rule="evenodd"></path>
+        </svg>
+        <input
+          type="search"
+          name="q"
+          data-search
+          value={value}
+          placeholder={placeholder}
+          autocomplete="off"
+          class="w-full rounded-xl border border-border bg-surface py-2.5 pl-9 pr-4 text-sm text-ink transition placeholder:text-ink-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        />
+      </form>
+    </div>
+  )
+}
+
+{
+  lg && (
+    <script is:inline>
+      (function () {
+        document.querySelectorAll("textarea[data-search-lg]").forEach(function (el) {
+          el.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+              e.preventDefault();
+              if (el.form) el.form.requestSubmit();
+            }
+          });
+          var fit = function () {
+            el.style.height = "auto";
+            el.style.height = Math.min(el.scrollHeight, 128) + "px";
+          };
+          el.addEventListener("input", fit);
+          fit();
+        });
+      })();
+    </script>
+  )
+}

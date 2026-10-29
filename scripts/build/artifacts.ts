@@ -18,7 +18,7 @@ import {
   tools,
   githubRepos,
   githubUpdatedAt,
-  getToolsSorted,
+  getToolsByScore,
   getReposByScore,
   getBoards,
   getGithubTop,
@@ -55,6 +55,7 @@ import {
   hasEnoughData,
   trendScore,
   opportunityScore,
+  overallScore,
   daysSince,
 } from "../../apps/web/src/lib/trends";
 
@@ -173,7 +174,7 @@ function toRepoRow(r: (typeof githubRepos)[number], rank: number): RepoRow {
 }
 
 /** AI 趋势词行 */
-function toTrendRow(t: (typeof trendKeywords)[number]): TrendRow {
+function toTrendRow(t: (typeof trendKeywords)[number], rank: number): TrendRow {
   const m = trendMetrics(t);
   const scored = hasEnoughData(t);
   const st = trendStatusMeta[t.status];
@@ -214,6 +215,8 @@ function toTrendRow(t: (typeof trendKeywords)[number]): TrendRow {
     scored,
     tv: scored ? Math.round(trendScore(t)) : 0,
     op: scored ? Math.round(opportunityScore(t)) : 0,
+    overall: scored ? overallScore(t) : 0,
+    rank,
     oppTypes: Array.from(new Set(t.opportunities.map((o) => o.type)))
       .slice(0, 2)
       .map((k) => ({
@@ -224,6 +227,7 @@ function toTrendRow(t: (typeof trendKeywords)[number]): TrendRow {
     updatedShort: formatDateShort(t.updatedAt),
     sortTrend: scored ? trendScore(t) : -1,
     sortOpp: scored ? opportunityScore(t) : -1,
+    sortOverall: scored ? overallScore(t) : -1,
     // JSON 不支持 Infinity：无可比增长时排最后
     sortGrowth: growth ?? -1e9,
     firstSeenAt: t.firstSeenAt,
@@ -241,7 +245,8 @@ async function main() {
   await rm(OUT, { recursive: true, force: true });
 
   // ---------- AI 工具榜 ----------
-  const toolRows = getToolsSorted().map((t, i) => toToolRow(t, i + 1));
+  // 榜单顺序 = 综合得分名次：rank 在此固化，筛选、排序、翻页都不会改变它
+  const toolRows = getToolsByScore().map((t, i) => toToolRow(t, i + 1));
 
   const toolDetail = tools.map((t) => ({
     rel: `tools/detail/${t.domain}.json`,
@@ -283,6 +288,7 @@ async function main() {
     stats: {
       tools: tools.length,
       repos: githubRepos.length,
+      trends: trendKeywords.length,
       githubUpdatedAt,
     },
     toolsHot: boards.hot.map((t, i) => toToolRow(t, i + 1)),
@@ -296,13 +302,28 @@ async function main() {
   };
 
   // ---------- AI 趋势词 ----------
-  const trendRows = trendKeywords
-    .map((t) => toTrendRow(t))
-    .sort((a, b) => b.sortTrend - a.sortTrend);
+  // 名次 = 综合得分 S 降序（同分先比 T，再按 slug 稳定排序），与 apps/web 口径一致
+  const orderedTrends = [...trendKeywords].sort((a, b) => {
+    const sa = hasEnoughData(a) ? overallScore(a) : -1;
+    const sb = hasEnoughData(b) ? overallScore(b) : -1;
+    if (sb !== sa) return sb - sa;
+    if (sa >= 0) {
+      const ta = trendScore(a);
+      const tb = trendScore(b);
+      if (tb !== ta) return tb - ta;
+    }
+    return a.slug.localeCompare(b.slug);
+  });
+
+  let rankSeq = 0;
+  const trendRows = orderedTrends.map((t) =>
+    toTrendRow(t, hasEnoughData(t) ? ++rankSeq : 0),
+  );
+  const trendRowBySlug = new Map(trendRows.map((r) => [r.slug, r]));
 
   const trendDetail = trendKeywords.map((t) => ({
     rel: `trends/detail/${t.slug}.json`,
-    data: { data: t, derived: toTrendRow(t) },
+    data: { data: t, derived: trendRowBySlug.get(t.slug) ?? toTrendRow(t, 0) },
   }));
 
   const trendFilters = {

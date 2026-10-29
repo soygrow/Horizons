@@ -1,4 +1,5 @@
 // DeepSeek LLM 客户端（OpenAI 兼容接口），用于中文描述 / 分类 / 定价提取
+import { proxyPostJSON } from "../proxy";
 
 export function hasLLM(): boolean {
   return !!process.env.DEEPSEEK_API_KEY;
@@ -45,19 +46,14 @@ export async function chatJSON<T>(
 
   for (let attempt = 0; ; attempt++) {
     try {
-      const res = await fetch("https://api.deepseek.com/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${key}`,
-          "Content-Type": "application/json",
-        },
-        body,
-        signal: AbortSignal.timeout(TIMEOUT_MS),
+      const res = await proxyPostJSON("https://api.deepseek.com/chat/completions", body, {
+        headers: { Authorization: `Bearer ${key}` },
+        timeoutMs: TIMEOUT_MS,
       });
       if (!res.ok) {
         throw new Error(`DeepSeek 请求失败 ${res.status}: ${(await res.text()).slice(0, 200)}`);
       }
-      const data = (await res.json()) as {
+      const data = JSON.parse(await res.text()) as {
         choices?: Array<{ message?: { content?: string } }>;
       };
       const content = data.choices?.[0]?.message?.content ?? "";

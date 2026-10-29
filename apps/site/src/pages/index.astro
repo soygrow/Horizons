@@ -1,67 +1,198 @@
 ---
 import Base from "../layouts/Base.astro";
 import SearchInput from "../components/SearchInput.astro";
-import GithubBoard from "../components/GithubBoard.astro";
 import BoardSection from "../components/BoardSection.astro";
-import TestimonialWall from "../components/TestimonialWall.astro";
-import FaqAccordion from "../components/FaqAccordion.astro";
-import { homeData } from "../lib/dataset";
+import ToolRowCompact from "../components/ToolRowCompact.astro";
+import RepoRowCompact from "../components/RepoRowCompact.astro";
+import TrendRowCompact from "../components/TrendRowCompact.astro";
+import { homeData, toolRows, repoRows, trendRows, trendFilters } from "../lib/dataset";
+import { homePicks, ROTATION_DAYS, PICKS_PER_BOARD } from "../lib/home-picks";
+import { formatDateShort } from "../lib/format";
 
-const { stats, toolsHot, toolsNewest, byCategory, githubTop } = homeData;
-const ghDate = stats.githubUpdatedAt ? stats.githubUpdatedAt.slice(0, 10) : "";
+const { stats } = homeData;
+
+// 三个板块直接吃同一份榜单数据：数据一变，下面的数字与抽样结果同步变化
+const picks = homePicks({ tools: toolRows, repos: repoRows, trends: trendRows });
+
+const toolsUpdatedAt = toolRows
+  .map((r) => r.collectedAt)
+  .sort()
+  .at(-1);
+const githubUpdatedAt = stats.githubUpdatedAt;
+const trendsUpdatedAt = trendFilters.updatedAt;
+
+/** 首屏三张榜单的规模（数值全部来自榜单数据本身） */
+const boards = [
+  {
+    label: "AI 工具榜",
+    href: "/tools",
+    count: stats.tools,
+    unit: "个工具",
+    updated: toolsUpdatedAt,
+    accent: "text-primary",
+  },
+  {
+    label: "GitHub 榜",
+    href: "/github",
+    count: stats.repos,
+    unit: "个开源项目",
+    updated: githubUpdatedAt,
+    accent: "text-ocean",
+  },
+  {
+    label: "AI 趋势词榜",
+    href: "/trends",
+    count: stats.trends,
+    unit: "个趋势词",
+    updated: trendsUpdatedAt,
+    accent: "text-accent",
+  },
+];
+
+/** 趋势词名次：trendRows 已按趋势强度排序，下标 + 1 即真实名次 */
+const trendRank = new Map(trendRows.map((r, i) => [r.slug, i + 1]));
+
+const sampleNote = `名次 10 名以后随机抽样 ${PICKS_PER_BOARD} 条 · 每 ${ROTATION_DAYS} 天换一批`;
+
+const title = "Horizons — 越过地平线，找到还没被抢走的机会";
+const description =
+  "地平线之外，藏着还没被抢走的机会。Horizons 把正在升温的 AI 工具、开源项目与趋势词整理成可追溯的榜单——先看见，再落地。";
 ---
 
-<Base>
-  <!-- Hero -->
-  <section class="relative overflow-hidden">
+<Base title={title} description={description}>
+  <!-- Hero：地平线 -->
+  <section class="relative overflow-hidden border-b border-border/60">
     <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgba(91,91,214,0.18),transparent)]">
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(65%_55%_at_50%_0%,rgba(8,102,250,0.14),transparent)]"
+    >
     </div>
-    <div class="relative mx-auto max-w-6xl px-4 py-20 text-center sm:px-6 sm:py-28">
-      <h1 class="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-        发现正在崛起的 AI 工具
+    <!-- 地平线：底部光带 + 品牌渐变亮线（与 logo 穹顶同色） -->
+    <div
+      class="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-[linear-gradient(to_top,rgba(112,63,244,0.10),transparent)]"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute inset-x-0 bottom-0 h-[2px]"
+      style="background-image: var(--brand-gradient); mask-image: linear-gradient(to right, transparent, black 22%, black 78%, transparent);"
+    >
+    </div>
+
+    <div
+      class="relative mx-auto flex min-h-[calc(100svh-4rem)] max-w-6xl flex-col justify-center px-4 pb-10 pt-8 text-center sm:px-6"
+    >
+      <h1 class="mx-auto max-w-3xl text-3xl font-bold leading-tight tracking-tight text-ink sm:text-[2.75rem]">
+        越过地平线，<br class="hidden sm:block" />
+        <span
+          class="bg-clip-text text-transparent"
+          style="background-image: linear-gradient(100deg, #0866fa 0%, #5b3cf3 55%, #703ff4 100%);"
+          >看见还没被抢走的机会</span
+        >
       </h1>
-      <p class="mx-auto mt-5 max-w-xl text-base text-ink-secondary">
-        两个榜：AI 工具榜看真实产品形态，GitHub 榜看开源项目能做成什么生意。 每个条目都标注指标来源与数据日期。
+
+      <p class="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-ink-secondary sm:text-base">
+        地平线之外，藏着还没被抢走的机会。Horizons 把正在升温的 AI 工具、开源项目与趋势词整理成可追溯的榜单——先看见，再落地。
       </p>
-      <div class="mt-8 flex justify-center">
-        <SearchInput value="" />
+
+      <div class="mt-6 flex justify-center">
+        <SearchInput
+          size="lg"
+          value=""
+          placeholder="地平线之外，有什么正在升温？例如：AI 视频生成"
+        />
       </div>
-      <p class="mt-6 text-sm text-ink-muted">
-        已收录 {stats.tools} 个 AI 工具 · {stats.repos} 个开源项目
-        {ghDate ? ` · 榜单数据更新于 ${ghDate}` : ""}
-      </p>
+
+      <!-- 从看见到落地 -->
+      <ol
+        class="mx-auto mt-5 flex max-w-2xl flex-col items-stretch gap-2 text-xs sm:flex-row sm:items-center sm:justify-center sm:gap-1.5"
+      >
+        {
+          [
+            ["01", "看见正在升温的热点"],
+            ["02", "找到已被验证的点"],
+            ["03", "按方向落地执行"],
+          ].map(([no, text], i) => (
+            <>
+              <li class="flex items-center justify-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-ink-secondary">
+                <span class="font-mono text-[10px] text-ink-muted">{no}</span>
+                {text}
+              </li>
+              {i < 2 && <span class="hidden text-ink-muted sm:block">→</span>}
+            </>
+          ))
+        }
+      </ol>
+
+      <!-- 三张榜单的实时规模（榜单数据变化 → 这里同步变化） -->
+      <div class="mx-auto mt-6 grid max-w-3xl grid-cols-3 gap-2 sm:gap-3">
+        {
+          boards.map((b) => (
+            <a
+              href={b.href}
+              class="group rounded-xl border border-border bg-surface px-2.5 py-2 text-left transition hover:border-primary/40 hover:bg-surface-2 sm:rounded-2xl sm:px-4 sm:py-3"
+            >
+              <div class="flex items-center justify-between gap-1">
+                <span class="truncate text-[10px] text-ink-secondary sm:text-xs">{b.label}</span>
+                <span
+                  class:list={["hidden text-[11px] tabular-nums sm:inline", b.accent]}
+                >
+                  {formatDateShort(b.updated)}
+                </span>
+              </div>
+              <div class="mt-1 sm:flex sm:items-baseline sm:gap-1">
+                <span class="block text-lg font-bold leading-tight text-ink tabular-nums sm:text-2xl"
+                  >{b.count}</span
+                >
+                <span class="block whitespace-nowrap text-[10px] leading-tight text-ink-muted sm:text-xs"
+                  >{b.unit}</span
+                >
+              </div>
+              <div class:list={["mt-1 text-[10px] tabular-nums sm:hidden", b.accent]}>
+                {formatDateShort(b.updated)}
+              </div>
+            </a>
+          ))
+        }
+      </div>
     </div>
   </section>
 
   <div class="mx-auto max-w-6xl px-4 sm:px-6">
-    <GithubBoard items={githubTop} total={stats.repos} />
+    <p class="mt-8 text-center text-xs text-ink-muted sm:text-left">{sampleNote}</p>
 
+    <!-- 榜单顺序 = 导航栏顺序：AI 工具榜 → GitHub 榜 → AI 趋势词榜 -->
     <BoardSection
-      title="热度榜"
-      subtitle={`按热度分排序的前 ${toolsHot.length} 个工具`}
-      items={toolsHot}
+      title="AI 工具榜"
+      subtitle="按综合得分排序：热度、流量、增长与付费能力加权，每条都能追到数据来源与采集日期"
+      meta={`共 ${stats.tools} 个工具`}
       viewAllHref="/tools"
-    />
+    >
+      {
+        picks.tools.map((tool) => (
+          <ToolRowCompact tool={tool} rank={tool.rank} />
+        ))
+      }
+    </BoardSection>
+
     <BoardSection
-      title="新星榜"
-      subtitle={`近期新收录的前 ${toolsNewest.length} 个工具`}
-      items={toolsNewest}
-      viewAllHref="/tools?sort=recent"
-    />
+      title="GitHub 榜"
+      subtitle="按「做成一款有收益产品的可能性」排序：不看 star 数量堆叠，只看能不能变成生意"
+      meta={`共 ${stats.repos} 个开源项目`}
+      viewAllHref="/github"
+    >
+      {picks.repos.map((repo) => <RepoRowCompact repo={repo} />)}
+    </BoardSection>
 
-    {
-      byCategory.map((b) => (
-        <BoardSection
-          title={b.category}
-          subtitle={`该分类共 ${b.total} 个工具，按热度取前 ${b.items.length} 个`}
-          items={b.items}
-          viewAllHref={`/tools?cat=${encodeURIComponent(b.category)}`}
-        />
-      ))
-    }
+    <BoardSection
+      title="AI 趋势词榜单"
+      subtitle="按趋势强度排序：标注为什么在升温、可信度多高、现在可以做哪个方向"
+      meta={`共 ${stats.trends} 个趋势词`}
+      viewAllHref="/trends"
+    >
+      {
+        picks.trends.map((trend, i) => (
+          <TrendRowCompact trend={trend} rank={trendRank.get(trend.slug) ?? i + 1} />
+        ))
+      }
+    </BoardSection>
   </div>
-
-  <TestimonialWall />
-  <FaqAccordion />
 </Base>

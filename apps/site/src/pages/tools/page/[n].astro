@@ -2,13 +2,13 @@
 import Base from "../../../layouts/Base.astro";
 import ToolFilterBar from "../../../components/ToolFilterBar.astro";
 import ToolList from "../../../components/ToolList.astro";
-import { toolRows, toolFilters, PAGE_SIZE, sortByHeat, totalPages } from "../../../lib/dataset";
+import { toolRows, toolFilters, PAGE_SIZE, sortByScore, totalPages } from "../../../lib/dataset";
 
-const rows = sortByHeat(toolRows);
+const rows = sortByScore(toolRows);
 const tp = totalPages(rows.length);
 
 export function getStaticPaths() {
-  const list = sortByHeat(toolRows);
+  const list = sortByScore(toolRows);
   const tp = totalPages(list.length);
   return Array.from({ length: Math.max(0, tp - 1) }, (_, i) => ({
     params: { n: String(i + 2) },

@@ -19,7 +19,10 @@
     "enrich:dry": "tsx scripts/fetch/enrich.ts --dry",
     "enrich:llm": "tsx scripts/fetch/enrich-llm.ts",
     "screenshot": "tsx scripts/fetch/screenshot.ts",
-    "ph:oauth": "tsx scripts/fetch/ph-oauth.ts"
+    "ph:oauth": "tsx scripts/fetch/ph-oauth.ts",
+    "trends:collect": "tsx scripts/fetch/trends/run.ts",
+    "trends:dry": "tsx scripts/fetch/trends/run.ts --dry",
+    "trends:rescore": "tsx scripts/fetch/trends/run.ts --rescore"
   },
   "devDependencies": {
     "@horizons/shared": "workspace:*",

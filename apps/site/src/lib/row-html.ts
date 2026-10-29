@@ -33,7 +33,7 @@ export const REPO_GRID =
 
 /** 必须与 components/TrendListHead.astro 的 TREND_GRID 一致 */
 export const TREND_GRID =
-  "grid-cols-[2.25rem_minmax(0,1.9fr)_5.5rem_5.5rem_6.5rem_4.5rem_minmax(0,1.7fr)_6.5rem_4.5rem_4.75rem]";
+  "grid-cols-[2.25rem_minmax(0,1.9fr)_5.5rem_5.5rem_6.5rem_4.5rem_minmax(0,1.7fr)_6.5rem_5.5rem_4.75rem]";
 
 const ICON_PALETTE = [
   "bg-indigo-500/20 text-indigo-300",
@@ -222,7 +222,7 @@ export function trendRowHtml(t: TrendRow): string {
   return (
     `<a href="/trends/${esc(t.slug)}" ` +
     `class="group grid items-center gap-3 border-b border-border px-4 py-3 transition hover:bg-surface-2 sm:px-5 ${TREND_GRID}">` +
-    `<span class="text-sm font-semibold tabular-nums text-ink-muted">${RANK_TOKEN}</span>` +
+    `<span class="text-sm font-semibold tabular-nums text-ink-muted">${t.rank > 0 ? t.rank : "—"}</span>` +
     `<div class="min-w-0">` +
     `<h3 class="truncate text-sm font-semibold text-ink group-hover:text-primary">${esc(t.normalizedName)}</h3>` +
     `<p class="mt-0.5 truncate text-xs text-ink-muted"><span class="font-mono">${esc(t.keyword)}</span>` +
@@ -251,8 +251,8 @@ export function trendRowHtml(t: TrendRow): string {
     `</div>` +
     `<div class="flex flex-col items-center gap-0.5 text-[11px] tabular-nums">` +
     (t.scored
-      ? `<span class="text-ink">趋势 <span class="font-semibold">${t.tv}</span></span>` +
-        `<span class="text-ink-muted">机会 <span class="font-semibold text-ink-secondary">${t.op}</span></span>`
+      ? `<span class="text-sm font-semibold text-ink">${t.overall.toFixed(1)}</span>` +
+        `<span class="text-ink-muted">T ${t.tv} · O ${t.op}</span>`
       : `<span class="text-ink-muted" title="采样点不足 14 个，暂不评分">数据不足</span>`) +
     `</div>` +
     `<span class="text-center text-[11px] tabular-nums text-ink-muted">${esc(t.updatedShort)}</span>` +

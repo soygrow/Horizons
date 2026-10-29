@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="og-bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#060f26"/>
+      <stop offset="0.55" stop-color="#0c1f50"/>
+      <stop offset="1" stop-color="#111038"/>
+    </linearGradient>
+    <radialGradient id="og-glowA" cx="300" cy="90" r="540" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0866fa" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#0866fa" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="og-glowB" cx="1120" cy="560" r="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#703ff4" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#703ff4" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="og-brand" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0866fa"/>
+      <stop offset="0.52" stop-color="#5b3cf3"/>
+      <stop offset="1" stop-color="#feb55d"/>
+    </linearGradient>
+    <!-- 穹顶：左蓝 → 右上紫 -->
+    <linearGradient id="hz-dome" x1="66" y1="100" x2="272" y2="10" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A79F6" />
+      <stop offset="0.36" stop-color="#2E6BF4" />
+      <stop offset="0.7" stop-color="#6B3FF4" />
+      <stop offset="1" stop-color="#7C3AED" />
+    </linearGradient>
+    <!-- 右下暖光（指南「增长」橙） -->
+    <radialGradient id="hz-glow" cx="262" cy="90" r="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFC069" stop-opacity="0.95" />
+      <stop offset="0.42" stop-color="#FEB55D" stop-opacity="0.55" />
+      <stop offset="1" stop-color="#FFA94D" stop-opacity="0" />
+    </radialGradient>
+    <!-- 地平线：左蓝 → 右紫 -->
+    <linearGradient id="hz-horizon" x1="8" y1="118" x2="310" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A6EF8" />
+      <stop offset="0.42" stop-color="#2C67F3" />
+      <stop offset="0.76" stop-color="#5B3CF3" />
+      <stop offset="1" stop-color="#6D33F2" />
+    </linearGradient>
+    <!-- 星芒 -->
+    <linearGradient id="hz-star" x1="247" y1="54" x2="290" y2="14" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6D33F2" />
+      <stop offset="0.55" stop-color="#1E63F5" />
+      <stop offset="1" stop-color="#0A79F6" />
+    </linearGradient>
+    <!-- 星与穹顶之间的透空缝隙：不依赖背景色，深浅背景下都不穿帮 -->
+    <mask id="hz-gap" maskUnits="userSpaceOnUse" x="0" y="0" width="320" height="140">
+      <rect width="320" height="140" fill="#fff" />
+      <path d="M266 8 Q272.6 30.4 295 36 Q272.6 41.6 266 64 Q259.4 41.6 237 36 Q259.4 30.4 266 8 Z" fill="#000" />
+    </mask>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#og-bg)"/>
+  <rect width="1200" height="630" fill="url(#og-glowA)"/>
+  <rect width="1200" height="630" fill="url(#og-glowB)"/>
+
+  <g transform="translate(92 116) scale(1.08)">
+<g mask="url(#hz-gap)">
+    <path
+      d="M77 94 L77 48 C77 25 112 10 158 10 C204 10 244 20 254 46 C261 63 265 80 266 94 C216 75 126 75 77 94 Z"
+      fill="url(#hz-dome)"
+    />
+    <path
+      d="M77 94 L77 48 C77 25 112 10 158 10 C204 10 244 20 254 46 C261 63 265 80 266 94 C216 75 126 75 77 94 Z"
+      fill="url(#hz-glow)"
+    />
+  </g>
+
+  <!-- 地平线 -->
+  <path d="M4 135 C74 68 234 68 313 131 C214 93 64 100 4 135 Z" fill="url(#hz-horizon)" />
+
+  <!-- 星芒 -->
+  <path
+    d="M266 13 Q270.9 31.1 289 36 Q270.9 40.9 266 59 Q261.1 40.9 243 36 Q261.1 31.1 266 13 Z"
+    fill="url(#hz-star)"
+  />
+  </g>
+
+  <text x="96" y="418" font-family="PingFang SC, Noto Sans SC, Helvetica Neue, Arial" font-size="72" font-weight="700" fill="#ffffff" letter-spacing="-1">看见下一个市场机会</text>
+  <text x="96" y="486" font-family="PingFang SC, Noto Sans SC, Helvetica Neue, Arial" font-size="30" fill="#9fb0cc">AI 工具榜 · GitHub 榜 · AI 趋势词榜单</text>
+  <text x="96" y="548" font-family="Helvetica Neue, Arial" font-size="32" font-weight="600" fill="#ffffff">Horizons.tools</text>
+
+  <rect x="0" y="627" width="1200" height="3" fill="url(#og-brand)"/>
+</svg>

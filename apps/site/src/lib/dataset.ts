@@ -33,7 +33,10 @@ export const TREND_SECTION_SIZE = 6;
 
 export const totalPages = (n: number) => Math.max(1, Math.ceil(n / PAGE_SIZE));
 
-/** 默认排序：热度降序（与 getToolsSorted 一致） */
-export function sortByHeat<T extends { heat: number }>(rows: T[]): T[] {
-  return [...rows].sort((a, b) => b.heat - a.heat);
+/**
+ * 默认排序：综合得分降序。
+ * rank 由构建期按综合得分固化（1 = 全库最高分），因此按 rank 升序即等于按得分降序。
+ */
+export function sortByScore<T extends { rank: number }>(rows: T[]): T[] {
+  return [...rows].sort((a, b) => a.rank - b.rank);
 }

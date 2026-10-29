@@ -7,6 +7,8 @@
  *  - URL 仍是 ?q=&cat=&visits=…，可直接分享 / 刷新，兼容旧站链接。
  */
 type Row = {
+  /** 全库综合得分名次：由构建期固化，与筛选 / 排序 / 页码无关 */
+  rank: number;
   cats: string[];
   visits: number | null;
   mom: number | null;
@@ -161,16 +163,15 @@ export function initToolsFilter() {
     });
 
     filtered.sort((a, b) =>
-      sort === "recent" ? b.collectedAt.localeCompare(a.collectedAt) : b.heat - a.heat,
+      // 默认 = 排名顺序（综合得分降序；rank 由构建期固化，同分也稳定）
+      sort === "recent" ? b.collectedAt.localeCompare(a.collectedAt) : a.rank - b.rank,
     );
 
     const total = Math.max(1, Math.ceil(filtered.length / pageSize));
     const page = Math.min(Math.max(1, Number(p.get("page") || 1)), total);
     const slice = filtered.slice((page - 1) * pageSize, page * pageSize);
 
-    rowsBox.innerHTML = slice
-      .map((r, i) => r.h.replace("%R%", pad((page - 1) * pageSize + i + 1)))
-      .join("");
+    rowsBox.innerHTML = slice.map((r) => r.h.replace("%R%", pad(r.rank))).join("");
 
     if (empty) empty.classList.toggle("hidden", slice.length > 0);
     meta.textContent = `显示 ${slice.length} 项，共 ${filtered.length} 项 / ${total} 页`;

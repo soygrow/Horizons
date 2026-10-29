@@ -24,7 +24,7 @@ const { rows, page, totalItems, totalPages, basePath = "/tools", pageSize = 20 }
   <div class="min-w-[1080px]">
     <ToolListHead />
     <div id="list-rows">
-      {rows.map((t, i) => <Fragment set:html={fillRank(t.h, (page - 1) * pageSize + i + 1)} />)}
+      {rows.map((t) => <Fragment set:html={fillRank(t.h, t.rank)} />)}
     </div>
     <div id="list-empty" class="hidden px-4 py-16 text-center">
       <p class="text-sm text-ink-muted">没有符合条件的工具</p>

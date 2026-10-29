@@ -1,5 +1,6 @@
 // Google Trends 非官方接口的最小客户端：cookie 引导 + 限流识别 + 退避
 // 只用于本地采集脚本；不进入前端构建。
+import { proxyGet, rotateProxy } from "../proxy";
 
 const UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
@@ -29,12 +30,11 @@ function baseHeaders(): Record<string, string> {
 /** Trends 需要 NID cookie，直接从 explore 页带出来 */
 async function bootstrapCookie(force = false): Promise<void> {
   if (!force && cookieHeader && Date.now() - cookieAt < 6 * 3600_000) return;
-  const res = await fetch("https://trends.google.com/trends/explore?geo=US&hl=en-US", {
+  const res = await proxyGet("https://trends.google.com/trends/explore?geo=US&hl=en-US", {
     headers: { ...baseHeaders(), accept: "text/html" },
-    redirect: "follow",
-    signal: AbortSignal.timeout(30_000),
+    timeoutMs: 30_000,
   });
-  const jar = (res.headers as Headers & { getSetCookie?: () => string[] }).getSetCookie?.() ?? [];
+  const jar = res.setCookies();
   const picked = jar
     .map((c) => c.split(";")[0].trim())
     .filter((c) => /^(NID|CONSENT|__Secure|AEC)/.test(c));
@@ -58,13 +58,16 @@ export async function trendsGet(
   for (let attempt = 0; attempt < 3; attempt++) {
     await bootstrapCookie(attempt > 0);
     try {
-      const res = await fetch(url, {
+      const res = await proxyGet(url, {
         headers: { ...baseHeaders(), ...(cookieHeader ? { cookie: cookieHeader } : {}) },
-        redirect: "follow",
-        signal: AbortSignal.timeout(30_000),
+        timeoutMs: 30_000,
       });
       if (res.status === 429) {
         cookieHeader = ""; // 下次换一个 cookie
+        // 有多个出口就直接换 IP（cookie 与 IP 都会影响限流判定）
+        if (rotateProxy()) {
+          throw new RateLimitError("Google Trends 429，已切换出口代理");
+        }
         throw new RateLimitError();
       }
       if (res.status >= 500) {

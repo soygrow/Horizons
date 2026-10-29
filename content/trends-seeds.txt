@@ -1,0 +1,77 @@
+# AI 趋势词手工种子池（一行一个词，# 开头为注释）
+# 用途：补足 RSS / 工具库 / GitHub 发现不到的长尾词；采集时统一过 Trends 与 LLM 准入。
+# 每天新增 3–5 个词即可，不需要一次写满。
+
+# ---- 模型与品牌 ----
+gpt-5
+claude opus
+gemini 3
+grok 5
+deepseek v4
+qwen 3
+llama 4
+mistral large
+nano banana
+sora 2
+veo 3
+
+# ---- 开发技术 ----
+mcp server
+claude skills
+model context protocol
+vibe coding
+ai coding agent
+prompt engineering
+rag pipeline
+llm fine tuning
+local llm
+ai evals
+agentic workflow
+vector database
+ai code review
+
+# ---- 工具与应用 ----
+cursor ai
+claude code
+github copilot
+windsurf editor
+lovable ai
+v0 dev
+replit agent
+notion ai
+perplexity ai
+gamma ai
+napkin ai
+elevenlabs voice
+hedra ai
+higgsfield ai
+runway ml
+
+# ---- 场景与玩法 ----
+ai website builder
+ai slides generator
+ai meeting notes
+ai resume builder
+ai photo editor
+ai video generator
+ai voice clone
+ai podcast editing
+ai spreadsheet
+ai data analyst
+ai customer support
+ai seo tools
+ai ugc ads
+ai avatar video
+text to sql ai
+
+# ---- 商业与行业 ----
+ai agents for business
+ai automation agency
+ai saas pricing
+ai wrappers
+ai compliance
+ai in healthcare
+ai in education
+ai in legal
+ai agents marketplace
+ai infrastructure cost
