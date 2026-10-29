@@ -18,6 +18,9 @@ export const en: DictPartial = {
       no: "01",
       title: "Performance",
       desc: "How big it is right now, and how fast it is growing.",
+      snapshot: "Data snapshot",
+      synced: "Synced on",
+      updated: "Last updated",
     },
     opportunity: {
       no: "02",
@@ -51,6 +54,7 @@ export const en: DictPartial = {
       subtitle: "No startup idea? See what real businesses open-source AI projects can become.",
       repoCount: "{n} open-source AI projects tracked",
       searchPlaceholder: "Search project / description / owner",
+      sortScore: "By overall score",
       sortStars: "By Stars",
       sort7d: "7-day growth",
       sort30d: "30-day growth",
@@ -65,6 +69,8 @@ export const en: DictPartial = {
     cols: {
       rank: "#",
       repo: "Project",
+      score: "Score",
+      updated: "Last commit",
       desc: "Description",
       trend: "Star trend",
       cat: "Use case",

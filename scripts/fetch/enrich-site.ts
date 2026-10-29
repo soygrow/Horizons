@@ -28,7 +28,6 @@ import { extractContact } from "./sources/contact";
 import {
   hasDataForSEO,
   fetchKeywords,
-  fetchGeoDistribution,
   fetchTrafficHistory,
   fetchBacklinksSummary,
   fetchCompetitors,
@@ -268,9 +267,11 @@ async function main(): Promise<void> {
 
   if (hasDataForSEO()) {
     try {
-      const [kw, g, histResult, bk, comps] = await Promise.all([
+      // 不调 domain_rank_overview：该端点只返回「当前 location 的单条排名概览」，
+      // 没有 location_name，拿不到国家分布（实测 items 恒为 1 条），此前一直白花 $0.09/站。
+      // 国家分布只有 vortex 能给，无 vortex 时保留旧值或留空。
+      const [kw, histResult, bk, comps] = await Promise.all([
         fetchKeywords(domain, 10),
-        fetchGeoDistribution(domain),
         fetchTrafficHistory(domain),
         fetchBacklinksSummary(domain),
         fetchCompetitors(domain, 8),
@@ -298,7 +299,8 @@ async function main(): Promise<void> {
       // rank=0 视为「未采到等级」；0 本身是 DR 的有效值，不在此清空
       const dfsWeight = bk && bk.domainWeight > 0 ? bk.domainWeight : undefined;
       metrics = {
-        monthlyVisits: total,
+        // DFS 给的是「搜索流量」，无搜索流量 ≠ 真的 0 访问，按缺失处理更准确
+        monthlyVisits: total > 0 ? total : undefined,
         organicVisits: organic,
         momGrowth,
         domainWeight: keepDR ? prevWeight : dfsWeight,
@@ -310,7 +312,6 @@ async function main(): Promise<void> {
       const hasVortexTrend = !!tool.trafficMetrics && (tool.trend?.length ?? 0) >= 2;
       if (!hasVortexTrend && hist.some((p) => p.total > 0)) trend = hist;
       keywords = kw;
-      geo = g;
       keywordCount = histResult.keywordCount;
       rankDistribution = histResult.rankDistribution;
       backlinks = bk && bk.total > 0
@@ -323,7 +324,7 @@ async function main(): Promise<void> {
         : undefined;
       if (comps.length) competitors = comps;
       console.log(
-        `[enrich-site] DFS：月搜索流量=${total}（自然 ${organic} / 付费 ${paid}）｜关键词 ${kw.length}｜排名词 ${keywordCount}｜国家 ${g.length}｜外链 ${bk?.total ?? "—"}｜竞品 ${comps.length}`,
+        `[enrich-site] DFS：月搜索流量=${total}（自然 ${organic} / 付费 ${paid}）｜关键词 ${kw.length}｜排名词 ${keywordCount}｜外链 ${bk?.total ?? "—"}｜竞品 ${comps.length}`,
       );
     } catch (e) {
       console.warn("[enrich-site] DataForSEO 失败：", e instanceof Error ? e.message : e);

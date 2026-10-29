@@ -42,3 +42,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 采集缓存与本地快照（体积大、可重建，不入库）
+content/cache/
+content/backup/

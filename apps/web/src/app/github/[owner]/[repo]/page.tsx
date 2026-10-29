@@ -120,10 +120,13 @@ export default async function RepoPage({ params }: { params: Promise<{ owner: st
   const trend = toTrendPoints(r);
   const permissive = isPermissiveLicense(r);
   const commit = r.commitActivity ?? [];
-  const languages = Object.entries(r.languages ?? {})
+  /* GitHub 返回的是各语言字节数，这里换算成占比后再展示 */
+  const langTotal = Object.values(r.languages ?? {}).reduce((a, b) => a + b, 0);
+  const languages: [string, number][] = Object.entries(r.languages ?? {})
     .filter(([, v]) => v > 0)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 6);
+    .slice(0, 6)
+    .map(([name, bytes]) => [name, langTotal > 0 ? Math.round((bytes / langTotal) * 100) : 0]);
   const diffTone = ins?.difficulty === "低" ? "ok" : ins?.difficulty === "高" ? "warn" : "muted";
 
   return (

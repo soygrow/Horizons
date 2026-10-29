@@ -379,23 +379,38 @@ async function main() {
 
   const targets = repos.filter((r) => {
     if (only.length > 0 && !only.includes(r.fullName.toLowerCase())) return false;
-    if (!force && r.insight) return false;
+    /* 已有 LLM / 精编情报直接跳过；只有"本地兜底"的情报会被重新生成（余额恢复后自动补上） */
+    if (!force && r.insight && r.insightSource !== "local") return false;
     return true;
   });
 
   const todo = limit > 0 ? targets.slice(0, limit) : targets;
-  console.log(`[insight] 待生成 ${todo.length} 个（共 ${repos.length} 个仓库）；模式=${local ? "本地" : "LLM"}`);
+  const retryLocal = targets.filter((r) => r.insightSource === "local").length;
+  console.log(
+    `[insight] 待生成 ${todo.length} 个（共 ${repos.length} 个仓库${retryLocal ? `，其中 ${retryLocal} 个为本地兜底待重生成` : ""}）；模式=${
+      local ? "本地" : "LLM"
+    }`,
+  );
 
   let fromCurated = 0;
   let fromLLM = 0;
   let fromLocal = 0;
   let llmFail = 0;
 
+  /* 每处理 N 个就落盘一次：余额/网络中途失败也不会丢掉已生成的情报 */
+  let dirty = 0;
+  const flush = () => {
+    const scored = repos.map((r) => ({ ...r, productScore: computeProductScore(r) })).sort(compareByScore);
+    fs.writeFileSync(JSON_PATH, JSON.stringify({ ...data, repos: scored }, null, 2) + "\n", "utf-8");
+    dirty = 0;
+  };
+
   for (const r of todo) {
     // 1) 精编优先
     const curated = CURATED_INSIGHTS[r.fullName];
     if (curated) {
       r.insight = zhWalk(curated) as GitHubInsight;
+      r.insightSource = "curated";
       fromCurated++;
       console.log(`[insight] ★ ${r.fullName}（精编）：${curated.taglineZh}`);
       continue;
@@ -403,21 +418,35 @@ async function main() {
     // 2) 强制本地
     if (local) {
       r.insight = heuristicInsight(r);
+      r.insightSource = "local";
       fromLocal++;
+      if (++dirty >= 20) flush();
       continue;
     }
     // 3) LLM，失败回退本地
     try {
       const out = await chatJSON<Partial<GitHubInsight>>(SYSTEM, buildPayload(r), 3000);
       r.insight = normalize(out, r.fullName);
+      r.insightSource = "llm";
       fromLLM++;
       console.log(`[insight] ✓ ${r.fullName}：${r.insight.taglineZh}`);
     } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
       llmFail++;
       r.insight = heuristicInsight(r);
+      r.insightSource = "local";
       fromLocal++;
-      console.warn(`[insight] ✗ ${r.fullName}，回退本地：`, e instanceof Error ? e.message : e);
+      console.warn(`[insight] ✗ ${r.fullName}，回退本地：`, msg);
+      /* 余额耗尽 / 鉴权失败这类错误继续跑没意义：先落盘再退出，避免刷出几百条兜底情报 */
+      if (/402|Insufficient Balance|401|Unauthorized/i.test(msg)) {
+        flush();
+        console.error(
+          `[insight] 中止：大模型不可用（${msg.slice(0, 80)}）。已落盘本地兜底情报，充值后直接重跑本脚本即可自动重生成。`,
+        );
+        process.exit(2);
+      }
     }
+    if (++dirty >= 10) flush();
     await sleep(300);
   }
 

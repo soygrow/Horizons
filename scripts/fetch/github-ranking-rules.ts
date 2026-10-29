@@ -1,17 +1,20 @@
 import type { GitHubRepo } from "@horizons/shared";
 
 /**
- * 【GitHub 榜收录原则 · gh-rank-v1】
+ * 【GitHub 榜收录原则 · gh-rank-v1.2】
  * 唯一事实来源：脚本与文档（docs/10-GitHub榜单收录原则.md）以本文件为准。
  * 任何一次重新拉取都必须走这里的判定，保证「同一原则、同一结果」。
  *
  * 一句话原则：
  *   一个项目能进榜，必须同时满足「AI 相关且可被二次开发」「真实活跃」「允许商业化」
- *   三个条件；同一个方向不能挤满榜单，最终只保留得分最高的 50 个。
+ *   三个条件；**总量不设上限**，合格即收录，按综合得分排序（榜单会随候选池持续增长）。
  */
-export const RANKING_RULE_VERSION = "gh-rank-v1.1";
+export const RANKING_RULE_VERSION = "gh-rank-v1.3";
 
-/** 榜单规模与配比：总数 + 每个方向的上限（防止 agent/聊天类刷榜） */
+/**
+ * 方向配额：仅在「显式限定总量」（LIMIT > 0）时作为单方向上限生效，
+ * 用于临时试点或对比测试；默认不限总量时不参与筛选。
+ */
 export const CATEGORY_CAP: Record<string, number> = {
   Agent: 12,
   Coding: 7,
@@ -56,7 +59,8 @@ export const RANKING_RULES = {
   excludeTopics: ["dataset", "datasets", "model-weights", "paper", "papers", "awesome", "tutorial", "course", "curated-list"],
 
   /* ---------- 规模 ---------- */
-  totalLimit: 50,
+  /** 入榜总量上限：0 = 不限（合格即收录，榜单可持续扩张到上千条） */
+  totalLimit: 0,
 };
 
 /** 候选池里需要的字段（GitHub search 接口即可返回，省限流） */
@@ -150,11 +154,20 @@ export function primaryCategory(repo: GitHubRepo): string {
 }
 
 /**
- * 按配额挑选最终入榜项目（两轮）：
- * 第一轮按综合得分排序逐条领取，方向满配额就顺延，保证榜单不被单一方向占满；
- * 第二轮用各方向被挤出的项目按分数补位，保证榜单始终凑满 totalLimit 个。
+ * 挑选最终入榜项目：
+ * - limit <= 0（默认）：不限总量，通过硬门槛的项目全部入榜，直接按综合得分排序；
+ * - limit > 0 且 useQuota=false：按综合得分截断前 limit 个（"扩到 N 个"的常规做法）；
+ * - limit > 0 且 useQuota=true：按方向配额两轮挑选（配额优先 + 分数补位），
+ *   仅用于小规模试点，避免 Agent 一个方向吃掉全部名额。
  */
-export function pickTopRepos(list: GitHubRepo[], limit = RANKING_RULES.totalLimit): GitHubRepo[] {
+export function pickTopRepos(
+  list: GitHubRepo[],
+  limit = RANKING_RULES.totalLimit,
+  useQuota = false,
+): GitHubRepo[] {
+  if (limit <= 0) return [...list];
+  if (!useQuota) return list.slice(0, limit);
+
   const used: Record<string, number> = {};
   const picked: GitHubRepo[] = [];
   const overflow: GitHubRepo[] = [];

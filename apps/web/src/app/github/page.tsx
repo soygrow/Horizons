@@ -18,7 +18,8 @@ import { getDict, format as tf } from "@/lib/i18n";
 
 export const metadata: Metadata = { title: "GitHub 榜" };
 
-const PAGE_SIZE = 12;
+/** 固定每页 20 条，不随数据量变化 */
+const PAGE_SIZE = 20;
 
 interface Query {
   q: string;
@@ -209,20 +210,20 @@ export default async function GithubPage({
       </div>
 
       <div className="mt-4 overflow-x-auto rounded-2xl border border-border bg-surface">
-        <div className="min-w-[1080px]">
+        <div className="min-w-[1200px]">
           <div
-            className={`grid items-center gap-4 border-b border-border px-4 py-2.5 text-xs text-ink-muted sm:px-5 ${REPO_GRID}`}
+            className={`grid items-center gap-3 border-b border-border px-4 py-2.5 text-xs text-ink-muted sm:px-5 ${REPO_GRID}`}
           >
             <span>{g.cols.rank}</span>
             <span>{g.cols.repo}</span>
-            <span className="text-right">{g.cols.score}</span>
+            <span className="text-center">{g.cols.score}</span>
             <span className="text-center">{g.cols.trend}</span>
-            <span className="text-right">{g.cols.stars}</span>
-            <span className="text-right">{g.cols.growth}</span>
-            <span>{g.cols.lang}</span>
-            <span>{g.cols.cat}</span>
-            <span>{g.cols.updated}</span>
-            <span>{g.cols.license}</span>
+            <span className="text-center">{g.cols.stars}</span>
+            <span className="text-center">{g.cols.growth}</span>
+            <span className="text-center">{g.cols.lang}</span>
+            <span className="text-center">{g.cols.cat}</span>
+            <span className="text-center">{g.cols.updated}</span>
+            <span className="text-center">{g.cols.license}</span>
           </div>
           {rows.length > 0 ? (
             rows.map((r, i) => (

@@ -234,6 +234,11 @@ export async function fetchKeywords(
 }
 
 /** 按国家搜索流量分布 */
+/**
+ * @deprecated DFS 没有「国家流量分布」数据源：domain_rank_overview 只返回当前
+ * location 的单条排名概览（items 恒为 1 且无 location_name），此函数永远返回 []。
+ * 国家分布只能来自 vortex（apify），已从 enrich-site 的调用链移除。
+ */
 export async function fetchGeoDistribution(domain: string): Promise<GeoItem[]> {
   const data = await request<{
     tasks?: Array<{

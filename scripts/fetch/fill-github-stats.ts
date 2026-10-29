@@ -61,10 +61,22 @@ async function commitActivity(full: string): Promise<number[] | undefined> {
   return Array.isArray(j) ? j.map((w) => w.total ?? 0) : undefined;
 }
 
+async function languages(full: string): Promise<Record<string, number> | undefined> {
+  const [owner, repo] = full.split("/");
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/languages`, {
+    headers: headers(),
+  });
+  if (!res.ok) return undefined;
+  const j = (await res.json()) as Record<string, number>;
+  return Object.keys(j).length ? j : undefined;
+}
+
 async function main() {
   const data = JSON.parse(fs.readFileSync(JSON_PATH, "utf-8")) as { repos: GitHubRepo[] };
   const repos = data.repos ?? [];
-  const todo = repos.filter((r) => r.contributorsCount === undefined || !r.commitActivity?.length);
+  const todo = repos.filter(
+    (r) => r.contributorsCount === undefined || !r.commitActivity?.length || !r.languages,
+  );
   console.log(`[stats] 待补 ${todo.length} 个 / 共 ${repos.length} 个`);
 
   let left = await remaining();
@@ -84,11 +96,15 @@ async function main() {
       r.commitActivity = await commitActivity(r.fullName);
       left--;
     }
+    if (!r.languages && left > 2) {
+      r.languages = await languages(r.fullName);
+      left--;
+    }
     done++;
     console.log(
       `[stats] (${done}/${todo.length}) ${r.fullName} · 贡献者 ${r.contributorsCount ?? "—"} · 提交周数 ${
         r.commitActivity?.length ?? 0
-      }`,
+      } · 语言 ${Object.keys(r.languages ?? {}).length}`,
     );
     await sleep(250);
   }

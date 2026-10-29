@@ -60,12 +60,27 @@ function parseStages(): Stage[] {
   return picked.length ? picked : ALL_STAGES;
 }
 
+/**
+ * 近期已同步过的站不再重复跑，避免「本来就没搜索流量」的站被反复抓取。
+ * 用 dataSnapshot.syncedAt（数据同步时间）而不是 collectedAt（条目抓取时间），
+ * 后者会被描述/标签类脚本刷新，无法代表流量数据是否跑过。
+ */
+const RECENT_DAYS = Number(process.env.REFRESH_RECENT_DAYS ?? 7);
+
+function syncedRecently(tool: AITool): boolean {
+  if (process.argv.includes("--force")) return false;
+  const raw = tool.dataSnapshot?.syncedAt;
+  if (!raw) return false;
+  const t = Date.parse(raw);
+  return Number.isFinite(t) && Date.now() - t < RECENT_DAYS * 86400_000;
+}
+
 function isMissing(tool: AITool, mode: "traffic" | "analysis" | "all"): boolean {
   const noTraffic = !tool.trafficMetrics?.monthlyVisits;
   const noAnalysis = !tool.aiInsight;
-  if (mode === "traffic") return noTraffic;
-  if (mode === "analysis") return noAnalysis;
-  return noTraffic || noAnalysis;
+  if (mode === "traffic") return noTraffic && !syncedRecently(tool);
+  if (mode === "analysis") return noAnalysis && !syncedRecently(tool);
+  return (noTraffic || noAnalysis) && !syncedRecently(tool);
 }
 
 function runScript(script: string, domain: string): Promise<{ code: number; ms: number }> {
@@ -117,6 +132,7 @@ async function main(): Promise<void> {
   );
 
   const failed: { domain: string; stage: Stage; code: number }[] = [];
+  const noTraffic: string[] = [];
   const startedAt = Date.now();
 
   for (let i = 0; i < targets.length; i++) {
@@ -126,9 +142,12 @@ async function main(): Promise<void> {
       const { code, ms } = await runScript(STAGE_SCRIPT[stage], domain);
       console.log(`[refresh] ${domain} ${stage} ${code === 0 ? "✅" : "❌"} ${(ms / 1000).toFixed(1)}s`);
       if (code !== 0) {
+        // apify 拿不到流量很常见（站点过小），不阻塞 DFS / 截图，单独归类
+        if (stage === "apify") {
+          noTraffic.push(domain);
+          continue;
+        }
         failed.push({ domain, stage, code });
-        // apify 拿不到流量很常见（站点过小），不阻塞 DFS / 截图，只记录
-        if (stage === "apify") continue;
         break;
       }
     }
@@ -136,6 +155,9 @@ async function main(): Promise<void> {
 
   const totalMin = ((Date.now() - startedAt) / 60000).toFixed(1);
   console.log(`\n[refresh] 完成：${targets.length} 个站点，用时 ${totalMin} 分钟`);
+  if (noTraffic.length) {
+    console.log(`[refresh] vortex 无流量 ${noTraffic.length} 个（已用 DFS 搜索流量兜底）：${noTraffic.join(", ")}`);
+  }
   if (failed.length) {
     console.log(`[refresh] 失败 ${failed.length} 项：`);
     for (const f of failed) console.log(`  - ${f.domain} [${f.stage}] exit=${f.code}`);

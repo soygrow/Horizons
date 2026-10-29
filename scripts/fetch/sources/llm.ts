@@ -4,6 +4,26 @@ export function hasLLM(): boolean {
   return !!process.env.DEEPSEEK_API_KEY;
 }
 
+/** 网络类错误与限流 / 5xx 才重试；4xx 参数错误重试也没用 */
+const RETRIES = Number(process.env.LLM_RETRIES ?? 2);
+const TIMEOUT_MS = Number(process.env.LLM_TIMEOUT_MS ?? 90_000);
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function retryable(e: unknown): boolean {
+  if (!(e instanceof Error)) return false;
+  // 偶发返回内容被截断，重试通常就能过
+  if (e instanceof SyntaxError) return true;
+  const code = String((e as { cause?: { code?: string } }).cause?.code ?? "");
+  const text = `${e.message} ${code}`;
+  if (/UND_ERR|ECONNRESET|ETIMEDOUT|ENOTFOUND|EPIPE|socket hang up|fetch failed|timeout/i.test(text)) {
+    return true;
+  }
+  return /DeepSeek 请求失败 (429|5\d\d)/.test(e.message);
+}
+
 export async function chatJSON<T>(
   system: string,
   user: string,
@@ -12,29 +32,44 @@ export async function chatJSON<T>(
   const key = process.env.DEEPSEEK_API_KEY;
   if (!key) throw new Error("未配置 DEEPSEEK_API_KEY");
 
-  const res = await fetch("https://api.deepseek.com/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "deepseek-chat",
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.4,
-      max_tokens: maxTokens,
-    }),
+  const body = JSON.stringify({
+    model: "deepseek-chat",
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: user },
+    ],
+    response_format: { type: "json_object" },
+    temperature: 0.4,
+    max_tokens: maxTokens,
   });
-  if (!res.ok) {
-    throw new Error(`DeepSeek 请求失败 ${res.status}: ${(await res.text()).slice(0, 200)}`);
+
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const res = await fetch("https://api.deepseek.com/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${key}`,
+          "Content-Type": "application/json",
+        },
+        body,
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      });
+      if (!res.ok) {
+        throw new Error(`DeepSeek 请求失败 ${res.status}: ${(await res.text()).slice(0, 200)}`);
+      }
+      const data = (await res.json()) as {
+        choices?: Array<{ message?: { content?: string } }>;
+      };
+      const content = data.choices?.[0]?.message?.content ?? "";
+      return JSON.parse(content) as T;
+    } catch (e) {
+      // 最后一次仍失败就抛出，由调用方记录该站失败
+      if (attempt >= RETRIES || !retryable(e)) throw e;
+      const wait = 1500 * (attempt + 1);
+      console.warn(
+        `[llm] 第 ${attempt + 1} 次失败，${wait}ms 后重试：${e instanceof Error ? e.message.slice(0, 120) : e}`,
+      );
+      await sleep(wait);
+    }
   }
-  const data = (await res.json()) as {
-    choices?: Array<{ message?: { content?: string } }>;
-  };
-  const content = data.choices?.[0]?.message?.content ?? "";
-  return JSON.parse(content) as T;
 }

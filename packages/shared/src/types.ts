@@ -516,6 +516,8 @@ export interface GitHubRepo {
   ideaSparks?: IdeaSpark[];
   // 中文创业情报（LLM 生成，面向想动手做产品的人）
   insight?: GitHubInsight;
+  // 情报来源：curated=人工精编，llm=大模型生成，local=本地模板兜底（余额/限流失败时写入，下次运行会自动重生成）
+  insightSource?: "curated" | "llm" | "local";
   // 综合得分（做产品的收益可能性，用于榜单排序与详情页展示）
   productScore?: ProductScore;
   // 日维度采集历史
