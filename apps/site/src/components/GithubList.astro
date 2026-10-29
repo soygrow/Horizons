@@ -115,7 +115,7 @@ const sorts = [
   <div class="min-w-[1200px]">
     <RepoListHead />
     <div id="list-rows">
-      {rows.map((r, i) => <Fragment set:html={fillRank(r.h, (page - 1) * pageSize + i + 1)} />)}
+      {rows.map((r) => <Fragment set:html={fillRank(r.h, r.rank)} />)}
     </div>
     <div id="list-empty" class="hidden px-4 py-16 text-center">
       <p class="text-sm text-ink-muted">没有符合条件的项目</p>

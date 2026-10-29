@@ -256,6 +256,20 @@ export function opportunityScore(t: AITrend): number {
   );
 }
 
+/**
+ * 综合得分权重：趋势强度 60% + 机会潜力 40%。
+ * 两者都是 0–100，所以综合分同样是 0–100，可直接用于全站排名。
+ * 趋势权重更高，因为榜单首先回答「什么正在升温」，机会是二级判断。
+ */
+export const OVERALL_WEIGHTS = { trend: 0.6, opportunity: 0.4 } as const;
+
+/** S = 0.6T + 0.4O */
+export function overallScore(t: AITrend): number {
+  return round1(
+    OVERALL_WEIGHTS.trend * trendScore(t) + OVERALL_WEIGHTS.opportunity * opportunityScore(t),
+  );
+}
+
 export function scoreTone(score: number): string {
   if (score >= 75) return "text-emerald-500";
   if (score >= 55) return "text-ink";
@@ -287,10 +301,54 @@ export function getTrendBySlug(slug: string): AITrend | undefined {
   return trendKeywords.find((t) => t.slug === slug);
 }
 
-export type TrendSort = "trend" | "opp" | "growth" | "newest";
+export type TrendSort = "overall" | "trend" | "opp" | "growth" | "newest";
+
+/**
+ * 综合排名比较器：综合得分高者靠前；同分先比趋势强度，再比近 7 天增长，最后按 slug 稳定排序。
+ * 采样点不足的数据不足项一律排在末尾，且不参与名次编号。
+ */
+export function compareByOverall(a: AITrend, b: AITrend): number {
+  const sa = hasEnoughData(a) ? overallScore(a) : -1;
+  const sb = hasEnoughData(b) ? overallScore(b) : -1;
+  if (sb !== sa) return sb - sa;
+  if (sa >= 0) {
+    const ta = trendScore(a);
+    const tb = trendScore(b);
+    if (tb !== ta) return tb - ta;
+    const ga = trendMetrics(a).growth7 ?? -Infinity;
+    const gb = trendMetrics(b).growth7 ?? -Infinity;
+    if (gb !== ga) return gb - ga;
+  }
+  return a.slug.localeCompare(b.slug);
+}
+
+let rankMapCache: Map<string, number> | null = null;
+
+/** 全站名次表：slug → 名次（1 起）。数据不足的词不入表。 */
+export function trendRankMap(): Map<string, number> {
+  if (rankMapCache) return rankMapCache;
+  const map = new Map<string, number>();
+  let rank = 0;
+  for (const t of [...trendKeywords].sort(compareByOverall)) {
+    if (!hasEnoughData(t)) continue;
+    map.set(t.slug, ++rank);
+  }
+  rankMapCache = map;
+  return map;
+}
+
+/** 详情页用：名次，未参与排名返回 null */
+export function trendRank(slug: string): number | null {
+  return trendRankMap().get(slug) ?? null;
+}
 
 export function sortTrends(list: AITrend[], sort: TrendSort): AITrend[] {
   const copy = [...list];
+  if (sort === "trend") {
+    return copy.sort(
+      (a, b) => (hasEnoughData(b) ? trendScore(b) : -1) - (hasEnoughData(a) ? trendScore(a) : -1),
+    );
+  }
   if (sort === "opp") {
     return copy.sort((a, b) => opportunityScore(b) - opportunityScore(a));
   }
@@ -302,9 +360,7 @@ export function sortTrends(list: AITrend[], sort: TrendSort): AITrend[] {
   if (sort === "newest") {
     return copy.sort((a, b) => b.firstSeenAt.localeCompare(a.firstSeenAt));
   }
-  return copy.sort(
-    (a, b) => (hasEnoughData(b) ? trendScore(b) : -1) - (hasEnoughData(a) ? trendScore(a) : -1),
-  );
+  return copy.sort(compareByOverall);
 }
 
 export function trendsByStatus(status: TrendStatus, limit?: number): AITrend[] {

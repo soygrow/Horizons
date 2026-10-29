@@ -1,4 +1,8 @@
-import { compareByScore, computeProductScore } from "@horizons/shared";
+import {
+  compareByScore,
+  compareByToolScore,
+  computeProductScore,
+} from "@horizons/shared";
 import type { AITool, PricingModel, GitHubRepo, ProductScore } from "@horizons/shared";
 import toolsData from "@content/aitools.json";
 import githubData from "@content/github-web.json";
@@ -23,9 +27,30 @@ export const allCategories = [
   "Other",
 ] as const;
 
-/** 按热度降序 */
+/**
+ * 按热度降序（heatScore）。
+ * 仅用于首页「热门」板块：首页排序口径与 /tools 榜单不同，改动请单独评估。
+ */
 export function getToolsSorted(): AITool[] {
   return [...tools].sort((a, b) => b.heatScore - a.heatScore);
+}
+
+/** 按综合得分降序（/tools 榜单默认顺序） */
+export function getToolsByScore(): AITool[] {
+  return [...tools].sort(compareByToolScore);
+}
+
+/**
+ * 全库综合得分名次：domain → 名次（1 起）。
+ * 名次只由综合得分决定，与筛选条件无关，因此筛选后排到前面的站仍显示其真实名次。
+ */
+let rankMapCache: Map<string, number> | null = null;
+export function getToolRankMap(): Map<string, number> {
+  if (rankMapCache) return rankMapCache;
+  rankMapCache = new Map(
+    getToolsByScore().map((t, i) => [t.domain, i + 1]),
+  );
+  return rankMapCache;
 }
 
 export function getToolByDomain(domain: string): AITool | undefined {

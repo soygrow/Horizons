@@ -3,6 +3,8 @@
  * 过滤与排序口径对齐 apps/web/src/app/github/page.tsx。
  */
 type Row = {
+  /** 真实排名：由综合得分决定，与当前排序/筛选/页码无关 */
+  rank: number;
   cats: string[];
   lang: string | null;
   diff: string;
@@ -124,17 +126,18 @@ export function initReposFilter() {
     });
 
     filtered.sort((a, b) => {
-      if (sort === "stars") return b.stars - a.stars;
-      if (sort === "7d") return numDesc(a.g7, b.g7);
-      if (sort === "30d") return numDesc(a.g30, b.g30);
-      return b.score - a.score;
+      if (sort === "stars") return b.stars - a.stars || a.rank - b.rank;
+      if (sort === "7d") return numDesc(a.g7, b.g7) || a.rank - b.rank;
+      if (sort === "30d") return numDesc(a.g30, b.g30) || a.rank - b.rank;
+      // 默认 = 排名顺序：综合得分降序，同分按星标、再按排名兜底，保证与 # 列一致
+      return b.score - a.score || b.stars - a.stars || a.rank - b.rank;
     });
 
     const total = Math.max(1, Math.ceil(filtered.length / pageSize));
     const page = Math.min(Math.max(1, Number(p.get("page") || 1)), total);
     const slice = filtered.slice((page - 1) * pageSize, page * pageSize);
 
-    rowsBox.innerHTML = slice.map((r, i) => r.h.replace("%R%", pad((page - 1) * pageSize + i + 1))).join("");
+    rowsBox.innerHTML = slice.map((r) => r.h.replace("%R%", pad(r.rank))).join("");
     if (empty) empty.classList.toggle("hidden", slice.length > 0);
     meta.textContent = `显示 ${slice.length} 项，共 ${filtered.length} 项 / ${total} 页`;
     pager.innerHTML = pagerHtml(page, total);

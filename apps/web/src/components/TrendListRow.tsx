@@ -10,6 +10,8 @@ import {
   hasEnoughData,
   opportunityScore,
   opportunityTypeMeta,
+  overallScore,
+  scoreTone,
   trendCategoryLabels,
   trendMetrics,
   trendScore,
@@ -17,11 +19,11 @@ import {
 } from "@/lib/trends";
 
 /**
- * 10 列：关键词 / 类别 / 状态 / 增长 / 可信度 / 为什么升温 / 机会方向 / 双分 / 更新
- * 「趋势证据」与「机会判断」两组信息在行内分区呈现，分数只作排序依据。
+ * 10 列：# 名次 / 关键词 / 类别 / 状态 / 综合得分 / 增长 / 可信度 / 为什么 / 机会方向 / 更新
+ * 名次由综合得分（0.6 趋势 + 0.4 机会）在全站范围内决定，筛选与切换排序都不改变名次。
  */
 export const TREND_GRID =
-  "grid-cols-[2.25rem_minmax(0,1.9fr)_5.5rem_5.5rem_6.5rem_4.5rem_minmax(0,1.7fr)_6.5rem_4.5rem_4.75rem]";
+  "grid-cols-[2.5rem_minmax(0,1.8fr)_5.5rem_5.25rem_4.75rem_6.25rem_3.5rem_minmax(0,1.6fr)_6rem_4.5rem]";
 
 export function TrendListHead() {
   return (
@@ -32,22 +34,23 @@ export function TrendListHead() {
       <span>关键词 / 标准名称</span>
       <span>类别</span>
       <span>趋势状态</span>
+      <span className="text-center">综合得分</span>
       <span>增长（近 7 天）</span>
-      <span>可信度</span>
+      <span className="text-center">可信度</span>
       <span>为什么值得关注</span>
       <span>可能的机会</span>
-      <span className="text-center">趋势/机会</span>
       <span className="text-center">更新</span>
     </div>
   );
 }
 
-export function TrendListRow({ trend, rank }: { trend: AITrend; rank: number }) {
+export function TrendListRow({ trend, rank }: { trend: AITrend; rank: number | null }) {
   const m = trendMetrics(trend);
   const spark = trendSparkline(trend);
   const scored = hasEnoughData(trend);
   const tv = trendScore(trend);
   const op = opportunityScore(trend);
+  const overall = overallScore(trend);
   const seenDays = daysSince(trend.firstSeenAt);
   const oppTypes = Array.from(new Set(trend.opportunities.map((o) => o.type))).slice(0, 2);
 
@@ -56,8 +59,13 @@ export function TrendListRow({ trend, rank }: { trend: AITrend; rank: number }) 
       href={`/trends/${trend.slug}`}
       className={`group grid items-center gap-3 border-b border-border px-4 py-3 transition hover:bg-surface-2 sm:px-5 ${TREND_GRID}`}
     >
-      <span className="text-sm font-semibold tabular-nums text-ink-muted">
-        {String(rank).padStart(2, "0")}
+      <span
+        className={`text-sm font-semibold tabular-nums ${
+          rank !== null && rank <= 3 ? "text-primary" : "text-ink-muted"
+        }`}
+        title={rank !== null ? `全站第 ${rank} 名` : "数据不足，不参与排名"}
+      >
+        {rank !== null ? rank : "—"}
       </span>
 
       <div className="min-w-0">
@@ -76,6 +84,21 @@ export function TrendListRow({ trend, rank }: { trend: AITrend; rank: number }) 
 
       <div className="min-w-0">
         <TrendStatusBadge status={trend.status} />
+      </div>
+
+      <div className="flex flex-col items-center gap-0.5 text-[11px] tabular-nums">
+        {scored ? (
+          <>
+            <span className={`text-base font-bold ${scoreTone(overall)}`}>{overall.toFixed(1)}</span>
+            <span className="text-[10px] text-ink-muted">
+              T {tv.toFixed(0)} · O {op.toFixed(0)}
+            </span>
+          </>
+        ) : (
+          <span className="text-ink-muted" title="采样点不足 14 个，暂不评分">
+            数据不足
+          </span>
+        )}
       </div>
 
       <div className="flex flex-col items-start gap-0.5">
@@ -102,23 +125,6 @@ export function TrendListRow({ trend, rank }: { trend: AITrend; rank: number }) 
         <span className="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] leading-4 text-ink-muted">
           {trend.opportunities.length} 个方向
         </span>
-      </div>
-
-      <div className="flex flex-col items-center gap-0.5 text-[11px] tabular-nums">
-        {scored ? (
-          <>
-            <span className="text-ink">
-              趋势 <span className="font-semibold">{tv.toFixed(0)}</span>
-            </span>
-            <span className="text-ink-muted">
-              机会 <span className="font-semibold text-ink-secondary">{op.toFixed(0)}</span>
-            </span>
-          </>
-        ) : (
-          <span className="text-ink-muted" title="采样点不足 14 个，暂不评分">
-            数据不足
-          </span>
-        )}
       </div>
 
       <span className="text-center text-[11px] tabular-nums text-ink-muted">

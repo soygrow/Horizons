@@ -7,6 +7,7 @@ import {
   getMoMGrowth,
   getOrganicShare,
   getLaunchedAt,
+  getToolRankMap,
 } from "@/lib/data";
 import { SearchInput } from "@/components/SearchInput";
 import { FilterGroup } from "@/components/FilterGroup";
@@ -15,6 +16,7 @@ import { ToolListHead } from "@/components/ToolListHead";
 import { ToolListRow } from "@/components/ToolListRow";
 import { Pagination } from "@/components/Pagination";
 
+import { compareByToolScore } from "@horizons/shared";
 import type { AITool } from "@horizons/shared";
 
 export const metadata: Metadata = { title: "AI工具榜" };
@@ -155,7 +157,8 @@ function filterTools(query: Query): AITool[] {
   if (query.sort === "recent") {
     list = [...list].sort((a, b) => b.collectedAt.localeCompare(a.collectedAt));
   } else {
-    list = [...list].sort((a, b) => b.heatScore - a.heatScore);
+    // 默认按综合得分（tps-v1）降序：规模 30 / 增长 20 / 搜索 15 / 热度 15 / DR 10 / 机会分 10
+    list = [...list].sort(compareByToolScore);
   }
   return list;
 }
@@ -170,6 +173,8 @@ export default async function ToolsPage({
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const page = Math.min(query.page, totalPages);
   const rows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  // 名次取自全库综合得分排名，与分页/筛选无关
+  const rankMap = getToolRankMap();
 
   const categoryOptions = [
     { value: "All", label: "全部" },
@@ -218,8 +223,8 @@ export default async function ToolsPage({
         <div className="min-w-[1080px]">
           <ToolListHead />
           {rows.length > 0 ? (
-            rows.map((t, i) => (
-              <ToolListRow key={t.id} tool={t} rank={(page - 1) * PAGE_SIZE + i + 1} />
+            rows.map((t) => (
+              <ToolListRow key={t.id} tool={t} rank={rankMap.get(t.domain) ?? 0} />
             ))
           ) : (
             <div className="px-4 py-16 text-center">

@@ -17,13 +17,15 @@ import {
   OPPORTUNITY_WEIGHTS,
   opportunityScore,
   opportunityTypeMeta,
+  overallScore,
+  OVERALL_WEIGHTS,
   seriesPoints,
   sourceKindLabels,
   systemVerdict,
   trendCategoryLabels,
-  trendDataMode,
   trendKeywords,
   trendMetrics,
+  trendRank,
   trendScore,
   TREND_WEIGHTS,
   verdictMeta,
@@ -84,19 +86,25 @@ function ScoreCard({
   value,
   scored,
   tone,
+  big,
 }: {
   label: string;
   sub: string;
   value: number;
   scored: boolean;
+  big?: boolean;
   tone: string;
 }) {
   return (
-    <div className="w-full rounded-xl border border-border bg-surface p-4 sm:w-40">
+    <div
+      className={`w-full rounded-xl border border-border bg-surface p-4 ${big ? "sm:w-48" : "sm:w-36"}`}
+    >
       <div className="text-xs text-ink-muted">{label}</div>
       {scored ? (
         <div className="mt-1 flex items-baseline gap-1">
-          <span className={`text-3xl font-bold tabular-nums ${tone}`}>{value.toFixed(0)}</span>
+          <span className={`font-bold tabular-nums ${big ? "text-4xl" : "text-2xl"} ${tone}`}>
+            {big ? value.toFixed(1) : value.toFixed(0)}
+          </span>
           <span className="text-xs text-ink-muted">/100</span>
         </div>
       ) : (
@@ -176,6 +184,8 @@ export default async function TrendDetailPage({ params }: { params: Promise<{ sl
   const scored = hasEnoughData(trend);
   const tv = trendScore(trend);
   const op = opportunityScore(trend);
+  const overall = overallScore(trend);
+  const rank = trendRank(trend.slug);
   const verdict = systemVerdict(trend);
   const related = getRelatedTrends(trend, 4);
   const seenDays = daysSince(trend.firstSeenAt);
@@ -241,21 +251,31 @@ export default async function TrendDetailPage({ params }: { params: Promise<{ sl
             </div>
           </div>
 
-          <div className="flex shrink-0 gap-3">
+          <div className="flex shrink-0 flex-col gap-3">
             <ScoreCard
-              label="趋势强度"
-              sub="回答：是否值得关注"
-              value={tv}
+              label="综合得分"
+              sub={rank !== null ? `全站第 ${rank} 名` : "数据不足，未参与排名"}
+              value={overall}
               scored={scored}
-              tone="text-ink"
+              tone="text-primary"
+              big
             />
-            <ScoreCard
-              label="机会潜力"
-              sub="回答：是否值得投入"
-              value={op}
-              scored={scored}
-              tone="text-emerald-500"
-            />
+            <div className="flex gap-3">
+              <ScoreCard
+                label="趋势强度"
+                sub="是否值得关注"
+                value={tv}
+                scored={scored}
+                tone="text-ink"
+              />
+              <ScoreCard
+                label="机会潜力"
+                sub="是否值得投入"
+                value={op}
+                scored={scored}
+                tone="text-emerald-500"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -459,9 +479,6 @@ export default async function TrendDetailPage({ params }: { params: Promise<{ sl
           <p className="rounded-2xl border border-dashed border-border p-4 text-xs leading-relaxed text-ink-muted">
             口径说明：Google Trends 展示的是归一化相对热度，不能转换为月搜索量，因此这里不提供「月搜索次数」。
             低基线会放大增长率，基线为 0 或采样不足时显示「—」。
-            {trendDataMode === "seed"
-              ? " 当前条目属于结构演示数据（seed），用于验证字段与页面结构，接入真实采集后自动切换。"
-              : ""}
           </p>
         </div>
 
@@ -469,6 +486,14 @@ export default async function TrendDetailPage({ params }: { params: Promise<{ sl
         <aside className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
           <Card>
             <h2 className="text-sm font-semibold text-ink">评分构成</h2>
+            <div className="mt-3 flex items-center justify-between gap-2 rounded-lg border border-primary/30 bg-primary/10 px-2.5 py-2">
+              <span className="text-[11px] text-ink">
+                综合得分 S = {OVERALL_WEIGHTS.trend} × T + {OVERALL_WEIGHTS.opportunity} × O
+              </span>
+              <span className="text-sm font-bold tabular-nums text-primary">
+                {scored ? overall.toFixed(1) : "—"}
+              </span>
+            </div>
             <div className="mt-3 flex flex-col gap-4">
               <ScoreBreakdown title={`趋势强度 T = ${scored ? tv.toFixed(1) : "—"}`} rows={trendRows} />
               <ScoreBreakdown title={`机会潜力 O = ${scored ? op.toFixed(1) : "—"}`} rows={oppRows} />
@@ -529,7 +554,6 @@ export default async function TrendDetailPage({ params }: { params: Promise<{ sl
                 ["数据快照", formatDateShort(trend.updatedAt)],
                 ["地区", trend.region],
                 ["采样点", `${m.samples} 个 / 步长 ${trend.series.stepDays} 天`],
-                ["数据集", trendDataMode === "seed" ? "结构演示（seed）" : "生产采集（live）"],
               ].map(([k, v]) => (
                 <div key={k} className="flex items-center justify-between gap-3">
                   <dt className="text-ink-muted">{k}</dt>
