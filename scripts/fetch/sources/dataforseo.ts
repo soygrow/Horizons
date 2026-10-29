@@ -468,24 +468,4 @@ export async function fetchRelatedKeywords(
     .filter((k) => k.term);
 }
 
-/**
- * 自然搜索流量估算（domain_rank_overview，汇总各地区 organic.etv）。
- * 用于 Apify 拿不到自然搜索份额时兜底（低流量站渠道份额缺失的常见场景）。
- */
-export async function fetchOrganicSearchETV(domain: string): Promise<number | undefined> {
-  const data = await request<{
-    tasks?: Array<{
-      result?: Array<{
-        items?: Array<{
-          metrics?: { organic?: { etv?: number } };
-        }>;
-      }>;
-    }>;
-  }>("dataforseo_labs/google/domain_rank_overview/live", [
-    { target: domain, limit: 1000 },
-  ]);
 
-  const items = data.tasks?.[0]?.result?.[0]?.items ?? [];
-  const total = items.reduce((sum, it) => sum + (it.metrics?.organic?.etv ?? 0), 0);
-  return total > 0 ? Math.round(total) : undefined;
-}

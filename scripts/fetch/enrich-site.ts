@@ -31,7 +31,6 @@ import {
   fetchTrafficHistory,
   fetchBacklinksSummary,
   fetchCompetitors,
-  fetchRelatedKeywords,
 } from "./sources/dataforseo";
 import { chatJSON, hasLLM } from "./sources/llm";
 
@@ -212,7 +211,6 @@ async function main(): Promise<void> {
   let geo = tool.geoDistribution;
   let backlinks = tool.backlinks;
   let competitors = tool.observations?.competitors ?? [];
-  let relatedKeywords = tool.relatedKeywords ?? [];
   let searchTraffic = tool.searchTraffic;
   let keywordCount = tool.keywordCount;
   let rankDistribution = tool.rankDistribution ?? [];
@@ -329,16 +327,6 @@ async function main(): Promise<void> {
     } catch (e) {
       console.warn("[enrich-site] DataForSEO 失败：", e instanceof Error ? e.message : e);
     }
-
-    // 相关关键词（基于品牌词 + 域名主体）
-    try {
-      const brand = domain.split(".")[0];
-      const rkw = await fetchRelatedKeywords([brand, `${brand} ai`], 15);
-      if (rkw.length) relatedKeywords = rkw;
-      console.log(`[enrich-site] 相关关键词：${rkw.length} 个`);
-    } catch {
-      /* ignore */
-    }
   } else {
     console.log("[enrich-site] 未配置 DataForSEO 凭据，跳过流量/关键词/外链/竞品");
   }
@@ -397,7 +385,6 @@ async function main(): Promise<void> {
     metrics: metricsForLLM,
     trend: trend?.slice(-7),
     keywords: keywords?.slice(0, 10),
-    relatedKeywords: relatedKeywords?.slice(0, 15),
     keywordCount: keywords?.length ?? keywordCount,
     rankDistribution,
     geo,
@@ -518,7 +505,6 @@ async function main(): Promise<void> {
   tool.keywords = keywords;
   tool.geoDistribution = geo;
   tool.backlinks = backlinks;
-  tool.relatedKeywords = relatedKeywords;
   tool.searchTraffic = searchTraffic;
   tool.keywordCount = keywordCount;
   tool.rankDistribution = rankDistribution;

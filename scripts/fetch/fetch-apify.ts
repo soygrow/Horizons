@@ -128,17 +128,7 @@ async function main(): Promise<void> {
       tool.ranks = { global: item.rankGlobal, country: item.countryRank };
     }
 
-    // 关键词
-    if (item.topKeywords?.length) {
-      tool.keywords = item.topKeywords
-        .filter((k) => k.keyword)
-        .map((k) => ({
-          term: k.keyword!,
-          volume: k.searchVolume,
-          cpc: k.cpc ?? undefined,
-          traffic: k.estimatedValue,
-        }));
-    }
+    
 
     // 流量趋势：统一为最近 6 个自然月（新站无历史月份补 0，真实反映从 0 起步）
     // vortex 只给每月总访问量，自然搜索按「最新月自然搜索占比」等比推算（无占比时记 0）
@@ -172,7 +162,7 @@ async function main(): Promise<void> {
     }
 
     console.log(
-      `[apify] 渠道 ${Object.keys(channelShares).length} 个｜国家 ${tool.geoDistribution?.length ?? 0} 个｜关键词 ${tool.keywords?.length ?? 0} 个｜趋势 ${trend.length} 个月`,
+      `[apify] 渠道 ${Object.keys(channelShares).length} 个｜国家 ${tool.geoDistribution?.length ?? 0} 个｜趋势 ${trend.length} 个月`,
     );
   }
 
