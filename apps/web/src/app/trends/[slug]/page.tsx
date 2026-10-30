@@ -7,7 +7,9 @@ import { TrendInterestChart } from "@/components/detail/TrendInterestChart";
 import { ClaimTypeBadge, TrendConfidenceBadge, TrendStatusBadge } from "@/components/TrendBadges";
 import { formatDateShort } from "@/lib/format";
 import {
+  cleanInsightText,
   daysSince,
+  formatEffort,
   formatGrowth,
   getRelatedTrends,
   getTrendBySlug,
@@ -235,7 +237,31 @@ export default async function TrendDetailPage({ params }: { params: Promise<{ sl
             </h1>
             <p className="mt-1 font-mono text-sm text-ink-muted">{trend.keyword}</p>
 
-            <p className="mt-4 max-w-3xl text-sm leading-relaxed text-ink-secondary">{trend.why}</p>
+            <p className="mt-4 max-w-3xl text-sm leading-relaxed text-ink-secondary">
+              {cleanInsightText(trend.why) || trend.why}
+            </p>
+
+            {trend.editorNote ? (
+              <div className="mt-4 flex flex-col gap-2 rounded-xl border border-border bg-surface-2/50 px-3.5 py-3 text-xs leading-relaxed">
+                <span className="text-[11px] font-medium tracking-wide text-ink-muted">
+                  这个词为什么值得看
+                </span>
+                <div className="flex gap-3">
+                  <span className="w-14 shrink-0 text-ink-muted">谁在付钱</span>
+                  <span className="text-ink-secondary">{trend.editorNote.audience}</span>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-14 shrink-0 text-ink-muted">从哪下手</span>
+                  <span className="text-ink-secondary">{trend.editorNote.entryAngle}</span>
+                </div>
+                {trend.editorNote.whyAccepted ? (
+                  <div className="flex gap-3">
+                    <span className="w-14 shrink-0 text-ink-muted">收录理由</span>
+                    <span className="text-ink-muted">{trend.editorNote.whyAccepted}</span>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
 
             <div className="mt-4 flex flex-wrap items-center gap-3 text-xs">
               <span className={`rounded-full border px-2.5 py-1 font-medium ${verdict.cls}`}>
@@ -247,7 +273,9 @@ export default async function TrendDetailPage({ params }: { params: Promise<{ sl
               {seenDays !== null ? (
                 <span className="text-ink-muted">首次发现 {seenDays} 天前</span>
               ) : null}
-              <span className="text-ink-muted">可信度依据：{trend.confidence === "high" ? "多时点 + 跨源" : trend.confidence === "medium" ? "有趋势证据但样本有限" : "观测点不足"}</span>
+              <span className="text-ink-muted">
+                数据可信度：{trend.confidence === "high" ? "高 · 多时点交叉验证" : trend.confidence === "medium" ? "中 · 样本偏少" : "低 · 观测点不足"}
+              </span>
             </div>
           </div>
 
@@ -348,14 +376,21 @@ export default async function TrendDetailPage({ params }: { params: Promise<{ sl
               {trend.evidence.map((e, i) => (
                 <div key={i} className="rounded-2xl border border-border bg-surface p-5">
                   <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[11px] tabular-nums tracking-widest text-ink-muted">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
                     <ClaimTypeBadge type={e.claimType} />
                     {e.date ? (
                       <span className="text-xs tabular-nums text-ink-muted">{e.date}</span>
                     ) : null}
                   </div>
-                  <p className="mt-2 text-sm font-medium leading-relaxed text-ink">{e.claim}</p>
-                  {e.detail ? (
-                    <p className="mt-1.5 text-xs leading-relaxed text-ink-secondary">{e.detail}</p>
+                  <p className="mt-2 text-sm font-medium leading-relaxed text-ink">
+                    {cleanInsightText(e.claim) || e.claim}
+                  </p>
+                  {cleanInsightText(e.detail) ? (
+                    <p className="mt-1.5 text-xs leading-relaxed text-ink-secondary">
+                      {cleanInsightText(e.detail)}
+                    </p>
                   ) : null}
                   <div className="mt-3 flex flex-wrap gap-2">
                     {e.sources.map((s) => (
@@ -380,34 +415,25 @@ export default async function TrendDetailPage({ params }: { params: Promise<{ sl
             <SectionHeader
               no="03"
               title="用户需求与搜索意图"
-              desc="把相关搜索词按意图聚类，回答「人们究竟在找什么」，而不是只看热度高低。"
+              desc="把搜索行为按意图归类，回答「人们究竟在找什么」。这里不标占比——Google Trends 不提供意图份额，任何百分比都是估出来的。"
             />
             <Card>
               {trend.intentSummary ? (
-                <p className="text-sm leading-relaxed text-ink-secondary">{trend.intentSummary}</p>
+                <p className="text-sm leading-relaxed text-ink-secondary">
+                  {cleanInsightText(trend.intentSummary) || trend.intentSummary}
+                </p>
               ) : null}
-              <ul className="mt-4 flex flex-col gap-4">
+              <ul className="mt-4 flex flex-col gap-3">
                 {trend.intents.map((it) => (
-                  <li key={it.intent}>
-                    <div className="flex items-center gap-3">
-                      <span className="w-16 shrink-0 text-xs font-medium text-ink">
-                        {intentLabels[it.intent] ?? it.intent}
-                      </span>
-                      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2">
-                        <div
-                          className="h-full rounded-full bg-primary/70"
-                          style={{ width: `${Math.min(100, it.share ?? 0)}%` }}
-                        />
-                      </div>
-                      <span className="w-9 shrink-0 text-right text-xs tabular-nums text-ink-muted">
-                        {it.share !== undefined ? `${it.share}%` : "—"}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex flex-wrap gap-1.5 pl-[4.75rem]">
+                  <li key={it.intent} className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+                    <span className="shrink-0 self-start rounded-md border border-primary/25 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary sm:w-[5.5rem] sm:text-center">
+                      {intentLabels[it.intent] ?? it.intent}
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
                       {it.queries.map((q) => (
                         <span
                           key={q}
-                          className="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 text-[11px] text-ink-secondary"
+                          className="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] text-ink-secondary"
                         >
                           {q}
                         </span>
@@ -416,6 +442,9 @@ export default async function TrendDetailPage({ params }: { params: Promise<{ sl
                   </li>
                 ))}
               </ul>
+              <p className="mt-3 border-t border-border pt-3 text-[11px] leading-relaxed text-ink-muted">
+                上面这些是这类意图下人们常见的搜索写法，用来判断内容或产品该覆盖哪些词，不是流量统计。
+              </p>
             </Card>
           </section>
 
@@ -427,27 +456,32 @@ export default async function TrendDetailPage({ params }: { params: Promise<{ sl
               desc="依据真实搜索意图、现有产品与竞争情况给出方向。每条机会都写明依据与工作量，不做「任何热词都成立」的通用建议。"
             />
             <div className="grid gap-3 sm:grid-cols-2">
-              {trend.opportunities.map((o, i) => (
-                <div key={i} className="flex flex-col rounded-2xl border border-border bg-surface p-5">
-                  <div className="flex items-center justify-between gap-2">
-                    <span
-                      className={`rounded-full border px-2 py-0.5 text-[11px] font-medium ${opportunityTypeMeta[o.type].cls}`}
-                    >
-                      {opportunityTypeMeta[o.type].label}
-                    </span>
-                    {o.effort ? (
-                      <span className="text-[11px] text-ink-muted">约 {o.effort}</span>
+              {trend.opportunities.map((o, i) => {
+                const basis = cleanInsightText(o.evidence);
+                return (
+                  <div key={i} className="flex flex-col rounded-2xl border border-border bg-surface p-5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span
+                        className={`rounded-full border px-2 py-0.5 text-[11px] font-medium ${opportunityTypeMeta[o.type].cls}`}
+                      >
+                        {opportunityTypeMeta[o.type].label}
+                      </span>
+                      {o.effort ? (
+                        <span className="text-[11px] text-ink-muted">{formatEffort(o.effort)}</span>
+                      ) : null}
+                    </div>
+                    <h3 className="mt-3 text-sm font-semibold leading-snug text-ink">{o.title}</h3>
+                    <p className="mt-2 flex-1 text-xs leading-relaxed text-ink-secondary">
+                      {cleanInsightText(o.why) || o.why}
+                    </p>
+                    {basis ? (
+                      <p className="mt-3 border-t border-border pt-2 text-[11px] text-ink-muted">
+                        依据：{basis}
+                      </p>
                     ) : null}
                   </div>
-                  <h3 className="mt-3 text-sm font-semibold leading-snug text-ink">{o.title}</h3>
-                  <p className="mt-2 flex-1 text-xs leading-relaxed text-ink-secondary">{o.why}</p>
-                  {o.evidence ? (
-                    <p className="mt-3 border-t border-border pt-2 text-[11px] text-ink-muted">
-                      依据：{o.evidence}
-                    </p>
-                  ) : null}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
 
@@ -467,7 +501,9 @@ export default async function TrendDetailPage({ params }: { params: Promise<{ sl
                     </span>
                   </div>
                   <p className="mt-2 text-sm font-medium leading-relaxed text-ink">{a.action}</p>
-                  <p className="mt-1.5 text-xs leading-relaxed text-ink-secondary">依据：{a.reason}</p>
+                  <p className="mt-1.5 text-xs leading-relaxed text-ink-secondary">
+                    依据：{cleanInsightText(a.reason) || a.reason}
+                  </p>
                   {a.uncertainty ? (
                     <p className="mt-1 text-xs leading-relaxed text-ink-muted">不确定性：{a.uncertainty}</p>
                   ) : null}

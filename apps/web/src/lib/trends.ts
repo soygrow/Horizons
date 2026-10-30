@@ -98,6 +98,103 @@ export const intentLabels: Record<string, string> = {
   alternative: "寻找替代",
 };
 
+/** 意图键在正文里裸奔时换成中文说法，别让读者看到 learn / howto */
+const INTENT_EN: Record<string, string> = {
+  learn: "了解概念",
+  howto: "找用法",
+  compare: "比较选型",
+  price: "比价",
+  alternative: "找替代",
+  problem: "排查问题",
+};
+
+/** 评分维度等内部字段名，正文里出现时换成人话 */
+const FIELD_ZH: Record<string, string> = {
+  intents: "搜索意图",
+  competitors: "竞品",
+  feasibility: "可行性",
+  demand: "需求强度",
+  wedge: "切口空间",
+  seo: "搜索机会",
+  timing: "时机",
+  oppParts: "评分",
+  trendsRelatedQueries: "相关搜索",
+  entryAngle: "切入口",
+  baseline: "基线",
+  peak: "峰值",
+  recent7: "近 7 天",
+};
+
+/**
+ * 机会卡的「工作量」。
+ * 这个字段是模型自由填的，库里混着 low / medium / 中：需封装部署模板… / 2-3 周 三种写法，
+ * 直接拼「约」会变成「约 low」「约 中：需封装部署模板、数据库/Auth/支付连接器与静态体检…」。
+ * 这里统一成读得懂的档位或时长。
+ */
+export function formatEffort(effort?: string): string {
+  if (!effort) return "";
+  const raw = effort.trim();
+  const head = raw.toLowerCase().split(/[：:，,\s]/)[0];
+  const grade: Record<string, string> = {
+    low: "低",
+    medium: "中",
+    high: "高",
+    低: "低",
+    中: "中",
+    高: "高",
+    中高: "中高",
+  };
+  if (grade[head]) return `投入 ${grade[head]}`;
+  const duration = raw.match(/^\d+(?:\.\d+)?\s*[-–~]\s*\d+\s*[天周月]|^\d+\s*[天周月]|^\d+\s*[-–~]\s*\d+\s*人月/);
+  if (duration) return `约 ${duration[0].replace(/\s+/g, " ").trim()}`;
+  return raw.length > 14 ? `${raw.slice(0, 14)}…` : raw;
+}
+
+/**
+ * 清掉正文里读者看不懂的内部标记。
+ *
+ * 实测这些是模型直接抄了 prompt 里的内部结构：
+ * - 「证据 3、4」「sourceIndexes [3,4,5]」：编号引用，页面上证据不按编号排，编号还可能越界
+ * - 「editorNote / entryAngle / trendsRelatedQueries」：采集端字段名，读者不认识
+ * - 「意图占比 learn 0.45」：Trends 不提供意图份额，这种百分比是估的
+ *
+ * 清完只剩残渣（比如纯英文碎片）也返回空串，由调用方决定不渲染，
+ * 宁可少一行「依据」，也不摆一句读者读不懂的话。
+ */
+export function cleanInsightText(text?: string | null): string {
+  if (!text) return "";
+  const out = text
+    .replace(/\b(sourceIndexes)\b\s*(\[[^\]]*\])?\s*[：:，,]?\s*/gi, "")
+    .replace(/\baboveBaselinePoints\s*[=为]?\s*(-?[\d.]+)/gi, "$1 个采样点高于基线")
+    .replace(/editorNote\s*(指出|明确|指定|标记|里|的|中)?/gi, "")
+    .replace(
+      /\b(intents|competitors|feasibility|demand|wedge|seo|timing|oppParts|trendsRelatedQueries|entryAngle|baseline|peak|recent7)\b/gi,
+      (m) => FIELD_ZH[m.toLowerCase()] ?? m,
+    )
+    .replace(/\bpeakMultiple\b\s*[，,]?\s*/gi, "")
+    .replace(/证据\s*\d+(?:\s*[、,，/和及]\s*\d+)*\s*[：:，,]?\s*/g, "")
+    .replace(/\b(learn|howto|compare|price|alternative|problem)\b/gi, (m) => INTENT_EN[m.toLowerCase()] ?? m)
+    .replace(/\d\.\d+\s*[+＋]\s*/g, "")
+    .replace(/\s*\d\.\d+(?=\s*[；;，,]|\s*$)/g, "")
+    .replace(/(?:合计?占|占比|约占|约|占)\s*\d+(?:\.\d+)?%/g, "为主")
+    .replace(/意图占比?/g, "")
+    .replace(/^(显示|表明|指出|说明|认为|含|包括|包含)[，,]?\s*/, "")
+    .replace(/（\s*[）)]|\(\s*\)/g, "")
+    .replace(/，{2,}/g, "，")
+    .replace(/\s{2,}/g, " ")
+    .replace(/^[，,。；;、：:\s]+/, "")
+    .replace(/[，,、；;\s]+$/, "")
+    .trim();
+  // 只认「变量名 + 赋值/下标」这种内部结构；GitHub、OpenAI 这类专有名词要放过
+  if (/\b[a-z]{2,}[A-Z][a-zA-Z]*\s*[=[(]/.test(out) || /\w=\d/.test(out)) return "";
+  // 「观测点不足」「多时点+跨源」是置信度说明，放「依据」下面只会让人困惑
+  if (/^(观测点?不足|样本有限|多时点\s*[+＋]\s*跨源|有?趋势证据但样本有限|数据不足|无明显?趋势证据)[。；;，,]?$/.test(out)) {
+    return "";
+  }
+  // 中文是这些字段的正文载体；只剩英文碎片说明原本就是字段名，没有可读信息
+  return (out.match(/[\u4e00-\u9fa5]/g) ?? []).length < 5 ? "" : out;
+}
+
 export const opportunityTypeMeta: Record<
   string,
   { label: string; cls: string }

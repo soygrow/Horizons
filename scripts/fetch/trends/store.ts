@@ -49,6 +49,7 @@ export interface TrendInput {
   normalizedName: string;
   why: string;
   intentSummary: string;
+  editorNote?: AITrend["editorNote"];
   sources: TrendSourceRef[];
   evidence: AITrend["evidence"];
   intents: AITrend["intents"];
@@ -72,6 +73,10 @@ export function buildTrend(input: TrendInput, existing?: AITrend): AITrend {
     confidence: input.confidence,
     why: input.why,
     intentSummary: input.intentSummary,
+    // 判定结论跟着词走：没有就别硬塞空对象
+    ...((input.editorNote ?? existing?.editorNote)
+      ? { editorNote: input.editorNote ?? existing?.editorNote }
+      : {}),
     // 首次发现永不覆盖，用于「新颖度」与页面展示
     firstSeenAt: existing?.firstSeenAt ?? today,
     lastSeenAt: today,

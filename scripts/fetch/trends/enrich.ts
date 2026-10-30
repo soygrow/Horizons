@@ -3,6 +3,7 @@ import type {
   OpportunityScoreParts,
   TrendActionVerdict,
   TrendCategory,
+  TrendEditorNote,
   TrendEvidence,
   TrendIntent,
   TrendIntentKey,
@@ -21,6 +22,8 @@ export interface Enrichment {
   category: TrendCategory;
   why: string;
   intentSummary: string;
+  /** 准入结论，来自价值判定，页面用来回答「谁付钱、从哪下手」 */
+  editorNote?: TrendEditorNote;
   evidence: TrendEvidence[];
   intents: TrendIntent[];
   relatedQueries: string[];
@@ -57,20 +60,26 @@ const SYSTEM = `你是 AI 趋势榜单的资深分析师，服务对象是想找
 - evidence: 1-3 条，每条 {claim, claimType, date?, detail?, sourceIndexes}；
   claimType 只能是 ${CLAIMS.join(" / ")}：有来源直接支持用 fact，由数据推断用 inference，猜测用 hypothesis；
   sourceIndexes 必须来自给定证据编号，找不到依据就用 hypothesis 并给空数组
-- intents: 1-3 条 {intent, share?, queries}，intent 取 ${INTENTS.join(" / ")}，queries 用英文真实搜索写法
+- intents: 1-3 条 {intent, queries}，intent 取 ${INTENTS.join(" / ")}；
+  queries 给 2-5 个这类人真会敲的英文搜索词，不写任何占比数字——Trends 不提供意图份额，百分比一定是编的
 - relatedQueries: 3-10 个相关搜索词（英文，尽量贴近真实长尾）
 - competitors: 0-4 个现有产品/项目名
 - oppParts: {demand, wedge, seo, feasibility, timing}，各自 0-100 的整数，
   demand=需求证据强度，wedge=可切入空间（越大越空），seo=搜索与内容机会，feasibility=独立开发可行性，timing=时机
 - opportunities: 2-3 条 {type, title, why, effort, evidence}，
-  type 取 ${OPP_TYPES.join(" / ")}；why 必须挂具体依据（意图占比/竞争/用户反馈）
+  type 取 ${OPP_TYPES.join(" / ")}；why 必须挂具体依据（谁在搜、竞争、用户反馈）；
+  evidence 写可核对的事实，例如「HN 讨论获 865 分」「GitHub 仓库 2.8 万星」
 - actions: 1-2 条 {verdict, action, reason, uncertainty}，verdict 取 ${VERDICTS.join(" / ")}
 
 硬性要求：
 1. 不要编造来源。没有依据的结论一律 claimType=hypothesis。
 2. 不要输出搜索量、月搜索次数——Trends 只有 0-100 相对热度。
 3. 中文描述里不要用「爆款」「颠覆」这类夸张词。
-4. 只输出 JSON。`;
+4. 禁止出现「证据 3、4」「sourceIndexes [2,6]」这类编号引用：页面上证据不编号，读者对不上；
+   要写就写来源和事实本身，例如「HN 讨论获 865 分」「GitHub 仓库 2.8 万星」。
+5. 禁止出现「editorNote」「entryAngle」「trendsRelatedQueries」这类内部字段名，读者不认识。
+6. 描述里的每个数字都要读者能核对：不要写「意图占比 45%」这种没有数据来源的比例。
+7. 只输出 JSON。`;
 
 interface RawEnrichment {
   normalizedName?: string;
@@ -179,13 +188,9 @@ export async function enrichKeyword(params: {
       : null;
     const queries = (item.queries ?? []).map((q) => str(q, 60)).filter(Boolean).slice(0, 6);
     if (!intent || queries.length === 0) continue;
-    intents.push({
-      intent,
-      ...(typeof item.share === "number" && item.share > 0
-        ? { share: Math.min(100, Math.round(item.share)) }
-        : {}),
-      queries,
-    });
+    // 不再写 share：Trends 不提供意图份额，模型给的百分比全是估的，
+    // 展示成进度条会让读者误以为是统计结果
+    intents.push({ intent, queries });
   }
 
   const opportunities: TrendOpportunity[] = [];
@@ -229,6 +234,15 @@ export async function enrichKeyword(params: {
     category,
     why: str(raw.why, 80) || `${keyword} 的搜索兴趣在近 7 天高于历史基线。`,
     intentSummary: str(raw.intentSummary, 60),
+    ...(params.editor
+      ? {
+          editorNote: {
+            audience: params.editor.audience,
+            entryAngle: params.editor.ideaAngle,
+            whyAccepted: params.editor.reason,
+          },
+        }
+      : {}),
     evidence: evidenceList,
     intents,
     relatedQueries: [

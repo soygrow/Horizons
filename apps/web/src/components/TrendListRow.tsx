@@ -4,6 +4,7 @@ import { Sparkline } from "./Sparkline";
 import { TrendConfidenceBadge, TrendStatusBadge } from "./TrendBadges";
 import { formatDateShort } from "@/lib/format";
 import {
+  cleanInsightText,
   daysSince,
   formatGrowth,
   growthTone,
@@ -111,7 +112,9 @@ export function TrendListRow({ trend, rank }: { trend: AITrend; rank: number | n
 
       <TrendConfidenceBadge confidence={trend.confidence} showLabel={false} />
 
-      <p className="line-clamp-2 text-xs leading-snug text-ink-secondary">{trend.why}</p>
+      <p className="line-clamp-2 text-xs leading-snug text-ink-secondary">
+        {cleanInsightText(trend.why) || trend.why}
+      </p>
 
       <div className="flex flex-wrap gap-1">
         {oppTypes.map((t) => (

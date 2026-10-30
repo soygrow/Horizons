@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-30T03:56:00.541Z",
+  "updatedAt": "2026-10-30T06:46:51.094Z",
   "mode": "live",
   "region": "US",
   "keywords": [
@@ -264,7 +264,12 @@
           "reason": "垂直案例有HN热度，但整体搜索未创新高，产品窗口尚未确认",
           "uncertainty": "缺乏各垂直方向的独立搜索量数据"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "独立开发者、AI 应用小团队",
+        "entryAngle": "做一个 MCP server 一键托管+调试面板，支持日志回放和权限配置，先覆盖 GitHub/Slack/Postgres 三个高频 server",
+        "whyAccepted": "MCP 已成事实协议，围绕 server 的接入、调试、托管需求真实且供给未饱和"
+      }
     },
     {
       "slug": "model-context-protocol",
@@ -515,7 +520,12 @@
           "reason": "标准化治理刚起步，接口与生态可能变动",
           "uncertainty": "基金会后续规范发布时间不明"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "AI 工具开发者、集成商",
+        "entryAngle": "做 MCP 协议兼容性测试套件，输入 server 地址自动跑通工具调用、错误处理和超时场景并出报告",
+        "whyAccepted": "协议层名词，周边已出现 server 市场、调试、鉴权等具体工程需求"
+      }
     },
     {
       "slug": "rag-pipeline",
@@ -788,7 +798,12 @@
           "reason": "评估类工具已有开源竞品，需确认差异化空间",
           "uncertainty": "开源项目迭代快，产品窗口可能被挤压"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做企业知识库的独立开发者",
+        "entryAngle": "选一个垂直数据源（如 Notion+飞书文档）做开箱即用的 RAG 管道，内置检索质量评测和坏例回流",
+        "whyAccepted": "需求明确但红海，通用框架已多，切口在垂直数据源和评测闭环"
+      }
     },
     {
       "slug": "ai-evals",
@@ -1048,7 +1063,12 @@
           "reason": "开源工具星标高但搜索仍在涨，说明工具层未收敛，存在切入窗口。",
           "uncertainty": "LangWatch/Kiln 可能快速下沉到轻量场景，压缩空间。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "AI 产品团队、独立开发者",
+        "entryAngle": "做一个面向小团队的 eval 平台：上传 50 条真实用例，自动跑多模型对比并给出回归告警，按项目收费",
+        "whyAccepted": "评测是 AI 应用上线前的刚需，工具分散、缺少轻量方案"
+      }
     },
     {
       "slug": "ai-code-review",
@@ -1296,7 +1316,12 @@
           "reason": "aboveBaselinePoints=0 且 7 天 -43.3%，产品窗口尚未打开；但 feasibility 78 说明一旦回暖可快速落地",
           "uncertainty": "泡沫论调可能进一步压低采购意愿"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "中小研发团队、开源维护者",
+        "entryAngle": "做自托管版 AI code review，专攻一种栈（如 Go+React），强调私有部署和按仓库定价",
+        "whyAccepted": "需求真实但已有 CodeRabbit 等玩家，切口在细分语言栈或自托管"
+      }
     },
     {
       "slug": "claude-skills",
@@ -1545,7 +1570,12 @@
           "reason": "对比与入门意图占比高，可低成本获搜索流量",
           "uncertainty": "话题热度可能随官方文档完善而回落"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "Claude 重度用户、AI 工作流开发者",
+        "entryAngle": "做 skills 市场+调试器：可视化编辑 skill、本地模拟触发、一键发布并统计调用效果",
+        "whyAccepted": "新能力名词，周边已出现 skill 编写、分发、调试需求，生态早期"
+      }
     },
     {
       "slug": "vibe-coding",
@@ -1818,7 +1848,12 @@
           "reason": "howto 与 problem 意图合计约 75%，内容成本低、可验证搜索需求并积累邮件列表。",
           "uncertainty": "Trends 相关查询为空，长尾词实际搜索量未知，需用落地页转化数据校准。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "非技术创始人、产品经理",
+        "entryAngle": "做 vibe coding 项目的托管部署层：一键把 Lovable/Bolt 产物接上数据库、域名和回滚",
+        "whyAccepted": "概念热度高但泛，需落到具体环节才有切口，如部署、回滚、协作"
+      }
     },
     {
       "slug": "ai-coding-agent",
@@ -2078,7 +2113,12 @@
           "reason": "compare 意图占比最高，且开源 agent 有现成社区热度",
           "uncertainty": "对比内容同质化风险高，需以真实仓库数据差异化"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "使用 Cursor/Claude Code 的开发者",
+        "entryAngle": "做 coding agent 的沙箱运行与审计工具，记录每次文件改动和命令执行，支持一键回滚",
+        "whyAccepted": "赛道拥挤但需求真实，切口在 agent 运行环境、权限和审计"
+      }
     },
     {
       "slug": "llm-fine-tuning",
@@ -2334,7 +2374,12 @@
           "reason": "learn/howto意图占比高，HN高赞帖子证明内容有传播力，可低成本获客。",
           "uncertainty": "内容竞争激烈，需差异化聚焦评测坏例分析。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "有私有数据的中小团队",
+        "entryAngle": "做微调数据清洗+效果对比工具：自动去重、构造评测集、对比微调前后输出差异",
+        "whyAccepted": "需求存在但被大厂平台部分承接，切口在垂直数据准备和效果对比"
+      }
     },
     {
       "slug": "local-llm",
@@ -2593,7 +2638,12 @@
           "reason": "SEO机会较高（70），compare意图占35%，内容成本低",
           "uncertainty": "竞品文档已覆盖部分内容，需以实测基准差异化"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "隐私敏感的个人开发者、小团队",
+        "entryAngle": "做本地 LLM 选型助手：扫描本机硬件，推荐可跑模型并一键配置 Ollama/vLLM 参数",
+        "whyAccepted": "本地部署需求真实，硬件适配和模型选择是具体痛点"
+      }
     },
     {
       "slug": "vector-database",
@@ -2847,7 +2897,12 @@
           "reason": "compare 意图占比约 40%，且现有高热度解释文已过时（2021/2024），存在内容空位",
           "uncertainty": "基准测试结果可能因硬件与数据集差异被质疑，需公开测试脚本"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做 RAG 应用的独立开发者、AI 应用小团队",
+        "entryAngle": "做一个向量库选型对比站，按延迟/成本/过滤能力/托管方式打分，附一键迁移脚本和本地 docker-compose 模板",
+        "whyAccepted": "具体基础设施品类，RAG/语义检索落地带来真实选型与运维需求，供给未饱和"
+      }
     },
     {
       "slug": "cursor-ai",
@@ -3111,7 +3166,12 @@
           "reason": "HN 高热度帖子表明用户对安全与质量有明确信息需求。",
           "uncertainty": "内容竞争可能加剧，需差异化。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "用 Cursor 的个人开发者、小团队技术负责人",
+        "entryAngle": "做 Cursor 规则与提示词市场：按技术栈（Next.js/Go/Flutter）提供 .cursorrules 模板，加团队共享配置同步工具",
+        "whyAccepted": "已成 AI 编程代名词，周边配置、规则文件、团队落地需求密集"
+      }
     },
     {
       "slug": "claude-code",
@@ -3379,7 +3439,12 @@
           "reason": "搜索意图以 learn/howto 为主，内容成本低且可直接导流到工具",
           "uncertainty": "热度 7 日微降 2.3%，需观察是否进入回落"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "重度命令行开发者、小团队工程负责人",
+        "entryAngle": "做 Claude Code 的 hooks/MCP 配置管理器，提供常用安全护栏（禁 rm、禁 push main）和团队共享配置包",
+        "whyAccepted": "终端 AI 编程代理，已出现 hooks、MCP 接入、权限配置等具体工程需求"
+      }
     },
     {
       "slug": "github-copilot",
@@ -3654,7 +3719,12 @@
           "reason": "compare和price意图占比高，内容可快速验证需求并导流。",
           "uncertainty": "内容竞争激烈，需差异化角度。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "企业采购方、需要合规审计的团队",
+        "entryAngle": "做 Copilot 使用率与成本分析工具，按团队/仓库统计采纳率与节省工时，输出可给管理层看的报表",
+        "whyAccepted": "需求真实但被巨头免费功能强承接，只能靠细分场景差异化"
+      }
     },
     {
       "slug": "lovable-ai",
@@ -3909,7 +3979,12 @@
           "reason": "内容成本低，可在产品验证期同时积累流量与用户反馈",
           "uncertainty": "相关搜索词未在 Trends 中直接返回，实际搜索量需用关键词工具二次确认"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "非技术创始人、独立开发者",
+        "entryAngle": "做 Lovable 导出项目的上线托管服务：一键接 Supabase、配域名、加鉴权和备份，按项目月费收费",
+        "whyAccepted": "AI 生成全栈应用，用户生成后普遍卡在部署、鉴权、数据库迁移等工程环节"
+      }
     },
     {
       "slug": "replit-agent",
@@ -4165,7 +4240,12 @@
           "reason": "problem 与 alternative 意图合计约 60%，内容可低成本获客。",
           "uncertainty": "搜索量绝对值未知，需用 Trends 相对热度持续验证。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "用 Replit 做原型的独立开发者、小团队",
+        "entryAngle": "做 Replit Agent 项目的导出与自托管工具，把生成应用迁到自有 VPS 并保留数据库和定时任务",
+        "whyAccepted": "AI 建站代理，需求明确但平台自身在补全能力，切口在导出与迁移"
+      }
     },
     {
       "slug": "notion-ai",
@@ -4419,7 +4499,12 @@
           "reason": "搜索热度虽降但意图明确，安全事件提供差异化角度。",
           "uncertainty": "热度下行期内容流量天花板有限"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "用 Notion 做知识库的中小团队运营",
+        "entryAngle": "做 Notion AI 的批量内容处理插件：批量改写、翻译、结构化抽取数据库字段，按用量收费",
+        "whyAccepted": "已成品类代名词但功能被 Notion 自身免费承接，只剩细分工作流角度"
+      }
     },
     {
       "slug": "perplexity-ai",
@@ -4670,7 +4755,12 @@
           "reason": "compare 和 problem 意图合计 60%，内容缺口明显。",
           "uncertainty": "竞争激烈，需差异化角度。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做行业研究的内容创作者、垂直媒体",
+        "entryAngle": "用 Perplexity API 做垂直行业情报日报，自动抓取并附来源引用，订阅制卖给细分行业从业者",
+        "whyAccepted": "AI 搜索需求真实，但通用搜索被巨头占据，切口在垂直领域与 API 封装"
+      }
     },
     {
       "slug": "gamma-ai",
@@ -4917,7 +5007,12 @@
           "reason": "搜索意图中对比与问题类合计约55%，现有内容竞争弱",
           "uncertainty": "Trends 无相关查询明细，长尾词量级未知"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做销售提案和课程材料的个人与小团队",
+        "entryAngle": "做 Gamma 的品牌模板与批量生成工具：上传品牌规范，批量生成同风格提案并导出 PPTX",
+        "whyAccepted": "AI 生成演示文稿，用户痛点集中在品牌模板统一和导出格式"
+      }
     },
     {
       "slug": "napkin-ai",
@@ -5164,7 +5259,12 @@
           "reason": "alternative/howto 搜索意图占比高，内容成本低，可验证需求。",
           "uncertainty": "搜索热度波动大，需持续跟踪。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "写博客和文档的内容创作者、技术写作者",
+        "entryAngle": "做文本转图表的批量 API 与 Markdown 插件，把长文自动切成配图并嵌入文档",
+        "whyAccepted": "文本转图表工具，需求真实但功能单一，切口在批量与嵌入工作流"
+      }
     },
     {
       "slug": "elevenlabs-voice",
@@ -5415,7 +5515,12 @@
           "reason": "price 与 alternative 意图合计占 60%，相关长尾搜索尚未被 Trends 收录，内容竞争低",
           "uncertainty": "搜索量绝对值未知，需用 Search Console 验证转化"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做短视频/播客/有声内容的个人创作者与小型内容工作室",
+        "entryAngle": "做一个 ElevenLabs 批量配音工作台：上传脚本 CSV，按角色分配音色、自动切分长文本、导出带时间轴的音频与字幕，按次收费",
+        "whyAccepted": "语音克隆与 TTS 已是明确工程需求，围绕多语言配音、角色音色管理、批量合成有大量细分场景未被覆盖"
+      }
     },
     {
       "slug": "hedra-ai",
@@ -5654,7 +5759,12 @@
           "reason": "需求增长145.3%且付费方场景明确，工具层竞品薄弱",
           "uncertainty": "Hedra API 定价与稳定性未核实，热度可能受单一事件驱动"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做虚拟主播、课程讲解、营销短视频的个人与小团队",
+        "entryAngle": "做角色视频的批量流水线：固定形象+多脚本批量生成，自动加字幕、片头片尾和平台尺寸适配，一次出 20 条",
+        "whyAccepted": "角色说话视频是真实需求，但供给集中在少数工具，围绕口型对齐后的二次剪辑与批量生产仍有切口"
+      }
     },
     {
       "slug": "higgsfield-ai",
@@ -5921,7 +6031,12 @@
           "reason": "learn/howto/alternative 意图占满，社区讨论浅，内容成本低可验证需求",
           "uncertainty": "搜索量未给出，需用 Search Console 验证长尾真实流量"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "短视频广告投放团队与独立创意人",
+        "entryAngle": "做运镜提示词模板库+一键复现：把爆款视频拆成镜头序列，生成可复用的 prompt 与参数预设，卖模板订阅",
+        "whyAccepted": "AI 视频运镜/镜头控制需求真实，但工具本身拥挤，切口在镜头模板复用与团队协作"
+      }
     },
     {
       "slug": "runway-ml",
@@ -6163,7 +6278,12 @@
           "reason": "learn/howto 意图占主导，内容可低成本验证需求",
           "uncertainty": "热度可能由短期事件驱动，需观察 2-3 周是否回落"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "小型影视/广告制作团队与自由剪辑师",
+        "entryAngle": "做 Runway 生成素材的资产管理层：自动打标、按镜头分组、版本对比与审片批注，接 API 同步",
+        "whyAccepted": "视频生成是红海但需求刚性，围绕生成后的素材管理、版本对比、团队审片有明确工程缺口"
+      }
     },
     {
       "slug": "ai-website-builder",
@@ -6412,7 +6532,12 @@
           "reason": "compare 意图占 30%，且 The Grid 事件后用户决策更谨慎，对比内容可低成本验证需求。",
           "uncertainty": "Trends 相关查询为空，长尾词需用站内搜索与社区反馈补充验证。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "不会写代码的小商家、活动组织者与自由职业者",
+        "entryAngle": "做单一垂直的建站：输入行业+城市自动生成带预约、地图、评价的落地页，绑定域名一键上线，按月收",
+        "whyAccepted": "需求极大但被巨头免费功能高度承接，只有垂直场景（如本地小店、活动页、简历站）才有差异化空间"
+      }
     },
     {
       "slug": "ai-slides-generator",
@@ -6672,7 +6797,12 @@
           "reason": "搜索意图中对比与问题类占比高，内容成本低且可为产品导流",
           "uncertainty": "该关键词搜索量级未知，Trends 仅提供相对热度"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "咨询/销售/教师等高频做汇报的个人用户",
+        "entryAngle": "做行业模板驱动的幻灯片生成：上传 Excel 或文档，自动出带图表和品牌配色的汇报稿，支持导出可编辑 pptx",
+        "whyAccepted": "生成 PPT 需求真实且付费意愿明确，通用工具同质化，切口在特定行业模板与数据图表自动生成"
+      }
     },
     {
       "slug": "ai-meeting-notes",
@@ -6931,7 +7061,12 @@
           "reason": "compare/problem 意图合计60%，HN 本地化讨论活跃，内容可低成本验证需求。",
           "uncertainty": "内容转化到付费的路径较长。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "销售团队、招聘方与咨询顾问等个人付费用户",
+        "entryAngle": "做垂直会议纪要：针对销售通话自动提取异议、预算、下一步动作并写入 CRM，按席位月费",
+        "whyAccepted": "会议纪要需求刚性，通用工具多但垂直场景（销售通话、面试、客户支持）的结构化输出仍缺"
+      }
     },
     {
       "slug": "ai-resume-builder",
@@ -7183,7 +7318,12 @@
           "reason": "compare 意图占约30%，内容可低成本获取早期用户并验证岗位族需求。",
           "uncertainty": "内容竞争程度未知，需观察自然流量转化。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "求职中的个人用户，尤其是转行和海外求职者",
+        "entryAngle": "做针对特定岗位 JD 的简历改写器：粘贴 JD 自动重排经历关键词、过 ATS 检测并给出匹配分，按次收费",
+        "whyAccepted": "需求真实但红海且免费替代多，只能靠针对特定岗位/地区的 ATS 优化做差异"
+      }
     },
     {
       "slug": "ai-photo-editor",
@@ -7445,7 +7585,12 @@
           "reason": "learn+howto 意图约 75%，内容获客成本低于投放，且能反哺产品需求验证",
           "uncertainty": "该长尾词竞争度未量化，需实测排名难度"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "电商卖家、二手交易个人卖家与小型摄影工作室",
+        "entryAngle": "做电商主图批量处理：白底、尺寸适配各平台、去水印、批量换背景，按张数或包月收费",
+        "whyAccepted": "极度红海，巨头免费功能覆盖大部分场景，只有电商图、证件照等垂直批量场景可做"
+      }
     },
     {
       "slug": "ai-video-generator",
@@ -7690,7 +7835,12 @@
           "reason": "compare意图占20%，且安全事件引发关注。",
           "uncertainty": "竞争激烈，需差异化。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做矩阵号的内容团队与独立短视频创作者",
+        "entryAngle": "做批量短视频生产管线：一个主题自动出脚本、配音、素材拼接、多平台尺寸导出，按条计费",
+        "whyAccepted": "需求巨大但供给饱和且被大厂主导，切口在生成后的分发与批量生产工作流而非模型本身"
+      }
     },
     {
       "slug": "ai-voice-clone",
@@ -7937,7 +8087,12 @@
           "reason": "problem 意图约占30%，内容成本低且能为产品导流",
           "uncertainty": "法律内容需专业审核，避免误导"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "内容创作者、播客主、有声书制作者、本地化团队",
+        "entryAngle": "做「授权可追溯」的短视频配音工具：用户上传 30 秒样本，生成带水印与授权声明的多语配音，按分钟计费。",
+        "whyAccepted": "语音克隆需求真实，但供给已被 ElevenLabs 等占据，切口在垂直场景与合规授权。"
+      }
     },
     {
       "slug": "ai-podcast-editing",
@@ -8196,7 +8351,12 @@
           "reason": "compare 意图占约 30%，对比内容可低成本获客并反哺产品定位",
           "uncertainty": "搜索热度为相对值，实际流量需上线后观测"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "独立播客主、小团队内容运营",
+        "entryAngle": "做一键去口癖+自动章节+shownotes 的网页工具，输入 RSS 或音频，输出剪辑版与文字稿，按集收费。",
+        "whyAccepted": "播客剪辑耗时且工具分散，需求明确，供给尚未饱和。"
+      }
     },
     {
       "slug": "ai-spreadsheet",
@@ -8448,7 +8608,12 @@
           "reason": "howto 意图约 45%，内容成本低且可为插件导流",
           "uncertainty": "搜索量为相对热度，无法确认绝对流量规模"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "中小企业财务、运营、个体电商卖家",
+        "entryAngle": "做面向电商卖家的「表格问答+批量改价」插件：接入店铺 CSV，用自然语言生成公式与批量操作，按月订阅。",
+        "whyAccepted": "需求真实但红海，Excel/Sheets 插件与独立产品众多，需靠细分场景差异化。"
+      }
     },
     {
       "slug": "ai-data-analyst",
@@ -8697,7 +8862,12 @@
           "reason": "howto意图占比约45%，HN同类构建经验帖获72 points，内容可低成本获客并验证需求。",
           "uncertainty": "内容转化到付费的路径较长，需配合产品落地页。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "没有数据团队的中小企业主、运营负责人",
+        "entryAngle": "做「上传 CSV 即出周报」的工具：自动生成图表+结论+异常提醒，导出 PDF/飞书文档，按报告数收费。",
+        "whyAccepted": "自然语言查数需求明确，但通用 BI 供给拥挤，切口在特定数据源与交付形态。"
+      }
     },
     {
       "slug": "ai-customer-support",
@@ -8948,7 +9118,12 @@
           "reason": "HN 质疑帖证明痛点真实，内容成本低可先验证需求",
           "uncertainty": "该话题内容竞争度未知"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "独立电商卖家、SaaS 小团队客服负责人",
+        "entryAngle": "做面向独立站卖家的「工单+知识库+退款话术」客服机器人，接 Shopify 与邮箱，按解决工单数计费。",
+        "whyAccepted": "需求刚性但巨头与成熟 SaaS 密集，独立团队需靠垂直行业与部署形态切入。"
+      }
     },
     {
       "slug": "ai-seo-tools",
@@ -9206,7 +9381,12 @@
           "reason": "搜索意图以对比和教程为主，内容可低成本引流到 MVP",
           "uncertainty": "搜索量仅为相对热度，实际转化需用落地页数据验证"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "内容站站长、独立开发者、出海小团队",
+        "entryAngle": "做「AI 搜索可见度监测」：追踪品牌在 ChatGPT/Perplexity 回答中的引用与排名，给出改写建议，按关键词订阅。",
+        "whyAccepted": "需求真实但极度红海，通用 SEO 工具难突围，需靠新搜索形态（AI 搜索引用）细分。"
+      }
     },
     {
       "slug": "ai-ugc-ads",
@@ -9484,7 +9664,12 @@
           "reason": "howto和compare意图合计80%，内容缺口存在，可低成本启动。",
           "uncertainty": "内容竞争可能加剧，需快速建立差异化。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "DTC 品牌投放操盘手、独立站卖家、效果广告代理",
+        "entryAngle": "做「批量生成 UGC 口播广告」工具：选模板+产品卖点，输出多版本 15 秒竖屏视频并 A/B 投放数据回流。",
+        "whyAccepted": "投放素材需求旺盛，AI 生成 UGC 广告供给尚在早期，切口清晰。"
+      }
     },
     {
       "slug": "ai-avatar-video",
@@ -9737,7 +9922,12 @@
           "reason": "howto/compare 意图占比高，内容成本低可验证需求",
           "uncertainty": "搜索量仅为相对热度，实际转化待验证"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "培训部门、跨境电商、本地化内容团队",
+        "entryAngle": "做面向中小企业的「产品培训数字人」：上传文档生成多语培训视频，带章节与测验，按席位收费。",
+        "whyAccepted": "数字人视频需求真实但供给拥挤（HeyGen 等），需靠垂直场景与本地化交付差异化。"
+      }
     },
     {
       "slug": "text-to-sql-ai",
@@ -9979,7 +10169,12 @@
           "reason": "需求真实、开源组件可复用、独立开发可行；但 Trends 近 7 日归零说明热度脉冲，需快速验证留存",
           "uncertainty": "付费意愿与准确率阈值未验证，企业采购周期可能较长"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "数据分析师、内部工具开发者、中小 SaaS 团队",
+        "entryAngle": "做「接上你的 Postgres 就能问」的自托管工具：带 schema 理解、权限白名单与查询审计，开源+托管收费。",
+        "whyAccepted": "自然语言查库是明确工程需求，通用产品多但垂直数据库与权限场景仍有空间。"
+      }
     },
     {
       "slug": "ai-agents-for-business",
@@ -10230,7 +10425,12 @@
           "reason": "compare 意图占 30%，现有内容多为产品发布而非横向评测，内容可低成本验证需求。",
           "uncertainty": "Trends 相关查询为空，长尾词需用搜索建议补全。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "想自动化流程的中小企业主、运营负责人",
+        "entryAngle": "做「业务流程 agent 搭建器」：从表单/邮件触发，串联 CRM 与表格，提供调试日志与人工接管，按运行次数收费。",
+        "whyAccepted": "概念宽泛但已出现接入、调试、托管等具体工程需求，需收敛到具体业务流程。"
+      }
     },
     {
       "slug": "ai-automation-agency",
@@ -10482,7 +10682,12 @@
           "reason": "搜索意图偏学习与比价，内容可低成本获客并验证付费意愿",
           "uncertainty": "无搜索量数据，只能靠相对热度与意图结构判断"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "中小企业主、想转型做自动化服务的自由职业者",
+        "entryAngle": "选一个具体行业（如牙科诊所预约+回访），做一套预置工作流模板+部署脚本，按行业打包售卖，附上线清单。",
+        "whyAccepted": "大量小团队在找可复用的自动化交付方案，需求真实但服务商已多，需靠垂直行业切口差异化。"
+      }
     },
     {
       "slug": "ai-saas-pricing",
@@ -10753,7 +10958,12 @@
           "reason": "howto 意图占 50%，内容可低成本获取搜索流量并验证需求。",
           "uncertainty": "内容竞争可能来自 SaaS 定价博客，需差异化聚焦 token 成本。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "AI SaaS 独立开发者、小团队创始人",
+        "entryAngle": "做一个把模型调用成本、毛利、免费额度、超额策略一起算的定价模拟器，输入用量曲线直接输出三档套餐和盈亏平衡点。",
+        "whyAccepted": "AI 产品按 token/按席位定价普遍算不清成本，创始人有真实决策需求，但已有若干计算器类工具。"
+      }
     },
     {
       "slug": "ai-wrappers",
@@ -11021,7 +11231,12 @@
           "reason": "learn/howto 意图合计占 80%，内容可低成本获取早期用户。",
           "uncertainty": "搜索热度可能短期波动，需持续跟踪趋势。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做 AI 套壳产品的独立开发者",
+        "entryAngle": "做套壳产品的成本与毛利看板：接入各家 API 用量，自动算每用户成本、留存与毛利，帮小团队判断该不该涨价。",
+        "whyAccepted": "围绕套壳产品的选型、成本、护城河讨论持续，但偏概念，需落到具体工程需求才有切口。"
+      }
     },
     {
       "slug": "ai-compliance",
@@ -11275,7 +11490,12 @@
           "reason": "howto 意图占 45%，内容成本低，可为产品导流。",
           "uncertainty": "内容竞争可能来自律所和咨询机构，需差异化开发者视角。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "面向欧洲市场的中小 AI 产品团队",
+        "entryAngle": "做 AI 产品合规自查工具：问卷式盘点模型用途与数据来源，自动生成风险分级报告和所需文档清单模板。",
+        "whyAccepted": "EU AI Act 等法规落地带来具体合规文档、风险评估、日志留存需求，供给尚未饱和。"
+      }
     },
     {
       "slug": "ai-in-education",
@@ -11545,7 +11765,12 @@
           "reason": "搜索意图中 learn+howto 占约75%，且 HN 长期讨论提供内容素材（证据2-5）。",
           "uncertainty": "内容转化到付费的路径较长，需配合工具试用入口。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "中小学教师、培训机构教研人员",
+        "entryAngle": "做单科（如初中数学）的题目生成+错因分析工具，教师上传班级错题即可生成分层练习卷和讲评要点。",
+        "whyAccepted": "教师备课、出题、批改场景明确，付费方是个人教师和培训机构，赛道拥挤但细分空间仍在。"
+      }
     },
     {
       "slug": "ai-agents-marketplace",
@@ -11809,7 +12034,12 @@
           "reason": "搜索意图以学习与对比为主，内容成本低且可为目录站导流",
           "uncertainty": "Trends相关查询为空，长尾真实量级需用搜索工具复核"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "agent 开发者、想采购现成 agent 的中小企业",
+        "entryAngle": "做一个垂直 agent 目录，只收录可实测的 agent，提供统一试用入口和任务完成率评测榜单，靠收录费或导流变现。",
+        "whyAccepted": "agent 分发、评测、托管需求已出现，但市场形态未定，存在做垂直 agent 目录与评测的切口。"
+      }
     },
     {
       "slug": "ai-infrastructure-cost",
@@ -12067,7 +12297,12 @@
           "reason": "搜索意图以学习与解决问题为主，内容竞争尚不饱和，SEO机会明确。",
           "uncertainty": "内容同质化风险；需持续更新保持排名。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "AI 应用开发者、小团队技术负责人",
+        "entryAngle": "做 API 成本监控代理：一行接入记录每次调用成本，按功能/用户维度出报表并给出缓存、模型降级等降本建议。",
+        "whyAccepted": "推理成本优化是真实工程痛点，小团队需要可操作的监控与降本方案，而非自建算力。"
+      }
     },
     {
       "slug": "arcjet",
@@ -12311,7 +12546,12 @@
           "reason": "搜索意图中 howto 和 compare 合计 60%，内容机会明确。",
           "uncertainty": "搜索量未知，需测试实际流量。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "独立开发者、小团队后端工程师",
+        "entryAngle": "做一个 Arcjet 的接入模板+对比评测站，覆盖 Next.js/Remix/Hono 三种框架的限流与 bot 防护配置，直接卖模板或引流到托管服务",
+        "whyAccepted": "面向开发者的安全防护 SDK（限流、bot 检测、邮件校验），有明确接入场景和付费方，赛道有 Upstash 等但未饱和"
+      }
     },
     {
       "slug": "inbox-zero",
@@ -12579,7 +12819,12 @@
           "reason": "搜索意图以 howto 和 learn 为主，内容可低成本获取早期用户。",
           "uncertainty": "内容竞争可能激烈，需差异化角度。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "重度邮件用户、小团队运营",
+        "entryAngle": "做一个只针对 Gmail 的 AI 收件箱分类器，按发件人/主题自动打标签并生成每日待办摘要，先做 Chrome 扩展验证付费意愿",
+        "whyAccepted": "邮件收件箱清零是明确场景，已有开源项目和付费工具，但细分到 Gmail 之外的邮箱或团队共享收件箱仍有切口"
+      }
     },
     {
       "slug": "articos-mcp",
@@ -12782,7 +13027,12 @@
           "reason": "howto 意图占比约 30%，relatedQueries 明确指向 setup 与生成器类需求，内容成本低",
           "uncertainty": "搜索量绝对值未知，内容收益上限不确定"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "AI 应用开发者、小团队技术负责人",
+        "entryAngle": "做一个 MCP server 的调试与托管面板：可视化查看工具调用、日志、鉴权配置，先支持 Articos 和官方 SDK，按项目数收费",
+        "whyAccepted": "MCP 是新兴协议，周边已出现接入、调试、托管需求，具体到 Articos 这个实现说明有人在找怎么接"
+      }
     },
     {
       "slug": "figma-agent",
@@ -13034,7 +13284,12 @@
           "reason": "官方功能可能覆盖部分需求，但生态工具仍有空间。",
           "uncertainty": "官方可能限制第三方Agent操作，影响产品可行性。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "设计团队与独立设计师",
+        "entryAngle": "做一个 Figma Agent 的提示词与工作流模板库，附带效果对比评测，按订阅收费",
+        "whyAccepted": "设计工具内的 AI 代理是明确场景，开发者需要接入、调试与评测方案"
+      }
     },
     {
       "slug": "agentic-workflow",
@@ -13288,7 +13543,12 @@
           "reason": "howto+problem 意图占八成，内容成本低且可验证需求真伪",
           "uncertainty": "搜索量仅为相对热度，实际流量规模未知"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做 AI 自动化的独立开发者与两三人小团队",
+        "entryAngle": "做一个 agent 工作流调试器：录制一次多步 agent 运行，回放每一步的输入输出与工具调用，标出失败步骤并支持单步重跑",
+        "whyAccepted": "能力名词已进入落地期，周围出现编排、调试、可观测性等具体工程需求，供给尚未饱和"
+      }
     },
     {
       "slug": "ai-music-generator",
@@ -13539,7 +13799,12 @@
           "reason": "版权争议（证据5）带来搜索关注，compare意图占25%，内容成本低。",
           "uncertainty": "版权诉讼进展可能改变用户关注点。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "短视频创作者、独立播客主、游戏小团队",
+        "entryAngle": "做「按视频分镜时长自动生成配乐并导出带时间码的音频轨」的浏览器工具，直接对接剪映/PR 工程文件",
+        "whyAccepted": "需求真实且付费方是个人创作者，但供给已被 Suno/Udio 等占据，需靠细分场景差异化"
+      }
     },
     {
       "slug": "ai-jailbreaks",
@@ -13803,7 +14068,12 @@
           "reason": "搜索意图以学习与操作为主，内容可低成本获客并导流工具。",
           "uncertainty": "内容可能被平台限流，需避免提供可直接滥用的完整绕过步骤。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "AI 安全研究者、做 LLM 应用的独立开发者、红队测试人员",
+        "entryAngle": "做一个提示词注入/越狱用例的回归测试集与 CLI 工具，帮应用开发者在模型升级后自动跑一遍已知越狱样本并给出拦截率报告。",
+        "whyAccepted": "有明确人群（红队、安全研究者、模型应用开发者）在找具体绕过手法与测试工具，需求真实但偏灰产与安全合规边界。"
+      }
     },
     {
       "slug": "typesafe-ai",
@@ -14055,7 +14325,12 @@
           "reason": "产品尚处融资早期，定价与 API 稳定性未明，过早重投入有平台风险",
           "uncertainty": "若官方直接推出 TS SDK，第三方封装空间会被压缩"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "用 TypeScript 做 AI 应用的独立开发者与小团队",
+        "entryAngle": "做一个 TS 优先的 LLM 结构化输出库：用 zod schema 定义输出，编译期推导类型，内置重试与流式解析，先发 npm 并写三篇对比 OpenAI structured outputs 的实测文",
+        "whyAccepted": "类型安全的 AI 调用封装是真实工程需求，团队在找能约束 LLM 输出结构、编译期校验的方案，供给尚未饱和"
+      }
     },
     {
       "slug": "ai-youtube-download",
@@ -14295,7 +14570,12 @@
           "reason": "需求真实但下载环节红海且版权风险高，细分到转写与结构化输出可避开 VidBee 等直接竞争",
           "uncertainty": "近 7 天热度回落 17.9%，需验证是脉冲还是季节性；版权与平台条款风险未评估"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "内容创作者、做二次剪辑的个人用户",
+        "entryAngle": "做 YouTube 视频转结构化笔记的工具：下载音频→转写→按章节生成摘要与时间戳，输出 Markdown，先只做英文长视频这一个场景",
+        "whyAccepted": "需求真实且高频，但红海且版权风险高，只能靠细分场景（字幕/摘要/批量转写）差异化"
+      }
     },
     {
       "slug": "ai-youtube-downloader",
@@ -14559,7 +14839,12 @@
           "reason": "近 7 天涨幅大但样本仅 30 天，可能是短期波动",
           "uncertainty": "峰值 41 的持续性未知"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "个人用户、自媒体运营",
+        "entryAngle": "避开纯下载，做面向播客/课程创作者的批量转写+多语言字幕导出，按分钟计费，先接 3 个垂直内容站做分发",
+        "whyAccepted": "与上一条同赛道，搜索量真实但供给极饱和，纯下载无差异化空间"
+      }
     },
     {
       "slug": "ai-video-generator-price",
@@ -14807,7 +15092,12 @@
           "reason": "近 7 日已回落 13.8%，当前更像脉冲而非稳定上升趋势",
           "uncertainty": "若头部厂商集中调价，热度可能再次抬升，判断窗口较短"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做短视频营销的小商家、自媒体创作者",
+        "entryAngle": "做一个 AI 视频生成器价格与额度对比站，实时抓取各家定价和免费额度，按每分钟成片成本排序，靠联盟链接变现",
+        "whyAccepted": "有人在比价选型，说明有真实采购决策，但赛道极度拥挤且被巨头免费额度挤压"
+      }
     },
     {
       "slug": "ai-for-making-apps",
@@ -15050,7 +15340,12 @@
           "reason": "compare意图占比高且现有内容质量低，内容成本低、可反哺产品获客",
           "uncertainty": "搜索量基数过低，内容流量回报可能慢"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "有想法但不会写代码的独立创业者、小商家",
+        "entryAngle": "做一个从一句话需求到可部署 app 的引导式工作流，内置模板库和部署一键化，按项目收费而非订阅",
+        "whyAccepted": "明确场景：非技术人群想用 AI 做出可用的 app，需求真实且供给尚未定型，细分切口多"
+      }
     },
     {
       "slug": "best-ai-tools-for-documentation",
@@ -15301,7 +15596,12 @@
           "reason": "compare 意图占 25%，相关搜索有对比需求，内容可快速获取搜索流量。",
           "uncertainty": "竞争可能来自现有技术博客，需差异化角度。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "写技术文档的开发者、小团队技术写作者",
+        "entryAngle": "做「代码库→文档」的自动化工具：接 GitHub 仓库，扫描变更自动生成并更新 README/API 文档，按仓库数订阅",
+        "whyAccepted": "明确场景（文档写作/维护）和明确人群，红海但细分角度多，可做评测聚合或垂直方案"
+      }
     },
     {
       "slug": "ai-administrative-assistant",
@@ -15545,7 +15845,12 @@
           "reason": "howto意图占比高，内容成本低。",
           "uncertainty": "竞争可能来自通用AI助手。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "小微企业主、自由职业者、个人创业者",
+        "entryAngle": "做面向个体户的行政助手：自动处理发票归档、日程排期、邮件跟进三类高频事务，按人月订阅，先做发票+邮件两个场景",
+        "whyAccepted": "需求真实（行政事务自动化），但供给拥挤且偏企业采购，需靠细分场景差异化"
+      }
     },
     {
       "slug": "ai-app-for-meeting-notes",
@@ -15790,7 +16095,12 @@
           "reason": "compare意图占40%，且HN有隐私担忧讨论，内容可低成本获客。",
           "uncertainty": "内容转化到付费的路径较长。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "销售、咨询顾问、自由职业者等高频开会人群",
+        "entryAngle": "做垂直行业会议纪要：选一个行业（如猎头面试、房产带看），预置该行业的话术模板和结构化输出，直接生成可交付记录",
+        "whyAccepted": "场景明确、付费方是个人用户，但红海严重，需靠垂直行业或本地化体验切"
+      }
     },
     {
       "slug": "ai-integration-platform",
@@ -16054,7 +16364,12 @@
           "reason": "需求信号明确（热度升50.8%、HN反复出现同类项目），但尚无强势品牌，切入窗口存在",
           "uncertainty": "搜索量绝对值低（关键词工具显示0k/月），需求可能集中在HN等开发者社区而非搜索"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做 B 端交付的独立开发者、小团队、需要接 AI 的中小企业技术负责人",
+        "entryAngle": "做一个面向小团队的 AI 接入中间层：统一多家模型 API、内置重试与成本统计、提供可观测面板，按调用量收费",
+        "whyAccepted": "企业要把模型接进现有系统，接入、鉴权、日志、评测等工程需求已具体出现，供给分散"
+      }
     },
     {
       "slug": "ai-integration-tool",
@@ -16314,7 +16629,12 @@
           "reason": "compare 意图约 30%，社区协议讨论已起，内容成本低且可导流到工具",
           "uncertainty": "协议仍在演进，教程可能需频繁更新"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "独立开发者、小团队后端工程师、SaaS 创业者",
+        "entryAngle": "先做单一痛点工具：一键把现有 REST 接口包装成可被 LLM 调用的 tool schema，并生成调试页面，开源引流加托管收费",
+        "whyAccepted": "与 platform 同源需求，工具层切口更窄更可落地，红海但需求真实"
+      }
     },
     {
       "slug": "best-plugins-for-chatgpt",
@@ -16559,7 +16879,12 @@
           "reason": "需求增长明确（+127%），目录供给分散且缺实测，独立开发可低成本切入",
           "uncertainty": "插件生态受官方产品迭代影响大，部分插件可能下线；搜索量绝对值偏低（0k/月）需验证真实流量"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "重度 ChatGPT 个人用户、小型团队运营",
+        "entryAngle": "做一个按岗位场景（写作、数据清洗、客服话术）筛选并实测 ChatGPT 插件的榜单站，每个插件附 30 秒可复现的测试用例和截图。",
+        "whyAccepted": "用户主动寻找 ChatGPT 插件，说明存在按场景挑选工具的真实需求，而插件目录和评测供给分散、质量参差。"
+      }
     },
     {
       "slug": "ai-code-editor-free",
@@ -16818,7 +17143,12 @@
           "reason": "需求真实但竞争激烈，Cursor和Copilot免费层占据市场，独立开发产品风险较高。",
           "uncertainty": "免费工具盈利模式不清晰，用户付费意愿低。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "预算敏感的独立开发者、学生、外包接单者",
+        "entryAngle": "做免费 AI 编辑器的横向实测对比页，按离线可用、免费额度、中文注释质量打分，并附一键迁移配置脚本。",
+        "whyAccepted": "需求真实且搜索量大，但被 Cursor、Copilot 免费层和 VS Code 插件占据，需要靠细分场景或体验差异化。"
+      }
     },
     {
       "slug": "ai-coding-agent-free",
@@ -17074,7 +17404,12 @@
           "reason": "大厂免费层可能压缩第三方打包空间",
           "uncertainty": "JetBrains 免费层范围与限制未在证据中说明"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "个人开发者、小团队创始人",
+        "entryAngle": "做一个免费编码 agent 的一键本地部署包（含模型选择、密钥管理、沙箱配置），附常见报错修复手册。",
+        "whyAccepted": "用户想找免费可用的编码 agent，供给端多为开源项目加自托管，配置门槛高，存在帮人跑通的切口。"
+      }
     },
     {
       "slug": "ai-coding-agents-free",
@@ -17326,7 +17661,12 @@
           "reason": "免费供给快速增加，商业模式尚未稳定",
           "uncertainty": "免费档额度政策可能随时收紧"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "独立开发者、技术选型的小团队",
+        "entryAngle": "做多 agent 同任务横评：同一 bug 修复任务跑 5 个免费 agent，公开耗时、token 成本和成功率，按周更新。",
+        "whyAccepted": "与单数形式同一需求，用户在多 agent 之间比较免费方案，评测和选型信息稀缺。"
+      }
     },
     {
       "slug": "best-open-source-coding-agents",
@@ -17572,7 +17912,12 @@
           "reason": "模型能力变化会快速改写「最好」的答案，对比库需持续维护",
           "uncertainty": "模型迭代节奏与社区迁移方向不确定"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "自托管偏好者、小团队技术负责人",
+        "entryAngle": "建一个开源编码 agent 数据库，按许可证、依赖模型、上下文长度、社区活跃度结构化对比，并提供 Docker 试跑模板。",
+        "whyAccepted": "开源编码 agent 数量快速增长，用户需要按能力、许可证、部署成本做选型，评测供给尚未饱和。"
+      }
     },
     {
       "slug": "claude-code-open-code",
@@ -17833,7 +18178,12 @@
           "reason": "搜索意图以 howto 与 compare 为主，竞争内容供给薄",
           "uncertainty": "OpenCode 配置格式可能快速变动，内容需持续维护"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "已用 Claude Code 想降本或自托管的开发者",
+        "entryAngle": "做 Claude Code 到 opencode 的配置迁移工具：转换权限规则、MCP 配置和自定义命令，并输出差异报告。",
+        "whyAccepted": "用户想把 Claude Code 的工作流迁移到开源替代品，涉及配置映射和兼容性调试，是具体工程需求。"
+      }
     },
     {
       "slug": "prezi-ai",
@@ -18081,7 +18431,12 @@
           "reason": "需求存在但被办公套件免费功能挤压，独立产品窗口尚不明确。",
           "uncertainty": "若出现高星开源渲染库或大厂跟进，窗口可能关闭。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "需要做演示文稿的职场个人用户、教师",
+        "entryAngle": "做 AI 演示工具的叙事结构模板库，主打非线性和故事线排版，输出可直接导入多平台的 Markdown 大纲。",
+        "whyAccepted": "Prezi 的 AI 演示功能是具体产品功能，但搜索者多为找替代方案或教程，红海且被办公套件免费功能挤压。"
+      }
     },
     {
       "slug": "omp-harness-ai",
@@ -18325,7 +18680,12 @@
           "reason": "内容成本低，可先验证搜索意图真实性。",
           "uncertainty": "相关搜索词在Trends中为空，长尾词需实测。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "在搭 agent 流水线的开发者",
+        "entryAngle": "做一个轻量 agent harness 对比与本地跑分工具，支持接入多家模型，输出可复现的评测报告",
+        "whyAccepted": "harness 类工具是 agent 评测/编排的具体工程需求，不是概念词，但供给尚不明朗"
+      }
     },
     {
       "slug": "core-agent",
@@ -18592,7 +18952,12 @@
           "reason": "learn 意图占比约 40%，且现有讨论内容质量低",
           "uncertainty": "搜索量显示 0k/月，内容流量规模可能有限"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "自建 agent 应用的独立开发者",
+        "entryAngle": "选一个垂直场景（如客服工单自动分派）做开箱即用的 agent 运行时模板，含记忆、工具调用和可观测面板",
+        "whyAccepted": "泛但指向 agent 核心框架/运行时，需求真实且红海，需靠细分场景切入"
+      }
     },
     {
       "slug": "ai-watch-video",
@@ -18839,7 +19204,12 @@
           "reason": "seo 70，problem 意图占约35%，教程可低成本承接搜索并测试转化。",
           "uncertainty": "搜索量绝对值未知（Trends 仅相对热度），内容转化率需实测。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "学生、内容创作者、需要快速消化长视频的个人用户",
+        "entryAngle": "做浏览器插件：在 YouTube 页面侧边栏对当前视频提问并跳转到对应时间戳，先只做英文视频，用现成转录+LLM",
+        "whyAccepted": "有明确场景（让 AI 看视频并回答问题），需求真实但供给拥挤"
+      }
     },
     {
       "slug": "rewind-ai-alternatives",
@@ -19112,7 +19482,12 @@
           "reason": "搜索意图以找替代为主，内容可低成本获客并验证关键词",
           "uncertainty": "该词搜索量极低（0k/月），需扩展长尾词"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "知识工作者、重度电脑用户、隐私敏感的个人付费者",
+        "entryAngle": "做本地优先的屏幕记忆检索工具，主打离线存储加按应用/时间线回溯，先出 macOS 菜单栏版验证付费意愿",
+        "whyAccepted": "用户在主动找替代方案，说明现有供给有缺口，屏幕记忆与本地检索有明确场景"
+      }
     },
     {
       "slug": "abm-marketing-automation",
@@ -19347,7 +19722,12 @@
           "reason": "learn意图占50%，内容可低成本获取早期关注。",
           "uncertainty": "搜索量低可能导致内容流量有限。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "B2B 中小企业的市场负责人、独立增长顾问",
+        "entryAngle": "做垂直行业的 ABM 轻量工具，选一个细分赛道（如 SaaS 出海或工业品），用公开数据自动生成目标账户清单加个性化外联草稿",
+        "whyAccepted": "需求真实但红海，大厂占据主流，切口在细分行业或小团队轻量方案"
+      }
     },
     {
       "slug": "ai-image-assistant",
@@ -19605,7 +19985,12 @@
           "reason": "选型期意图占比高，内容成本低且可反哺产品获客",
           "uncertainty": "HN 相关帖仅 2-6 分，社区讨论热度偏低，内容分发需另找渠道"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "电商卖家、社交媒体运营、独立设计师",
+        "entryAngle": "做电商场景的图片助手，聚焦白底图、场景图、多平台尺寸一键适配，直接对接 Shopify 或闲鱼店铺",
+        "whyAccepted": "需求真实但极度红海，必须靠细分场景或体验差异化才有切口"
+      }
     },
     {
       "slug": "gemini-ocr",
@@ -19860,7 +20245,12 @@
           "reason": "compare 意图占 30%，现有 HN 评测未覆盖手写票据与多栏 PDF。",
           "uncertainty": "搜索热度为相对值，实际内容流量转化未知。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "需要批量文档/票据识别的个人开发者与中小企业",
+        "entryAngle": "做一个针对某类难识别文档（如手写票据、多栏 PDF、发票）的 OCR 管线，封装 Gemini 调用并输出结构化 JSON，按页收费",
+        "whyAccepted": "有人在找用 Gemini 做 OCR 的具体方案，场景明确但供给被大模型 API 直接承接，需靠细分文档类型差异化"
+      }
     },
     {
       "slug": "discovery-agent",
@@ -20116,7 +20506,12 @@
           "reason": "howto 意图占比约 45%，内容竞争小，可用教程低成本获客并验证场景选择。",
           "uncertainty": "Trends 相关查询为空，长尾词需从 HN 讨论和 GitHub 仓库描述中挖掘。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做销售线索、竞品调研、内容选题的小团队",
+        "entryAngle": "做一个可配置的 discovery agent 模板：输入一个领域关键词，自动爬取并去重输出带来源的候选清单（线索/竞品/选题），先做单一垂直场景",
+        "whyAccepted": "新兴能力名词，已有围绕 agent 做发现/调研的工程需求，但定义尚模糊，需绑定具体场景"
+      }
     },
     {
       "slug": "discovery-agents",
@@ -20374,7 +20769,12 @@
           "reason": "内容成本低，可先占搜索位并为脚手架导流",
           "uncertainty": "关键词竞争格局尚未验证"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "需要多源信息聚合的独立开发者与小团队",
+        "entryAngle": "做多 agent 发现编排的开源脚手架：定义 source、filter、dedupe、report 四段，附一个可跑 demo，靠托管版收费",
+        "whyAccepted": "与单数同义，复数搜索多指向多 agent 编排，需求真实但供给未饱和"
+      }
     },
     {
       "slug": "eu-ai-act",
@@ -20609,7 +21009,12 @@
           "reason": "learn和howto意图占比高，内容成本低。",
           "uncertainty": "竞争内容多，需差异化。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "面向欧盟用户的 SaaS 与 AI 应用开发者",
+        "entryAngle": "做一个 EU AI Act 自查工具：问卷式判定风险等级，自动生成合规清单与所需文档模板，按项目收费",
+        "whyAccepted": "合规需求刚性且明确，围绕条款解读、自查、文档生成已出现具体工程需求，小团队可切入工具层"
+      }
     },
     {
       "slug": "render-mcp",
@@ -20855,7 +21260,12 @@
           "reason": "内容成本低，可同时验证 howto 与 problem 两类意图占比",
           "uncertainty": "关键词搜索量近零，内容可能主要靠社区分发而非搜索"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "用 Claude/Cursor 搭 MCP 工具的独立开发者、AI 应用小团队",
+        "entryAngle": "做一个 MCP server 的本地调试与托管面板：一键起服务、可视化 tool 调用日志、错误回放，先支持 render 类工具链",
+        "whyAccepted": "MCP 生态里围绕渲染/部署的具体工程需求，已有接入和调试场景，供给未饱和"
+      }
     },
     {
       "slug": "data-quality-machine-learning",
@@ -21120,7 +21530,12 @@
           "reason": "howto 意图占 45%，HN 讨论热度低但持续，内容可低成本获客。",
           "uncertainty": "内容竞争度未知，需测试 SEO 排名速度。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做微调/垂直模型的小团队、数据标注外包商",
+        "entryAngle": "做面向小团队的训练数据体检工具：上传数据集自动出重复率、标签噪声、分布偏移报告，按次收费",
+        "whyAccepted": "训练数据质量是明确工程痛点，已有清洗、标注、评测等具体需求，小团队可切入细分"
+      }
     },
     {
       "slug": "ai-flow",
@@ -21380,7 +21795,12 @@
           "reason": "证据 2/3/4 显示该痛点被反复讨论，内容成本低且能反哺模板产品",
           "uncertainty": "话题偏情绪化，转化到付费的路径未验证"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做自动化的小团队、运营与内容创作者",
+        "entryAngle": "做面向内容团队的 AI 工作流模板市场+一键部署，先做 20 个可跑通的选题→脚本→配图流水线模板",
+        "whyAccepted": "AI 工作流编排需求真实但红海，需靠垂直场景或体验差异化"
+      }
     },
     {
       "slug": "ai-together",
@@ -21625,7 +22045,12 @@
           "reason": "learn/howto 意图占 75%，内容成本低，可验证需求并导流。",
           "uncertainty": "相关查询为空，需测试关键词实际搜索量。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "小团队创始人、社群运营、在线学习小组",
+        "entryAngle": "做「AI 圆桌」轻工具：多人各自提交观点，AI 汇总分歧点并生成共识草案，切会议纪要和社群讨论两个高频场景",
+        "whyAccepted": "泛化的协作式 AI 概念词，周围已出现多人共用会话的工程需求，但切口需自己定义"
+      }
     },
     {
       "slug": "fine-tune-ai",
@@ -21893,7 +22318,12 @@
           "reason": "howto意图占比最高，内容可低成本获取早期用户并测试关键词需求。",
           "uncertainty": "搜索量数据缺失，内容流量规模不确定。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "有私有数据想定制模型的中小团队与独立开发者",
+        "entryAngle": "做一个微调数据集质检+评测报告工具：上传 jsonl 自动查标签噪声、重复样本、类别失衡，输出可复现的 eval 对比表。",
+        "whyAccepted": "微调是具体工程需求，围绕数据准备、评测、托管已有真实付费场景，且不被单一巨头垄断。"
+      }
     },
     {
       "slug": "ai-search-engine-api",
@@ -22146,7 +22576,12 @@
           "reason": "需求真实但规模小，聚合与封装是明确切口，独立开发可在数周内验证",
           "uncertainty": "关键词搜索量极低，付费意愿需通过实际调用量验证；大厂搜索 API 可能降价挤压"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做 RAG、Agent 产品的独立开发者与小团队",
+        "entryAngle": "做一个多供应商搜索 API 的聚合网关：统一接口、自动 fallback、按查询缓存与成本对比面板，按调用量收费。",
+        "whyAccepted": "开发者明确在找可接入的搜索 API 做 RAG/Agent，供给分散且定价与质量差异大，存在选型与封装切口。"
+      }
     },
     {
       "slug": "ai-product-demo",
@@ -22398,7 +22833,12 @@
           "reason": "compare 意图占 30%，内容成本低且能验证搜索需求真实度",
           "uncertainty": "Trends 相关查询为空，长尾词需用实际搜索验证"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "SaaS 独立开发者与种子期创始人",
+        "entryAngle": "做面向 SaaS 落地页的演示生成器：输入产品 URL 自动抓取界面生成交互式 demo 片段，可嵌入官网，按站点订阅",
+        "whyAccepted": "与 ai demo video 同源需求，搜的人在找能快速产出产品演示的方案，场景和人群明确"
+      }
     },
     {
       "slug": "voice-agent-platform",
@@ -22667,7 +23107,12 @@
           "reason": "compare 意图占 30%，现有对比多为厂商自述，独立实测可低成本获取搭建者流量。",
           "uncertainty": "实测需真实通话成本，内容更新频率受平台版本影响。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做客服/外呼/预约的中小企业和独立开发者",
+        "entryAngle": "做一个语音 agent 的延迟与打断调试面板：接入 Vapi/Retell/ElevenLabs 任一 SDK，实时显示首字延迟、打断率、通话录音回放，按通话量收费",
+        "whyAccepted": "语音 agent 搭建需求真实，供给分散且工程细节（延迟、打断、电话接入、评测）尚未标准化，独立团队有切口"
+      }
     },
     {
       "slug": "chatgpt-crm",
@@ -22913,7 +23358,12 @@
           "reason": "内容成本低，可先验证搜索意图与转化",
           "uncertainty": "长尾词竞争度未知，需实测排名"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "销售团队负责人和独立销售顾问",
+        "entryAngle": "做一个对话式 CRM 前端：自然语言录入跟进记录、自动生成下一步动作和提醒，后端接 HubSpot/Pipedrive API，先做单人销售版",
+        "whyAccepted": "有人在找用对话方式操作 CRM 的具体方案，场景明确，现有 CRM 的 AI 层体验普遍粗糙"
+      }
     },
     {
       "slug": "bluebird-mcp",
@@ -23118,7 +23568,12 @@
           "reason": "learn/howto 意图占主导，内容成本低且可顺带验证真实搜索需求",
           "uncertainty": "搜索量过低，内容可能长期无流量"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "用 Claude/Cursor 接外部工具的独立开发者和 AI 工程师",
+        "entryAngle": "做 MCP 服务器的托管与调试平台：一键部署 Bluebird 类 MCP server，提供调用日志、鉴权管理和失败重试，按 server 数收费",
+        "whyAccepted": "MCP 生态里具体服务器的接入与调试需求已出现，属于新兴协议周边的工程需求"
+      }
     },
     {
       "slug": "peec-ai-alternatives",
@@ -23373,7 +23828,12 @@
           "reason": "alternative意图占比高，内容成本低，可快速测试需求并导流",
           "uncertainty": "竞争内容可能快速增加，需持续更新"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做 AI SEO / GEO 的营销团队与独立顾问",
+        "entryAngle": "做一个多引擎 AI 品牌提及监测器，输入品牌名自动跑 ChatGPT/Perplexity/Gemini 的推荐结果并出周报，先做免费单品牌版引流",
+        "whyAccepted": "用户在找 AI 品牌监测/可见性追踪的替代方案，说明品类需求已成型但供给未定，替代词本身就是切口信号"
+      }
     },
     {
       "slug": "ai-agent-manager",
@@ -23618,7 +24078,12 @@
           "reason": "howto/problem 意图占比高，内容成本低，可验证真实痛点。",
           "uncertainty": "内容竞争可能来自现有 AI 工具博客。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "用 Claude Code/Cursor 搭 agent 的独立开发者与小团队",
+        "entryAngle": "做一个 agent 运行看板：统一接入各家 agent SDK，记录每次调用的 token、耗时、失败原因，并提供人工审批卡点",
+        "whyAccepted": "能力名词已出现具体工程需求：多 agent 的编排、监控、权限与成本管理，供给尚未饱和"
+      }
     },
     {
       "slug": "ai-office-manager",
@@ -23853,7 +24318,12 @@
           "reason": "需求真实、热度上升 221%，但定义模糊需靠细分职能差异化；独立开发可行性高",
           "uncertainty": "搜索量标注为 0k/月，真实付费意愿未验证，可能只是概念热度"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "10 人以下小团队创始人、远程团队运营",
+        "entryAngle": "先只做一件事：自动读取邮件和日历，生成每日待办与催办清单，并一键发出跟进邮件，不做全能助手",
+        "whyAccepted": "场景真实但定义模糊，容易被泛化成通用助手，需要靠细分职能差异化"
+      }
     },
     {
       "slug": "claude-code-tokens-cost",
@@ -24128,7 +24598,12 @@
           "reason": "搜索意图以问题与操作为主，内容成本低且可为工具导流。",
           "uncertainty": "HN 讨论热度点数偏低，社区扩散速度不确定。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "自费或小团队报销的开发者、技术负责人",
+        "entryAngle": "做 Claude Code 用量与成本监控 CLI 加轻量面板：按项目统计 token、识别重复上下文浪费、给出压缩 prompt 与缓存命中建议",
+        "whyAccepted": "明确的成本痛点，围绕编码 agent 的用量统计、预算控制、缓存优化已出现真实工程需求"
+      }
     },
     {
       "slug": "claude-engineering",
@@ -24403,7 +24878,12 @@
           "reason": "howto 意图占比高，内容可低成本获客并验证需求。",
           "uncertainty": "搜索量数据缺失，内容竞争程度未知。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "独立开发者、小团队技术负责人",
+        "entryAngle": "做一个 Claude 代码库上下文打包 CLI：扫描 repo 生成结构化摘要与 CLAUDE.md 模板，按 token 预算裁剪，直接可跑",
+        "whyAccepted": "开发者在找用 Claude 做工程落地的具体方法（代码库理解、agent 编排、CI 集成），需求真实且供给零散"
+      }
     },
     {
       "slug": "ai-autonomy",
@@ -24656,7 +25136,12 @@
           "reason": "learn意图占比高，内容成本低且能验证搜索需求",
           "uncertainty": "概念偏泛，内容易同质化，需靠可运行示例区分"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做 agent 产品的独立开发者",
+        "entryAngle": "做一个 agent 自主执行的可观测层：记录每步决策、权限申请与回滚点，输出可读执行报告，先支持 2 个主流框架",
+        "whyAccepted": "概念偏泛但已出现具体工程需求（长任务 agent 的权限边界、中断恢复、审计日志），可落到工具层"
+      }
     },
     {
       "slug": "ai-reflection",
@@ -24904,7 +25389,12 @@
           "reason": "howto 意图占比高，内容供给少，SEO 机会（62）较好，成本低。",
           "uncertainty": "热度近期下降55.3%，需观察是否季节性回落。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "调 agent 效果的独立开发者",
+        "entryAngle": "做一个反思循环调试器：同一任务跑多轮 self-critique，对比每轮输出差异并标出哪次反思真正改进了结果",
+        "whyAccepted": "指 agent 自我反思/复盘循环，已有 prompt 与评测层面的具体调试需求，但词义仍偏模糊"
+      }
     },
     {
       "slug": "ai-web-crawler",
@@ -25185,7 +25675,12 @@
           "reason": "problem意图占比高且HN讨论热度大，内容成本低可先验证搜索需求。",
           "uncertainty": "搜索量基数小，内容流量规模有限。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做竞品监控、线索采集的小团队与个人开发者",
+        "entryAngle": "做按站点模板一键生成爬虫的托管服务，内置常见电商/招聘站模板，按抓取条数计费。",
+        "whyAccepted": "需求真实但通用爬虫红海，切口在反爬适配与结构化抽取的体验差异。"
+      }
     },
     {
       "slug": "ai-image-editor-prompt-free",
@@ -25457,7 +25952,12 @@
           "reason": "工具端供给密集，模型厂商下沉会压缩通用提示词库空间",
           "uncertainty": "模型厂商产品路线不透明"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "个人创作者、社媒运营",
+        "entryAngle": "做按场景（电商白底图、证件照、头像）分类的提示词库加一键套用的小工具，免费引流、高级模板订阅。",
+        "whyAccepted": "免费 AI 修图提示词需求真实，但巨头免费功能已覆盖大半，需靠细分场景差异化。"
+      }
     },
     {
       "slug": "ai-image-story-generator",
@@ -25711,7 +26211,12 @@
           "reason": "搜索意图以学习和解决问题为主，内容成本低、可验证需求。",
           "uncertainty": "SEO 见效周期不确定，需配合产品落地页转化。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "家长、儿童内容创作者、社媒博主",
+        "entryAngle": "做输入一句话生成 6 页绘本并导出 PDF/视频的工具，主打儿童睡前故事，按本付费。",
+        "whyAccepted": "图文故事生成有明确人群（家长、自媒体），供给分散且质量参差，体验差异化空间大。"
+      }
     },
     {
       "slug": "ai-phone-call-free",
@@ -25962,7 +26467,12 @@
           "reason": "howto 意图占比最高，竞品内容薄弱",
           "uncertainty": "工具迭代快，内容需月度更新"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "个人用户、小商家（预约提醒、客服）",
+        "entryAngle": "做面向小商家的 AI 接听电话 SaaS，按分钟计费，先做美甲/餐饮预约提醒这一垂直场景。",
+        "whyAccepted": "免费 AI 打电话需求真实，但语音基础设施成本高、巨头在推，切口在垂直场景。"
+      }
     },
     {
       "slug": "calling-ai-free",
@@ -26220,7 +26730,12 @@
           "reason": "头部词搜索量低、长尾分散，内容成本低且能与 demo 互相导流",
           "uncertainty": "热度为 30 天脉冲，可能快速回落"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "个人用户、想试水语音 AI 的小团队",
+        "entryAngle": "做浏览器内一键拨打 AI 的 demo 工具，免费额度引流，后端卖可嵌入的语音 agent SDK。",
+        "whyAccepted": "与 ai phone call free 同源，用户明确在找免费拨打 AI 的方案，需求真实但成本结构受限。"
+      }
     },
     {
       "slug": "ai-table-generator",
@@ -26471,7 +26986,12 @@
           "reason": "howto 与 problem 意图合计约80%，内容成本低且能验证需求真伪",
           "uncertainty": "竞品可能已占部分长尾词，需先查排名再定选题"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "需要批量整理数据的运营、分析师、学生个人用户",
+        "entryAngle": "做一个「粘贴任意文档→自动识别字段并输出可编辑表格+CSV」的单页工具，先只吃财报和论文两类格式，免费导出带水印、付费去水印",
+        "whyAccepted": "需求真实：从文本/文档生成结构化表格，红海但细分场景（财报、论文、简历）仍有体验差异空间"
+      }
     },
     {
       "slug": "ai-native-email-client",
@@ -26730,7 +27250,12 @@
           "reason": "compare 意图占比高、自托管资料稀缺，内容成本低可先验证需求",
           "uncertainty": "该词搜索量极低（0k/月），内容流量可能有限"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "重度邮件处理的独立开发者、销售与自由职业者",
+        "entryAngle": "不做通用客户端，做 Gmail 侧边插件：自动把长邮件线程压缩成待办+草稿回复，聚焦「收件箱清零」单一场景，按人月收费",
+        "whyAccepted": "需求真实但邮箱客户端是红海且被巨头免费功能承接，需靠细分场景差异化"
+      }
     },
     {
       "slug": "ai-reddit-search",
@@ -26984,7 +27509,12 @@
           "reason": "替代与 howto 意图合计约七成，竞争内容少",
           "uncertainty": "搜索量绝对值未知，仅相对热度"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "独立开发者、跨境电商选品、内容营销个人",
+        "entryAngle": "做一个 Reddit 语义搜索+痛点聚类工具，输入品类词自动抓取相关 subreddit 帖子，输出高频抱怨和未被满足需求清单，按周订阅收费",
+        "whyAccepted": "有人明确想用 AI 检索 Reddit 内容做选品、舆情、用户调研，需求真实且现有工具体验粗糙"
+      }
     },
     {
       "slug": "best-ai-for-finding-jobs",
@@ -27236,7 +27766,12 @@
           "reason": "compare 意图占比最高且长尾词未被占满，内容成本低、可反哺产品获客",
           "uncertainty": "横评类内容竞争可能来自大站，需靠垂直岗位视角差异化"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "主动求职的白领、转行者、应届生",
+        "entryAngle": "做垂直岗位的 AI 求职助手：抓取目标公司招聘页+内推渠道，自动匹配简历并生成定制化申请材料，按求职周期一次性收费",
+        "whyAccepted": "求职者明确在找能直接帮自己找工作的 AI 工具，付费方是个人用户，场景清晰"
+      }
     },
     {
       "slug": "best-ai-job-search-tools",
@@ -27502,7 +28037,12 @@
           "reason": "editorNote指出供给未饱和，GitHub开源项目薄弱，存在产品化窗口。",
           "uncertainty": "用户是否愿意为聚合推荐付费尚不明确；需快速验证付费意愿。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "求职者、职业转型人群、猎头助理",
+        "entryAngle": "做 AI 求职工具聚合+实测对比站，按岗位类型给出工具组合推荐，靠联盟佣金和付费深度测评变现",
+        "whyAccepted": "与上一条同赛道但更偏工具评测型需求，说明用户在主动比较和采购，供给尚未饱和"
+      }
     },
     {
       "slug": "ai-chat-together",
@@ -27766,7 +28306,12 @@
           "reason": "内容成本低，可承接搜索意图并导流至MVP。",
           "uncertainty": "搜索量绝对值低（0k/月），内容流量天花板有限。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "远程小团队、在线教育辅导、朋友共同决策场景",
+        "entryAngle": "做面向小团队的共享 AI 会话空间：一个会话多人同时提问、分支讨论、结论沉淀成文档，先切产品评审和旅行规划两个场景",
+        "whyAccepted": "多人/多模型一起聊的协作场景有真实需求，但表述模糊、红海明显，需要靠细分场景差异化"
+      }
     },
     {
       "slug": "ag-ui-copilotkit",
@@ -27999,7 +28544,12 @@
           "reason": "seo 机会 62、feasibility 82，内容成本低且可直接为后续工具导流",
           "uncertainty": "关键词月搜索量显示为 0k，长尾词实际检索量可能极低"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做 Agent 前端界面的独立开发者与小团队",
+        "entryAngle": "做一个 AG-UI 协议兼容性测试与事件流可视化工具，输入任意 Agent 后端即可回放渲染事件、定位协议不匹配。",
+        "whyAccepted": "AG-UI 协议 + CopilotKit 是新兴 Agent 前端接入层，文档与示例稀缺，调试和脚手架需求明确。"
+      }
     },
     {
       "slug": "api-deepseek",
@@ -28255,7 +28805,12 @@
           "reason": "Trends 相关搜索为空、长尾内容稀缺，SEO 机会 55，内容成本低可先于产品验证需求。",
           "uncertainty": "Google Trends 仅给相对热度，无法确认绝对搜索量（证据 1 显示 0k/月，需谨慎解读）。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做 AI 应用的独立开发者与小团队",
+        "entryAngle": "做一个 DeepSeek API 兼容网关：一行改 base_url 即可切换，内置多 key 轮询、用量统计和失败重试，按调用量收月费",
+        "whyAccepted": "开发者在找 DeepSeek API 的接入、计费、代理与兼容层方案，工程需求真实但供给已较拥挤"
+      }
     },
     {
       "slug": "ai-demo-video",
@@ -28511,7 +29066,12 @@
           "reason": "SEO 机会中等（58），内容成本低",
           "uncertainty": "热度可能受单次造假新闻驱动，需观察 30 天留存"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "独立开发者、早期创业者和产品市场一人团队",
+        "entryAngle": "做「录屏转产品演示」工具：上传屏幕录制，自动加缩放高亮、字幕和背景音乐，导出 30 秒竖版短视频，免费 3 条后订阅",
+        "whyAccepted": "创始人和独立开发者需要给产品做演示视频，需求明确且现有工具偏重偏贵，细分切口清晰"
+      }
     },
     {
       "slug": "table-maker-ai",
@@ -28752,7 +29312,12 @@
           "reason": "howto意图占比高，内容成本低，可测试搜索流量并收集用户反馈。",
           "uncertainty": "关键词竞争度未知，需观察排名效果。"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做报表、课程表、对比表的个人用户与小团队",
+        "entryAngle": "做「一句话描述→生成可分享的对比表/排期表」工具，主打模板化输出（竞品对比、项目排期、价格表），靠模板库和分享链接做差异化",
+        "whyAccepted": "与 ai table generator 同需求，用户明确在找工具做表格，红海但场景清晰"
+      }
     },
     {
       "slug": "ai-visibility-tools-free",
@@ -29016,7 +29581,12 @@
           "reason": "搜索意图以 howto 为主，内容可低成本获取长尾流量并导流检测页",
           "uncertainty": "该词搜索量极低（证据 1 显示 0k/月），需依赖长尾词而非主词"
         }
-      ]
+      ],
+      "editorNote": {
+        "audience": "做内容站和 SaaS 的独立开发者、小团队增长负责人",
+        "entryAngle": "做一个免费检测页：输入域名，抓取 ChatGPT/Perplexity 回答里是否提及该品牌，输出缺失关键词清单并给出可复制的改写文案，用邮箱换报告做获客",
+        "whyAccepted": "GEO/AI 搜索可见性是真需求，免费工具查询说明有人在找低成本方案，供给尚未饱和"
+      }
     }
   ],
   "policy": {

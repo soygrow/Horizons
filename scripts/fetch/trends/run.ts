@@ -378,6 +378,7 @@ async function main(): Promise<void> {
           normalizedName: enrich.normalizedName,
           why: enrich.why,
           intentSummary: enrich.intentSummary,
+          editorNote: enrich.editorNote,
           sources,
           evidence: enrich.evidence,
           intents: enrich.intents,

@@ -462,8 +462,23 @@ export type TrendIntentKey =
 
 export interface TrendIntent {
   intent: TrendIntentKey;
-  share?: number; // 意图占比 %（相关搜索词聚类）
+  /** @deprecated Google Trends 不提供意图份额，该值由模型估算，页面不再展示 */
+  share?: number;
+  /** 这类意图下人们实际会敲的搜索词 */
   queries: string[];
+}
+
+/**
+ * 准入判定留下的结论，直接对应采集原则：
+ * 读者是准备动手的创业者，所以每个上榜词都要能回答「谁付钱、从哪下手」。
+ */
+export interface TrendEditorNote {
+  /** 谁在为这个问题付钱 */
+  audience: string;
+  /** 明天就能动手的切入口 */
+  entryAngle: string;
+  /** 收录理由：为什么这个词值得进榜 */
+  whyAccepted: string;
 }
 
 /** 机会方向 */
@@ -531,6 +546,8 @@ export interface AITrend {
   oppParts: OpportunityScoreParts;
   sources: TrendSourceRef[]; // 趋势数据源（Explore / Trending now …）
   evidence: TrendEvidence[]; // 事件与原因
+  /** 准入判定留下的结论：谁付钱、从哪下手、为什么收这个词 */
+  editorNote?: TrendEditorNote;
   intents: TrendIntent[]; // 搜索意图
   relatedQueries?: string[]; // 相关查询
   competitors?: string[]; // 现有产品 / 竞品
