@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "data": "tsx --tsconfig ../web/tsconfig.json ../../scripts/build/artifacts.ts",
+    "data": "node ../../scripts/build/web-data.mjs && tsx --tsconfig ../web/tsconfig.json ../../scripts/build/artifacts.ts",
     "deploy": "pnpm data && astro build && wrangler deploy"
   },
   "dependencies": {

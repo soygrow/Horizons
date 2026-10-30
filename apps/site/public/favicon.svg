@@ -1,31 +1,53 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Horizons">
   <title>Horizons</title>
   <defs>
-    <linearGradient id="fv-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#1479F7" />
-      <stop offset="0.52" stop-color="#3A45F6" />
-      <stop offset="1" stop-color="#5B1EF3" />
+    <!-- 与 brand/logo-mark.svg 完全一致的配色：穹顶 / 暖光 / 地平线 / 星芒 -->
+    <linearGradient id="hz-dome" x1="66" y1="100" x2="272" y2="10" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A79F6" />
+      <stop offset="0.36" stop-color="#2E6BF4" />
+      <stop offset="0.7" stop-color="#6B3FF4" />
+      <stop offset="1" stop-color="#7C3AED" />
     </linearGradient>
-    <mask id="fv-gap" maskUnits="userSpaceOnUse" x="0" y="0" width="320" height="140">
+    <radialGradient id="hz-glow" cx="262" cy="90" r="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFC069" stop-opacity="0.95" />
+      <stop offset="0.42" stop-color="#FEB55D" stop-opacity="0.55" />
+      <stop offset="1" stop-color="#FFA94D" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="hz-horizon" x1="8" y1="118" x2="310" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A6EF8" />
+      <stop offset="0.42" stop-color="#2C67F3" />
+      <stop offset="0.76" stop-color="#5B3CF3" />
+      <stop offset="1" stop-color="#6D33F2" />
+    </linearGradient>
+    <linearGradient id="hz-star" x1="247" y1="54" x2="290" y2="14" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6D33F2" />
+      <stop offset="0.55" stop-color="#1E63F5" />
+      <stop offset="1" stop-color="#0A79F6" />
+    </linearGradient>
+    <mask id="hz-gap" maskUnits="userSpaceOnUse" x="0" y="0" width="320" height="140">
       <rect width="320" height="140" fill="#fff" />
       <path d="M266 8 Q272.6 30.4 295 36 Q272.6 41.6 266 64 Q259.4 41.6 237 36 Q259.4 30.4 266 8 Z" fill="#000" />
     </mask>
   </defs>
 
-  <rect width="64" height="64" rx="14" fill="url(#fv-bg)" />
+  <!-- 白底圆角与网页导航同底色；内容为同一张彩色 mark，等比放大 -->
+  <rect width="64" height="64" rx="14" fill="#ffffff" />
 
-  <!-- 与 brand/logo-mark.svg 完全同源同比例，等比放大到 94% 宽以避免小尺寸糊成一团 -->
-  <g transform="translate(1.2 18.1) scale(0.194)">
-    <g mask="url(#fv-gap)">
+  <g transform="translate(3.28 19.04) scale(0.18123)">
+    <g mask="url(#hz-gap)">
       <path
         d="M77 94 L77 48 C77 25 112 10 158 10 C204 10 244 20 254 46 C261 63 265 80 266 94 C216 75 126 75 77 94 Z"
-        fill="#ffffff"
+        fill="url(#hz-dome)"
+      />
+      <path
+        d="M77 94 L77 48 C77 25 112 10 158 10 C204 10 244 20 254 46 C261 63 265 80 266 94 C216 75 126 75 77 94 Z"
+        fill="url(#hz-glow)"
       />
     </g>
-    <path d="M4 135 C74 68 234 68 313 131 C214 93 64 100 4 135 Z" fill="#ffffff" />
+    <path d="M4 135 C74 68 234 68 313 131 C214 93 64 100 4 135 Z" fill="url(#hz-horizon)" />
     <path
       d="M266 13 Q270.9 31.1 289 36 Q270.9 40.9 266 59 Q261.1 40.9 243 36 Q261.1 31.1 266 13 Z"
-      fill="#ffffff"
+      fill="url(#hz-star)"
     />
   </g>
 </svg>
