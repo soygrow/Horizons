@@ -190,6 +190,68 @@ function dedupeSubsets(list: TrendCandidate[], preferKeys: Set<string>): TrendCa
   return kept.map((k) => k.item);
 }
 
+/** 组成「需求」的实词之外的填充词：ai、best、tool、generator 这类单看不能定位需求 */
+const GENERIC_TOKENS = new Set([
+  "the", "and", "for", "with", "to", "in", "of", "a", "an", "how", "what", "is", "my", "your", "on", "at",
+  "ai", "best", "free", "top", "new", "app", "apps", "tool", "tools", "platform", "platforms", "software",
+  "online", "service", "services", "generator", "generators", "builder", "builders", "maker", "makers",
+  "website", "websites", "system", "systems", "solution", "solutions", "assistant", "assistants", "vs",
+]);
+
+/** 去掉复数后缀，"claude skills" 与 "claude skill" 才是同一个族 */
+function stem(token: string): string {
+  return token.length > 3 && token.endsWith("s") && !token.endsWith("ss") ? token.slice(0, -1) : token;
+}
+
+function coreTokens(keyword: string): Set<string> {
+  const parts = keyword
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t.length > 1 && !GENERIC_TOKENS.has(t))
+    .map(stem);
+  return new Set(parts);
+}
+
+/** 只改说法、不改需求的修饰词：claude skills install 与 claude skills 是同一件事 */
+const VARIANT_TOKENS = new Set([
+  "install", "installing", "marketplace", "example", "examples", "directory", "awesome",
+  "github", "gitlab", "download", "list", "guide", "tutorial", "tutorials", "tips",
+  "template", "templates", "usage", "docs", "documentation",
+]);
+
+/**
+ * 只合并「说法不同的同一需求」，不合并「同一主题下的不同工程需求」。
+ *
+ * related queries 会给出 claude skills / install / marketplace / example / directory 一串，
+ * 这些是同一件事的不同说法，全收进来就是刷屏。但 claude code hooks / permissions /
+ * subagents 是三个不同的技术需求，硬按主题砍成 3 个，反而扔掉榜上最值钱的部分。
+ * 判断方法：短的实词集合被长的完全包含，且多出来的只是变体词，才算重复。
+ */
+function dedupeVariants(list: TrendCandidate[], preferKeys: Set<string>): TrendCandidate[] {
+  const ordered = [...list].sort(
+    (a, b) =>
+      Number(preferKeys.has(b.normalizedKey)) - Number(preferKeys.has(a.normalizedKey)) ||
+      b.weight - a.weight,
+  );
+  const kept: Array<{ core: Set<string>; keyword: string }> = [];
+  const out: TrendCandidate[] = [];
+  for (const c of ordered) {
+    const core = coreTokens(c.keyword);
+    const dup =
+      core.size > 0 &&
+      kept.some(({ core: other }) => {
+        if (other.size === 0) return false;
+        const [small, big] = core.size <= other.size ? [core, other] : [other, core];
+        if (![...small].every((t) => big.has(t))) return false;
+        return [...big].filter((t) => !small.has(t)).every((t) => VARIANT_TOKENS.has(t));
+      });
+    if (dup) continue;
+    kept.push({ core, keyword: c.keyword });
+    out.push(c);
+  }
+  return out;
+}
+
 function mergeSources(existing: AITrend | undefined, next: TrendSourceRef[]): TrendSourceRef[] {
   const out: TrendSourceRef[] = [];
   const seen = new Set<string>();
@@ -246,10 +308,9 @@ async function main(): Promise<void> {
   if (args.withPh) discovered.push(...(await discoverFromProductHunt()));
 
   const existingIndex = indexByKey(dataset.keywords);
-  const filtered = dedupeSubsets(
-    dedupeNearDuplicates(dedupeCandidates(discovered)),
-    new Set(existingIndex.keys()),
-  ).filter((c) => {
+  const existingKeys = new Set(existingIndex.keys());
+  const deduped = dedupeSubsets(dedupeNearDuplicates(dedupeCandidates(discovered)), existingKeys);
+  const filtered = dedupeVariants(deduped, existingKeys).filter((c) => {
     // 已在库的词继续维护，不再重复做准入判定
     if (existingIndex.has(c.normalizedKey)) return true;
     // 工具库 / 种子 / PH 本身已限定 AI 范围，只做可用性校验；
@@ -575,9 +636,17 @@ async function main(): Promise<void> {
         );
         await sleep(wait);
       } else {
-        failed += chunk.length;
+        const msg = msgOf(e);
         note(false);
-        console.warn(`批量请求失败（${chunk.length} 词）：${msgOf(e)}`);
+        // 网络抖动（代理瞬断、TLS 被切断）不是这些词本身的问题，
+        // 整批算失败等于白跑一轮：上一轮 260 个词就是这么丢的
+        if (/socket|network|ECONNRESET|ETIMEDOUT|ENOTFOUND|fetch failed|aborted|TLS/i.test(msg)) {
+          console.warn(`[trends] 批量网络抖动（${chunk.length} 词回队列）：${msg.slice(0, 70)}`);
+          for (const item of chunk) requeueOrDrop(item);
+        } else {
+          failed += chunk.length;
+          console.warn(`批量请求失败（${chunk.length} 词）：${msg}`);
+        }
         await sleep(randomDelay());
       }
     }
