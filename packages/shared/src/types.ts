@@ -545,6 +545,43 @@ export interface TrendDataset {
   mode: "seed" | "live";
   region: string;
   keywords: AITrend[];
+  /** 榜单准入原则：决定什么样的趋势值得进榜，随市场审计演进 */
+  policy?: EntryPolicy;
+}
+
+/**
+ * 单个候选词的准入判定。
+ * 只回答一个问题：一个独立开发者看到这个词，明天有没有能开工的事。
+ */
+export interface ValueVerdict {
+  verdict: "accept" | "reject";
+  /** 创业切口强度 0-100：需求确定性 × 可承接性 × 供给稀缺度 */
+  score: number;
+  /** 判定依据，一句话 */
+  reason: string;
+  /** 谁在为这个问题付费 */
+  audience: string;
+  /** 可落地的切入口；reject 时为空 */
+  ideaAngle: string;
+  /** 判定时间，用于缓存过期 */
+  at: string;
+}
+
+/**
+ * 准入原则。原则本身是会变的——每次审计都会根据
+ * 「最近被拒的词」和「市场反馈」重写条目，version 递增。
+ */
+export interface EntryPolicy {
+  version: number;
+  updatedAt: string;
+  /** 收：一条趋势要能回答「创业者明天能拿它做什么」 */
+  accept: string[];
+  /** 拒：没有切入点的典型信号 */
+  reject: string[];
+  /** 最近一次修订依据，解释原则为什么变 */
+  notes: string[];
+  /** 已判定过的词，避免重复花钱；键为归一化关键词 */
+  verdicts?: Record<string, ValueVerdict>;
 }
 
 /** 登录会话中的用户信息（前后端共享） */

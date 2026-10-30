@@ -1,0 +1,71 @@
+name: Deploy Site
+
+# push 到 main 后，在 GitHub 的机器上构建并直接部署到 Cloudflare，
+# 不再经过本地网络上传（本地到 Cloudflare 边缘不稳定，上传慢且容易中断）。
+#
+# 需要的仓库 Secrets：
+#   CLOUDFLARE_API_TOKEN   （权限见 docs/11-部署手册.md）
+#   CLOUDFLARE_ACCOUNT_ID
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/**"
+      - "apps/site/**"
+      - "packages/shared/**"
+      - "scripts/build/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/deploy-site.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-site
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 生成榜单产物 content/dist
+        run: pnpm --filter @horizons/site run data
+
+      - name: 构建 Astro 静态站
+        run: pnpm --filter @horizons/site run build
+
+      - name: 部署到 Cloudflare（horizons-site）
+        run: pnpm --filter @horizons/site exec wrangler deploy
+
+      # 部署已经成功，验收只用于暴露问题：失败不阻塞流水线，
+      # 避免网络抖动把一次成功发布标成失败。
+      - name: 线上验收（非阻塞）
+        continue-on-error: true
+        run: |
+          fail=0
+          for path in / /tools /github /trends; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' \
+              --max-time 10 --retry 2 --retry-delay 2 --retry-all-errors \
+              "https://horizons.tools$path" || true)
+            echo "$path → ${code:-000}"
+            [ "${code:-000}" = "200" ] || fail=1
+          done
+          exit "$fail"

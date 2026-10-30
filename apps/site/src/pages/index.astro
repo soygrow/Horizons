@@ -27,9 +27,8 @@ const boards = [
     label: "AI 工具榜",
     href: "/tools",
     count: stats.tools,
-    unit: "个工具",
+    unit: "个 AI 工具",
     updated: toolsUpdatedAt,
-    accent: "text-primary",
   },
   {
     label: "GitHub 榜",
@@ -37,7 +36,6 @@ const boards = [
     count: stats.repos,
     unit: "个开源项目",
     updated: githubUpdatedAt,
-    accent: "text-ocean",
   },
   {
     label: "AI 趋势词榜",
@@ -45,7 +43,6 @@ const boards = [
     count: stats.trends,
     unit: "个趋势词",
     updated: trendsUpdatedAt,
-    accent: "text-accent",
   },
 ];
 
@@ -63,8 +60,30 @@ const description =
   <!-- Hero：地平线 -->
   <section class="relative overflow-hidden border-b border-border/60">
     <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(65%_55%_at_50%_0%,rgba(8,102,250,0.14),transparent)]"
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(72%_62%_at_50%_-6%,rgba(8,102,250,0.12),transparent)]"
     >
+    </div>
+    <!-- 装饰：极淡网格（向四周淡出，给大字留出呼吸感） -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0"
+      style="background-image: linear-gradient(to right, rgba(12,31,80,0.055) 1px, transparent 1px), linear-gradient(to bottom, rgba(12,31,80,0.055) 1px, transparent 1px); background-size: 76px 76px; mask-image: radial-gradient(56% 52% at 50% 34%, black, transparent 76%); -webkit-mask-image: radial-gradient(56% 52% at 50% 34%, black, transparent 76%);"
+    >
+    </div>
+    <!-- 装饰：同心圆，圆心落在标题上方，营造「地平线」纵深 -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute left-1/2 top-[-15rem] -translate-x-1/2 sm:top-[-19rem]"
+    >
+      <div class="aspect-square w-[62rem] rounded-full border border-primary/[0.05]"></div>
+      <div
+        class="absolute inset-0 m-auto aspect-square w-[42rem] rounded-full border border-primary/[0.055]"
+      >
+      </div>
+      <div
+        class="absolute inset-0 m-auto aspect-square w-[26rem] rounded-full border border-primary/[0.06]"
+      >
+      </div>
     </div>
     <!-- 地平线：底部光带 + 品牌渐变亮线（与 logo 穹顶同色） -->
     <div
@@ -78,10 +97,12 @@ const description =
     </div>
 
     <div
-      class="relative mx-auto flex min-h-[calc(100svh-4rem)] max-w-6xl flex-col justify-center px-4 pb-10 pt-8 text-center sm:px-6"
+      class="relative mx-auto flex min-h-[calc(100svh-4rem)] max-w-6xl flex-col justify-center px-4 pb-12 pt-10 text-center sm:px-6"
     >
-      <h1 class="mx-auto max-w-3xl text-3xl font-bold leading-tight tracking-tight text-ink sm:text-[2.75rem]">
-        越过地平线，<br class="hidden sm:block" />
+      <h1
+        class="mx-auto max-w-4xl text-[1.75rem] font-bold leading-[1.2] tracking-tight text-ink sm:text-[3.25rem] sm:leading-[1.18]"
+      >
+        越过地平线，<br />
         <span
           class="bg-clip-text text-transparent"
           style="background-image: linear-gradient(100deg, #0866fa 0%, #5b3cf3 55%, #703ff4 100%);"
@@ -89,11 +110,13 @@ const description =
         >
       </h1>
 
-      <p class="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-ink-secondary sm:text-base">
+      <p
+        class="mx-auto mt-7 max-w-2xl text-sm leading-[1.8] text-ink-secondary sm:mt-8 sm:text-[17px]"
+      >
         地平线之外，藏着还没被抢走的机会。Horizons 把正在升温的 AI 工具、开源项目与趋势词整理成可追溯的榜单——先看见，再落地。
       </p>
 
-      <div class="mt-6 flex justify-center">
+      <div class="mt-8 flex justify-center sm:mt-10">
         <SearchInput
           size="lg"
           value=""
@@ -103,7 +126,7 @@ const description =
 
       <!-- 从看见到落地 -->
       <ol
-        class="mx-auto mt-5 flex max-w-2xl flex-col items-stretch gap-2 text-xs sm:flex-row sm:items-center sm:justify-center sm:gap-1.5"
+        class="mx-auto mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[10px] text-ink-muted sm:mt-9 sm:gap-x-7 sm:text-xs"
       >
         {
           [
@@ -112,41 +135,36 @@ const description =
             ["03", "按方向落地执行"],
           ].map(([no, text], i) => (
             <>
-              <li class="flex items-center justify-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-ink-secondary">
-                <span class="font-mono text-[10px] text-ink-muted">{no}</span>
+              <li class="flex items-center gap-1.5">
+                <span class="font-mono text-[9px] text-ink-muted/70 sm:text-[10px]">{no}</span>
                 {text}
               </li>
-              {i < 2 && <span class="hidden text-ink-muted sm:block">→</span>}
+              {i < 2 && (
+                <li aria-hidden="true" class="hidden text-ink-muted/40 sm:block">
+                  →
+                </li>
+              )}
             </>
           ))
         }
       </ol>
 
       <!-- 三张榜单的实时规模（榜单数据变化 → 这里同步变化） -->
-      <div class="mx-auto mt-6 grid max-w-3xl grid-cols-3 gap-2 sm:gap-3">
+      <div class="mx-auto mt-10 flex items-start justify-center divide-x divide-border sm:mt-12">
         {
           boards.map((b) => (
             <a
               href={b.href}
-              class="group rounded-xl border border-border bg-surface px-2.5 py-2 text-left transition hover:border-primary/40 hover:bg-surface-2 sm:rounded-2xl sm:px-4 sm:py-3"
+              aria-label={`${b.label}：${b.count} ${b.unit}`}
+              class="group px-5 text-center sm:px-11"
             >
-              <div class="flex items-center justify-between gap-1">
-                <span class="truncate text-[10px] text-ink-secondary sm:text-xs">{b.label}</span>
-                <span
-                  class:list={["hidden text-[11px] tabular-nums sm:inline", b.accent]}
-                >
-                  {formatDateShort(b.updated)}
-                </span>
+              <div class="text-[1.75rem] font-bold leading-none tracking-tight text-ink tabular-nums transition duration-200 group-hover:text-primary sm:text-[2.25rem]">
+                {b.count}
               </div>
-              <div class="mt-1 sm:flex sm:items-baseline sm:gap-1">
-                <span class="block text-lg font-bold leading-tight text-ink tabular-nums sm:text-2xl"
-                  >{b.count}</span
-                >
-                <span class="block whitespace-nowrap text-[10px] leading-tight text-ink-muted sm:text-xs"
-                  >{b.unit}</span
-                >
+              <div class="mt-2 whitespace-nowrap text-[11px] text-ink-secondary sm:mt-2.5 sm:text-xs">
+                {b.unit}
               </div>
-              <div class:list={["mt-1 text-[10px] tabular-nums sm:hidden", b.accent]}>
+              <div class="mt-1 text-[10px] tabular-nums text-ink-muted/80 sm:text-[11px]">
                 {formatDateShort(b.updated)}
               </div>
             </a>

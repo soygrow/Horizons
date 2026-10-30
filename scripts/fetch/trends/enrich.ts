@@ -50,6 +50,9 @@ const SYSTEM = `你是 AI 趋势榜单的资深分析师，服务对象是想找
 - normalizedName: 标准名称（模型/产品/能力的正式写法，可含英文）
 - category: 从 ${CATEGORIES.join(" / ")} 中选一个；不是 AI 相关就选 broadtech
 - why: 60 字内中文，一句话说明「为什么升温」，必须引用给定数据（增长率、峰值倍数、证据标题），不要空话
+- 若给定 editorNote：whoPays 是真正付钱的人，entryAngle 是能开工的切入口。
+  此时 why 必须同时回答「谁在为什么问题付费」，opportunities 的第一条必须落在 entryAngle 上；
+  禁止写成「值得关注」「前景广阔」这类套话，读者是准备动手的创业者。
 - intentSummary: 40 字内中文，说明搜索者到底想要什么
 - evidence: 1-3 条，每条 {claim, claimType, date?, detail?, sourceIndexes}；
   claimType 只能是 ${CLAIMS.join(" / ")}：有来源直接支持用 fact，由数据推断用 inference，猜测用 hypothesis；
@@ -105,6 +108,8 @@ export async function enrichKeyword(params: {
   relatedQueries: string[];
   evidence: KeywordEvidence;
   sources: TrendSourceRef[];
+  /** 准入判定结果：谁付钱 + 可落地的切入口，文案必须与之对齐 */
+  editor?: { audience: string; ideaAngle: string; reason: string };
 }): Promise<Enrichment> {
   const { keyword, series, evidence, sources } = params;
   const m = seriesMetrics(series);
@@ -133,6 +138,13 @@ export async function enrichKeyword(params: {
     })),
     hnHits: evidence.hn.map((h) => ({ title: h.title, url: h.url, detail: h.detail ?? "" })),
     repoHits: evidence.repos.map((r) => ({ title: r.title, url: r.url, detail: r.detail ?? "" })),
+    editorNote: params.editor
+      ? {
+          whoPays: params.editor.audience,
+          entryAngle: params.editor.ideaAngle,
+          whyAccepted: params.editor.reason,
+        }
+      : null,
   };
 
   const raw = await chatJSON<RawEnrichment>(SYSTEM, JSON.stringify(payload), 4000);

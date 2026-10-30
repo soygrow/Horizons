@@ -14,6 +14,7 @@ export function loadDataset(): TrendDataset {
       mode: raw.mode ?? "live",
       region: raw.region ?? "US",
       keywords: Array.isArray(raw.keywords) ? raw.keywords : [],
+      ...(raw.policy ? { policy: raw.policy } : {}),
     };
   } catch {
     return { updatedAt: new Date().toISOString(), mode: "live", region: "US", keywords: [] };

@@ -1,5 +1,5 @@
 import "../config"; // 副作用导入：加载 .env.local
-import type { AITrend, TrendSeries, TrendSourceRef } from "@horizons/shared";
+import type { AITrend, TrendSeries, TrendSourceRef, ValueVerdict } from "@horizons/shared";
 import { hasLLM } from "../sources/llm";
 import { RateLimitError, sleep } from "./http";
 import {
@@ -16,9 +16,19 @@ import {
   discoverFromTrendingRss,
   isUsableKeyword,
   matchKeyword,
+  normalizeKey,
   type TrendCandidate,
 } from "./discovery";
 import { computeTrendParts, deriveConfidence, deriveStatus, rescore } from "./score";
+import {
+  auditDue,
+  auditPolicy,
+  cachedVerdict,
+  ensurePolicy,
+  judgeKeywords,
+  pruneVerdicts,
+  shouldAccept,
+} from "./policy";
 import { enrichKeyword } from "./enrich";
 import {
   buildTrend,
@@ -53,6 +63,8 @@ interface Args {
   withPh: boolean;
   /** 跳过「相关查询」请求，每词少一次观看量，429 时更稳 */
   noRelated: boolean;
+  /** 只跑「准入原则审计」：用历史判定样本重写榜单收录标准 */
+  policyAudit: boolean;
 }
 
 function parseArgs(): Args {
@@ -73,6 +85,7 @@ function parseArgs(): Args {
     rescore: process.argv.includes("--rescore"),
     withPh: process.argv.includes("--with-ph"),
     noRelated: process.argv.includes("--no-related"),
+    policyAudit: process.argv.includes("--policy-audit"),
   };
 }
 
@@ -130,6 +143,23 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (args.policyAudit) {
+    const base = ensurePolicy(dataset.policy);
+    const samples = Object.entries(base.verdicts ?? {}).map(([keyword, verdict]) => ({
+      keyword,
+      verdict,
+    }));
+    const next = await auditPolicy(base, samples);
+    if (!args.dry) saveDataset({ ...dataset, policy: next, updatedAt: now.toISOString() });
+    console.log(
+      `[policy] 准入原则 v${base.version} → v${next.version}（样本 ${samples.length} 个）${args.dry ? "，dry-run 未写入" : ""}`,
+    );
+    next.accept.forEach((a) => console.log(`  收 · ${a}`));
+    next.reject.forEach((r) => console.log(`  拒 · ${r}`));
+    next.notes.slice(0, 3).forEach((n) => console.log(`  记 · ${n}`));
+    return;
+  }
+
   console.log(`[trends] 词库现有 ${dataset.keywords.length} 个，本次预算 ${args.limit} 个（geo=${args.geo}）`);
 
   const discovered: TrendCandidate[] = [
@@ -155,8 +185,65 @@ async function main(): Promise<void> {
   });
   console.log(`[trends] 候选 ${discovered.length} 个，去重过滤后 ${filtered.length} 个`);
 
+  // ---- 价值准入：先用便宜的 LLM 判「有没有创业切口」，再花宝贵的 Trends 配额 ----
+  // 读者是创业者，收进来的词必须能回答「明天能拿它做什么」。
+  let policy = ensurePolicy(dataset.policy);
+  const gate = new Map<string, ValueVerdict>();
+  const judgedNow: Array<{ keyword: string; verdict: ValueVerdict }> = [];
+  const toJudge: string[] = [];
+
+  for (const c of filtered) {
+    if (existingIndex.has(c.normalizedKey)) continue; // 库内词免判
+    const hit = cachedVerdict(policy, c.normalizedKey);
+    if (hit) gate.set(c.normalizedKey, hit);
+    else toJudge.push(c.keyword);
+  }
+
+  if (toJudge.length > 0 && !args.dry) {
+    if (!hasLLM()) {
+      console.warn("[policy] 未配置 LLM，本轮跳过价值准入（只按规则过滤）");
+    } else {
+      try {
+        const judged = await judgeKeywords(toJudge, policy);
+        for (const [k, v] of judged) {
+          gate.set(k, v);
+          judgedNow.push({ keyword: k, verdict: v });
+        }
+        console.log(`[policy] 价值判定 ${judged.size}/${toJudge.length} 个词`);
+      } catch (e) {
+        console.warn(
+          `[policy] 价值判定失败，本轮退回规则过滤：${e instanceof Error ? e.message : e}`,
+        );
+      }
+    }
+    policy = pruneVerdicts({
+      ...policy,
+      verdicts: { ...policy.verdicts, ...Object.fromEntries([...gate]) },
+    });
+  }
+
+  let valueRejected = 0;
+  const passed: TrendCandidate[] = [];
+  for (const c of filtered) {
+    if (existingIndex.has(c.normalizedKey)) {
+      passed.push(c);
+      continue;
+    }
+    const v = gate.get(c.normalizedKey);
+    if (!v) {
+      // 没有判定（LLM 不可用）：交给规则层，避免整轮卡死
+      passed.push(c);
+      continue;
+    }
+    if (shouldAccept(v)) passed.push(c);
+    else valueRejected++;
+  }
+  if (valueRejected > 0) {
+    console.log(`[policy] 价值准入拒掉 ${valueRejected} 个：没有可落地的创业切口`);
+  }
+
   const batch = planBatch({
-    candidates: filtered,
+    candidates: passed,
     existing: dataset.keywords,
     budget: args.limit,
     refreshAfterDays: args.refreshAfter,
@@ -226,12 +313,22 @@ async function main(): Promise<void> {
       const status = deriveStatus(series);
       const confidence = deriveConfidence(series, sources);
 
+      const verdict = gate.get(normalizeKey(item.keyword));
       const enrich = await enrichKeyword({
         keyword: item.keyword,
         series,
         relatedQueries,
         evidence,
         sources,
+        ...(verdict
+          ? {
+              editor: {
+                audience: verdict.audience,
+                ideaAngle: verdict.ideaAngle,
+                reason: verdict.reason,
+              },
+            }
+          : {}),
       });
 
       const trend = buildTrend(
@@ -270,6 +367,7 @@ async function main(): Promise<void> {
         saveDataset({
           ...dataset,
           keywords,
+          policy,
           updatedAt: new Date().toISOString(),
           mode: "live",
           region: args.geo,
@@ -383,9 +481,24 @@ async function main(): Promise<void> {
     }
   }
 
+  // 原则自审：距上次修订超过间隔，就用本轮判定样本把误杀/漏放修回条目
+  if (judgedNow.length > 0 && auditDue(policy)) {
+    try {
+      const next = await auditPolicy(policy, judgedNow);
+      if (next.version !== policy.version) {
+        policy = next;
+        console.log(`[policy] 准入原则已迭代到 v${policy.version}`);
+        next.notes.slice(0, 1).forEach((n) => console.log(`  记 · ${n}`));
+      }
+    } catch {
+      // 审计失败不影响本轮采集结果
+    }
+  }
+
   saveDataset({
     ...dataset,
     keywords,
+    policy,
     updatedAt: new Date().toISOString(),
     mode: "live",
     region: args.geo,

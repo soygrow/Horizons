@@ -29,6 +29,7 @@ export async function chatJSON<T>(
   system: string,
   user: string,
   maxTokens = 4000,
+  temperature = 0.4,
 ): Promise<T> {
   const key = process.env.DEEPSEEK_API_KEY;
   if (!key) throw new Error("未配置 DEEPSEEK_API_KEY");
@@ -40,7 +41,7 @@ export async function chatJSON<T>(
       { role: "user", content: user },
     ],
     response_format: { type: "json_object" },
-    temperature: 0.4,
+    temperature,
     max_tokens: maxTokens,
   });
 

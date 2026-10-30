@@ -1,0 +1,47 @@
+name: Deploy API
+
+# apps/api 变更时自动部署 horizons-api（Hono + D1）。
+# D1 迁移不在流水线里自动执行，避免线上数据结构被误改；
+# 需要时手动跑：pnpm --filter @horizons/api exec wrangler d1 migrations apply horizons-db --remote
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/api/**"
+      - "packages/shared/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/deploy-api.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-api
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 类型检查
+        run: pnpm --filter @horizons/api run typecheck
+
+      - name: 部署到 Cloudflare（horizons-api）
+        run: pnpm --filter @horizons/api exec wrangler deploy

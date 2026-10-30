@@ -1,5 +1,6 @@
 import type {
   AITrend,
+  EntryPolicy,
   OpportunityScoreParts,
   TrendCategory,
   TrendConfidence,
@@ -16,6 +17,8 @@ export const trendKeywords: AITrend[] = ds.keywords ?? [];
 export const trendDataMode = ds.mode ?? "seed";
 export const trendsUpdatedAt = ds.updatedAt ?? "";
 export const trendRegion = ds.region ?? "US";
+/** 榜单收录标准：会随每次审计演进，页面上直接展示当前版本 */
+export const trendPolicy: EntryPolicy | null = ds.policy ?? null;
 
 /* ------------------------------- 展示字典 ------------------------------- */
 

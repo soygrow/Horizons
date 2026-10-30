@@ -12,9 +12,10 @@
     </mask>
   </defs>
 
-  <rect width="64" height="64" rx="15" fill="url(#fv-bg)" />
+  <rect width="64" height="64" rx="14" fill="url(#fv-bg)" />
 
-  <g transform="translate(8 21.4) scale(0.15)">
+  <!-- 与 brand/logo-mark.svg 完全同源同比例，等比放大到 94% 宽以避免小尺寸糊成一团 -->
+  <g transform="translate(1.2 18.1) scale(0.194)">
     <g mask="url(#fv-gap)">
       <path
         d="M77 94 L77 48 C77 25 112 10 158 10 C204 10 244 20 254 46 C261 63 265 80 266 94 C216 75 126 75 77 94 Z"

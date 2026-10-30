@@ -6,6 +6,7 @@ import {
   sortTrends,
   trendCategoryLabels,
   trendKeywords,
+  trendPolicy,
   trendRankMap,
   trendStatusMeta,
   trendsUpdatedAt,
@@ -264,6 +265,45 @@ export default async function TrendsPage({
           不参与排名、不强行给分。
         </p>
       </section>
+
+      {trendPolicy ? (
+        <section className="mt-6 rounded-2xl border border-border bg-surface p-5">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="text-sm font-semibold text-ink">什么词能进这个榜</h2>
+            <span className="text-xs text-ink-muted">
+              收录标准 v{trendPolicy.version} · {formatDateShort(trendPolicy.updatedAt.slice(0, 10))} 更新
+            </span>
+          </div>
+          <p className="mt-2 text-xs leading-relaxed text-ink-secondary">
+            标准只回答一件事：一个独立开发者看到这个词，明天有没有能开工的事。
+            每次采集都会拿没通过判定的词回头审计这套标准，所以它会随市场变化，而不是一次定死的规则。
+          </p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="text-xs font-medium text-ink">收：有可落地的切口</p>
+              <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-ink-secondary">
+                {trendPolicy.accept.map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <span className="text-emerald-500">·</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs font-medium text-ink">拒：看着热但没有切入点</p>
+              <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-ink-muted">
+                {trendPolicy.reject.map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <span>·</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }
