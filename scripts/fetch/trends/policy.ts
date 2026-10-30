@@ -78,6 +78,10 @@ const JUDGE_SYSTEM = `你是趋势榜单的选品编辑，读者是独立开发�
 - 模型 / 版本发布资讯：gpt-5、llama 4、gemini 3、nano banana 这类，搜的人只想知道新旧差异、跑分、怎么用
 - 单个小产品的品牌名：ayven、ferndesk、pancake、busabase 这类，搜的人是在找这个产品本身，
   读者拿不到任何可迁移的东西。只有已成品类代名词的例外（figma、notion、cursor）
+- 品牌名 + 品类词的组合：nebula mcp、render mcp、bluebird mcp、copilotkit examples、
+  replit agent、figma agent 这类，主语仍是某个具体产品，不是需求本身。
+  判断方法：把这个词去掉品类词后，剩下的还是不是一个产品名；是就拒。
+  只有品类词本身（mcp server、mcp、rag pipeline）才收
 - 纯概念科普的泛词：ai、machine learning、prompt engineering，没有具体场景
 - 单公司内部功能名、单条新闻事件、纯娱乐梗
 - 必须大额资本或资质才能做：自建算力、GPU 租赁、医疗诊断、法律意见

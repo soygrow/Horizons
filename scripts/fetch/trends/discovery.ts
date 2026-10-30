@@ -5,8 +5,8 @@ import type { AITrend, TrendSourceRef } from "@horizons/shared";
 import { fetchTrendingRss } from "./sources/google-trends";
 import { sleep } from "./http";
 
-/** 候选词来源：RSS 发现 / 现有工具库 / 手工种子 / GitHub 新仓库 / Product Hunt */
-export type CandidateOrigin = "rss" | "aitools" | "seed" | "github" | "ph";
+/** 候选词来源：RSS 发现 / 现有工具库 / 手工种子 / GitHub 新仓库 / Product Hunt / 已收词的相关搜索 */
+export type CandidateOrigin = "rss" | "aitools" | "seed" | "github" | "ph" | "related";
 
 export interface TrendCandidate {
   keyword: string;
@@ -193,6 +193,63 @@ export function discoverFromSeeds(): TrendCandidate[] {
     });
   }
   if (out.length > 0) console.log(`[seed] 候选 ${out.length} 个`);
+  return out;
+}
+
+/**
+ * 从已收录词的相关搜索里挖新词。
+ *
+ * 这是最贴近采集标准的来源：related queries 是 Google Trends 自己给出的
+ * 「搜这个词的人还在搜什么」，每个候选背后都有一条真实搜索路径，不是我们猜的。
+ * 被多个父词同时指向的，说明需求更实在，排序时权重更高。
+ */
+export function discoverFromRelatedQueries(): TrendCandidate[] {
+  const file = path.resolve(process.cwd(), "content/trends.json");
+  let trends: AITrend[] = [];
+  try {
+    const raw = JSON.parse(fs.readFileSync(file, "utf-8")) as { keywords?: AITrend[] };
+    trends = Array.isArray(raw.keywords) ? raw.keywords : [];
+  } catch {
+    console.warn("[related] 读取 trends.json 失败，跳过");
+    return [];
+  }
+
+  const existing = new Set(trends.map((t) => normalizeKey(t.keyword)));
+  const merged = new Map<string, { keyword: string; weight: number; parents: string[] }>();
+
+  for (const t of trends) {
+    for (const q of t.relatedQueries ?? []) {
+      const keyword = (q ?? "").trim();
+      const key = normalizeKey(keyword);
+      if (!keyword || existing.has(key)) continue;
+      // matchKeyword 会挡掉问句（what is / how to）和与 AI 无关的长尾
+      if (!matchKeyword(keyword)) continue;
+      const hit = merged.get(key);
+      if (hit) {
+        hit.weight += 1;
+        if (hit.parents.length < 3) hit.parents.push(t.keyword);
+        continue;
+      }
+      merged.set(key, { keyword, weight: 1, parents: [t.keyword] });
+    }
+  }
+
+  const out: TrendCandidate[] = [...merged.values()].map((item) => ({
+    keyword: item.keyword,
+    normalizedKey: normalizeKey(item.keyword),
+    origin: "related" as const,
+    weight: item.weight,
+    sources: item.parents.map<TrendSourceRef>((p) => ({
+      label: `相关搜索：${p}`,
+      url: `https://trends.google.com/trends/explore?geo=US&q=${encodeURIComponent(p)}`,
+      site: "trends.google.com",
+      kind: "google_trends",
+    })),
+  }));
+
+  if (out.length > 0) {
+    console.log(`[related] 候选 ${out.length} 个（来自 ${trends.length} 个已收词的相关搜索）`);
+  }
   return out;
 }
 

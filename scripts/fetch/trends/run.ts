@@ -12,6 +12,7 @@ import {
   discoverFromAitools,
   discoverFromGithub,
   discoverFromProductHunt,
+  discoverFromRelatedQueries,
   discoverFromSeeds,
   discoverFromTrendingRss,
   isUsableKeyword,
@@ -153,6 +154,42 @@ function dedupeNearDuplicates(list: TrendCandidate[], threshold = 0.66): TrendCa
   return kept.map((k) => k.item);
 }
 
+/**
+ * 子集合并：「mcp」⊂「mcp server」⊂「github mcp server」，三条曲线几乎重合。
+ *
+ * Jaccard 相似度管不住这种包含关系（{mcp} 与 {mcp,server} 只有 0.5），
+ * 结果就是同一个话题在榜上刷屏。这里直接按集合包含判断，只留一个。
+ * 已在库的词优先保留，避免把有外链的老页面挤掉。
+ */
+function dedupeSubsets(list: TrendCandidate[], preferKeys: Set<string>): TrendCandidate[] {
+  const tokens = (keyword: string): Set<string> => {
+    const parts = keyword
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter((t) => t.length > 2 && !STOPWORDS.has(t));
+    return new Set(parts);
+  };
+  const ordered = [...list].sort(
+    (a, b) =>
+      Number(preferKeys.has(b.normalizedKey)) - Number(preferKeys.has(a.normalizedKey)) ||
+      b.weight - a.weight,
+  );
+  const kept: Array<{ set: Set<string>; item: TrendCandidate }> = [];
+  for (const c of ordered) {
+    const set = tokens(c.keyword);
+    if (set.size === 0) {
+      kept.push({ set, item: c });
+      continue;
+    }
+    const dup = kept.some((k) => {
+      if (k.set.size === 0) return false;
+      return [...set].every((t) => k.set.has(t)) || [...k.set].every((t) => set.has(t));
+    });
+    if (!dup) kept.push({ set, item: c });
+  }
+  return kept.map((k) => k.item);
+}
+
 function mergeSources(existing: AITrend | undefined, next: TrendSourceRef[]): TrendSourceRef[] {
   const out: TrendSourceRef[] = [];
   const seen = new Set<string>();
@@ -203,12 +240,16 @@ async function main(): Promise<void> {
     )),
     ...discoverFromAitools(),
     ...discoverFromSeeds(),
+    ...discoverFromRelatedQueries(),
     ...(await discoverFromGithub(Number(process.env.TRENDS_GITHUB_DAYS ?? 14), 40)),
   ];
   if (args.withPh) discovered.push(...(await discoverFromProductHunt()));
 
   const existingIndex = indexByKey(dataset.keywords);
-  const filtered = dedupeNearDuplicates(dedupeCandidates(discovered)).filter((c) => {
+  const filtered = dedupeSubsets(
+    dedupeNearDuplicates(dedupeCandidates(discovered)),
+    new Set(existingIndex.keys()),
+  ).filter((c) => {
     // 已在库的词继续维护，不再重复做准入判定
     if (existingIndex.has(c.normalizedKey)) return true;
     // 工具库 / 种子 / PH 本身已限定 AI 范围，只做可用性校验；
