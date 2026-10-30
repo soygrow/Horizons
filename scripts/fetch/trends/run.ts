@@ -65,6 +65,8 @@ interface Args {
   noRelated: boolean;
   /** 只跑「准入原则审计」：用历史判定样本重写榜单收录标准 */
   policyAudit: boolean;
+  /** 耐心模式：被限流就长睡等解封，适合无人值守慢慢扩量 */
+  patient: boolean;
 }
 
 function parseArgs(): Args {
@@ -86,6 +88,7 @@ function parseArgs(): Args {
     withPh: process.argv.includes("--with-ph"),
     noRelated: process.argv.includes("--no-related"),
     policyAudit: process.argv.includes("--policy-audit"),
+    patient: process.argv.includes("--patient"),
   };
 }
 
@@ -116,6 +119,38 @@ function dedupeCandidates(list: TrendCandidate[]): TrendCandidate[] {
     });
   }
   return [...map.values()];
+}
+
+/** 同义词合并用的停用词：「ai」几乎每个词都有，去掉它才能分清语义 */
+const STOPWORDS = new Set(["the", "and", "for", "with", "to", "in", "of", "a", "an", "ai", "app"]);
+
+/**
+ * 近似重复合并。
+ * 「ai youtube download」「youtube video download ai」「download youtube video ai」
+ * 在 Trends 里是同一条曲线，全收进来等于在榜上刷屏。
+ * 用 token 集合的 Jaccard 相似度判断，保留 weight 高的那个。
+ */
+function dedupeNearDuplicates(list: TrendCandidate[], threshold = 0.66): TrendCandidate[] {
+  const tokens = (keyword: string): Set<string> => {
+    const parts = keyword
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter((t) => t.length > 2 && !STOPWORDS.has(t));
+    return new Set(parts);
+  };
+
+  const kept: Array<{ set: Set<string>; item: TrendCandidate }> = [];
+  for (const c of [...list].sort((a, b) => b.weight - a.weight)) {
+    const set = tokens(c.keyword);
+    const dup = kept.some((k) => {
+      let inter = 0;
+      for (const t of set) if (k.set.has(t)) inter++;
+      const union = set.size + k.set.size - inter;
+      return union > 0 && inter / union >= threshold;
+    });
+    if (!dup) kept.push({ set, item: c });
+  }
+  return kept.map((k) => k.item);
 }
 
 function mergeSources(existing: AITrend | undefined, next: TrendSourceRef[]): TrendSourceRef[] {
@@ -173,7 +208,7 @@ async function main(): Promise<void> {
   if (args.withPh) discovered.push(...(await discoverFromProductHunt()));
 
   const existingIndex = indexByKey(dataset.keywords);
-  const filtered = dedupeCandidates(discovered).filter((c) => {
+  const filtered = dedupeNearDuplicates(dedupeCandidates(discovered)).filter((c) => {
     // 已在库的词继续维护，不再重复做准入判定
     if (existingIndex.has(c.normalizedKey)) return true;
     // 工具库 / 种子 / PH 本身已限定 AI 范围，只做可用性校验；
@@ -381,6 +416,11 @@ async function main(): Promise<void> {
   // 429 不再一触即停：单词退回队尾重试，只有「最近 10 分钟限流率 > 60%」才收工。
   const WINDOW_MS = 10 * 60_000;
   const MAX_RETRY = 2;
+  /** 耐心模式：被限流就长睡等解封，而不是收工 */
+  const PATIENT_ROUNDS = 10;
+  const PATIENT_BASE_WAIT = 4 * 60_000;
+  const PATIENT_MAX_WAIT = 20 * 60_000;
+  let patientRounds = 0;
   const events: { t: number; limited: boolean }[] = [];
   let backoffLevel = 0;
 
@@ -393,7 +433,7 @@ async function main(): Promise<void> {
 
   const overloaded = (): boolean => {
     const limited = events.filter((e) => e.limited).length;
-    return events.length >= 12 && limited / events.length > 0.6;
+    return events.length >= 6 && limited / events.length > 0.6;
   };
 
   const queue = [...batch];
@@ -403,7 +443,7 @@ async function main(): Promise<void> {
   const requeueOrDrop = (item: (typeof batch)[number]): void => {
     const attempt = (attempts.get(item.keyword) ?? 0) + 1;
     attempts.set(item.keyword, attempt);
-    if (attempt <= MAX_RETRY) queue.push(item);
+    if (args.patient || attempt <= MAX_RETRY) queue.push(item);
     else {
       failed++;
       console.warn(`${item.keyword} → 放弃（限流重试 ${attempt} 次）`);
@@ -412,12 +452,30 @@ async function main(): Promise<void> {
 
   while (queue.length > 0) {
     if (overloaded()) {
-      console.warn("[trends] 最近 10 分钟限流率 > 60%，提前收工，已采集结果保留");
-      break;
+      if (!args.patient) {
+        console.warn("[trends] 最近 10 分钟限流率 > 60%，提前收工，已采集结果保留");
+        break;
+      }
+      patientRounds++;
+      if (patientRounds > PATIENT_ROUNDS) {
+        console.warn(
+          `[trends] 已休眠 ${patientRounds - 1} 轮仍被限流，收工：本次成功 ${ok} 个，词库 ${keywords.length} 个`,
+        );
+        break;
+      }
+      const wait = Math.min(PATIENT_MAX_WAIT, PATIENT_BASE_WAIT * patientRounds);
+      console.log(
+        `[trends] 限流中（第 ${patientRounds}/${PATIENT_ROUNDS} 轮），休眠 ${Math.round(wait / 60_000)} 分钟后继续，队列剩 ${queue.length} 个词`,
+      );
+      await sleep(wait);
+      events.length = 0;
+      attempts.clear();
+      backoffLevel = 0;
+      continue;
     }
 
-    // 一批 = 锚点 + 4 个词，只花 2 次请求
-    const chunk = queue.splice(0, COMPARE_LIMIT - 1);
+    // 一批 = 4 个同类词互比，只花 2 次请求
+    const chunk = queue.splice(0, COMPARE_LIMIT);
     try {
       const { series, weak, missing } = await fetchInterestBatch(
         chunk.map((c) => c.keyword),
@@ -437,8 +495,8 @@ async function main(): Promise<void> {
           continue;
         }
 
-        // 值域太窄（批内峰值 < 10），量化误差大：单词重取一份高精度曲线
-        if (weak.includes(item.keyword)) {
+        // 值域太窄（批内峰值 < 10）或被组内大词压成 0：单词重取一份高精度曲线
+        if (weak.includes(item.keyword) || missing.includes(item.keyword)) {
           try {
             const single = await fetchInterest(item.keyword, args.geo, !args.noRelated);
             note(false);
@@ -466,7 +524,9 @@ async function main(): Promise<void> {
       if (e instanceof RateLimitError) {
         note(true);
         for (const item of chunk) requeueOrDrop(item);
-        const wait = Math.min(60_000, 8000 * 2 ** backoffLevel);
+        // 60 秒封顶会在限流期反复撞击，反而拖长封禁；指数退到 10 分钟，
+        // 连续 429 就一直等到配额恢复
+        const wait = Math.min(10 * 60_000, 8000 * 2 ** backoffLevel);
         backoffLevel++;
         console.warn(
           `[trends] 批量 429（${chunk.length} 词回队列），退避 ${Math.round(wait / 1000)}s`,

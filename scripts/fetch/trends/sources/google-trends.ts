@@ -124,10 +124,13 @@ export interface BatchInterest {
 export async function fetchInterestBatch(
   keywords: string[],
   geo: string,
-  anchor = ANCHOR_KEYWORD,
+  anchor?: string,
 ): Promise<BatchInterest> {
-  const rest = keywords.filter((k) => k.toLowerCase() !== anchor.toLowerCase());
-  const group = [anchor, ...rest].slice(0, COMPARE_LIMIT);
+  const pool = keywords.filter((k) => !anchor || k.toLowerCase() !== anchor.toLowerCase());
+  // 不指定锚点时，4 个候选词直接互比：组内最大 = 100。
+  // 这比挂一个巨词锚点好得多——巨词会把小词压成 0（0–100 整数精度不够），
+  // 而同类候选词量级接近，互相比较不会丢精度。评分全是比例指标，不需要跨批次统一尺度。
+  const group = anchor ? [anchor, ...pool].slice(0, COMPARE_LIMIT) : pool.slice(0, COMPARE_LIMIT);
 
   const req = {
     comparisonItem: group.map((keyword) => ({ keyword, geo, time: TIME_RANGE })),
@@ -166,14 +169,15 @@ export async function fetchInterestBatch(
   const start = toDate(Number(kept[0].time));
   const columns = group.map((_, i) => kept.map((p) => p.value?.[i] ?? 0));
 
-  const anchorPeak = Math.max(0, ...columns[0]);
-  const scale = anchorPeak > 0 ? ANCHOR_PEAK / anchorPeak : 1;
+  const startIdx = anchor ? 1 : 0;
+  const anchorPeak = anchor ? Math.max(0, ...columns[0]) : ANCHOR_PEAK;
+  const scale = anchor && anchorPeak > 0 ? ANCHOR_PEAK / anchorPeak : 1;
 
   const series = new Map<string, TrendSeries>();
   const weak: string[] = [];
   const missing: string[] = [];
 
-  for (let i = 1; i < group.length; i++) {
+  for (let i = startIdx; i < group.length; i++) {
     const keyword = group[i];
     const raw = columns[i];
     const rawPeak = Math.max(0, ...raw);

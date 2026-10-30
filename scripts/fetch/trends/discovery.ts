@@ -96,7 +96,17 @@ export async function discoverFromTrendingRss(geos: string[]): Promise<TrendCand
   return out;
 }
 
-/** 系统已有的 AI 工具库本身就是现成词池：产品名往往就是搜索词 */
+/** 月搜索量门槛：低于这个数的词只有品牌流量，进榜说明不了任何需求 */
+const MIN_SEARCH_VOLUME = 1000;
+
+/**
+ * AI 工具库作为词池，但取「搜索词」而不是「产品名」。
+ *
+ * 之前用 tool.name 当候选，收进来的全是 ayven / ferndesk 这类小众品牌：
+ * 搜的人只有品牌自己，没有需求信号，对读者零价值。
+ * 库里的 keywords 字段是真实搜索词 + 月搜索量，这才是需求：
+ * 「ai music generator」11 万次搜索 = 有大量人在找东西，「picova ai」140 次 = 没人搜。
+ */
 export function discoverFromAitools(): TrendCandidate[] {
   const file = path.resolve(process.cwd(), "content/aitools.json");
   let tools: AITool[] = [];
@@ -107,27 +117,50 @@ export function discoverFromAitools(): TrendCandidate[] {
     console.warn("[aitools] 读取失败，跳过");
     return [];
   }
+
   const out: TrendCandidate[] = [];
+  const merged = new Map<string, TrendCandidate>();
+
   for (const tool of tools) {
-    const keyword = tool.name?.trim();
-    if (!keyword || !isUsableKeyword(keyword)) continue;
-    if (!isAiRelevant(keyword) && !isAiRelevant(`${tool.name} ${tool.segmentLabel ?? ""}`)) continue;
-    out.push({
-      keyword,
-      normalizedKey: normalizeKey(keyword),
-      origin: "aitools",
-      weight: 0,
-      sources: [
-        {
-          label: `AI 工具库：${keyword}`,
-          url: tool.url || `https://${tool.domain}`,
-          site: tool.domain,
-          kind: "official",
-        },
-      ],
-    });
+    for (const item of tool.keywords ?? []) {
+      const keyword = item.term?.trim();
+      if (!keyword) continue;
+      // 只有真的带了搜索量才用它做门槛：这个库里 1031 个词只有 6 个有 volume，
+      // 把「缺失」当 0 会把整库滤空
+      if (item.volume !== undefined && item.volume < MIN_SEARCH_VOLUME) continue;
+      if (!isUsableKeyword(keyword) || !isAiRelevant(keyword)) continue;
+
+      const key = normalizeKey(keyword);
+      const source = {
+        label: `搜索量 ${Math.round((item.volume ?? 0) / 1000)}k/月`,
+        url: tool.url || `https://${tool.domain}`,
+        site: "google-keyword",
+        kind: "serp" as const,
+      };
+
+      const exist = merged.get(key);
+      if (exist) {
+        // 同一个搜索词被多个工具共用：需求更真实，权重叠加
+        exist.weight += item.volume ?? 0;
+        if (!exist.sources.some((s) => s.site === source.site && s.label === source.label)) {
+          exist.sources.push(source);
+        }
+        continue;
+      }
+
+      const candidate: TrendCandidate = {
+        keyword,
+        normalizedKey: key,
+        origin: "aitools",
+        weight: item.volume ?? 0,
+        sources: [source],
+      };
+      merged.set(key, candidate);
+      out.push(candidate);
+    }
   }
-  console.log(`[aitools] 候选 ${out.length} 个`);
+
+  console.log(`[aitools] 候选 ${out.length} 个（来自带搜索量的真实关键词）`);
   return out;
 }
 

@@ -1,6 +1,6 @@
 // Google Trends 非官方接口的最小客户端：cookie 引导 + 限流识别 + 退避
 // 只用于本地采集脚本；不进入前端构建。
-import { proxyGet, rotateProxy } from "../proxy";
+import { exitLabel, proxyGet, rotateProxy } from "../proxy";
 
 const UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
@@ -65,10 +65,11 @@ export async function trendsGet(
       if (res.status === 429) {
         cookieHeader = ""; // 下次换一个 cookie
         // 有多个出口就直接换 IP（cookie 与 IP 都会影响限流判定）
+        const from = exitLabel();
         if (rotateProxy()) {
-          throw new RateLimitError("Google Trends 429，已切换出口代理");
+          throw new RateLimitError(`429 @ ${from}，已切换出口到 ${exitLabel()}`);
         }
-        throw new RateLimitError();
+        throw new RateLimitError(`429 @ ${from}`);
       }
       if (res.status >= 500) {
         lastError = new Error(`Trends ${pathname} ${res.status}`);
@@ -82,6 +83,14 @@ export async function trendsGet(
     } catch (e) {
       if (e instanceof RateLimitError) throw e;
       lastError = e;
+      // 出口整体不可达（直连被墙 / 代理挂了）：先换出口再重试，别在这里耗死
+      const from = exitLabel();
+      if (rotateProxy()) {
+        console.warn(
+          `[trends] 出口 ${from} 不可达（${e instanceof Error ? e.message.slice(0, 60) : e}），切到 ${exitLabel()}`,
+        );
+        continue;
+      }
       await sleep(1500 * (attempt + 1));
     }
   }
