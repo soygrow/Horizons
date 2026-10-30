@@ -5,6 +5,7 @@ import type { BuildPhase, BuildStep, GitHubInsight, GitHubRepo } from "@horizons
 import "./config"; // 副作用导入：加载 .env.local
 import { chatJSON, hasLLM } from "./sources/llm";
 import { CURATED_INSIGHTS } from "./curated-github-insights";
+import { checkIdeaValue } from "./github-ranking-rules";
 
 /**
  * GitHub 榜单「中文创业情报」生成：
@@ -142,7 +143,7 @@ function normalize(out: Partial<GitHubInsight>, repoName: string): GitHubInsight
           effort: String(x.effort ?? "").trim(),
           stackHint: x.stackHint ? String(x.stackHint).trim() : undefined,
         }))
-        .filter((x) => x.title && x.product)
+        .filter((x) => x.title && x.product && x.audience && x.monetization)
         .slice(0, 4)
     : [];
   const buildSteps = Array.isArray(out.buildSteps)
@@ -379,8 +380,9 @@ async function main() {
 
   const targets = repos.filter((r) => {
     if (only.length > 0 && !only.includes(r.fullName.toLowerCase())) return false;
-    /* 已有 LLM / 精编情报直接跳过；只有"本地兜底"的情报会被重新生成（余额恢复后自动补上） */
-    if (!force && r.insight && r.insightSource !== "local") return false;
+    /* 已有真实情报（有中文定位句）直接跳过；本地兜底模板的 taglineZh 为空，会被重新生成。
+       注意：判据用 taglineZh 而不是 insightSource——rebuild 重建记录时会丢 insightSource。 */
+    if (!force && r.insight?.taglineZh?.trim()) return false;
     return true;
   });
 
@@ -396,6 +398,8 @@ async function main() {
   let fromLLM = 0;
   let fromLocal = 0;
   let llmFail = 0;
+  /** v1.4：补一次后仍不满足「读者价值」的情报数（照常入库，但会提示） */
+  let ideaWeak = 0;
 
   /* 每处理 N 个就落盘一次：余额/网络中途失败也不会丢掉已生成的情报 */
   let dirty = 0;
@@ -426,10 +430,38 @@ async function main() {
     // 3) LLM，失败回退本地
     try {
       const out = await chatJSON<Partial<GitHubInsight>>(SYSTEM, buildPayload(r), 3000);
-      r.insight = normalize(out, r.fullName);
+      let insight = normalize(out, r.fullName);
+      let verdict = checkIdeaValue(insight);
+
+      /* v1.4：情报必须让读者想出一个「自己能做」的产品。
+         首版不合格就带着不合格原因补一次，避免只写空泛方向。 */
+      if (!verdict.ok) {
+        const retry = await chatJSON<Partial<GitHubInsight>>(
+          SYSTEM,
+          `${buildPayload(r)}\n\n上一版不合格原因：${verdict.reason}。` +
+            `请确保 buildIdeas 至少 3 个，每个都要写清 audience（具体人群/行业）和 monetization（带数字的收费方式）；` +
+            `buildSteps 至少 3 步且绑定该项目的独有能力；moat 必填。`,
+          3000,
+        );
+        const retried = normalize(retry, r.fullName);
+        const v2 = checkIdeaValue(retried);
+        if (v2.ok) {
+          insight = retried;
+          verdict = v2;
+        } else {
+          verdict = v2;
+        }
+      }
+
+      r.insight = insight;
       r.insightSource = "llm";
       fromLLM++;
-      console.log(`[insight] ✓ ${r.fullName}：${r.insight.taglineZh}`);
+      if (!verdict.ok) {
+        ideaWeak++;
+        console.warn(`[insight] ! ${r.fullName}：读者价值仍不足（${verdict.reason}）`);
+      } else {
+        console.log(`[insight] ✓ ${r.fullName}：${insight.taglineZh}`);
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       llmFail++;
@@ -461,7 +493,8 @@ async function main() {
     "utf-8",
   );
   console.log(
-    `[insight] 完成：精编 ${fromCurated}，LLM ${fromLLM}，本地 ${fromLocal}（LLM 失败 ${llmFail}）→ ${JSON_PATH}`,
+    `[insight] 完成：精编 ${fromCurated}，LLM ${fromLLM}，本地 ${fromLocal}` +
+      `（LLM 失败 ${llmFail}，读者价值仍不足 ${ideaWeak}）→ ${JSON_PATH}`,
   );
 }
 

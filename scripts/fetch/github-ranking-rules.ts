@@ -1,15 +1,17 @@
-import type { GitHubRepo } from "@horizons/shared";
+import type { GitHubInsight, GitHubRepo } from "@horizons/shared";
 
 /**
- * 【GitHub 榜收录原则 · gh-rank-v1.2】
+ * 【GitHub 榜收录原则 · gh-rank-v1.5】
  * 唯一事实来源：脚本与文档（docs/10-GitHub榜单收录原则.md）以本文件为准。
  * 任何一次重新拉取都必须走这里的判定，保证「同一原则、同一结果」。
  *
  * 一句话原则：
  *   一个项目能进榜，必须同时满足「AI 相关且可被二次开发」「真实活跃」「允许商业化」
- *   三个条件；**总量不设上限**，合格即收录，按综合得分排序（榜单会随候选池持续增长）。
+ *   三个条件，并且**能为读者产出一个可落地的产品点子**；总量不设上限，合格即收录。
+ *   排序按 pps-v2：**轻启动机会 > 商业化 > 落地门槛 > 可开发性 > 增长 > 热度 > 活跃度**，
+ *   即「一个人、很少的钱就能做出小而美产品」的项目排在前面，重型基础设施项目靠后。
  */
-export const RANKING_RULE_VERSION = "gh-rank-v1.3";
+export const RANKING_RULE_VERSION = "gh-rank-v1.5";
 
 /**
  * 方向配额：仅在「显式限定总量」（LIMIT > 0）时作为单方向上限生效，
@@ -151,6 +153,53 @@ export function checkRankable(it: RankItem): RankCheck {
 /** 主分类：榜单行里「用途」列展示的第一个类别 */
 export function primaryCategory(repo: GitHubRepo): string {
   return repo.categories[0] ?? "Other";
+}
+
+/**
+ * v1.4 新增：读者价值门槛（情报层的「第四条硬门槛」）。
+ *
+ * 榜单服务的是「想做点事的人」——创业者、AI 工具重度使用者、互联网/科技从业者。
+ * 他们读完一条，必须能回答三个问题：
+ *   ① 能做成什么产品（buildIdeas 里有明确产品形态）
+ *   ② 卖给谁、怎么收钱（audience + monetization 不能是空话）
+ *   ③ 值不值得动手（buildSteps 至少给出可执行的起手三步 + 一句护城河判断）
+ * 三个问题答不上来的情报，即使项目本身合格，也不该算「合格条目」——
+ * 因为它对这个榜单的读者没有任何增值。
+ */
+export const IDEA_RULES = {
+  /** 至少 3 个可落地点子（含目标用户 + 收费方式） */
+  minBuildIdeas: 3,
+  /** 至少 3 步落地动作 */
+  minBuildSteps: 3,
+  /** 必须有护城河判断，否则等于「谁都能做」，没有价值 */
+  requireMoat: true,
+} as const;
+
+export interface IdeaCheck {
+  ok: boolean;
+  reason?: string;
+}
+
+/** 判定一条情报是否真的能给读者「一个新想法」 */
+export function checkIdeaValue(insight?: GitHubInsight | null): IdeaCheck {
+  if (!insight) return { ok: false, reason: "无情报" };
+
+  const ideas = (insight.buildIdeas ?? []).filter(
+    (i) => i.title?.trim() && i.product?.trim() && i.audience?.trim() && i.monetization?.trim(),
+  );
+  if (ideas.length < IDEA_RULES.minBuildIdeas) {
+    return { ok: false, reason: `可落地点子不足（${ideas.length}/${IDEA_RULES.minBuildIdeas}）` };
+  }
+
+  if ((insight.buildSteps ?? []).length < IDEA_RULES.minBuildSteps) {
+    return { ok: false, reason: `落地步骤不足（${(insight.buildSteps ?? []).length}）` };
+  }
+
+  if (IDEA_RULES.requireMoat && !insight.moat?.trim()) {
+    return { ok: false, reason: "缺少护城河判断" };
+  }
+
+  return { ok: true };
 }
 
 /**

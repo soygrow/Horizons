@@ -1,5 +1,9 @@
 import type { KeywordItem, GeoItem } from "@horizons/shared";
 import { config } from "../config";
+import { cachedCall } from "../api-cache";
+
+/** DataForSEO Labs / Backlinks live 端点的近似单价（美元/请求），仅用于台账估算 */
+const DFS_COST_PER_REQUEST = 0.075;
 
 /**
  * DataForSEO 采集源（流量估算 + 关键词）。
@@ -49,8 +53,26 @@ class HttpError extends Error {
   }
 }
 
-/** 单次 HTTP 调用（POST 带 body，GET 不带） */
+/**
+ * 单次 HTTP 调用（POST 带 body，GET 不带）。
+ * 带 body 的业务请求走缓存：同一端点 + 同一参数在 TTL 内直接复用本地结果，不再扣费。
+ * GET（多为 task_get 轮询）不额外计费，直接放行。
+ */
 async function send(path: string, body?: unknown[]): Promise<DfsResponse> {
+  if (!body) return sendRaw(path);
+  return cachedCall(
+    {
+      provider: "dataforseo",
+      endpoint: path,
+      key: JSON.stringify(body),
+      costUsd: DFS_COST_PER_REQUEST,
+      ttlDays: 30,
+    },
+    () => sendRaw(path, body),
+  );
+}
+
+async function sendRaw(path: string, body?: unknown[]): Promise<DfsResponse> {
   const creds = getCreds();
   if (!creds) throw new Error("未配置 DATAFORSEO_LOGIN / DATAFORSEO_PASSWORD");
   const auth = `Basic ${Buffer.from(`${creds.login}:${creds.password}`).toString("base64")}`;

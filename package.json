@@ -22,7 +22,11 @@
     "ph:oauth": "tsx scripts/fetch/ph-oauth.ts",
     "trends:collect": "tsx scripts/fetch/trends/run.ts",
     "trends:dry": "tsx scripts/fetch/trends/run.ts --dry",
-    "trends:rescore": "tsx scripts/fetch/trends/run.ts --rescore"
+    "trends:rescore": "tsx scripts/fetch/trends/run.ts --rescore",
+    "fetch:daily": "tsx scripts/fetch/daily/run.ts",
+    "fetch:daily:dry": "tsx scripts/fetch/daily/run.ts --dry",
+    "digest:daily": "tsx scripts/fetch/daily/build.ts",
+    "digest:daily:dry": "tsx scripts/fetch/daily/build.ts --dry"
   },
   "devDependencies": {
     "@horizons/shared": "workspace:*",

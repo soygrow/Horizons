@@ -130,6 +130,52 @@ const QUERIES = [
   "topic:object-detection stars:>=2000",
   "topic:ai-safety stars:>=200",
   "topic:guardrails stars:>=200",
+
+  /* ---------- v1.4 新增：垂类生意（最容易变成一个人能跑的小生意） ---------- */
+  "topic:legal-tech stars:>=300",
+  "topic:ai-legal stars:>=100",
+  "topic:healthcare stars:>=1000",
+  "topic:medical-ai stars:>=200",
+  "topic:ai-ecommerce stars:>=200",
+  "topic:shopify stars:>=1000",
+  "topic:recruiting stars:>=300",
+  "topic:resume stars:>=500",
+  "topic:job-search stars:>=300",
+  "topic:fintech stars:>=1000",
+  "topic:ai-finance stars:>=200",
+  "topic:invoice stars:>=300",
+  "topic:bookkeeping stars:>=200",
+  "topic:real-estate stars:>=200",
+  "topic:logistics stars:>=300",
+  "topic:customer-support stars:>=500",
+  "topic:ai-sales stars:>=200",
+  "topic:lead-generation stars:>=200",
+  "topic:language-learning stars:>=500",
+  "topic:translation stars:>=1500",
+
+  /* ---------- v1.4 新增：分发形态（决定能不能低成本触达用户） ---------- */
+  "topic:chrome-extension stars:>=800",
+  "topic:browser-extension stars:>=800",
+  "topic:telegram-bot stars:>=800",
+  "topic:discord-bot stars:>=800",
+  "topic:slack-bot stars:>=300",
+  "topic:wechat stars:>=500",
+  "topic:wordpress stars:>=1000",
+  "topic:no-code stars:>=800",
+  "topic:low-code stars:>=1000",
+
+  /* ---------- v1.4 新增：内容生产（自媒体 / 电商素材刚需） ---------- */
+  "topic:subtitle stars:>=500",
+  "topic:video-editing stars:>=800",
+  "topic:podcast stars:>=800",
+  "topic:background-removal stars:>=300",
+  "topic:image-upscaling stars:>=300",
+  "topic:document-processing stars:>=500",
+  "topic:pdf-parsing stars:>=300",
+  "topic:ocr-receipt stars:>=100",
+  "topic:spreadsheet stars:>=500",
+  "topic:knowledge-base stars:>=800",
+  "topic:second-brain stars:>=500",
 ];
 
 interface SearchItem extends RankItem {
@@ -394,8 +440,11 @@ async function main() {
 
   for (const [i, r] of picked.entries()) {
     const old = prev.get(r.fullName);
-    /* 已有中文情报直接复用，避免对同一项目重复调用大模型 */
-    if (old?.insight) r.insight = old.insight;
+    /* 已有中文情报直接复用，避免对同一项目重复调用大模型（来源标记一起带上） */
+    if (old?.insight) {
+      r.insight = old.insight;
+      if (old.insightSource) r.insightSource = old.insightSource;
+    }
     if (old?.readme) {
       r.readme = old.readme;
       r.readmeSummary = old.readmeSummary ?? readmeSummary(old.readme);

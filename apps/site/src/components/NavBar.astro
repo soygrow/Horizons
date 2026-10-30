@@ -1,5 +1,6 @@
 ---
 const channels = [
+  { label: "每日情报", href: "/daily", isNew: true },
   { label: "AI工具榜", href: "/tools" },
   { label: "GitHub榜", href: "/github" },
   { label: "AI趋势词榜单", href: "/trends" },
@@ -38,7 +39,14 @@ const path = Astro.url.pathname;
                 : "text-ink-secondary hover:bg-surface-2 hover:text-ink",
             ]}
           >
-            {c.label}
+            <span class="flex items-center gap-1.5">
+              {c.label}
+              {c.isNew && (
+                <span class="rounded bg-primary-soft px-1 py-px text-[9px] font-semibold leading-[1.4] text-primary">
+                  NEW
+                </span>
+              )}
+            </span>
           </a>
         ))}
       </nav>
@@ -70,6 +78,31 @@ const path = Astro.url.pathname;
         提交产品
       </a>
     </div>
+  </div>
+
+  <!-- 移动端频道入口：PC 导航在 lg 以下隐藏，这里保证手机上也能进「每日情报」 -->
+  <div class="border-t border-border/60 lg:hidden">
+    <nav
+      aria-label="频道"
+      class="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4 py-1.5 sm:px-6"
+    >
+      {channels.map((c) => (
+        <a
+          href={c.href}
+          class:list={[
+            "flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] transition",
+            path.startsWith(c.href) ? "bg-surface-2 text-ink" : "text-ink-secondary",
+          ]}
+        >
+          {c.label}
+          {c.isNew && (
+            <span class="rounded bg-primary-soft px-1 py-px text-[9px] font-semibold leading-[1.4] text-primary">
+              NEW
+            </span>
+          )}
+        </a>
+      ))}
+    </nav>
   </div>
 </header>
 

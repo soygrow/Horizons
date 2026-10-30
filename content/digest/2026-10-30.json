@@ -1,0 +1,412 @@
+{
+  "date": "2026-10-30",
+  "generatedAt": "2026-10-30T05:15:09.899Z",
+  "stats": {
+    "candidates": 111,
+    "merged": 111,
+    "verified": 12,
+    "published": 15
+  },
+  "modules": [
+    {
+      "key": "headline",
+      "items": [
+        {
+          "id": "evt_20261030_02",
+          "title": "We're releasing the weights of Mistral Large 4",
+          "summary": "外链指向 mistral.ai 的原文，讨论发生在 Hacker News 评论区。",
+          "why": "发布类消息，先分清官方给的是基准还是演示——演示通常跑不出同样的数。目前只有转述，引用前需二次确认。",
+          "category": "model_release",
+          "evidence": "pending",
+          "score": 81,
+          "heat": 5,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "community",
+              "label": "Hacker News · 1250 分",
+              "url": "https://mistral.ai/news/mistral-large-4-oss",
+              "verified": false
+            }
+          ],
+          "signals": {
+            "points": 1250,
+            "comments": 350
+          },
+          "missing": "只有单一来源（hackernews），需等官方公告或第二家独立报道"
+        },
+        {
+          "id": "evt_20261030_108",
+          "title": "An updated Model Spec for more capable and beneficial AI",
+          "summary": "OpenAI 官方博客 10-30 01:00 的原文摘要：OpenAI’s updated Model Spec outlines five core values to guide more capable AI toward sound judgment, human agency, and…。",
+          "why": "发布类消息，先分清官方给的是基准还是演示——演示通常跑不出同样的数。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 74,
+          "heat": 4,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "official",
+              "label": "OpenAI 官方博客",
+              "url": "https://openai.com/index/updated-model-spec",
+              "verified": true
+            }
+          ],
+          "signals": {}
+        },
+        {
+          "id": "evt_20261030_110",
+          "title": "How we detect frontier model misalignment",
+          "summary": "OpenAI 官方博客 10-29 17:00 的原文摘要：OpenAI uses layered monitoring to detect frontier model misalignment and unauthorized agent behavior so responders can…。",
+          "why": "偏方法与研究结论，值得看的是它给出了什么可复现的判据，而不是一句结论。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 74,
+          "heat": 4,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "official",
+              "label": "OpenAI 官方博客",
+              "url": "https://openai.com/index/how-we-detect-frontier-model-misalignment",
+              "verified": true
+            }
+          ],
+          "signals": {}
+        },
+        {
+          "id": "evt_20261030_107",
+          "title": "You can generate and edit Google Docs files directly in Gemini chats now",
+          "summary": "The Verge 10-30 02:45 的原文摘要：Now you can generate, preview, and edit PDFs, Google Docs, Google Sheets, slide decks, Markdown files, TXT files, and…。",
+          "why": "写代码或写文档的入口又变了一步，先看它对你现有流程是替代还是叠加。目前只有转述，引用前需二次确认。",
+          "category": "ai_coding",
+          "evidence": "pending",
+          "score": 64,
+          "heat": 4,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "media",
+              "label": "The Verge",
+              "url": "https://theverge.com/ai-artificial-intelligence/1022519/google-gemini-file-editing-documents-pdfs",
+              "verified": false
+            }
+          ],
+          "signals": {},
+          "missing": "只有单一来源（rss），需等官方公告或第二家独立报道"
+        }
+      ]
+    },
+    {
+      "key": "model",
+      "items": [
+        {
+          "id": "evt_20261030_18",
+          "title": "tangency-labs/solidcraft",
+          "summary": "仓库 tangency-labs/solidcraft：SolidCraft: an open-source parametric 3D CAD application built in pure Rust. Desktop,…。当前 1.2 万 Star，创建于 2026-10-07，平均每日新增约 540.9 Star；本次采样较上次 +4；Rust · 许可证 Apache-2.0。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 68,
+          "heat": 4,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · tangency-labs/solidcraft",
+              "url": "https://github.com/tangency-labs/solidcraft",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 12091,
+            "starDelta": 4,
+            "starPerDay": 540.9
+          }
+        },
+        {
+          "id": "evt_20261030_67",
+          "title": "raullenchai/Rapid-MLX",
+          "summary": "仓库 raullenchai/Rapid-MLX：Rapid-MLX is an open-source (Apache 2.0) OpenAI- and Anthropic-compatible LLM inference…。当前 4,061 Star，创建于 2026-02-25，平均每日新增约 16.4 Star；Python · 许可证 NOASSERTION。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 65,
+          "heat": 4,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · raullenchai/Rapid-MLX",
+              "url": "https://github.com/raullenchai/Rapid-MLX",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 4061,
+            "starDelta": 0,
+            "starPerDay": 16.4
+          }
+        },
+        {
+          "id": "evt_20261030_74",
+          "title": "ashhart/TensorFold",
+          "summary": "仓库 ashhart/TensorFold：LLM Inference Engine for Metal, CUDA and Vulkan。当前 1,540 Star，创建于 2026-06-19，平均每日新增约 11.6 Star；Zig · 许可证 Apache-2.0。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 64,
+          "heat": 4,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · ashhart/TensorFold",
+              "url": "https://github.com/ashhart/TensorFold",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 1540,
+            "starDelta": 0,
+            "starPerDay": 11.6
+          }
+        },
+        {
+          "id": "evt_20261030_91",
+          "title": "modelstudioai/cli",
+          "summary": "仓库 modelstudioai/cli：Official Model Studio CLI（阿里云百炼 CLI）built for AI Agent frameworks, exposing models,…。当前 366 Star，创建于 2026-05-28，平均每日新增约 2.4 Star；TypeScript · 许可证 Apache-2.0。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 64,
+          "heat": 4,
+          "firstSeenAt": "2026-10-30T03:27:39.742Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · modelstudioai/cli",
+              "url": "https://github.com/modelstudioai/cli",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 366,
+            "starDelta": 0,
+            "starPerDay": 2.4
+          }
+        }
+      ]
+    },
+    {
+      "key": "oss",
+      "items": [
+        {
+          "id": "evt_20261030_01",
+          "title": "Ebony-Vinyl/dsh-our-free-model",
+          "summary": "仓库 Ebony-Vinyl/dsh-our-free-model：在 dsh 里装上这个插件即可，无需登录、注册或填 API Key，就能使用包括 DeepSeek V4.1 Flash、Kimi K3 在内的前沿模型——完全免费，不限量。…。当前 5.1 万 Star，创建于 2026-09-24，平均每日新增约 1,443 Star；本次采样较上次 +60；JavaScript · 许可证 MIT。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 88,
+          "heat": 5,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · Ebony-Vinyl/dsh-our-free-model",
+              "url": "https://github.com/Ebony-Vinyl/dsh-our-free-model",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 51159,
+            "starDelta": 60,
+            "starPerDay": 1442.5
+          }
+        },
+        {
+          "id": "evt_20261030_03",
+          "title": "deepseek-ai/deepseek-harness",
+          "summary": "仓库 deepseek-ai/deepseek-harness：DeepSeek Harness: Everything is a Plugin。当前 26.6 万 Star，创建于 2026-08-13，平均每日新增约 3,426 Star；本次采样较上次 +43；TypeScript · 许可证 MIT。",
+          "why": "自动化边界前移，重点看权限隔离，以及失败之后能不能回滚。已有可直接核对的原始出处，可以引用。",
+          "category": "ai_agent",
+          "evidence": "verified",
+          "score": 82,
+          "heat": 5,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · deepseek-ai/deepseek-harness",
+              "url": "https://github.com/deepseek-ai/deepseek-harness",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 265977,
+            "starDelta": 43,
+            "starPerDay": 3425.5
+          }
+        },
+        {
+          "id": "evt_20261030_04",
+          "title": "yetone/magpie",
+          "summary": "仓库 yetone/magpie：Every agent's model. One place. Codex on DeepSeek, Claude Code on Kimi, from the menu bar。当前 2.6 万 Star，创建于 2026-09-23，平均每日新增约 700.9 Star；本次采样较上次 +33；Go · 许可证 MIT。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 80,
+          "heat": 4,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · yetone/magpie",
+              "url": "https://github.com/yetone/magpie",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 25557,
+            "starDelta": 33,
+            "starPerDay": 700.9
+          }
+        },
+        {
+          "id": "evt_20261030_29",
+          "title": "mw00/project-maya",
+          "summary": "仓库 mw00/project-maya：Project Maya - run GLM-5.3-Flash (321B MoE), DeepSeek-V4.1-Flash-1017 (748B MoE) and…。当前 2,224 Star，创建于 2026-10-06，平均每日新增约 95.9 Star；本次采样较上次 +2；Cuda · 许可证 MIT。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 76,
+          "heat": 4,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · mw00/project-maya",
+              "url": "https://github.com/mw00/project-maya",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 2224,
+            "starDelta": 2,
+            "starPerDay": 95.9
+          }
+        }
+      ]
+    },
+    {
+      "key": "business",
+      "items": [
+        {
+          "id": "evt_20261030_109",
+          "title": "Google admits AI search makes less money, but it's fixing that with more ads",
+          "summary": "Ars Technica 10-30 00:24 的原文摘要：Google's negative cash flow balloons to -$9.06 billion, and stock price tumbles following Q3 earnings.。",
+          "why": "价格与融资会改变成本线，但截图和转述要等官方条款确认，别先改自己的报价。目前只有转述，引用前需二次确认。",
+          "category": "other",
+          "evidence": "pending",
+          "score": 58,
+          "heat": 3,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "media",
+              "label": "Ars Technica",
+              "url": "https://arstechnica.com/gadgets/2026/10/google-admits-ai-search-makes-less-money-but-its-fixing-that-with-more-ads",
+              "verified": false
+            }
+          ],
+          "signals": {},
+          "missing": "只有单一来源（rss），需等官方公告或第二家独立报道"
+        }
+      ]
+    },
+    {
+      "key": "action",
+      "items": [
+        {
+          "id": "evt_20261030_05",
+          "title": "stablyai/orca",
+          "summary": "仓库 stablyai/orca：Orca is the place for working with a fleet of agents (e.g. Grok Bot, Claude Code). Run…。当前 11.0 万 Star，创建于 2026-03-17，平均每日新增约 485.9 Star；本次采样较上次 +20；TypeScript · 许可证 MIT。",
+          "why": "自动化边界前移，重点看权限隔离，以及失败之后能不能回滚。已有可直接核对的原始出处，可以引用。",
+          "category": "ai_agent",
+          "evidence": "verified",
+          "score": 67,
+          "heat": 4,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · stablyai/orca",
+              "url": "https://github.com/stablyai/orca",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 110305,
+            "starDelta": 20,
+            "starPerDay": 485.9
+          }
+        },
+        {
+          "id": "evt_20261030_12",
+          "title": "paperclipai/paperclip",
+          "summary": "仓库 paperclipai/paperclip：The open-source app everyone uses to manage agents at work。当前 10.9 万 Star，创建于 2026-03-02，平均每日新增约 450.1 Star；本次采样较上次 +12；TypeScript · 许可证 MIT。",
+          "why": "自动化边界前移，重点看权限隔离，以及失败之后能不能回滚。已有可直接核对的原始出处，可以引用。",
+          "category": "ai_agent",
+          "evidence": "verified",
+          "score": 63,
+          "heat": 4,
+          "firstSeenAt": "2026-10-30T03:27:39.742Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · paperclipai/paperclip",
+              "url": "https://github.com/paperclipai/paperclip",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 108709,
+            "starDelta": 12,
+            "starPerDay": 450.1
+          }
+        }
+      ]
+    }
+  ],
+  "sourceHealth": [
+    {
+      "source": "hackernews",
+      "ok": true,
+      "items": 19,
+      "duplicates": 0,
+      "ms": 2059,
+      "error": null,
+      "note": "扫描 80 条高分帖，AI 相关 19 条"
+    },
+    {
+      "source": "github",
+      "ok": true,
+      "items": 86,
+      "duplicates": 0,
+      "ms": 24864,
+      "error": null,
+      "note": "86 个仓库 / 12 次请求（已用 PAT）"
+    },
+    {
+      "source": "rss",
+      "ok": true,
+      "items": 6,
+      "duplicates": 0,
+      "ms": 23843,
+      "error": null,
+      "note": "theverge 2/10（AI 相关 2），arstechnica 1/20（AI 相关 1），bbc-tech 失败（fetch failed），openai-blog 3/1337（AI 相关 3），huggingface-blog 失败（fetch failed）"
+    }
+  ]
+}

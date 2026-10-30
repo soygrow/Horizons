@@ -41,6 +41,9 @@ async function main(): Promise<void> {
   const order = process.argv.includes("--new")
     ? ("NEWEST" as const)
     : ("VOTES" as const);
+  // 单个 topic 挖尽后（新增骤降）用 --topic 切换到其他话题继续扩充候选
+  const topicIdx = process.argv.indexOf("--topic");
+  const topic = topicIdx >= 0 && process.argv[topicIdx + 1] ? process.argv[topicIdx + 1] : "artificial-intelligence";
   const existingNames = new Set(existing.map((t) => t.name.toLowerCase()));
 
   function absorb(label: string, items: AITool[]): void {
@@ -64,7 +67,7 @@ async function main(): Promise<void> {
           fetchProductHuntTools(
             config.maxPerRun + existing.length,
             order,
-            "artificial-intelligence",
+            topic,
             existingNames,
           ),
         );

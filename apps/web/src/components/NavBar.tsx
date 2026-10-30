@@ -6,6 +6,7 @@ const channels: { label: string; href: string; soon?: boolean }[] = [
   { label: "AI工具榜", href: "/tools" },
   { label: "GitHub榜", href: "/github" },
   { label: "AI趋势词榜单", href: "/trends" },
+  { label: "定价", href: "/pricing" },
 ];
 
 export function NavBar() {

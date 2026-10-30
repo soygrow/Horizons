@@ -144,13 +144,13 @@ fetch_code() {
   printf '%s' "${code:-000}" > "$tmpdir/$key"
 }
 
-for path in / /tools /github /trends; do
+for path in / /tools /github /trends /daily; do
   fetch_code "$path" "$(printf '%s' "$path" | tr '/' '_')" &
 done
 curl -s --max-time 10 "$SITE/deploy-check-should-not-exist" 2>/dev/null > "$tmpdir/notfound" &
 wait || true
 
-for path in / /tools /github /trends; do
+for path in / /tools /github /trends /daily; do
   key=$(printf '%s' "$path" | tr '/' '_')
   code=$(cat "$tmpdir/$key" 2>/dev/null || echo 000)
   if [ "$code" = "200" ]; then

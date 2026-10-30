@@ -1,0 +1,222 @@
+---
+import Base from "../../layouts/Base.astro";
+import {
+  digests,
+  digestCounts,
+  EVIDENCE_META,
+  MODULE_META,
+  categoryLabel,
+  formatDate,
+  formatTime,
+  signalText,
+  type Digest,
+} from "../../lib/digest";
+
+export function getStaticPaths() {
+  return digests.map((digest) => ({ params: { date: digest.date }, props: { digest } }));
+}
+
+const { digest } = Astro.props as { digest: Digest };
+const index = digests.findIndex((d) => d.date === digest.date);
+const newer = index > 0 ? digests[index - 1] : null;
+const older = index >= 0 && index < digests.length - 1 ? digests[index + 1] : null;
+const total = digestCounts(digest);
+
+/** 全局序号，跨模块连续编号 */
+let counter = 0;
+const rows = digest.modules.map((m) => ({
+  ...MODULE_META[m.key],
+  key: m.key,
+  items: m.items.map((item) => ({ ...item, rank: String(++counter).padStart(2, "0") })),
+}));
+
+const title = `每日情报 ${digest.date} · Horizons`;
+const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，覆盖模型与产品、开源工具、商业信号与可立即验证的动作，每条附原始链接与证据等级。`;
+---
+
+<Base {title} {description}>
+  <article class="mx-auto max-w-4xl px-4 pb-16 pt-10 sm:px-6">
+    <!-- 刊头 -->
+    <nav class="flex items-center justify-between gap-3 text-[11px] text-ink-muted">
+      <a href="/daily" class="transition hover:text-ink">← 每日情报</a>
+      <div class="flex items-center gap-3">
+        {newer && <a href={`/daily/${newer.date}`} class="transition hover:text-ink">较新一期 →</a>}
+        {older && <a href={`/daily/${older.date}`} class="transition hover:text-ink">较早一期</a>}
+      </div>
+    </nav>
+
+    <header class="mt-5 border-b border-border pb-6">
+      <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+        <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+          AI 科技热点日报
+        </h1>
+        <p class="text-[11px] text-ink-muted tabular-nums">{formatDate(digest.date)}</p>
+      </div>
+
+      <dl
+        class="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4"
+      >
+        {
+          [
+            { k: "候选条目", v: digest.stats.candidates },
+            { k: "合并后事件", v: digest.stats.merged },
+            { k: "证据已核验", v: digest.stats.verified },
+            { k: "本期采用", v: total },
+          ].map((s) => (
+            <div class="bg-surface px-3 py-2.5">
+              <dt class="text-[10px] text-ink-muted">{s.k}</dt>
+              <dd class="mt-0.5 text-base font-bold text-ink tabular-nums">{s.v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <p class="mt-3 text-[11px] leading-relaxed text-ink-muted">
+        标题保留原文，不做机器翻译，方便你直接核对。正文由模板按原始材料生成，只写材料能支持的事实。
+      </p>
+    </header>
+
+    <!-- 模块 -->
+    {
+      rows.map((mod) => (
+        <section class="mt-10">
+          <div class="flex items-end justify-between gap-3 border-b border-border pb-2">
+            <div class="flex items-baseline gap-2">
+              <span class="font-mono text-[11px] text-ink-muted/70">{mod.no}</span>
+              <h2 class="text-base font-semibold text-ink">{mod.name}</h2>
+              <span class="text-[11px] text-ink-muted">{mod.desc}</span>
+            </div>
+            <span class="text-[11px] text-ink-muted tabular-nums">{mod.items.length} 条</span>
+          </div>
+
+          <ul class={mod.key === "rumor" ? "divide-y divide-dashed divide-border" : "divide-y divide-border"}>
+            {mod.items.map((item) => (
+              <li id={item.id} class="flex gap-3 scroll-mt-24 py-5 sm:gap-4">
+                <div class="w-7 shrink-0 text-center">
+                  <span class="text-[11px] font-semibold text-ink-muted tabular-nums">{item.rank}</span>
+                  <div class="mt-1.5 flex flex-col items-center gap-[3px]" aria-hidden="true">
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <span
+                        class:list={[
+                          "h-[3px] w-3.5 rounded-full",
+                          i < item.heat ? "bg-primary" : "bg-ink-muted/20",
+                        ]}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span
+                      class:list={[
+                        "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium",
+                        EVIDENCE_META[item.evidence].cls,
+                      ]}
+                    >
+                      <span class:list={["h-1 w-1 rounded-full", EVIDENCE_META[item.evidence].dot]} />
+                      {EVIDENCE_META[item.evidence].label}
+                    </span>
+                    <span class="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] text-ink-secondary">
+                      {categoryLabel(item.category)}
+                    </span>
+                    {signalText(item).map((s) => (
+                      <span class="text-[10px] text-ink-muted tabular-nums">{s}</span>
+                    ))}
+                  </div>
+
+                  <h3 class="mt-2 text-[15px] font-semibold leading-snug text-ink">
+                    {item.sources[0] ? (
+                      <a
+                        href={item.sources[0].url}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        class="underline decoration-border decoration-1 underline-offset-[3px] transition hover:decoration-primary"
+                      >
+                        {item.title}
+                      </a>
+                    ) : (
+                      item.title
+                    )}
+                  </h3>
+
+                  <p class="mt-2 text-[13px] leading-relaxed text-ink-secondary">
+                    <span class="font-medium text-ink">发生了什么 · </span>
+                    {item.summary}
+                  </p>
+                  <p class="mt-1.5 text-[13px] leading-relaxed text-ink-secondary">
+                    <span class="font-medium text-ink">为什么值得关注 · </span>
+                    {item.why}
+                  </p>
+
+                  {item.missing && (
+                    <p class="mt-2 rounded-md border border-amber-500/20 bg-amber-500/[0.06] px-2.5 py-1.5 text-[11px] leading-relaxed text-amber-700 dark:text-amber-400">
+                      证据缺口：{item.missing}
+                    </p>
+                  )}
+
+                  <div class="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-ink-muted">
+                    <span>来源</span>
+                    {item.sources.map((s, i) => (
+                      <>
+                        {i > 0 && <span class="text-border-strong">/</span>}
+                        <a
+                          href={s.url}
+                          target="_blank"
+                          rel="noopener noreferrer nofollow"
+                          class="text-ink-secondary underline decoration-border underline-offset-2 transition hover:text-primary"
+                        >
+                          {s.label}
+                        </a>
+                      </>
+                    ))}
+                    <span class="text-border-strong">·</span>
+                    <span class="tabular-nums">首次发现 {formatTime(item.firstSeenAt)}</span>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+
+    <!-- 采集健康度 -->
+    <section class="mt-12 rounded-xl border border-border bg-surface p-4">
+      <h2 class="text-sm font-semibold text-ink">本期数据源</h2>
+      <ul class="mt-3 flex flex-wrap gap-1.5">
+        {
+          digest.sourceHealth.map((s) => (
+            <li
+              class:list={[
+                "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11px]",
+                s.ok
+                  ? "border-border bg-surface-2 text-ink-secondary"
+                  : "border-red-500/25 bg-red-500/10 text-red-600 dark:text-red-400",
+              ]}
+              title={s.error ?? s.note ?? ""}
+            >
+              <span class:list={["h-1.5 w-1.5 rounded-full", s.ok ? "bg-emerald-500" : "bg-red-500"]} />
+              {s.source}
+              <span class="text-ink-muted tabular-nums">{s.items} 条</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-3 text-[11px] leading-relaxed text-ink-muted">
+        源失败不会让整期缺内容，但会在上面标红；任何一期都能追溯到具体是哪个源没取到。
+      </p>
+    </section>
+
+    <footer class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+      <p class="text-[11px] text-ink-muted">
+        生成于 {formatTime(digest.generatedAt)} · 数据可回溯到原始链接
+      </p>
+      <div class="flex gap-3 text-[11px]">
+        <a href="/daily" class="text-ink-secondary transition hover:text-ink">每日情报首页</a>
+        <a href="/tools" class="text-ink-secondary transition hover:text-ink">AI 工具榜</a>
+        <a href="/trends" class="text-ink-secondary transition hover:text-ink">趋势词榜</a>
+      </div>
+    </footer>
+  </article>
+</Base>

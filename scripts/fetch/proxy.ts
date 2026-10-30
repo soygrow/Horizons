@@ -5,13 +5,19 @@ import { Agent, request as httpsRequest } from "node:https";
 import { request as httpRequest } from "node:http";
 import { connect as tlsConnect, type ConnectionOptions } from "node:tls";
 
+/** 出口：null 表示直连（不挂代理） */
+export type Exit = URL | null;
+
+const DIRECT_TOKENS = new Set(["direct", "直连", "直链", "none", "off"]);
+
 /**
- * 出口代理列表。TRENDS_PROXY 支持逗号/分号/空白分隔的多个出口，
- * 例如 TRENDS_PROXY="127.0.0.1:7890,127.0.0.1:7891"：
+ * 出口列表。TRENDS_PROXY 支持逗号/分号/空白分隔的多个出口，
+ * 也可以把「直连」当作一个出口混排：
+ *   TRENDS_PROXY="direct,127.0.0.1:7890"   → 先直连，被限流后换代理
  * 某个 IP 被 Google 限流时自动换下一个，而不是干等冷却。
- * 未设置 TRENDS_PROXY 时回退到 HTTPS_PROXY / ALL_PROXY。
+ * 未配置时默认直连。
  */
-export function proxyList(): URL[] {
+export function exitList(): Exit[] {
   const raw = [
     process.env.TRENDS_PROXY,
     process.env.HTTPS_PROXY || process.env.https_proxy,
@@ -20,11 +26,20 @@ export function proxyList(): URL[] {
     .filter((s): s is string => !!s && s.trim().length > 0)
     .join(",");
 
-  const out: URL[] = [];
+  const out: Exit[] = [];
   const seen = new Set<string>();
   for (const part of raw.split(/[,;\s]+/)) {
     const text = part.trim();
     if (!text) continue;
+
+    if (DIRECT_TOKENS.has(text.toLowerCase())) {
+      if (!seen.has("direct")) {
+        seen.add("direct");
+        out.push(null);
+      }
+      continue;
+    }
+
     try {
       const u = new URL(text.includes("://") ? text : `http://${text}`);
       if (!u.hostname) continue;
@@ -36,22 +51,35 @@ export function proxyList(): URL[] {
       // 忽略非法项
     }
   }
+
+  if (out.length === 0) out.push(null);
   return out;
 }
 
-let activeProxy = 0;
+let activeExit = 0;
 
 /** 当前生效的出口 */
+export function currentExit(): Exit {
+  const list = exitList();
+  return list[activeExit % list.length] ?? null;
+}
+
+/** 当前出口的可读标识，用于日志 */
+export function exitLabel(): string {
+  const exit = currentExit();
+  return exit ? `${exit.hostname}:${exit.port || (exit.protocol === "https:" ? 443 : 80)}` : "direct";
+}
+
+/** 兼容旧调用点 */
 export function proxyUrl(): URL | null {
-  const list = proxyList();
-  return list.length > 0 ? list[activeProxy % list.length] : null;
+  return currentExit();
 }
 
 /** 切到下一个出口；只有 1 个出口时返回 false（调用方改为退避等待） */
 export function rotateProxy(): boolean {
-  const list = proxyList();
+  const list = exitList();
   if (list.length <= 1) return false;
-  activeProxy = (activeProxy + 1) % list.length;
+  activeExit = (activeExit + 1) % list.length;
   return true;
 }
 
@@ -102,8 +130,8 @@ function tunnelAgent(proxy: URL): Agent {
 const agentCache = new Map<string, Agent>();
 
 export function getAgent(): Agent | null {
-  const proxy = proxyUrl();
-  if (!proxy) return null;
+  const proxy = currentExit();
+  if (!proxy) return null; // 直连出口：走原生 fetch
   const key = `${proxy.protocol}//${proxy.hostname}:${proxy.port}`;
   const hit = agentCache.get(key);
   if (hit) return hit;

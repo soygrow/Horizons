@@ -6,6 +6,7 @@ const columns: { title: string; links: { label: string; href: string }[] }[] = [
     links: [
       { label: "AI工具榜", href: "/tools" },
       { label: "AI趋势词榜单", href: "/trends" },
+      { label: "定价", href: "/pricing" },
       { label: "提交产品", href: "/#submit" },
       { label: "Changelog", href: "#" },
     ],

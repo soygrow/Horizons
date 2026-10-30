@@ -4,6 +4,10 @@
  * 获取「产品表现」8 指标；低流量站渠道份额 null 时兜底为 0。
  */
 import { config } from "../config";
+import { cachedCall } from "../api-cache";
+
+/** Apify 按次计费近似单价（付费 Actor 每次查询），仅用于台账估算，不影响业务逻辑 */
+const APIFY_COST_PER_DOMAIN = 0.0028;
 
 /* ------------------------------- 原始类型 ------------------------------- */
 
@@ -30,6 +34,8 @@ export interface SimilarwebRawItem {
   organicSearchShare?: number;
   paidSearchShare?: number;
   keywordsTotal?: number;
+  /** 分月总访问量历史（lergassy 提供，用于还原真实趋势） */
+  monthlyVisitsHistory?: { month?: string; visits?: number }[];
 }
 
 /* ------------------------------- 指标类型 ------------------------------- */
@@ -127,39 +133,66 @@ export function extractTrafficMetrics(item: SimilarwebRawItem): TrafficMetrics {
 
 
 
-/** 备选 Actor（异步 run + 轮询 + 取 dataset） */
-async function fetchLergassy(domain: string): Promise<SimilarwebRawItem | null> {
+/**
+ * 备选 Actor（异步 run + 轮询 + 取 dataset），经缓存。
+ * 2026-10 实测：这是当前唯一可用的 SimilarWeb 数据源，且不产生 Apify 费用。
+ */
+export async function fetchLergassy(domain: string): Promise<SimilarwebRawItem | null> {
+  return cachedCall(
+    {
+      provider: "apify",
+      endpoint: "lergassy/similarweb-traffic-scraper",
+      key: domain,
+      costUsd: 0, // 实测该 Actor 不产生费用（usd=0），台账按 0 记
+      ttlDays: 30,
+      cacheNull: false, // 免费源：超时/抖动不固化成「无数据」
+    },
+    () => fetchLergassyRaw(domain),
+  );
+}
+
+async function runLergassyBatch(websites: string[]): Promise<SimilarwebRawItem[]> {
   const token = process.env.APIFY_TOKEN!;
   const ACTOR = "lergassy~similarweb-traffic-scraper";
   const base = "https://api.apify.com/v2";
 
-  try {
-    const runRes = await fetch(`${base}/acts/${ACTOR}/runs?token=${encodeURIComponent(token)}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "User-Agent": config.userAgent },
-      body: JSON.stringify({ websites: [domain] }),
-      signal: AbortSignal.timeout(60_000),
-    });
-    if (!runRes.ok) return null;
-    const runData = (await runRes.json()) as { data?: { id?: string } };
-    const runId = runData.data?.id;
-    if (!runId) return null;
+  const runRes = await fetch(`${base}/acts/${ACTOR}/runs?token=${encodeURIComponent(token)}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "User-Agent": config.userAgent },
+    body: JSON.stringify({ websites }),
+    signal: AbortSignal.timeout(60_000),
+  });
+  // 请求失败必须抛错：调用方需区分「网络/平台故障」与「真的查不到」，
+  // 否则一次网络抖动会把整批站写成「无数据」并永久跳过
+  if (!runRes.ok) throw new Error(`lergassy 启动失败 HTTP ${runRes.status}`);
+  const runId = ((await runRes.json()) as { data?: { id?: string } }).data?.id;
+  if (!runId) throw new Error("lergassy 未返回 runId");
 
-    for (let i = 0; i < 30; i++) {
-      await new Promise((r) => setTimeout(r, 2000));
-      const stRes = await fetch(`${base}/actor-runs/${runId}?token=${encodeURIComponent(token)}`, {
-        signal: AbortSignal.timeout(30_000),
-      });
-      const st = (await stRes.json()) as { data?: { status?: string } };
-      const status = st.data?.status;
-      if (status === "SUCCEEDED") break;
-      if (status === "FAILED" || status === "ABORTED" || status === "TIMED-OUT") return null;
-    }
-
-    const dsRes = await fetch(`${base}/actor-runs/${runId}/dataset/items?token=${encodeURIComponent(token)}`, {
+  // 实测单站 run 需 40~90s，批量更多域名会更久，上限给到 5 分钟
+  const deadline = Date.now() + 300_000;
+  let status = "";
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 3000));
+    const stRes = await fetch(`${base}/actor-runs/${runId}?token=${encodeURIComponent(token)}`, {
       signal: AbortSignal.timeout(30_000),
     });
-    const items = (await dsRes.json()) as SimilarwebRawItem[];
+    status = ((await stRes.json()) as { data?: { status?: string } }).data?.status ?? "";
+    if (status === "SUCCEEDED") break;
+    if (status === "FAILED" || status === "ABORTED" || status === "TIMED-OUT") {
+      throw new Error(`lergassy run 失败：${status}`);
+    }
+  }
+  if (status !== "SUCCEEDED") throw new Error(`lergassy run 超时：${status || "unknown"}`);
+
+  const dsRes = await fetch(`${base}/actor-runs/${runId}/dataset/items?token=${encodeURIComponent(token)}`, {
+    signal: AbortSignal.timeout(60_000),
+  });
+  return (await dsRes.json()) as SimilarwebRawItem[];
+}
+
+async function fetchLergassyRaw(domain: string): Promise<SimilarwebRawItem | null> {
+  try {
+    const items = await runLergassyBatch([domain]);
     return (
       items.find((i) => i.type !== "notice" && i.domain === domain) ??
       items.find((i) => i.type !== "notice" && (i.monthlyVisits ?? 0) > 0) ??
@@ -170,8 +203,64 @@ async function fetchLergassy(domain: string): Promise<SimilarwebRawItem | null> 
   }
 }
 
-/** 主 Actor：vortex_data/similarweb-scraper（字段最全，渠道份额为顶层 0-1 小数） */
+/** 单次 run 可容纳的域名数量（实测 25 个约 90s，再多收益递减） */
+const LERGASSY_BATCH = 25;
+
+/**
+ * 批量查询月访问量：一次 run 查多个域名，把「N × 42s」压到「N/25 × 90s」。
+ * 仅用于初筛与批量补齐，不写单域缓存；需要进入长期缓存的数据走 fetchLergassy。
+ */
+export async function fetchLergassyMulti(
+  domains: string[],
+): Promise<Map<string, SimilarwebRawItem | null | undefined>> {
+  const out = new Map<string, SimilarwebRawItem | null | undefined>();
+  for (let i = 0; i < domains.length; i += LERGASSY_BATCH) {
+    const chunk = domains.slice(i, i + LERGASSY_BATCH);
+    // 网络抖动常见（undici 对解析出的多个 IP 依次尝试，全部超时才失败），重试 3 次
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const items = await runLergassyBatch(chunk);
+        const byDomain = new Map<string, SimilarwebRawItem>();
+        for (const it of items) {
+          if (it.type !== "notice" && it.domain) byDomain.set(it.domain.toLowerCase(), it);
+        }
+        // null 表示平台确实没有该站数据
+        for (const d of chunk) out.set(d, byDomain.get(d.toLowerCase()) ?? null);
+        break;
+      } catch (e) {
+        const msg = (e as Error).message;
+        if (attempt === 3) {
+          // undefined 表示网络/平台故障，调用方不得据此判定「无数据」
+          console.warn(`[apify] 批次放弃（${chunk.length} 个域名）：${msg}`);
+          for (const d of chunk) out.set(d, undefined);
+        } else {
+          console.warn(`[apify] 第 ${attempt} 次失败，5s 后重试：${msg}`);
+          await new Promise((r) => setTimeout(r, 5000 * attempt));
+        }
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * 主 Actor：vortex_data/similarweb-scraper（字段最全，渠道份额为顶层 0-1 小数）。
+ * 经缓存：30 天内同一域名不再真实调用（SimilarWeb 本身按月更新）。
+ */
 export async function fetchVortex(domain: string): Promise<VortexItem | null> {
+  return cachedCall(
+    {
+      provider: "apify",
+      endpoint: "vortex_data/similarweb-scraper",
+      key: domain,
+      costUsd: APIFY_COST_PER_DOMAIN,
+      ttlDays: 30,
+    },
+    () => fetchVortexRaw(domain),
+  );
+}
+
+async function fetchVortexRaw(domain: string): Promise<VortexItem | null> {
   const token = process.env.APIFY_TOKEN!;
   const url = `https://api.apify.com/v2/acts/vortex_data~similarweb-scraper/run-sync-get-dataset-items?token=${encodeURIComponent(token)}`;
   try {
@@ -231,6 +320,19 @@ export interface DomainRatingItem {
 }
 
 export async function fetchDomainRating(domain: string): Promise<number | null> {
+  return cachedCall(
+    {
+      provider: "apify",
+      endpoint: "datascraperes/bulk-domain-rating-checker",
+      key: domain,
+      costUsd: APIFY_COST_PER_DOMAIN,
+      ttlDays: 90, // DR 变化慢，三个月内复用
+    },
+    () => fetchDomainRatingRaw(domain),
+  );
+}
+
+async function fetchDomainRatingRaw(domain: string): Promise<number | null> {
   const token = process.env.APIFY_TOKEN!;
   const ACTOR = "datascraperes~bulk-domain-rating-checker";
   const base = "https://api.apify.com/v2";
@@ -293,15 +395,27 @@ export async function fetchTrafficMetrics(
   preloaded?: VortexItem | null,
 ): Promise<TrafficMetrics | null> {
   let m: TrafficMetrics | null = null;
+  // 2026-10 实测：vortex_data/similarweb-scraper 对所有域名（含 picvo.ai、claude.com）
+  // 均返回空数组，已不可用；lergassy 正常且不产生费用。故默认 lergassy 优先，
+  // 需要时用 APIFY_PRIMARY=vortex 切回旧顺序。
+  const preferVortex = (process.env.APIFY_PRIMARY ?? "lergassy").toLowerCase() === "vortex";
 
-  // 1. 主 Actor：vortex_data（完整渠道份额）
-  const v = preloaded !== undefined ? preloaded : await fetchVortex(domain);
-  if (v) m = extractVortex(v);
-
-  // 2. 备选：lergassy（若 vortex 无有效月访问量）
-  if (!m?.monthlyVisits) {
+  if (preferVortex) {
+    const v = preloaded !== undefined ? preloaded : await fetchVortex(domain);
+    if (v) m = extractVortex(v);
+    if (!m?.monthlyVisits) {
+      const fb = await fetchLergassy(domain);
+      if (fb) m = extractTrafficMetrics(fb);
+    }
+  } else {
+    // 1) 当前唯一可用源
     const fb = await fetchLergassy(domain);
     if (fb) m = extractTrafficMetrics(fb);
+    // 2) 兜底：vortex（已失效，保留以便 Actor 恢复后无需改代码）
+    if (!m?.monthlyVisits) {
+      const v = preloaded !== undefined ? preloaded : await fetchVortex(domain);
+      if (v) m = extractVortex(v);
+    }
   }
 
   // 自然搜索份额缺失时不再回调 DataForSEO：enrich-site 阶段的 historical_rank_overview
