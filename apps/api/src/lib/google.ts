@@ -18,20 +18,38 @@ export function buildAuthorizeUrl(
   return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 }
 
-/** 生成防 CSRF 的 state（HMAC 签名，免存储） */
-export async function createState(secret: string): Promise<string> {
-  const nonce = randomBytesBase64(16);
-  const sig = await hmacSign(secret, nonce);
-  return `${nonce}.${sig}`;
+/** 只允许站内相对路径回跳，挡掉 //evil.com 这类开放重定向 */
+export function safeNext(input: string | null | undefined): string | null {
+  if (!input) return null;
+  if (!input.startsWith("/") || input.startsWith("//")) return null;
+  if (input.length > 200) return null;
+  return input;
 }
 
-/** 校验 state 签名 */
-export async function verifyState(state: string, secret: string): Promise<boolean> {
+/**
+ * 生成防 CSRF 的 state（HMAC 签名，免存储）。
+ * 顺带把登录后的回跳路径签进 state，回调时无需额外存储。
+ */
+export async function createState(secret: string, next?: string | null): Promise<string> {
+  const nonce = randomBytesBase64(16);
+  const target = safeNext(next);
+  const payload = target ? `${nonce}|${target}` : nonce;
+  const sig = await hmacSign(secret, payload);
+  return `${payload}.${sig}`;
+}
+
+/** 校验 state 签名，成功时返回签名内的回跳路径 */
+export async function verifyState(
+  state: string,
+  secret: string,
+): Promise<{ ok: boolean; next: string | null }> {
   const idx = state.lastIndexOf(".");
-  if (idx <= 0) return false;
-  const nonce = state.slice(0, idx);
+  if (idx <= 0) return { ok: false, next: null };
+  const payload = state.slice(0, idx);
   const sig = state.slice(idx + 1);
-  return hmacVerify(secret, nonce, sig);
+  if (!(await hmacVerify(secret, payload, sig))) return { ok: false, next: null };
+  const sep = payload.indexOf("|");
+  return { ok: true, next: sep > 0 ? safeNext(payload.slice(sep + 1)) : null };
 }
 
 export interface GoogleTokenResponse {

@@ -19,9 +19,9 @@ function sessionCookie(value: string, maxAge: number): string {
   return `${SESSION_COOKIE}=${value}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`;
 }
 
-/** 发起 Google 登录 */
+/** 发起 Google 登录；?next=/opportunity/xxx 登录后回到原页 */
 auth.get("/google", async (c) => {
-  const state = await createState(c.env.SESSION_SECRET);
+  const state = await createState(c.env.SESSION_SECRET, c.req.query("next"));
   const url = buildAuthorizeUrl(
     c.env.GOOGLE_CLIENT_ID,
     c.env.GOOGLE_REDIRECT_URI,
@@ -30,11 +30,12 @@ auth.get("/google", async (c) => {
   return c.redirect(url);
 });
 
-/** Google 登录回调：换 token → 拉用户 → upsert → 签发会话 → 跳转账户页 */
+/** Google 登录回调：换 token → 拉用户 → upsert → 签发会话 → 跳转回原页（默认账户页） */
 auth.get("/google/callback", async (c) => {
   const code = c.req.query("code");
   const state = c.req.query("state");
-  if (!code || !state || !(await verifyState(state, c.env.SESSION_SECRET))) {
+  const checked = state ? await verifyState(state, c.env.SESSION_SECRET) : { ok: false, next: null };
+  if (!code || !checked.ok) {
     return c.text("登录状态校验失败，请重试", 400);
   }
 
@@ -90,7 +91,7 @@ auth.get("/google/callback", async (c) => {
     );
 
     c.header("Set-Cookie", sessionCookie(token, SESSION_TTL_SECONDS));
-    return c.redirect(new URL("/account", c.env.APP_URL).toString());
+    return c.redirect(new URL(checked.next ?? "/account", c.env.APP_URL).toString());
   } catch (e) {
     console.error("[auth] callback error", e);
     return c.text("登录失败，请稍后重试", 500);

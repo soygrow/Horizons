@@ -609,6 +609,57 @@ export interface SessionUser {
   avatarUrl: string | null;
 }
 
+/* ------------------------------ 我在做 ------------------------------ */
+
+export const DOING_STATUSES = ["doing", "shipped", "paused", "dropped"] as const;
+export type DoingStatus = (typeof DOING_STATUSES)[number];
+
+export const DOING_STATUS_LABELS: Record<DoingStatus, string> = {
+  doing: "在做",
+  shipped: "已上线",
+  paused: "暂停了",
+  dropped: "放弃了",
+};
+
+/** 一条留言（同一用户可多条） */
+export interface DoingUpdate {
+  id: string;
+  body: string;
+  status: DoingStatus;
+  createdAt: number;
+}
+
+/** 某条机会下的一位参与者（公开信息，不含邮箱） */
+export interface DoingDoer {
+  userId: string;
+  name: string | null;
+  avatarUrl: string | null;
+  status: DoingStatus;
+  updateCount: number;
+  lastAt: number;
+  joinedAt: number;
+}
+
+/** GET /api/opportunity/:slug/doing */
+export interface DoingResponse {
+  slug: string;
+  count: number;
+  doers: DoingDoer[];
+  /** 是否已登录：决定按钮显示「我在做」还是「登录后加入」 */
+  authenticated: boolean;
+  /** 当前登录用户的参与情况；未登录或未加入为 null */
+  me: { status: DoingStatus; joinedAt: number; updates: DoingUpdate[] } | null;
+}
+
+/** GET /api/opportunity/:slug/doing/:userId */
+export interface DoingUserResponse {
+  user: { id: string; name: string | null; avatarUrl: string | null; status: DoingStatus };
+  updates: DoingUpdate[];
+}
+
+export const DOING_MAX_BODY = 280;
+export const DOING_MIN_INTERVAL_MS = 20_000;
+
 /** GitHub 榜单：每日一手数值快照（日维度采集，体现项目快速变化） */
 export interface GitHubSnapshot {
   date: string; // YYYY-MM-DD
