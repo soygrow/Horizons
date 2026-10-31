@@ -1,4 +1,6 @@
 import "../config"; // 副作用导入：加载 .env.local
+import fs from "node:fs";
+import path from "node:path";
 import type { AITrend, TrendSeries, TrendSourceRef, ValueVerdict } from "@horizons/shared";
 import { hasLLM } from "../sources/llm";
 import { RateLimitError, sleep } from "./http";
@@ -53,6 +55,43 @@ import {
  *   pnpm trends:collect --rescore             # 不联网，按最新口径重算全库分数
  *   pnpm trends:collect --with-ph --limit 40  # 启用 Product Hunt 发现
  */
+
+/**
+ * 跳过表：Google Trends 里确实没有量的词，记下来，一段时间内不再试探。
+ *
+ * 不记录的话每轮都会重新烧配额在这些词上——上一轮 300 个预算里 200 个是空序列，
+ * 真正的新词只跑了几十个。字节级原因见 emptyRetry 的注释。
+ */
+const SKIP_FILE = path.resolve(process.cwd(), "content/trends-skipped.json");
+const SKIP_TTL_DAYS = 14;
+
+/** 参照词：必然有数据，用来区分「候选没量」和「我们被限流」 */
+const SENTINEL_KEYWORD = "chatgpt";
+
+interface SkipRecord {
+  reason: string;
+  at: string;
+}
+
+function loadSkips(): Map<string, SkipRecord> {
+  try {
+    const raw = JSON.parse(fs.readFileSync(SKIP_FILE, "utf-8")) as Record<string, SkipRecord>;
+    return new Map(Object.entries(raw));
+  } catch {
+    return new Map();
+  }
+}
+
+function saveSkips(skips: Map<string, SkipRecord>): void {
+  const now = Date.now();
+  const fresh: Record<string, SkipRecord> = {};
+  for (const [k, v] of skips) {
+    const at = Date.parse(v.at);
+    if (Number.isFinite(at) && now - at < SKIP_TTL_DAYS * 86_400_000) fresh[k] = v;
+  }
+  fs.mkdirSync(path.dirname(SKIP_FILE), { recursive: true });
+  fs.writeFileSync(SKIP_FILE, JSON.stringify(fresh, null, 2));
+}
 
 interface Args {
   limit: number;
@@ -311,10 +350,19 @@ async function main(): Promise<void> {
 
   const existingIndex = indexByKey(dataset.keywords);
   const existingKeys = new Set(existingIndex.keys());
+  const skips = loadSkips();
+  const skipCutoff = Date.now() - SKIP_TTL_DAYS * 86_400_000;
+  let skippedByCache = 0;
   const deduped = dedupeSubsets(dedupeNearDuplicates(dedupeCandidates(discovered)), existingKeys);
   const filtered = dedupeVariants(deduped, existingKeys).filter((c) => {
     // 已在库的词继续维护，不再重复做准入判定
     if (existingIndex.has(c.normalizedKey)) return true;
+    // 近两周确认为无量的词不再占配额
+    const skip = skips.get(c.normalizedKey);
+    if (skip && Date.parse(skip.at) > skipCutoff) {
+      skippedByCache++;
+      return false;
+    }
     // 工具库 / 种子 / PH 本身已限定 AI 范围，只做可用性校验；
     // RSS 与 GitHub 名字来源混杂，必须命中 AI 关键词，否则 2000 词里一半是噪声
     if (c.origin === "aitools" || c.origin === "seed" || c.origin === "ph") {
@@ -322,7 +370,10 @@ async function main(): Promise<void> {
     }
     return matchKeyword(c.keyword);
   });
-  console.log(`[trends] 候选 ${discovered.length} 个，去重过滤后 ${filtered.length} 个`);
+  console.log(
+    `[trends] 候选 ${discovered.length} 个，去重过滤后 ${filtered.length} 个` +
+      (skippedByCache > 0 ? `（跳过表挡掉 ${skippedByCache} 个已知无量词）` : ""),
+  );
 
   // ---- 价值准入：先用便宜的 LLM 判「有没有创业切口」，再花宝贵的 Trends 配额 ----
   // 读者是创业者，收进来的词必须能回答「明天能拿它做什么」。
@@ -553,6 +604,31 @@ async function main(): Promise<void> {
 
   const queue = [...batch];
   const attempts = new Map<string, number>();
+  /** 空序列只重试一次：Google 限流时会返回空 timeline 而不是 429，重试一次能救回来一半 */
+  const emptyRetried = new Set<string>();
+
+  /**
+   * 限流时 Google 返回空 timeline 而非 429，于是「这个词没量」和「我们被限流了」
+   * 看起来一模一样。拿一个必然有数据的参照词对照：连它也是空的，就是限流，
+   * 此时绝不能写跳过表——那会让一批本来有量的词被误伤 14 天。
+   */
+  let healthAt = 0;
+  let healthOk = true;
+  const throttled = async (): Promise<boolean> => {
+    if (Date.now() - healthAt < 60_000) return !healthOk;
+    try {
+      const probe = await fetchInterest(SENTINEL_KEYWORD, args.geo, false);
+      healthOk = (probe.series?.values.length ?? 0) > 0;
+    } catch {
+      healthOk = false;
+    }
+    healthAt = Date.now();
+    return !healthOk;
+  };
+
+  const recordSkip = (keyword: string, reason: string): void => {
+    skips.set(normalizeKey(keyword), { reason: reason.slice(0, 80), at: new Date().toISOString() });
+  };
 
   /** 记一次重试；超过上限则放弃该词 */
   const requeueOrDrop = (item: (typeof batch)[number]): void => {
@@ -620,18 +696,48 @@ async function main(): Promise<void> {
             if (e instanceof RateLimitError) {
               note(true);
               requeueOrDrop(item);
+            } else if (/^空序列/.test(msgOf(e)) && !emptyRetried.has(item.keyword)) {
+              // 空序列一半是限流期的软拒绝而不是真的没量：
+              // 实测 ai excel plugin 批量空、单独请求峰值 100。隔几秒再单独问一次
+              emptyRetried.add(item.keyword);
+              await sleep(8000);
+              try {
+                const again = await fetchInterest(item.keyword, args.geo, !args.noRelated);
+                note(false);
+                await processTrend(item, again.series, again.relatedQueries);
+              } catch (e2) {
+                if (e2 instanceof RateLimitError || (await throttled())) {
+                  note(true);
+                  requeueOrDrop(item);
+                } else {
+                  failed++;
+                  recordSkip(item.keyword, msgOf(e2));
+                  console.warn(`${item.keyword} → 跳过：${msgOf(e2)}`);
+                }
+              }
+            } else if (await throttled()) {
+              // 参照词也没数据 → 我们在被限流，这个词既不判死也不写跳过表
+              note(true);
+              requeueOrDrop(item);
             } else {
               failed++;
+              recordSkip(item.keyword, msgOf(e));
               console.warn(`${item.keyword} → 跳过：${msgOf(e)}`);
             }
           }
           continue;
         }
 
-        failed++;
-        console.warn(
-          `${item.keyword} → 跳过：${missing.includes(item.keyword) ? "搜索量不足" : "无数据"}`,
-        );
+        if (await throttled()) {
+          note(true);
+          requeueOrDrop(item);
+        } else {
+          failed++;
+          recordSkip(item.keyword, missing.includes(item.keyword) ? "搜索量不足" : "无数据");
+          console.warn(
+            `${item.keyword} → 跳过：${missing.includes(item.keyword) ? "搜索量不足" : "无数据"}`,
+          );
+        }
       }
 
       await sleep(randomDelay());
@@ -655,6 +761,41 @@ async function main(): Promise<void> {
         if (/socket|network|ECONNRESET|ETIMEDOUT|ENOTFOUND|fetch failed|aborted|TLS/i.test(msg)) {
           console.warn(`[trends] 批量网络抖动（${chunk.length} 词回队列）：${msg.slice(0, 70)}`);
           for (const item of chunk) requeueOrDrop(item);
+        } else if (/^空序列/.test(msg)) {
+          // 先问参照词：它也是空的说明是软限流，这 5 个词一个都不能判死
+          if (await throttled()) {
+            note(true);
+            console.warn(`[trends] 参照词同样为空 → 软限流，${chunk.length} 词回队列`);
+            for (const item of chunk) requeueOrDrop(item);
+            await sleep(60_000);
+            continue;
+          }
+          // 整组返回空时 throws 会带走 5 个词。降级成单词请求逐个确认，
+          // 否则这 5 个词连「是否真的没量」都无从判断
+          console.warn(`[trends] 整组空序列（${chunk.length} 词），降级单词重取`);
+          for (const item of chunk) {
+            if (emptyRetried.has(item.keyword)) {
+              failed++;
+              recordSkip(item.keyword, "整组与单词均为空序列");
+              continue;
+            }
+            emptyRetried.add(item.keyword);
+            try {
+              const single = await fetchInterest(item.keyword, args.geo, !args.noRelated);
+              note(false);
+              await processTrend(item, single.series, single.relatedQueries);
+            } catch (e2) {
+              if (e2 instanceof RateLimitError || (await throttled())) {
+                note(true);
+                requeueOrDrop(item);
+              } else {
+                failed++;
+                recordSkip(item.keyword, msgOf(e2));
+                console.warn(`${item.keyword} → 跳过：${msgOf(e2)}`);
+              }
+            }
+            await sleep(randomDelay());
+          }
         } else {
           failed += chunk.length;
           console.warn(`批量请求失败（${chunk.length} 词）：${msg}`);
@@ -686,7 +827,10 @@ async function main(): Promise<void> {
     mode: "live",
     region: args.geo,
   });
-  console.log(`[trends] 完成：成功 ${ok}，失败 ${failed}，词库 ${keywords.length} 个 → content/trends.json`);
+  saveSkips(skips);
+  console.log(
+    `[trends] 完成：成功 ${ok}，失败 ${failed}，词库 ${keywords.length} 个，跳过表 ${skips.size} 条 → content/trends.json`,
+  );
 }
 
 main().catch((e) => {
