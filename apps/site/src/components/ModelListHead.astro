@@ -1,0 +1,23 @@
+---
+/** 模型榜表头：11 列，GRID 必须与 lib/row-html.ts 的 MODEL_GRID 一致 */
+import { MODEL_GRID } from "../lib/row-html";
+---
+
+<div
+  class:list={[
+    "grid items-center gap-3 border-b border-border bg-surface-2/60 px-4 py-2.5 text-xs text-ink-muted sm:px-5",
+    MODEL_GRID,
+  ]}
+>
+  <span>#</span>
+  <span>模型 / 厂商</span>
+  <span>模态</span>
+  <span>类型</span>
+  <span class="text-center" title="单次请求可容纳的最大 token 数">上下文</span>
+  <span class="text-center" title="单次响应可生成的最大 token 数">最大输出</span>
+  <span class="text-center" title="每 100 万输入 token 的美元价">输入 /1M</span>
+  <span class="text-center" title="每 100 万输出 token 的美元价">输出 /1M</span>
+  <span class="text-center" title="命中上下文缓存时的输入价">缓存 /1M</span>
+  <span class="text-center" title="能力 ÷ 平均单价，样本内归一">性价比</span>
+  <span class="text-center">综合得分</span>
+</div>

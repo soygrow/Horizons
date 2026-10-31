@@ -1,0 +1,566 @@
+---
+/** AI 模型详情：定价与成本、能力定位、适用场景与同类对比 */
+import Base from "../../layouts/Base.astro";
+import SectionHeader from "../../components/detail/SectionHeader.astro";
+import Stat from "../../components/detail/Stat.astro";
+import { formatDateShort } from "../../lib/format";
+import { modelRows } from "../../lib/dataset";
+import { vendorLogoChip } from "../../lib/row-html";
+import {
+  avgPrice,
+  formatTokens,
+  gradeTone,
+  modelModalityLabels,
+  priceText,
+  priceTone,
+  tierLabel,
+} from "../../lib/model-score";
+
+export async function getStaticPaths() {
+  const mods = import.meta.glob("../../../../../content/dist/models/detail/*.json", {
+    eager: true,
+  }) as Record<string, { data: Record<string, any>; derived: any }>;
+  return Object.values(mods).map((mod) => ({
+    params: { slug: mod.data.slug },
+    props: { model: mod.data, row: mod.derived },
+  }));
+}
+
+const { model, row } = Astro.props as { model: Record<string, any>; row: any };
+const price = model.price ?? {};
+const modalityLabel = modelModalityLabels[model.modality] ?? model.modality;
+/** 标签去重：模态、开源状态、协议已在前面单独展示，不再重复 */
+const shownLabels = new Set(
+  [modalityLabel, model.open ? "开源" : "闭源", model.license].filter(Boolean),
+);
+const heroTags = [...new Set(model.tags ?? [])].filter((t: string) => !shownLabels.has(t));
+const total = modelRows.length;
+const rank = row.rank ?? 0;
+const topPct = rank > 0 ? Math.max(1, Math.ceil((rank / total) * 100)) : 0;
+
+/** 成本速算：按每 1M token 单价换算三种典型月用量 */
+const scenarios = [
+  { label: "轻量试用", usage: "1M 输入 + 0.2M 输出", inM: 1, outM: 0.2 },
+  { label: "常规产品", usage: "10M 输入 + 2M 输出", inM: 10, outM: 2 },
+  { label: "规模调用", usage: "100M 输入 + 20M 输出", inM: 100, outM: 20 },
+].map((s) => {
+  const cost =
+    price.input === null && price.output === null
+      ? null
+      : (price.input ?? 0) * s.inM + (price.output ?? 0) * s.outM;
+  return { ...s, cost };
+});
+
+const fmtCost = (v: number | null) =>
+  v === null ? "—" : v >= 1000 ? `$${Math.round(v).toLocaleString("en-US")}` : `$${v.toFixed(2)}`;
+
+const selfAvg = avgPrice(row.priceIn ?? null, row.priceOut ?? null);
+
+/** 同类对比：优先同模态 + 同价位（0.5×–2×），不足 3 个则退回同模态；按综合得分取前 5 */
+const sameModality = modelRows.filter((r) => r.slug !== model.slug && r.modality === model.modality);
+const sameBand =
+  selfAvg === null
+    ? []
+    : sameModality.filter((r) => {
+        const p = avgPrice(r.priceIn, r.priceOut);
+        return p !== null && p >= selfAvg * 0.5 && p <= selfAvg * 2;
+      });
+const basePool = sameBand.length >= 3 ? sameBand : sameModality;
+const comparePool = basePool.length ? basePool : modelRows.filter((r) => r.slug !== model.slug);
+const compareSorted = [...comparePool].sort((a, b) => b.score - a.score);
+// 单一厂商最多占 2 席，避免对比表被同一家刷屏；不足 5 个再放宽
+const compare = [];
+const compareCounts = new Map();
+for (const r of compareSorted) {
+  if ((compareCounts.get(r.provider) ?? 0) >= 2) continue;
+  compareCounts.set(r.provider, (compareCounts.get(r.provider) ?? 0) + 1);
+  compare.push(r);
+  if (compare.length === 5) break;
+}
+if (compare.length < 5) {
+  for (const r of compareSorted) {
+    if (compare.includes(r)) continue;
+    compare.push(r);
+    if (compare.length === 5) break;
+  }
+}
+
+/** 能力分名次（按能力排序，与综合得分名次区分） */
+const capabilityRank =
+  modelRows.filter((r) => r.capability > row.capability).length + 1;
+
+/** 同能力但更便宜：能力分不低于它 3 分、均价低于它 80% 的模型 */
+const cheaper =
+  selfAvg === null
+    ? []
+    : modelRows
+        .filter((r) => {
+          if (r.slug === model.slug || r.capability < row.capability - 3) return false;
+          const p = avgPrice(r.priceIn, r.priceOut);
+          return p !== null && p < selfAvg * 0.8;
+        })
+        .sort(
+          (a, b) =>
+            (avgPrice(a.priceIn, a.priceOut) ?? 0) - (avgPrice(b.priceIn, b.priceOut) ?? 0),
+        )
+        .slice(0, 3);
+
+/** 官方模型页链接：优先 OpenRouter 模型页（简介原文来源） */
+const sourceUrl =
+  (model.sources ?? []).find((s: any) => /OpenRouter/i.test(s.label))?.url ??
+  (model.sources ?? [])[0]?.url ??
+  null;
+
+const priceRows = [
+  { label: "输入（Input）", value: price.input ?? null, hint: "每 100 万输入 token" },
+  { label: "输出（Output）", value: price.output ?? null, hint: "每 100 万输出 token" },
+  { label: "缓存输入（Cached）", value: price.cachedInput ?? null, hint: "命中上下文缓存时的输入价" },
+];
+---
+
+<Base
+  title={`${model.name} — 价格、上下文与能力`}
+  description={
+    model.desc
+      ? `${model.provider} ${model.name}：${model.desc}`
+      : `${model.provider} ${model.name} 的定价、上下文窗口、开源协议、能力分与性价比，以及与同类模型的价格对比。`
+  }
+>
+  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <div class="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+      <a href="/models" class="hover:text-ink">AI 模型榜</a>
+      <span>/</span>
+      <span class="text-ink-secondary">{model.provider}</span>
+      <span>/</span>
+      <span class="text-ink-secondary">{model.name}</span>
+      <span class="ml-auto rounded-full border border-border bg-surface px-2.5 py-1">
+        快照 {formatDateShort(model.updatedAt ?? model.releasedAt)}
+      </span>
+    </div>
+
+    <!-- Hero -->
+    <div class="mt-4 rounded-2xl border border-border bg-surface p-6">
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-secondary">
+              {modalityLabel}
+            </span>
+            <span
+              class:list={[
+                "rounded-full border px-2 py-0.5 text-[11px] font-medium",
+                model.open
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-500"
+                  : "border-border bg-surface-2 text-ink-muted",
+              ]}
+            >
+              {model.open ? "开源" : "闭源"}
+            </span>
+            {model.license && model.license !== "Proprietary" && (
+              <span class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-muted">
+                {model.license}
+              </span>
+            )}
+            {heroTags.map((t: string) => (
+              <span class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-secondary">
+                {t}
+              </span>
+            ))}
+          </div>
+
+          <div class="mt-3 flex items-start gap-3">
+            <Fragment set:html={vendorLogoChip(model.provider, "lg")} />
+            <div class="min-w-0">
+              <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{model.name}</h1>
+              <p class="mt-1 text-sm text-ink-muted">{model.provider}</p>
+            </div>
+          </div>
+
+          {model.desc && (
+            <div class="mt-4 max-w-3xl rounded-xl border border-border bg-surface-2/40 px-4 py-3">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-[10px] font-medium tracking-wide text-ink-muted">官方简介</span>
+                {sourceUrl && (
+                  <a
+                    href={sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-[11px] text-ink-muted underline-offset-2 hover:text-primary hover:underline"
+                  >
+                    查看原文 ↗
+                  </a>
+                )}
+              </div>
+              <p class="mt-1.5 text-sm leading-relaxed text-ink-secondary">{model.desc}</p>
+            </div>
+          )}
+
+          <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
+            <span class="text-ink-muted">
+              上下文 <span class="font-medium text-ink">{formatTokens(model.context)}</span>
+            </span>
+            <span class="text-ink-muted">
+              输入 <span class={`font-medium tabular-nums ${priceTone(price.input ?? null)}`}>{priceText(price.input ?? null)}</span>
+              /1M
+            </span>
+            <span class="text-ink-muted">
+              输出 <span class={`font-medium tabular-nums ${priceTone(price.output ?? null)}`}>{priceText(price.output ?? null)}</span>
+              /1M
+            </span>
+            {model.freeTier && (
+              <span class="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] text-emerald-500">
+                {model.freeTier}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div class="grid w-full shrink-0 grid-cols-3 gap-2 sm:gap-3 lg:w-[22rem]">
+          {
+            [
+              { label: "综合得分", sub: "能力为主", value: row.score, tone: "text-ink" },
+              { label: "能力分", sub: "模型自身强度", value: row.capability, tone: "text-primary" },
+              { label: "性价比", sub: "能力 ÷ 均价", value: row.value, tone: "text-emerald-500" },
+            ].map((c) => (
+              <div class="min-w-0 rounded-xl border border-border bg-surface p-3 sm:p-4">
+                <div class="truncate text-[11px] text-ink-muted sm:text-xs">{c.label}</div>
+                <div class="mt-1 flex items-baseline gap-1">
+                  <span class={`text-2xl font-bold tabular-nums sm:text-3xl ${c.tone}`}>
+                    {typeof c.value === "number" && c.value > 0
+                      ? Number.isInteger(c.value)
+                        ? c.value
+                        : c.value.toFixed(1)
+                      : "—"}
+                  </span>
+                  <span class="text-[11px] text-ink-muted">/100</span>
+                </div>
+                <div class="mt-2 h-1 w-full overflow-hidden rounded-full bg-surface-2">
+                  <div
+                    class="h-full rounded-full bg-primary"
+                    style={`width: ${typeof c.value === "number" ? `${Math.min(100, Math.max(3, c.value))}%` : "0%"}`}
+                  />
+                </div>
+                <div class="mt-2 hidden text-[11px] leading-snug text-ink-muted sm:block">{c.sub}</div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="mt-5 flex flex-wrap items-center gap-3 border-t border-border pt-4 text-xs">
+        <span class="rounded-full border border-border bg-surface-2 px-2.5 py-1 text-ink-muted">
+          评级
+        </span>
+        <span class={`rounded border px-1.5 py-0.5 text-[11px] font-semibold ${gradeTone[row.grade] ?? gradeTone.C}`}>
+          {row.grade}
+        </span>
+        <span class="text-ink-muted">
+          能力与性价比在全站 {total} 个模型中归一比较，综合得分位列前 {topPct}%；评级仅用于横向参考。
+        </span>
+      </div>
+    </div>
+
+    <!-- 指标条 -->
+    <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <Stat label="上下文窗口" value={formatTokens(model.context)} hint="单次请求可容纳的最大 token 数" />
+      <Stat label="最大输出" value={formatTokens(model.maxOutput)} hint="单次响应可生成的最大 token 数" />
+      <Stat label="参数量" value={model.params ?? undefined} placeholder="未公开" hint="厂商未公开参数量" />
+      <Stat label="知识截止" value={model.knowledgeCutoff ?? undefined} placeholder="未公开" hint="训练数据的大致截止时间" />
+      <Stat label="发布" value={formatDateShort(model.releasedAt)} hint="模型首次公开发布时间" />
+      <Stat label="许可" value={model.license === "Proprietary" ? "闭源授权" : (model.license ?? undefined)} hint="开源协议或闭源授权" />
+      <Stat label="模态" value={modalityLabel} hint="输入输出支持的内容类型" />
+      <Stat label="显式推理" value={(model.tags ?? []).includes("推理") ? "支持" : "不支持"} hint="是否有独立的思考/推理模式" />
+    </div>
+
+    <div class="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div class="flex flex-col gap-10">
+        <!-- 01 定价与成本 -->
+        <section class="flex flex-col gap-4">
+          <SectionHeader
+            no="01"
+            title="定价与成本"
+            desc="统一换算为每 100 万 token 的美元价，方便横向比较；不推算厂商未公开的折扣价。"
+          />
+          <div class="rounded-2xl border border-border bg-surface p-5">
+            <div class="grid gap-3 sm:grid-cols-3">
+              {
+                priceRows.map((p) => (
+                  <div class="flex flex-col gap-1 rounded-lg border border-border p-4">
+                    <span class="text-xs text-ink-muted">{p.label}</span>
+                    <span class={`text-lg font-semibold tabular-nums ${priceTone(p.value)}`}>
+                      {p.value === null ? "未公开" : priceText(p.value)}
+                    </span>
+                    <span class="text-[11px] leading-relaxed text-ink-muted">{p.hint}</span>
+                  </div>
+                ))
+              }
+            </div>
+
+            <div class="mt-5 border-t border-border pt-4">
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h3 class="text-xs font-semibold text-ink">成本速算</h3>
+                <span class="text-[11px] text-ink-muted">按公开牌价，USD / 月</span>
+              </div>
+              <div class="mt-3 grid gap-2 sm:grid-cols-3">
+                {
+                  scenarios.map((s) => (
+                    <div class="rounded-lg bg-surface-2 px-3 py-2.5">
+                      <div class="text-[11px] text-ink-muted">{s.label}</div>
+                      <div class="mt-0.5 text-base font-semibold tabular-nums text-ink">{fmtCost(s.cost)}</div>
+                      <div class="mt-0.5 text-[11px] tabular-nums text-ink-muted">{s.usage}</div>
+                    </div>
+                  ))
+                }
+              </div>
+            </div>
+
+            <div class="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4 text-xs">
+              <span class="text-ink-muted">免费额度</span>
+              {model.freeTier ? (
+                <span class="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] text-emerald-500">
+                  {model.freeTier}
+                </span>
+              ) : (
+                <span class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-muted">
+                  未提供公开免费额度
+                </span>
+              )}
+            </div>
+
+            <p class="mt-3 border-t border-border pt-3 text-[11px] leading-relaxed text-ink-muted">
+              价格取自厂商公开挂牌价（每 1M tokens 的美元价，OpenRouter 与厂商官方定价页交叉核对），实际计费以厂商官方定价页为准；缓存命中、批量接口与区域价格可能不同。
+            </p>
+          </div>
+        </section>
+
+        <!-- 02 能力定位 -->
+        <section class="flex flex-col gap-4">
+          <SectionHeader
+            no="02"
+            title="能力定位"
+            desc="能力分为公开基准与家族校准的估算值，用于横向分档；上下文、输出上限与价格来自公开模型接口与厂商定价页，均可核对。"
+          />
+          <div class="rounded-2xl border border-border bg-surface p-5">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <div class="text-xs text-ink-muted">能力档位</div>
+                <div class="mt-1 flex items-baseline gap-2">
+                  <span class="text-2xl font-bold tabular-nums text-ink">{row.capability}</span>
+                  <span class="text-sm text-ink-muted">/ 100</span>
+                  <span class="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+                    {tierLabel(row.capability)}
+                  </span>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-x-6 gap-y-2 text-xs">
+                <div>
+                  <div class="text-ink-muted">综合名次</div>
+                  <div class="mt-0.5 font-medium tabular-nums text-ink">
+                    {rank > 0 ? `#${rank}` : "—"}<span class="text-ink-muted"> / {total}</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="text-ink-muted">能力名次</div>
+                  <div class="mt-0.5 font-medium tabular-nums text-ink">
+                    #{capabilityRank}<span class="text-ink-muted"> / {total}</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="text-ink-muted">综合得分前</div>
+                  <div class="mt-0.5 font-medium tabular-nums text-ink">{topPct}%</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 h-1.5 overflow-hidden rounded-full bg-surface-2">
+              <div class="h-full rounded-full bg-primary" style={`width: ${Math.min(100, Math.max(3, row.capability))}%`} />
+            </div>
+
+            {
+              (model.benchmarks ?? []).length > 0 && (
+                <ul class="mt-5 flex flex-col gap-3 border-t border-border pt-4">
+                  {(model.benchmarks ?? []).map((b: any) => {
+                    const num = parseFloat(String(b.value));
+                    const pct = Number.isFinite(num) ? Math.min(100, Math.max(0, num)) : 0;
+                    return (
+                      <li class="flex items-center gap-3">
+                        <span class="w-40 shrink-0 text-xs font-medium text-ink">{b.name}</span>
+                        <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2">
+                          <div class="h-full rounded-full bg-primary/70" style={`width: ${pct}%`} />
+                        </div>
+                        <span class="w-16 shrink-0 text-right text-xs tabular-nums text-ink-secondary">
+                          {b.value}
+                          {b.unit ?? ""}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )
+            }
+
+            <div class="mt-5 grid gap-4 border-t border-border pt-4 sm:grid-cols-2">
+              <div>
+                <h3 class="text-xs font-semibold text-emerald-500">优势</h3>
+                <ul class="mt-2 flex flex-col gap-1.5 text-xs leading-relaxed text-ink-secondary">
+                  {(model.strengths ?? []).map((s: string) => <li>· {s}</li>)}
+                </ul>
+              </div>
+              <div>
+                <h3 class="text-xs font-semibold text-amber-500">短板</h3>
+                <ul class="mt-2 flex flex-col gap-1.5 text-xs leading-relaxed text-ink-secondary">
+                  {(model.weaknesses ?? []).map((s: string) => <li>· {s}</li>)}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 03 适用场景 -->
+        <section class="flex flex-col gap-4">
+          <SectionHeader
+            no="03"
+            title="适用场景"
+            desc="按能力、上下文与价格给出的典型用法，不是「什么都能做」的通用建议。"
+          />
+          <div class="grid gap-3 sm:grid-cols-3">
+            {
+              (model.useCases ?? []).map((u: string, i: number) => (
+                <div class="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-5">
+                  <span class="w-fit rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] tabular-nums text-ink-muted">
+                    场景 {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <p class="text-sm font-medium leading-snug text-ink">{u}</p>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        <!-- 04 同类对比 -->
+        <section class="flex flex-col gap-4">
+          <SectionHeader
+            no="04"
+            title="同类模型对比"
+            desc="同模态、均价 0.5×–2× 区间的模型放在一起比价格与得分，回答「同样预算选谁」。"
+          />
+
+          <div class="overflow-x-auto rounded-2xl border border-border bg-surface">
+            <div class="min-w-[600px]">
+              <div class="grid grid-cols-[minmax(0,1.6fr)_4.5rem_4.75rem_4.75rem_4rem_4rem] items-center gap-3 border-b border-border px-4 py-2.5 text-xs text-ink-muted">
+                <span>模型</span>
+                <span class="text-center">上下文</span>
+                <span class="text-center">输入 /1M</span>
+                <span class="text-center">输出 /1M</span>
+                <span class="text-center">性价比</span>
+                <span class="text-center">得分</span>
+              </div>
+              {
+                compare.map((p) => (
+                  <a
+                    href={`/models/${p.slug}`}
+                    class="grid grid-cols-[minmax(0,1.6fr)_4.5rem_4.75rem_4.75rem_4rem_4rem] items-center gap-3 border-b border-border px-4 py-3 text-sm transition last:border-0 hover:bg-surface-2"
+                  >
+                    <span class="min-w-0">
+                      <span class="block truncate font-medium text-ink">{p.name}</span>
+                      <span class="block truncate text-xs text-ink-muted">{p.provider}</span>
+                    </span>
+                    <span class="text-center text-xs tabular-nums text-ink-secondary">{p.contextText}</span>
+                    <span class={`text-center text-xs tabular-nums ${priceTone(p.priceIn)}`}>{p.priceIn === null ? "—" : priceText(p.priceIn)}</span>
+                    <span class={`text-center text-xs tabular-nums ${priceTone(p.priceOut)}`}>{p.priceOut === null ? "—" : priceText(p.priceOut)}</span>
+                    <span class="text-center text-xs tabular-nums text-emerald-500">{p.value > 0 ? p.value : "—"}</span>
+                    <span class="text-center text-xs font-semibold tabular-nums text-ink">{p.score.toFixed(1)}</span>
+                  </a>
+                ))
+              }
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- 侧栏 -->
+      <aside class="flex flex-col gap-5">
+        <div class="rounded-2xl border border-border bg-surface p-5">
+          <h2 class="text-sm font-semibold text-ink">评分构成</h2>
+          <dl class="mt-4 flex flex-col gap-3 text-xs">
+            <div class="flex items-center justify-between">
+              <dt class="text-ink-muted">能力分</dt>
+              <dd class="font-semibold tabular-nums text-ink">{row.capability} / 100</dd>
+            </div>
+            <div class="flex items-center justify-between">
+              <dt class="text-ink-muted">性价比分</dt>
+              <dd class="font-semibold tabular-nums text-ink">{row.value > 0 ? row.value : "—"} / 100</dd>
+            </div>
+            <div class="flex items-center justify-between border-t border-border pt-3">
+              <dt class="text-ink-muted">综合得分</dt>
+              <dd class="font-semibold tabular-nums text-ink">{row.score.toFixed(1)}</dd>
+            </div>
+          </dl>
+          <p class="mt-3 text-[11px] leading-relaxed text-ink-muted">
+            综合得分 = 0.9 × 能力 + 0.1 × 性价比。性价比按全库平均单价归一，样本变化时会小幅波动。
+          </p>
+        </div>
+
+        {cheaper.length > 0 && (
+          <div class="rounded-2xl border border-border bg-surface p-5">
+            <h2 class="text-sm font-semibold text-ink">同能力、更便宜</h2>
+            <ul class="mt-3 flex flex-col gap-2.5">
+              {cheaper.map((a) => (
+                <li>
+                  <a
+                    href={`/models/${a.slug}`}
+                    class="group flex items-center justify-between gap-2 text-xs"
+                  >
+                    <span class="min-w-0">
+                      <span class="block truncate font-medium text-ink group-hover:text-primary">{a.name}</span>
+                      <span class="block truncate text-[11px] text-ink-muted">{a.provider}</span>
+                    </span>
+                    <span class="shrink-0 text-right">
+                      <span class="block tabular-nums text-emerald-500">能力 {a.capability}</span>
+                      <span class="block tabular-nums text-[11px] text-ink-muted">
+                        均价 {priceText(avgPrice(a.priceIn, a.priceOut))}
+                      </span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p class="mt-3 border-t border-border pt-3 text-[11px] leading-relaxed text-ink-muted">
+              能力分与它相差不超过 3 分，均价不到它的 80%。预算敏感时优先看这几个。
+            </p>
+          </div>
+        )}
+
+        <div class="rounded-2xl border border-border bg-surface p-5">
+          <h2 class="text-sm font-semibold text-ink">数据来源</h2>
+          <ul class="mt-3 flex flex-col gap-2">
+            {
+              (model.sources ?? []).map((s: any) => (
+                <li>
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-xs text-ink-secondary underline-offset-2 transition hover:text-primary hover:underline"
+                  >
+                    {s.label} ↗
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-3 border-t border-border pt-3 text-[11px] leading-relaxed text-ink-muted">
+            数据每日从 OpenRouter 与 models.dev 两个公开接口采集后合并去重；能力分为家族校准估算，接入基准评测后会自动替换。
+          </p>
+        </div>
+
+        <a
+          href="/models"
+          class="rounded-2xl border border-border bg-surface p-5 text-sm text-ink-secondary transition hover:border-primary/40 hover:text-primary"
+        >
+          ← 返回 AI 模型榜
+        </a>
+      </aside>
+    </div>
+  </div>
+</Base>

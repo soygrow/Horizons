@@ -1,0 +1,193 @@
+---
+/**
+ * AI 模型榜：单一列表页。
+ * 模态 / 类型 / 厂商是筛选条件，不是分区；首屏服务端渲染第 1 页，
+ * 筛选 / 搜索 / 排序 / 分页由浏览器接管（口径同 tools / trends）。
+ */
+import Base from "../../layouts/Base.astro";
+import SearchInput from "../../components/SearchInput.astro";
+import FilterGroup from "../../components/FilterGroup.astro";
+import ModelListHead from "../../components/ModelListHead.astro";
+import { modelRows, modelFilters, PAGE_SIZE } from "../../lib/dataset";
+import { formatDateShort } from "../../lib/format";
+import { priceText } from "../../lib/model-score";
+
+const openCount = modelRows.filter((r) => r.open).length;
+const closedCount = modelRows.length - openCount;
+const multimodalCount = modelRows.filter((r) => r.modality === "multimodal").length;
+const providerCount = new Set(modelRows.map((r) => r.provider)).size;
+const freeCount = modelRows.filter((r) => r.hasFree).length;
+const minInput = modelRows.reduce<number | null>(
+  (min, r) => (r.priceIn === null ? min : min === null ? r.priceIn : Math.min(min, r.priceIn)),
+  null,
+);
+
+const modalityOptions = [
+  { value: "All", label: "全部" },
+  ...modelFilters.modalities.map((m) => ({
+    value: m.value,
+    label: modelRows.find((r) => r.modality === m.value)?.modalityLabel ?? m.value,
+  })),
+];
+const typeOptions = [
+  { value: "all", label: "全部" },
+  { value: "open", label: "开源" },
+  { value: "closed", label: "闭源" },
+];
+const providerOptions = [
+  { value: "All", label: "全部" },
+  ...modelFilters.providers.map((p) => ({ value: p.value, label: p.value })),
+];
+const priceOptions = [
+  { value: "all", label: "全部" },
+  { value: "low", label: "≤ $0.5" },
+  { value: "mid", label: "$0.5–3" },
+  { value: "high", label: "$3–10" },
+  { value: "premium", label: "> $10" },
+];
+const freeOptions = [
+  { value: "all", label: "全部" },
+  { value: "free", label: "有免费变体" },
+];
+
+const firstPage = [...modelRows]
+  .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
+  .slice(0, PAGE_SIZE);
+
+const title = "AI 模型榜 · Horizons";
+const description =
+  "按能力、价格与性价比排序的 AI 大模型榜单：上下文窗口、开源/闭源、每百万 token 输入输出价格一目了然，支持按厂商与模态筛选。";
+---
+
+<Base title={title} description={description}>
+  <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+    <header>
+      <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">AI 模型榜</h1>
+      <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink-secondary">
+        不是又一个模型参数表，而是把<strong class="font-medium text-ink">能力、价格与性价比</strong>放在一起看：
+        上下文、最大输出、缓存价、每百万 token 的输入与输出价格全部列出，选型时不用再跳十几个定价页。
+        收录 OpenRouter 全量付费文本模型，并用 models.dev 补齐阿里、智谱、月之暗面、字节、腾讯等厂商的直营型号，
+        已去重日期快照、社区微调与转售镜像。
+      </p>
+
+      <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+        <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-secondary">
+          共 {modelRows.length} 个模型
+        </span>
+        <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-secondary">
+          {providerCount} 家厂商
+        </span>
+        <span class="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-emerald-500">
+          开源 {openCount}
+        </span>
+        <span class="rounded-full border border-border bg-surface-2 px-2.5 py-1 text-ink-muted">
+          闭源 {closedCount}
+        </span>
+        <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-secondary">
+          多模态 {multimodalCount}
+        </span>
+        {freeCount > 0 && (
+          <span class="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-emerald-500">
+            有免费变体 {freeCount}
+          </span>
+        )}
+        {minInput !== null && (
+          <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-secondary">
+            最低输入价 {priceText(minInput)} /1M
+          </span>
+        )}
+        <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-muted">
+          快照 {formatDateShort(modelFilters.updatedAt)}
+        </span>
+      </div>
+
+      <div class="mt-5">
+        <SearchInput value="" action="/models" placeholder="搜索模型 / 厂商 / 简介" />
+      </div>
+    </header>
+
+    <div class="mt-6 space-y-3">
+      <FilterGroup title="模态" param="mod" options={modalityOptions} current="All" />
+      <FilterGroup title="类型" param="type" options={typeOptions} current="all" />
+      <FilterGroup title="均价档位" param="price" options={priceOptions} current="all" />
+      <FilterGroup title="免费变体" param="free" options={freeOptions} current="all" />
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="mr-1 text-xs font-medium text-ink-muted">厂商</span>
+        <select
+          data-filter-select="prov"
+          aria-label="按厂商筛选"
+          class="rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:text-ink focus:border-primary/50 focus:outline-none"
+        >
+          {providerOptions.map((p) => <option value={p.value}>{p.label}</option>)}
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
+      <span id="models-meta" class="text-sm text-ink-muted">
+        共 {modelRows.length} 个模型 · 按综合得分排序
+      </span>
+      <div class="flex flex-wrap items-center gap-1">
+        <a href="#" data-sort="score" class="rounded-full bg-primary px-3 py-1 text-xs font-medium text-white">
+          综合得分
+        </a>
+        {modelFilters.sorts
+          .filter((s) => s.value !== "score")
+          .map((s) => (
+            <a
+              href="#"
+              data-sort={s.value}
+              class="rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-ink-secondary transition hover:text-ink"
+            >
+              {s.label}
+            </a>
+          ))}
+      </div>
+    </div>
+
+    <!-- 列表：首屏静态渲染第 1 页，浏览器接管后按筛选条件重绘 -->
+    <div class="mt-4 overflow-x-auto rounded-2xl border border-border bg-surface">
+      <div class="min-w-[1232px]">
+        <ModelListHead />
+        <div id="models-rows">
+          {firstPage.map((r) => <Fragment set:html={r.h} />)}
+        </div>
+        <div id="models-empty" class="hidden px-4 py-16 text-center">
+          <p class="text-sm text-ink-muted">没有匹配的模型，换个筛选条件试试。</p>
+          <a href="/models" data-reset class="mt-2 inline-block text-xs text-primary hover:underline">
+            重置筛选
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="mt-6" id="models-pager" data-page-size={PAGE_SIZE}></div>
+
+    <section class="mt-10 rounded-2xl border border-border bg-surface p-5">
+      <h2 class="text-sm font-semibold text-ink">评分与价格是怎么算的</h2>
+      <div class="mt-3 grid gap-3 text-xs leading-relaxed text-ink-secondary sm:grid-cols-3">
+        <p>
+          <span class="font-medium text-ink">能力分</span>
+          由公开基准与模型家族校准的估算值，回答「它本身有多强」；接入基准评测后替换。
+        </p>
+        <p>
+          <span class="font-medium text-ink">性价比分</span>
+          = 能力 ÷ 平均单价，在全库内归一；回答「同样的钱能买到多少能力」。
+        </p>
+        <p>
+          <span class="font-medium text-ink">综合得分</span>
+          = 0.9 × 能力分 + 0.1 × 性价比分，决定列表名次（<span class="font-mono">#</span> 是全站名次，筛选不重排）。
+        </p>
+      </div>
+      <p class="mt-3 border-t border-border pt-3 text-xs leading-relaxed text-ink-muted">
+        最大输出与缓存价取自公开模型接口与厂商定价页；只有部分厂商公布缓存输入价，未公布的显示为
+        <span class="font-mono">—</span>，不做推算。简介取自模型页同步的厂商原文，不做改写；没有原文的模型不生成简介。
+        数据源：{modelFilters.source}。{modelFilters.capabilityNote}
+      </p>
+    </section>
+  </div>
+
+  <script>
+    import { initModelsFilter } from "../../scripts/model-filter";
+    initModelsFilter();
+  </script>
+</Base>

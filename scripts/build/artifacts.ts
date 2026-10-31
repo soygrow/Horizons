@@ -10,12 +10,13 @@
  *   或：cd apps/web && pnpm exec tsx --tsconfig ./tsconfig.json ../../scripts/build/artifacts.ts
  */
 import { createHash } from "node:crypto";
-import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { gzipSync } from "node:zlib";
 
 import {
   tools,
+  listedTools,
   githubRepos,
   githubUpdatedAt,
   getToolsByScore,
@@ -60,9 +61,29 @@ import {
 } from "../../apps/web/src/lib/trends";
 
 // 行 HTML 唯一模板源（同一样式在构建期与浏览器筛选时共用）
-import { repoRowHtml, toolRowHtml, trendRowHtml } from "../../apps/site/src/lib/row-html";
-import type { RepoRow, ToolRow, TrendRow } from "../../apps/site/src/lib/types";
+import { modelRowHtml, repoRowHtml, toolRowHtml, trendRowHtml } from "../../apps/site/src/lib/row-html";
+import type { ModelRow, RepoRow, ToolRow, TrendRow } from "../../apps/site/src/lib/types";
 import { formatCount, formatDateShort } from "../../apps/site/src/lib/format";
+import {
+  formatTokens,
+  gradeOf,
+  modelModalityLabels,
+  // 注意：model-score 与 trends 都导出 overallScore，这里重命名避免后者覆盖前者
+  overallScore as modelOverallScore,
+  priceText,
+  valueScores,
+} from "../../apps/site/src/lib/model-score";
+
+// 机会榜：评分口径、证据解析、构建期硬闸门（唯一实现，页面与本脚本共用）
+import {
+  BOARD_LABELS,
+  OPPORTUNITY_WEIGHTS,
+  buildOpportunityDetails,
+  buildOpportunityRows,
+  summarizeBatches,
+  validateOpportunities,
+} from "../../apps/site/src/lib/opportunity";
+import type { BoardIndex, OpportunityFile } from "../../apps/site/src/lib/opportunity";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const OUT = path.join(ROOT, "content/dist");
@@ -238,6 +259,91 @@ function toTrendRow(t: (typeof trendKeywords)[number], rank: number): TrendRow {
   return { ...row, h: trendRowHtml(row as TrendRow) };
 }
 
+/* ------------------------------- AI 模型榜 ------------------------------- */
+
+type ModelSource = {
+  slug: string;
+  name: string;
+  provider: string;
+  modality: string;
+  tags?: string[];
+  open: boolean;
+  license?: string | null;
+  context?: number | null;
+  maxOutput?: number | null;
+  params?: string | null;
+  price?: { input?: number | null; output?: number | null; cachedInput?: number | null };
+  freeTier?: string | null;
+  capability: number;
+  knowledgeCutoff?: string | null;
+  releasedAt?: string | null;
+  desc?: string | null;
+  strengths?: string[];
+  weaknesses?: string[];
+  useCases?: string[];
+  benchmarks?: { name: string; value: string | number; unit?: string }[];
+  sources?: { label: string; url: string }[];
+};
+
+function toModelRow(
+  m: ModelSource,
+  rank: number,
+  valueMap: Map<string, number>,
+  updatedAt: string,
+): ModelRow {
+  const priceIn = m.price?.input ?? null;
+  const priceOut = m.price?.output ?? null;
+  const priceCached = m.price?.cachedInput ?? null;
+  const value = valueMap.get(m.slug) ?? 0;
+  const score = modelOverallScore(m.capability, value);
+  const row: Omit<ModelRow, "h"> = {
+    rank,
+    slug: m.slug,
+    name: m.name,
+    provider: m.provider,
+    modality: m.modality,
+    modalityLabel: modelModalityLabels[m.modality] ?? m.modality,
+    tags: m.tags ?? [],
+    open: m.open,
+    license: m.license ?? null,
+    context: m.context ?? null,
+    contextText: formatTokens(m.context ?? null),
+    maxOutput: m.maxOutput ?? null,
+    maxOutputText: formatTokens(m.maxOutput ?? null),
+    params: m.params ?? null,
+    priceIn,
+    priceOut,
+    priceCached,
+    priceInText: priceText(priceIn),
+    priceOutText: priceText(priceOut),
+    priceCachedText: priceText(priceCached),
+    priceUnit: "USD / 1M tokens",
+    freeTier: m.freeTier ?? null,
+    hasFree: Boolean(m.freeTier),
+    capability: m.capability,
+    value,
+    score,
+    grade: gradeOf(score),
+    desc: m.desc ?? null,
+    knowledgeCutoff: m.knowledgeCutoff ?? null,
+    releasedAt: m.releasedAt ?? null,
+    updatedShort: formatDateShort(updatedAt),
+    hay: [
+      m.name,
+      m.provider,
+      modelModalityLabels[m.modality] ?? m.modality,
+      ...(m.tags ?? []),
+      m.license ?? "",
+      m.params ?? "",
+      m.desc ?? "",
+      ...(m.useCases ?? []),
+    ]
+      .join(" ")
+      .toLowerCase(),
+  };
+  return { ...row, h: modelRowHtml(row as ModelRow) };
+}
+
 /* ------------------------------- 主流程 ------------------------------- */
 
 async function main() {
@@ -342,6 +448,158 @@ async function main() {
       .filter((c) => c.count > 0),
   };
 
+  // ---------- AI 模型榜 ----------
+  const modelsRaw = JSON.parse(
+    await readFile(path.join(ROOT, "content/models.json"), "utf8"),
+  ) as {
+    mode: string;
+    updatedAt: string;
+    source?: string;
+    note?: string;
+    capabilityNote?: string;
+    models: ModelSource[];
+  };
+  const modelUpdatedAt = modelsRaw.updatedAt;
+
+  // 性价比：能力 ÷ 平均单价，在全库样本内归一（口径见 lib/model-score.ts）
+  const valueMap = valueScores(
+    modelsRaw.models.map((m) => ({
+      slug: m.slug,
+      capability: m.capability,
+      priceIn: m.price?.input ?? null,
+      priceOut: m.price?.output ?? null,
+    })),
+  );
+
+  // 名次 = 综合得分降序（同分按名称稳定排序）
+  const orderedModels = [...modelsRaw.models].sort((a, b) => {
+    const sa = modelOverallScore(a.capability, valueMap.get(a.slug) ?? 0);
+    const sb = modelOverallScore(b.capability, valueMap.get(b.slug) ?? 0);
+    if (sb !== sa) return sb - sa;
+    return a.name.localeCompare(b.name);
+  });
+  const modelRows = orderedModels.map((m, i) => toModelRow(m, i + 1, valueMap, modelUpdatedAt));
+  const modelRowBySlug = new Map(modelRows.map((r) => [r.slug, r]));
+
+  const modelDetail = modelsRaw.models.map((m) => ({
+    rel: `models/detail/${m.slug}.json`,
+    data: {
+      data: { ...m, updatedAt: modelUpdatedAt },
+      derived: modelRowBySlug.get(m.slug) ?? toModelRow(m, 0, valueMap, modelUpdatedAt),
+    },
+  }));
+
+  const modelFilters = {
+    generatedAt: GENERATED_AT,
+    updatedAt: modelUpdatedAt,
+    mode: modelsRaw.mode,
+    note: modelsRaw.note,
+    capabilityNote: modelsRaw.capabilityNote,
+    source: modelsRaw.source,
+    total: modelRows.length,
+    providers: tally(modelsRaw.models.map((m) => m.provider)),
+    modalities: tally(modelsRaw.models.map((m) => m.modality)),
+    licenses: [
+      { value: "open", count: modelRows.filter((r) => r.open).length },
+      { value: "closed", count: modelRows.filter((r) => !r.open).length },
+    ],
+    sorts: [
+      { value: "score", label: "综合得分" },
+      { value: "capability", label: "能力分" },
+      { value: "value", label: "性价比" },
+      { value: "price", label: "价格低→高" },
+      { value: "context", label: "上下文" },
+      { value: "newest", label: "最新发布" },
+    ],
+  };
+
+  // ---------- 机会榜（跨榜汇编：唯一真源 content/opportunities.json）----------
+  const oppFile = JSON.parse(
+    await readFile(path.join(ROOT, "content/opportunities.json"), "utf8"),
+  ) as OpportunityFile;
+
+  const boardIndex: BoardIndex = { trendRows, toolRows, repoRows, modelRows };
+  const oppErrors = validateOpportunities(oppFile, boardIndex);
+  if (oppErrors.length) {
+    fail(`机会榜未通过原则校验：\n  - ${oppErrors.join("\n  - ")}`);
+  }
+
+  const oppRows = buildOpportunityRows(oppFile, oppFile.updatedAt);
+  const oppDetails = buildOpportunityDetails(oppFile, oppRows, boardIndex, oppFile.updatedAt);
+
+  const oppPolicy = {
+    title: "机会榜收录原则",
+    version: oppFile.version,
+    intro:
+      "六条规则、一个公式、六道闸门。规则不是宣言，而是每次构建都要跑一遍的检查：证据回查不到就中断，一个人做不到就不进榜。分数只表示同类机会之间的相对排序，不预测成功率。",
+    rules: [
+      {
+        id: "00",
+        name: "一人公司适配",
+        desc: "启动 ≤ 150 美元、稳定期 ≤ 300 美元/月；一个人 6 周内做出能收费的版本；获客只靠搜索、平台市场、社区、开源或内容；付费方是自己刷卡的个体，不走采购流程；单价 ≤ 99 美元/月或一次性 ≤ 199 美元；不需要驻场与定制交付。任何一条不满足，无论多热都不进榜。",
+      },
+      {
+        id: "01",
+        name: "跨榜交叉 ≥ 3 源",
+        desc: "每条机会至少引用 3 个不同榜单，且至少 1 个趋势词。单榜热度不构成机会：词热不代表能变现，工具流量大不代表还有空间。",
+      },
+      {
+        id: "02",
+        name: "证据必须可追溯",
+        desc: "每条证据都指向榜单里的具体条目，构建期逐个回查，找不到即中断构建。数字由构建期从榜单实时注入，人工判断里不写会被数据更新打脸的硬数字。",
+      },
+      {
+        id: "03",
+        name: "可执行性优先于热度",
+        desc: "可执行性既是分数也是门槛：低于 60 不进榜。判分看现有开源件与模型能否承担六成基础工作量，难点是否只在编排、交互与领域判断。",
+      },
+      {
+        id: "04",
+        name: "供给缺口是核心判据",
+        desc: "只收三种一人公司能吃的缝：价格缺口（对手按席位卖给企业）、本地化缺口（海外已验证、中文没人做或做得差）、形态缺口（通用工具缺一个能交付的闭环）。正面红海只在口径明显不同时收录，并写明「不要做什么」。",
+      },
+      {
+        id: "05",
+        name: "写下失效条件",
+        desc: "每条机会必须给出风险与应对、每个阶段达不到就停的通过标准、以及效果数字不成立的条件。禁止「潜力巨大」这类无法证伪的表述。",
+      },
+    ],
+    formula: "O = 0.30 × D + 0.25 × G + 0.20 × F + 0.15 × T + 0.10 × M",
+    weights: OPPORTUNITY_WEIGHTS,
+    grades: [
+      { grade: "S", range: "≥ 80" },
+      { grade: "A", range: "72 – 79" },
+      { grade: "B", range: "64 – 71" },
+      { grade: "C", range: "< 64" },
+    ],
+    gates: [
+      "引用榜单 < 3 或缺少趋势词证据 → 构建中断",
+      "任一证据主键在榜单中不存在 → 构建中断",
+      "需求证据分与所引用趋势词机会分均值偏差 > 20 → 构建中断",
+      "可执行性 < 60 或自助变现 < 50 → 构建中断",
+      "单人周数 > 6、缺启动预算、缺自分发渠道、第一周动作少于 3 条 → 构建中断",
+      "风险少于 2 条、缺阶段通过标准、缺「前 10 个付费用户」路径 → 构建中断",
+    ],
+    boards: (Object.keys(BOARD_LABELS) as (keyof typeof BOARD_LABELS)[]).map((k) => ({
+      key: k,
+      label: BOARD_LABELS[k],
+    })),
+    policyDoc: oppFile.policyDoc ?? "",
+    updatedAt: oppFile.updatedAt,
+  };
+
+  const oppBatches = summarizeBatches(oppRows);
+  const oppIndex = {
+    generatedAt: GENERATED_AT,
+    updatedAt: oppFile.updatedAt,
+    version: oppFile.version,
+    policy: oppPolicy,
+    total: oppRows.length,
+    latestBatch: oppBatches[0]?.batch ?? "",
+    batches: oppBatches,
+    rows: oppRows,
+  };
+
   // ---------- 写入 ----------
   await write("tools/index.json", toolRows);
   await write("tools/filters.json", toolFilters);
@@ -350,18 +608,26 @@ async function main() {
   await writeMany(trendDetail);
   await write("github/index.json", repoRows);
   await write("github/filters.json", repoFilters);
+  await write("models/index.json", modelRows);
+  await write("models/filters.json", modelFilters);
+  await write("opportunity/index.json", oppIndex);
+  await writeMany(
+    oppDetails.map((d) => ({ rel: `opportunity/detail/${d.slug}.json`, data: d })),
+  );
   await write("home.json", home);
   await writeMany(toolDetail);
   await writeMany(repoDetail);
+  await writeMany(modelDetail);
 
   // ---------- 校验（数据不丢的硬闸门）----------
-  if (toolRows.length !== tools.length) {
-    fail(`tools 条数不一致：产物 ${toolRows.length} ≠ 源 ${tools.length}`);
+  // 注意：源文件保存全部候选（tools），只有达到收录门槛的 listedTools 才上榜
+  if (toolRows.length !== listedTools.length) {
+    fail(`tools 条数不一致：产物 ${toolRows.length} ≠ 达标 ${listedTools.length}（源 ${tools.length}）`);
   }
   if (repoRows.length !== githubRepos.length) {
     fail(`github 条数不一致：产物 ${repoRows.length} ≠ 源 ${githubRepos.length}`);
   }
-  if (new Set(toolRows.map((r) => r.domain)).size !== tools.length) {
+  if (new Set(toolRows.map((r) => r.domain)).size !== listedTools.length) {
     fail("tools 存在重复 domain 主键");
   }
   if (new Set(repoRows.map((r) => r.fullName)).size !== githubRepos.length) {
@@ -376,6 +642,15 @@ async function main() {
     fail("trends 存在重复 slug 主键");
   }
   if (trendRows.some((r) => !r.slug || !r.keyword)) fail("trends 存在缺失必填字段的行");
+  if (modelRows.length !== modelsRaw.models.length) {
+    fail(`models 条数不一致：产物 ${modelRows.length} ≠ 源 ${modelsRaw.models.length}`);
+  }
+  if (new Set(modelRows.map((r) => r.slug)).size !== modelsRaw.models.length) {
+    fail("models 存在重复 slug 主键");
+  }
+  if (modelRows.some((r) => !r.slug || !r.name || !r.provider)) {
+    fail("models 存在缺失必填字段的行");
+  }
 
   // ---------- manifest ----------
   const manifest = {
@@ -413,6 +688,25 @@ async function main() {
         indexBytes: bytes(trendRows),
         detailCount: trendDetail.length,
       },
+      models: {
+        status: "ready",
+        count: modelRows.length,
+        source: "content/models.json",
+        mode: modelsRaw.mode,
+        updatedAt: modelUpdatedAt,
+        hash: digest(modelRows),
+        indexBytes: bytes(modelRows),
+        detailCount: modelDetail.length,
+      },
+      opportunity: {
+        status: "ready",
+        count: oppRows.length,
+        source: "content/opportunities.json",
+        updatedAt: oppFile.updatedAt,
+        hash: digest(oppRows),
+        indexBytes: bytes(oppIndex),
+        detailCount: oppDetails.length,
+      },
     },
   };
   await write("manifest.json", manifest);
@@ -423,6 +717,7 @@ async function main() {
   await copyFile(path.join(OUT, "tools/index.json"), path.join(PUB, "tools.json"));
   await copyFile(path.join(OUT, "github/index.json"), path.join(PUB, "github.json"));
   await copyFile(path.join(OUT, "trends/index.json"), path.join(PUB, "trends.json"));
+  await copyFile(path.join(OUT, "models/index.json"), path.join(PUB, "models.json"));
 
   // ---------- 报告 ----------
   const ms = Date.now() - t0;
@@ -435,6 +730,12 @@ async function main() {
   );
   console.log(
     `  trends  ${String(trendRows.length).padStart(4)} 条   index ${kb(bytes(trendRows))} (gzip ${gz(trendRows)})   详情 ${trendDetail.length} 个   模式 ${trendDataMode}`,
+  );
+  console.log(
+    `  models  ${String(modelRows.length).padStart(4)} 条   index ${kb(bytes(modelRows))} (gzip ${gz(modelRows)})   详情 ${modelDetail.length} 个   模式 ${modelsRaw.mode}`,
+  );
+  console.log(
+    `  opp      ${String(oppRows.length).padStart(4)} 条   批次 ${oppBatches.length} 个（最新 ${oppIndex.latestBatch || "—"}）   证据 ${oppRows.reduce((s, r) => s + r.evidenceCount, 0)} 条   详情 ${oppDetails.length} 个   最高 ${oppRows[0]?.overall ?? 0} 分`,
   );
   console.log(`  home    聚合板块 ${home.byCategory.length} 个分类 / 热度 ${home.toolsHot.length} / 新星 ${home.toolsNewest.length}`);
   console.log(`  version ${manifest.version}   耗时 ${(ms / 1000).toFixed(2)}s`);
