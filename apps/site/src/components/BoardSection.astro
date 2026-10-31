@@ -1,5 +1,13 @@
 ---
 /** 首页榜单板块外壳：标题 + 规模信息 + 「查看全部」，行内容由调用方用 slot 传入 */
+interface Column {
+  label: string;
+  /** 悬停说明：字段含义/口径 */
+  hint?: string;
+  /** 列头额外类名，需与行内单元格的显隐保持一致 */
+  cls?: string;
+}
+
 interface Props {
   title: string;
   subtitle?: string;
@@ -7,9 +15,13 @@ interface Props {
   meta?: string;
   viewAllHref?: string;
   viewAllText?: string;
+  /** 列头：传入即渲染，需同时传 gridClass（与行模板一致） */
+  columns?: Column[];
+  gridClass?: string;
 }
 
-const { title, subtitle, meta, viewAllHref, viewAllText = "查看全部" } = Astro.props;
+const { title, subtitle, meta, viewAllHref, viewAllText = "查看全部", columns, gridClass } =
+  Astro.props;
 ---
 
 <section class="mt-12">
@@ -36,6 +48,22 @@ const { title, subtitle, meta, viewAllHref, viewAllText = "查看全部" } = Ast
   </div>
 
   <div class="mt-4 overflow-hidden rounded-2xl border border-border bg-surface">
+    {
+      columns && (
+        <div
+          class:list={[
+            "grid items-center gap-3 border-b border-border bg-surface-2/50 px-4 py-2 text-[11px] font-medium text-ink-muted sm:px-5",
+            gridClass,
+          ]}
+        >
+          {columns.map((c) => (
+            <span class={c.cls ?? "text-center"} title={c.hint}>
+              {c.label}
+            </span>
+          ))}
+        </div>
+      )
+    }
     <slot />
   </div>
 </section>

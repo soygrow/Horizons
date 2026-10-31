@@ -54,6 +54,9 @@ content/github-web.json
 apps/site/dist/
 apps/site/.astro/
 
+# 本地部署运行态（pnpm local 的日志与 pid）
+.local/
+
 # 榜单产物（由 scripts/build/artifacts.ts 生成，pnpm deploy 时自动重算）
 content/dist/
 apps/site/public/data/

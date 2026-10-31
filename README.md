@@ -18,7 +18,10 @@
 
 ```bash
 pnpm install
-pnpm dev
+pnpm dev        # 开发态（热更新，apps/site），不适合当“本地部署”看
+pnpm dev:web    # 旧的 Next 站（apps/web，仅回滚备胎，3000 端口）
+pnpm local      # 本地部署：全量构建最新代码 → http://localhost:4321（固定流程）
+pnpm local:stop # 停掉本地服务
 ```
 
 ## 数据采集

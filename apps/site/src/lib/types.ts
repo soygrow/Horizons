@@ -137,6 +137,67 @@ export interface ToolFilters {
   sorts: { value: string; label: string }[];
 }
 
+/** AI 模型榜：构建期算好的列表行 */
+export interface ModelRow {
+  rank: number;
+  slug: string;
+  name: string;
+  provider: string;
+  /** 主模态 key（text / multimodal / reasoning / code / image / video / audio / embedding） */
+  modality: string;
+  modalityLabel: string;
+  tags: string[];
+  open: boolean;
+  license: string | null;
+  /** 上下文窗口（tokens） */
+  context: number | null;
+  contextText: string;
+  maxOutput: number | null;
+  maxOutputText: string;
+  params: string | null;
+  /** 价格：USD / 1M tokens；null 表示无公开定价 */
+  priceIn: number | null;
+  priceOut: number | null;
+  priceCached: number | null;
+  priceInText: string;
+  priceOutText: string;
+  priceCachedText: string;
+  priceUnit: string;
+  freeTier: string | null;
+  hasFree: boolean;
+  /** 能力分（0–100） */
+  capability: number;
+  /** 性价比分（0–100，构建期按样本内归一） */
+  value: number;
+  /** 综合得分 = 0.9 × 能力 + 0.1 × 性价比 */
+  score: number;
+  grade: "S" | "A" | "B" | "C";
+  /** 厂商官方模型页简介（原文）；无官方简介时为 null，不做生成 */
+  desc: string | null;
+  knowledgeCutoff: string | null;
+  releasedAt: string | null;
+  updatedShort: string;
+  /** 搜索用的小写文本 */
+  hay: string;
+  /** 预渲染行 HTML（名次已内联） */
+  h: string;
+}
+
+export interface ModelFilters {
+  generatedAt: string;
+  updatedAt: string;
+  mode: string;
+  total: number;
+  /** 数据口径说明（来源、价格单位、能力分估算方式） */
+  note?: string;
+  capabilityNote?: string;
+  source?: string;
+  providers: FilterOption[];
+  modalities: FilterOption[];
+  licenses: FilterOption[];
+  sorts: { value: string; label: string }[];
+}
+
 export interface RepoFilters {
   generatedAt: string;
   categories: FilterOption[];

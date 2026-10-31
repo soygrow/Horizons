@@ -1,8 +1,13 @@
 ---
-/** 首页 GitHub 榜行：显示榜单真实名次（不是顺序号） */
+/**
+ * 首页 GitHub 榜行
+ * 列：名次 · 项目 · 近 30 天增长 · 星标 · 难度 · 综合得分
+ * 网格模板与 pages/index.astro 传给 BoardSection 的列头共用 REPO_HOME_GRID
+ */
 import Sparkline from "./Sparkline.astro";
 import { formatCount } from "../lib/format";
 import { categoryLabel, scoreGradeTone } from "../lib/labels";
+import { REPO_HOME_GRID } from "../lib/row-html";
 import type { RepoRow } from "../lib/types";
 
 interface Props {
@@ -10,67 +15,106 @@ interface Props {
 }
 
 const { repo } = Astro.props;
+
+/** 前三名统一用品牌色，其余淡出：避免"银比铜暗"这类层级倒挂 */
+const rankTone = repo.rank <= 3 ? "text-primary" : "text-ink-muted/70";
+
+const growthTone =
+  repo.g30 === null
+    ? "border-border bg-surface-2 text-ink-muted"
+    : repo.g30 >= 0
+      ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-500"
+      : "border-rose-500/25 bg-rose-500/10 text-rose-400";
+
+const growthText = repo.g30 !== null ? `${repo.g30 > 0 ? "+" : ""}${repo.g30}%` : "—";
+
+const diffTone =
+  repo.diff === "低"
+    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-500"
+    : repo.diff === "高"
+      ? "border-amber-500/30 bg-amber-500/10 text-amber-500"
+      : "border-border bg-surface-2 text-ink-secondary";
 ---
 
 <a
   href={`/github/${repo.owner}/${repo.repo}`}
-  class="group flex items-center gap-3 border-b border-border px-4 py-3 transition last:border-b-0 hover:bg-surface-2 sm:px-5"
+  class:list={[
+    "group grid items-center gap-3 border-b border-border px-4 py-3 transition last:border-b-0 hover:bg-surface-2 sm:px-5",
+    REPO_HOME_GRID,
+  ]}
 >
-  <span class="w-9 shrink-0 text-sm font-semibold text-ink-muted tabular-nums">
-    #{repo.rank}
+  <span class:list={["text-center text-[13px] font-bold tabular-nums", rankTone]}>
+    {repo.rank}
   </span>
 
-  {
-    repo.avatar ? (
-      <img
-        src={repo.avatar}
-        alt=""
-        loading="lazy"
-        class="h-8 w-8 shrink-0 rounded-md border border-border bg-surface-2 object-cover"
-      />
-    ) : (
-      <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-surface-2 text-[10px] font-semibold text-ink-muted">
+  <div class="flex min-w-0 items-center gap-3">
+    <!-- 首字母垫底：头像被墙/加载失败时不会留一块空白灰块 -->
+    <span class="relative grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-lg border border-border bg-surface-2">
+      <span class="text-[11px] font-semibold text-ink-muted">
         {(repo.owner || "?").charAt(0).toUpperCase()}
       </span>
-    )
-  }
-
-  <div class="min-w-0 flex-1">
-    <div class="flex items-center gap-2">
-      <h3 class="truncate text-sm font-semibold text-ink group-hover:text-primary">
-        {repo.fullName}
-      </h3>
-      {repo.cats.slice(0, 2).map((c) => (
-        <span class="hidden shrink-0 rounded-md border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] leading-4 text-ink-secondary sm:inline">
-          {categoryLabel(c)}
-        </span>
-      ))}
+      {repo.avatar && (
+        <img
+          src={repo.avatar}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 h-full w-full object-cover"
+        />
+      )}
+    </span>
+    <div class="min-w-0">
+      <div class="flex min-w-0 items-center gap-2">
+        <h3 class="truncate text-[15px] font-semibold leading-5 text-ink group-hover:text-primary">
+          {repo.fullName}
+        </h3>
+        {repo.cats[0] && (
+          <span class="hidden shrink-0 rounded border border-border/70 px-1.5 py-px text-[10px] leading-4 text-ink-muted sm:inline">
+            {categoryLabel(repo.cats[0])}
+          </span>
+        )}
+      </div>
+      <p class="mt-1 line-clamp-1 text-[12px] leading-4 text-ink-secondary">{repo.intro}</p>
     </div>
-    <p class="mt-0.5 line-clamp-1 text-xs leading-snug text-ink-secondary">{repo.intro}</p>
   </div>
 
-  <div class="hidden shrink-0 lg:block">
-    <Sparkline points={repo.spark} width={64} height={24} />
-  </div>
-
-  <div class="hidden shrink-0 flex-col items-end gap-0.5 sm:flex">
-    <span class="text-xs text-ink-secondary tabular-nums">★ {formatCount(repo.stars)}</span>
+  <div class="hidden items-center justify-center gap-1.5 lg:flex">
+    <Sparkline
+      points={repo.spark}
+      width={64}
+      height={26}
+      strokeWidth={2}
+      fillOpacity={0.18}
+      dotRadius={2.5}
+    />
     <span
       class:list={[
-        "text-[11px] tabular-nums",
-        repo.g30 === null ? "text-ink-muted" : repo.g30 >= 0 ? "text-emerald-500" : "text-rose-400",
+        "shrink-0 rounded-md border px-1 py-0.5 text-[11px] font-semibold tabular-nums",
+        growthTone,
       ]}
     >
-      {repo.g30 !== null ? `30天 ${repo.g30 > 0 ? "+" : ""}${repo.g30}%` : "—"}
+      {growthText}
     </span>
   </div>
 
-  <div class="w-14 shrink-0 text-center">
-    <div class="flex items-baseline justify-center gap-1">
-      <span class="text-sm font-bold text-ink tabular-nums">{repo.score.toFixed(1)}</span>
-      <span class:list={["rounded border px-1 text-[10px] font-semibold", scoreGradeTone[repo.grade]]}>
-        {repo.grade}
-      </span>
-    </div>
+  <span class="hidden text-center text-[13px] text-ink-secondary tabular-nums lg:block">
+    ★ {formatCount(repo.stars)}
+  </span>
+
+  <div class="hidden justify-center lg:flex">
+    <span class:list={["rounded-md border px-1.5 py-0.5 text-[11px] font-medium", diffTone]}>
+      {repo.diff}
+    </span>
+  </div>
+
+  <div class="flex items-center justify-center gap-1.5">
+    <span class="text-[17px] font-bold leading-none text-ink tabular-nums">
+      {repo.score.toFixed(1)}
+    </span>
+    <span
+      class:list={["rounded px-1.5 py-0.5 text-[11px] font-bold leading-none", scoreGradeTone[repo.grade]]}
+    >
+      {repo.grade}
+    </span>
   </div>
 </a>

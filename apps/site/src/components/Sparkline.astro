@@ -4,9 +4,22 @@ interface Props {
   points: number[] | null;
   width?: number;
   height?: number;
+  /** 线宽：首页榜单用 2，更小的列表保持 1.5 */
+  strokeWidth?: number;
+  /** 面积填充透明度 */
+  fillOpacity?: number;
+  /** 末点半径 */
+  dotRadius?: number;
 }
 
-const { points, width = 72, height = 26 } = Astro.props;
+const {
+  points,
+  width = 72,
+  height = 26,
+  strokeWidth = 1.5,
+  fillOpacity = 0.12,
+  dotRadius = 2,
+} = Astro.props;
 
 function smoothPath(pts: { x: number; y: number }[]): string {
   const n = pts.length;
@@ -57,15 +70,15 @@ const last = coords[coords.length - 1];
     class="text-accent"
     aria-label="流量趋势"
   >
-    <path d={`${d} L${width},${height} L0,${height} Z`} fill="currentColor" opacity="0.12" />
+    <path d={`${d} L${width},${height} L0,${height} Z`} fill="currentColor" opacity={fillOpacity} />
     <path
       d={d}
       fill="none"
       stroke="currentColor"
-      stroke-width="1.5"
+      stroke-width={strokeWidth}
       stroke-linejoin="round"
       stroke-linecap="round"
     />
-    <circle cx={last.x} cy={last.y} r="2" fill="currentColor" />
+    <circle cx={last.x} cy={last.y} r={dotRadius} fill="currentColor" />
   </svg>
 )}

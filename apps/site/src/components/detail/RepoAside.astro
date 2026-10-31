@@ -53,7 +53,7 @@ const growthText = (v: number | null) => (v !== null ? `${v > 0 ? "+" : ""}${v}%
               <span class="tabular-nums text-ink-muted">{p.points.toFixed(1)} 分</span>
             </div>
             <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-2">
-              <div class="h-full rounded-full bg-primary/70" style={`width: ${Math.max(2, p.value)}%`} />
+              <div class="h-full rounded-full bg-primary/70" style={`width: ${Math.max(2, Math.min(100, p.points))}%`} />
             </div>
             <p class="mt-0.5 truncate text-[10px] text-ink-muted">{p.note}</p>
           </li>
@@ -61,6 +61,7 @@ const growthText = (v: number | null) => (v !== null ? `${v > 0 ? "+" : ""}${v}%
       }
     </ul>
     <p class="mt-3 text-[10px] leading-relaxed text-ink-muted">
+      横条长度＝该维度实际贡献的分值（占满分 100 的比例，权重越高最多能贡献越多），不是得分率。
       得分衡量的是「一个没多少经费的人，用它做出一款小而美、能收点钱的产品」的可能性——「轻启动机会」权重最高，重型基础设施项目会被降权。
     </p>
   </div>

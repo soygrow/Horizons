@@ -8,7 +8,9 @@
  */
 import { categoryLabel } from "./labels";
 import { formatCount, formatDateShort } from "./format";
-import type { RepoRow, ToolRow, TrendRow } from "./types";
+import { gradeTone, priceText, priceTone } from "./model-score";
+import { vendorIconUrl } from "./vendor-logos";
+import type { ModelRow, RepoRow, ToolRow, TrendRow } from "./types";
 
 /** 排名占位符：筛选后序号会变，由渲染方调用 fillRank 填入 */
 export const RANK_TOKEN = "%R%";
@@ -31,9 +33,17 @@ export const TOOL_GRID =
 export const REPO_GRID =
   "grid-cols-[2.5rem_minmax(0,2.4fr)_5.5rem_6.5rem_5rem_4.5rem_4.5rem_9rem_4.5rem_5rem]";
 
+/** 首页 GitHub 榜单行：必须与 pages/index.astro 传入 BoardSection 的列头一致 */
+export const REPO_HOME_GRID =
+  "grid-cols-[1.75rem_minmax(0,1fr)_4.25rem] lg:grid-cols-[2.25rem_minmax(0,1fr)_8rem_4.75rem_4.25rem_5.75rem]";
+
 /** 必须与 components/TrendListHead.astro 的 TREND_GRID 一致 */
 export const TREND_GRID =
   "grid-cols-[2.25rem_minmax(0,1.9fr)_5.5rem_5.5rem_6.5rem_4.5rem_minmax(0,1.7fr)_6.5rem_5.5rem_4.75rem]";
+
+/** 必须与 components/ModelListHead.astro 的 MODEL_GRID 一致 */
+export const MODEL_GRID =
+  "grid-cols-[2.25rem_minmax(0,2.4fr)_4.5rem_4rem_4.75rem_4.75rem_4.25rem_4.25rem_4.25rem_5.25rem_5.5rem]";
 
 const ICON_PALETTE = [
   "bg-indigo-500/20 text-indigo-300",
@@ -64,6 +74,26 @@ export function iconHtml(domain: string, name: string, size: "md" | "lg" = "md")
     `class="${cls} shrink-0 rounded-xl border border-border bg-surface object-contain p-1" ` +
     `onerror="this.style.display='none';var f=document.getElementById('${id}-fb');if(f)f.style.display='flex';">` +
     `<span id="${id}-fb" style="display:none" class="${cls} shrink-0 items-center justify-center rounded-xl font-semibold ${color}">${initial}</span>` +
+    `</span>`
+  );
+}
+
+/** 厂商 logo 方块：单色 SVG 用 CSS mask 取色，随主题/悬停变色；未收录时退回首字母 */
+export function vendorLogoChip(provider: string, size: "sm" | "md" | "lg" = "md"): string {
+  const src = vendorIconUrl(provider);
+  const box = size === "lg" ? "h-12 w-12 rounded-xl" : size === "sm" ? "h-7 w-7" : "h-8 w-8 rounded-lg";
+  const icon = size === "lg" ? "h-7 w-7" : size === "sm" ? "h-4 w-4" : "h-[18px] w-[18px]";
+  if (!src) {
+    const color = ICON_PALETTE[hash(provider) % ICON_PALETTE.length];
+    const fs = size === "lg" ? "text-lg" : size === "sm" ? "text-[11px]" : "text-[13px]";
+    return `<span class="flex ${box} shrink-0 items-center justify-center border border-border font-semibold ${fs} ${color}">${esc(provider.charAt(0))}</span>`;
+  }
+  const style =
+    `-webkit-mask-image:url(${src});-webkit-mask-size:contain;-webkit-mask-position:center;-webkit-mask-repeat:no-repeat;` +
+    `mask-image:url(${src});mask-size:contain;mask-position:center;mask-repeat:no-repeat`;
+  return (
+    `<span class="flex ${box} shrink-0 items-center justify-center border border-border bg-surface-2 text-ink-secondary transition group-hover:border-primary/30 group-hover:text-primary">` +
+    `<span class="${icon} bg-current" style="${style}"></span>` +
     `</span>`
   );
 }
@@ -256,6 +286,60 @@ export function trendRowHtml(t: TrendRow): string {
       : `<span class="text-ink-muted" title="采样点不足 14 个，暂不评分">数据不足</span>`) +
     `</div>` +
     `<span class="text-center text-[11px] tabular-nums text-ink-muted">${esc(t.updatedShort)}</span>` +
+    `</a>`
+  );
+}
+
+/* ------------------------------ AI 模型榜行 ------------------------------ */
+
+export function modelRowHtml(m: ModelRow): string {
+  const openCls = m.open
+    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-500"
+    : "border-border bg-surface-2 text-ink-muted";
+  const openText = m.open ? "开源" : "闭源";
+  const scoreBar = Math.min(100, Math.max(4, m.score));
+  const valueBar = Math.min(100, Math.max(4, m.value));
+  const licenseText = !m.license ? "" : m.license === "Proprietary" ? "闭源授权" : m.license;
+  const rankCls = m.rank <= 3 ? "text-ink" : "text-ink-muted";
+
+  return (
+    `<a href="/models/${esc(m.slug)}" ` +
+    `class="group grid items-center gap-x-3 gap-y-1.5 border-b border-border px-4 py-3 transition hover:bg-surface-2 sm:px-5 ${MODEL_GRID}">` +
+    `<span class="text-sm font-semibold tabular-nums ${rankCls}">${m.rank}</span>` +
+    `<div class="flex min-w-0 items-center gap-2.5">` +
+    vendorLogoChip(m.provider) +
+    `<div class="min-w-0">` +
+    `<div class="flex items-center gap-1.5">` +
+    `<h3 class="min-w-0 truncate text-sm font-semibold text-ink group-hover:text-primary">${esc(m.name)}</h3>` +
+    (m.hasFree
+      ? `<span title="${esc(m.freeTier ?? "提供免费变体")}" class="shrink-0 rounded border border-emerald-500/30 bg-emerald-500/10 px-1 py-px text-[10px] leading-4 text-emerald-500">免费层</span>`
+      : "") +
+    `</div>` +
+    `<p class="mt-0.5 truncate text-xs text-ink-muted">${esc(m.provider)}${licenseText ? ` · ${esc(licenseText)}` : ""}${m.releasedAt ? ` · ${esc(formatDateShort(m.releasedAt))}` : ""}</p>` +
+    `</div></div>` +
+    `<span class="truncate text-xs text-ink-secondary">${esc(m.modalityLabel)}</span>` +
+    `<span class="inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${openCls}">${openText}</span>` +
+    `<span class="text-center text-sm tabular-nums text-ink-secondary">${esc(m.contextText)}</span>` +
+    `<span class="text-center text-sm tabular-nums text-ink-secondary">${esc(m.maxOutputText)}</span>` +
+    `<span class="text-center text-sm tabular-nums ${priceTone(m.priceIn)}">${esc(m.priceInText)}</span>` +
+    `<span class="text-center text-sm tabular-nums ${priceTone(m.priceOut)}">${esc(m.priceOutText)}</span>` +
+    `<span class="text-center text-sm tabular-nums text-ink-secondary">${esc(m.priceCached === null ? "—" : m.priceCachedText)}</span>` +
+    `<div class="flex flex-col items-center gap-1">` +
+    `<span class="text-sm font-semibold tabular-nums text-emerald-500">${m.value > 0 ? m.value : "—"}</span>` +
+    `<div class="h-1 w-12 overflow-hidden rounded-full bg-surface-2">` +
+    `<div class="h-full rounded-full bg-emerald-500/70" style="width:${m.value > 0 ? valueBar : 0}%"></div>` +
+    `</div></div>` +
+    `<div class="flex flex-col items-center gap-0.5">` +
+    `<div class="flex items-baseline gap-1">` +
+    `<span class="text-sm font-bold tabular-nums text-ink">${m.score.toFixed(1)}</span>` +
+    `<span class="rounded border px-1 text-[10px] font-semibold ${gradeTone[m.grade]}">${esc(m.grade)}</span>` +
+    `</div>` +
+    `<div class="h-1 w-14 overflow-hidden rounded-full bg-surface-2">` +
+    `<div class="h-full rounded-full bg-primary" style="width:${scoreBar}%"></div>` +
+    `</div></div>` +
+    (m.desc
+      ? `<p class="col-span-full pl-[5.625rem] pr-2 text-[11.5px] leading-relaxed text-ink-muted line-clamp-2 transition group-hover:text-ink-secondary" title="${esc(m.desc)}">${esc(m.desc)}</p>`
+      : "") +
     `</a>`
   );
 }

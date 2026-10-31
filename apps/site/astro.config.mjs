@@ -23,6 +23,13 @@ export default defineConfig({
     server: {
       // 构建期需要读取仓库根的 content/dist 产物
       fs: { allow: ["../.."] },
+      // 本地开发把 /api 转给 wrangler dev（apps/api），保证「我在做」等交互可联调
+      proxy: {
+        "/api": {
+          target: process.env.API_ORIGIN || "http://127.0.0.1:8787",
+          changeOrigin: true,
+        },
+      },
     },
   },
 });
