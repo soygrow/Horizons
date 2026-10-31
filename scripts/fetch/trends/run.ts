@@ -700,7 +700,7 @@ async function main(): Promise<void> {
               // 空序列一半是限流期的软拒绝而不是真的没量：
               // 实测 ai excel plugin 批量空、单独请求峰值 100。隔几秒再单独问一次
               emptyRetried.add(item.keyword);
-              await sleep(8000);
+              await sleep(3000);
               try {
                 const again = await fetchInterest(item.keyword, args.geo, !args.noRelated);
                 note(false);
@@ -770,32 +770,13 @@ async function main(): Promise<void> {
             await sleep(60_000);
             continue;
           }
-          // 整组返回空时 throws 会带走 5 个词。降级成单词请求逐个确认，
-          // 否则这 5 个词连「是否真的没量」都无从判断
-          console.warn(`[trends] 整组空序列（${chunk.length} 词），降级单词重取`);
+          // 参照词有数据却整组为空：这 5 个词确实没量，直接记跳过表。
+          // 逐个重取能把速度拖慢三倍（5 词 × 约 8 秒），而回捞率极低
           for (const item of chunk) {
-            if (emptyRetried.has(item.keyword)) {
-              failed++;
-              recordSkip(item.keyword, "整组与单词均为空序列");
-              continue;
-            }
-            emptyRetried.add(item.keyword);
-            try {
-              const single = await fetchInterest(item.keyword, args.geo, !args.noRelated);
-              note(false);
-              await processTrend(item, single.series, single.relatedQueries);
-            } catch (e2) {
-              if (e2 instanceof RateLimitError || (await throttled())) {
-                note(true);
-                requeueOrDrop(item);
-              } else {
-                failed++;
-                recordSkip(item.keyword, msgOf(e2));
-                console.warn(`${item.keyword} → 跳过：${msgOf(e2)}`);
-              }
-            }
-            await sleep(randomDelay());
+            failed++;
+            recordSkip(item.keyword, "整组空序列（参照词正常）");
           }
+          console.warn(`[trends] 整组空序列（${chunk.length} 词）判为无量`);
         } else {
           failed += chunk.length;
           console.warn(`批量请求失败（${chunk.length} 词）：${msg}`);
