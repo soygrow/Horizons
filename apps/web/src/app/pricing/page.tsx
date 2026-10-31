@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { githubRepos, tools } from "@/lib/data";
-import { trendKeywords } from "@/lib/trends";
 
 export const metadata: Metadata = {
   title: "定价",
@@ -44,12 +42,6 @@ const faqs = [
 ];
 
 export default function PricingPage() {
-  const stats = [
-    { label: "AI 工具", value: tools.length },
-    { label: "开源项目", value: githubRepos.length },
-    { label: "趋势词", value: trendKeywords.length },
-  ];
-
   return (
     <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-20">
       {/* 页头 */}
@@ -57,23 +49,10 @@ export default function PricingPage() {
         <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">
           定价
         </h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-ink-secondary sm:text-base">
-          一个订阅，覆盖三条榜单的全部数据。价格一次性说清楚，没有隐藏条款，也不靠静默扣款。
+        <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-ink-secondary sm:text-base">
+          地平线之上，机会总是先露出轮廓。三条榜单把正在升温的信号、已经成形的想法摊开给你看——
+          别人还在猜的时候，你已经能下手。
         </p>
-
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs">
-          {stats.map((s) => (
-            <span
-              key={s.label}
-              className="rounded-full border border-border bg-surface px-3 py-1 text-ink-secondary"
-            >
-              {s.value} 个{s.label}
-            </span>
-          ))}
-          <span className="rounded-full border border-border bg-surface px-3 py-1 text-ink-muted">
-            数据来源可追溯
-          </span>
-        </div>
       </header>
 
       {/* 当前阶段提示 */}

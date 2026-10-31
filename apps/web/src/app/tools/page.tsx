@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import {
-  tools,
+  listedTools,
   allCategories,
   categoryLabel,
   getMonthlyVisits,
@@ -139,7 +139,7 @@ function buildHref(query: Query, patch: Partial<Query>): string {
 function filterTools(query: Query): AITool[] {
   const q = query.q.trim().toLowerCase();
 
-  let list = tools.filter((t) => {
+  let list = listedTools.filter((t) => {
     if (q) {
       const hay = `${t.name} ${t.domain} ${t.description}`.toLowerCase();
       if (!hay.includes(q)) return false;

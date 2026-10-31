@@ -8,6 +8,30 @@ import toolsData from "@content/aitools.json";
 import githubData from "@content/github-web.json";
 
 export const tools = toolsData as AITool[];
+
+/** 收录门槛（与 docs/15-AI工具榜收录原则.md 一致） */
+const MIN_VISITS_CORE = 10_000; // 主榜：月访问 ≥1 万
+const MIN_VISITS_WATCH = 1_000; // 观察区：1 千 ~ 1 万，且未明显下滑
+const WATCH_PH_UPVOTES = 300; // 无流量数据时，至少 PH 热度达标才保留
+
+/**
+ * 是否进入榜单展示。
+ * 数据文件保留全部候选（便于后续复采与画像），但达不到门槛的站不上榜，
+ * 避免「月访问 0」或「发布即死」的站混进主榜。
+ */
+export function isListed(tool: AITool): boolean {
+  const v = getMonthlyVisits(tool);
+  if (v === undefined) return (tool.phUpvotes ?? 0) >= WATCH_PH_UPVOTES;
+  if (v >= MIN_VISITS_CORE) return true;
+  if (v >= MIN_VISITS_WATCH) {
+    const g = getMoMGrowth(tool);
+    return !(typeof g === "number" && g < 0);
+  }
+  return false;
+}
+
+/** 达到收录门槛、可展示的工具 */
+export const listedTools = tools.filter(isListed);
 const gh = githubData as unknown as { updatedAt: string; repos: GitHubRepo[] };
 export const githubRepos = gh.repos ?? [];
 /** GitHub 榜数据快照时间（页面上如实展示） */
@@ -32,12 +56,12 @@ export const allCategories = [
  * 仅用于首页「热门」板块：首页排序口径与 /tools 榜单不同，改动请单独评估。
  */
 export function getToolsSorted(): AITool[] {
-  return [...tools].sort((a, b) => b.heatScore - a.heatScore);
+  return [...listedTools].sort((a, b) => b.heatScore - a.heatScore);
 }
 
-/** 按综合得分降序（/tools 榜单默认顺序） */
+/** 按综合得分降序（/tools 榜单默认顺序，只含达标工具） */
 export function getToolsByScore(): AITool[] {
-  return [...tools].sort(compareByToolScore);
+  return [...listedTools].sort(compareByToolScore);
 }
 
 /**
@@ -60,7 +84,7 @@ export function getToolByDomain(domain: string): AITool | undefined {
 /** 相似工具：按共享分类数量排序 */
 export function getSimilarTools(tool: AITool, limit = 6): AITool[] {
   const set = new Set(tool.categories);
-  return tools
+  return listedTools
     .filter((t) => t.id !== tool.id)
     .map((t) => {
       const shared = t.categories.filter((c) => set.has(c)).length;
@@ -214,7 +238,7 @@ export function paginate<T>(list: T[], page: number, pageSize: number): T[] {
  */
 export function getBoards() {
   const sorted = getToolsSorted();
-  const newest = [...tools].sort((a, b) =>
+  const newest = [...listedTools].sort((a, b) =>
     b.firstSeenAt.localeCompare(a.firstSeenAt),
   );
   const byCategory = allCategories

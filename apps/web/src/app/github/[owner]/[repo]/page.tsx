@@ -398,7 +398,7 @@ export default async function RepoPage({ params }: { params: Promise<{ owner: st
                   <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-2">
                     <div
                       className="h-full rounded-full bg-primary/70"
-                      style={{ width: `${Math.max(2, p.value)}%` }}
+                      style={{ width: `${Math.max(2, Math.min(100, p.points))}%` }}
                     />
                   </div>
                   <p className="mt-0.5 truncate text-[10px] text-ink-muted">{p.note}</p>
@@ -406,7 +406,8 @@ export default async function RepoPage({ params }: { params: Promise<{ owner: st
               ))}
             </ul>
             <p className="mt-3 text-[10px] leading-relaxed text-ink-muted">
-              得分用于衡量「用它做出一款有收益产品的可能性」，榜单按此排序；无官网项目同样收录，只在商业化项少计分。
+              横条长度＝该维度实际贡献的分值（占满分 100 的比例，权重越高最多能贡献越多），不是得分率。
+              得分衡量的是「一个没多少经费的人，用它做出一款小而美、能收点钱的产品」的可能性——「轻启动机会」权重最高，重型基础设施项目会被降权。
             </p>
           </div>
 

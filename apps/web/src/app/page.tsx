@@ -1,4 +1,4 @@
-import { tools, githubRepos, githubUpdatedAt, getBoards, getGithubTop } from "@/lib/data";
+import { listedTools, githubRepos, githubUpdatedAt, getBoards, getGithubTop } from "@/lib/data";
 import { SearchInput } from "@/components/SearchInput";
 import { BoardSection } from "@/components/BoardSection";
 import { GithubBoard } from "@/components/GithubBoard";
@@ -32,7 +32,7 @@ export default function Home() {
             <SearchInput defaultValue="" />
           </div>
           <p className="mt-6 text-sm text-ink-muted">
-            已收录 {tools.length} 个 AI 工具 · {githubRepos.length} 个开源项目
+            已收录 {listedTools.length} 个 AI 工具 · {githubRepos.length} 个开源项目
             {ghDate ? ` · 榜单数据更新于 ${ghDate}` : ""}
           </p>
         </div>
