@@ -32,7 +32,9 @@ const TOKEN = process.env.GITHUB_TOKEN;
 const LIMIT = Math.max(0, parseInt(process.env.LIMIT ?? "0", 10) || 0);
 /** 每条搜索词取多少个 / 取几页（GitHub 单页上限 100；页数越多候选池越大） */
 const PER_PAGE = Math.min(100, Math.max(1, parseInt(process.env.PER_PAGE ?? "100", 10) || 100));
-const SEARCH_PAGES = Math.min(5, Math.max(1, parseInt(process.env.SEARCH_PAGES ?? "2", 10) || 2));
+const SEARCH_PAGES = Math.min(5, Math.max(1, parseInt(process.env.SEARCH_PAGES ?? "3", 10) || 3));
+/** 搜索请求间隔：带 token 每分钟 30 次上限，留余量避免 403 限流 */
+const SEARCH_DELAY = Math.max(2300, parseInt(process.env.SEARCH_DELAY ?? "3800", 10) || 3800);
 /** QUOTA=1 时，限定总量会先按方向配额再补位；默认按综合得分直接截断前 N 个 */
 const QUOTA = process.env.QUOTA === "1";
 
@@ -176,6 +178,120 @@ const QUERIES = [
   "topic:spreadsheet stars:>=500",
   "topic:knowledge-base stars:>=800",
   "topic:second-brain stars:>=500",
+
+  /* ---------- v1.6 新增：扩池词（都带 AI 强信号 topic，避免被「AI 信号弱」过滤） ---------- */
+  "topic:llm-app stars:>=300",
+  "topic:llm-apps stars:>=300",
+  "topic:llm-gateway stars:>=300",
+  "topic:ai-gateway stars:>=200",
+  "topic:ai-proxy stars:>=200",
+  "topic:llm-observability stars:>=200",
+  "topic:llm-evaluation stars:>=200",
+  "topic:evals stars:>=200",
+  "topic:prompt-management stars:>=200",
+  "topic:agent-framework stars:>=300",
+  "topic:multi-agent-systems stars:>=300",
+  "topic:ai-agent-framework stars:>=200",
+  "topic:ai-orchestration stars:>=200",
+  "topic:rag-pipeline stars:>=300",
+  "topic:graphrag stars:>=300",
+  "topic:vector-search stars:>=500",
+  "topic:ai-search-engine stars:>=300",
+  "topic:ai-scraping stars:>=200",
+  "topic:browser-agent stars:>=300",
+  "topic:computer-use stars:>=300",
+  "topic:gui-agent stars:>=200",
+  "topic:ai-browser stars:>=300",
+  "topic:ai-desktop stars:>=200",
+  "topic:ai-terminal stars:>=200",
+  "topic:coding-agent stars:>=300",
+  "topic:ai-coding-assistant stars:>=300",
+  "topic:ai-ide stars:>=300",
+  "topic:ai-devops stars:>=200",
+  "topic:ai-monitoring stars:>=200",
+  "topic:ai-etl stars:>=200",
+  "topic:ai-spreadsheet stars:>=200",
+  "topic:ai-ppt stars:>=200",
+  "topic:ai-presentation stars:>=200",
+  "topic:ai-design stars:>=300",
+  "topic:ai-logo stars:>=200",
+  "topic:ai-photo stars:>=300",
+  "topic:ai-video-editor stars:>=300",
+  "topic:ai-video-generation stars:>=300",
+  "topic:ai-subtitle stars:>=200",
+  "topic:ai-podcast stars:>=200",
+  "topic:ai-transcribe stars:>=200",
+  "topic:ai-avatar stars:>=200",
+  "topic:ai-music stars:>=300",
+  "topic:text-to-3d stars:>=300",
+  "topic:comfyui stars:>=500",
+  "topic:ai-tutor stars:>=200",
+  "topic:ai-crm stars:>=200",
+  "topic:ai-support stars:>=200",
+  "topic:ai-marketing stars:>=300",
+  "topic:ai-copywriting stars:>=200",
+  "topic:ai-seo stars:>=300",
+  "topic:ai-recruitment stars:>=200",
+  "topic:ai-real-estate stars:>=100",
+  "topic:ai-travel stars:>=100",
+
+  /* ---------- v1.6 第二批：编码 / SaaS / 内容 / 语音 / 3D 等尚未探到的方向 ---------- */
+  "topic:vibe-coding stars:>=300",
+  "topic:ai-pair-programming stars:>=200",
+  "topic:code-completion stars:>=300",
+  "topic:cursor stars:>=300",
+  "topic:ai-saas stars:>=200",
+  "topic:saas-boilerplate stars:>=500",
+  "topic:ai-dashboard stars:>=200",
+  "topic:ai-summary stars:>=300",
+  "topic:summarization stars:>=300",
+  "topic:ai-writer stars:>=300",
+  "topic:ai-content stars:>=300",
+  "topic:ai-blog stars:>=200",
+  "topic:ai-news stars:>=200",
+  "topic:ai-research stars:>=300",
+  "topic:ai-paper stars:>=200",
+  "topic:arxiv stars:>=300",
+  "topic:ai-notes stars:>=200",
+  "topic:ai-email stars:>=200",
+  "topic:ai-inbox stars:>=200",
+  "topic:ai-calendar stars:>=200",
+  "topic:ai-booking stars:>=100",
+  "topic:ai-ads stars:>=200",
+  "topic:ai-thumbnail stars:>=100",
+  "topic:ai-meme stars:>=100",
+  "topic:ai-companion stars:>=300",
+  "topic:character-ai stars:>=300",
+  "topic:ai-game stars:>=300",
+  "topic:ai-npc stars:>=100",
+  "topic:ai-animation stars:>=200",
+  "topic:ai-lipsync stars:>=200",
+  "topic:ai-dubbing stars:>=100",
+  "topic:ai-voiceover stars:>=100",
+  "topic:ai-speech stars:>=300",
+  "topic:ai-audio stars:>=300",
+  "topic:ai-lyrics stars:>=100",
+  "topic:ai-song stars:>=100",
+  "topic:ai-3d stars:>=200",
+  "topic:ai-texture stars:>=100",
+  "topic:ai-rigging stars:>=100",
+  "topic:ai-data-extraction stars:>=100",
+
+  /* ---------- v1.6 第三批：不再是 topic，而是按仓库名 / 描述里的 AI 关键词捞长尾。
+     topic 词已经翻到边际（第 4-5 页新增个位数），换维度才能覆盖没被 topic 标注的项目；
+     星标门槛写进查询，AI 相关性仍由 checkRankable 的 AI 信号判定把关。 ---------- */
+  "ai in:name stars:>=800",
+  "llm in:name stars:>=800",
+  "agent in:name stars:>=800",
+  "gpt in:name stars:>=800",
+  "rag in:name stars:>=800",
+  "ai in:description stars:>=1000",
+  "llm in:description stars:>=1000",
+  "agent in:description stars:>=1000",
+  "gpt in:description stars:>=1000",
+  "rag in:description stars:>=800",
+  "ai in:readme stars:>=2000",
+  "llm in:readme stars:>=2000",
 ];
 
 interface SearchItem extends RankItem {
@@ -215,59 +331,115 @@ async function coreRemaining(): Promise<number> {
  * 限速：带 token 30 次/分钟、匿名 10 次/分钟，这里按 2.3s 串行（≈26 次/分钟）稳妥推进。
  */
 async function collectCandidates(): Promise<Map<string, SearchItem>> {
-  /* 候选池缓存 6 小时：调原则时反复重跑不必再打上百次搜索接口 */
+  /* 候选池缓存 6 小时：调原则时反复重跑不必再打上百次搜索接口。
+     缓存里记录已搜过的查询，--append-cache 时只补搜新增的词，避免扩词后重扫全部查询。 */
   const cacheFile = path.resolve(process.cwd(), "content/cache/github-candidates.json");
   const refresh = process.argv.includes("--refresh-cache");
+  const append = process.argv.includes("--append-cache");
+  let cachedItems: SearchItem[] = [];
+  let cachedQueries: string[] = [];
+
   if (!refresh && fs.existsSync(cacheFile)) {
     try {
       const c = JSON.parse(fs.readFileSync(cacheFile, "utf-8")) as {
         fetchedAt?: string;
         items?: SearchItem[];
+        queries?: string[];
       };
       const age = Date.now() - Date.parse(c.fetchedAt ?? "");
       if (c.items?.length && age < 6 * 3600_000) {
-        console.log(`[rebuild] 复用候选池缓存（${c.items.length} 个，${Math.round(age / 60000)} 分钟前）`);
-        return new Map(c.items.map((it) => [it.full_name.toLowerCase(), it]));
+        if (!append) {
+          console.log(`[rebuild] 复用候选池缓存（${c.items.length} 个，${Math.round(age / 60000)} 分钟前）`);
+          return new Map(c.items.map((it) => [it.full_name.toLowerCase(), it]));
+        }
+        cachedItems = c.items;
+        cachedQueries = c.queries ?? [];
       }
     } catch {
       /* 缓存损坏则重新拉取 */
     }
   }
 
-  const found = new Map<string, SearchItem>();
-  for (const [i, q] of QUERIES.entries()) {
+  const found = new Map<string, SearchItem>(
+    cachedItems.map((it) => [it.full_name.toLowerCase(), it]),
+  );
+  /* --deep-cache：候选池不够时，对已有查询只补抓更深的页（默认从第 4 页起），
+     避免为了多看几百个仓库把前面几页重复请求一遍。 */
+  const deep = process.argv.includes("--deep-cache");
+  const pageFrom = deep ? Math.max(1, SEARCH_PAGES - 1) : 1;
+  const todoQueries = deep
+    ? QUERIES
+    : append && cachedQueries.length
+      ? QUERIES.filter((q) => !cachedQueries.includes(q))
+      : QUERIES;
+  if (append) {
+    console.log(
+      `[rebuild] 增量搜索：待搜 ${todoQueries.length} 个查询（缓存已有 ${cachedQueries.length} 个查询 / ${cachedItems.length} 个候选）`,
+    );
+  }
+  if (deep) {
+    console.log(
+      `[rebuild] 深页补搜：${todoQueries.length} 个查询 × 第 ${pageFrom}-${SEARCH_PAGES} 页（缓存已有 ${cachedItems.length} 个候选）`,
+    );
+  }
+  if (append && !todoQueries.length) {
+    console.log("[rebuild] 没有新增查询，直接复用缓存");
+    return found;
+  }
+
+  for (const [i, q] of todoQueries.entries()) {
     let addedTotal = 0;
-    for (let page = 1; page <= SEARCH_PAGES; page++) {
+    for (let page = pageFrom; page <= SEARCH_PAGES; page++) {
       const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(q)}&sort=stars&order=desc&per_page=${PER_PAGE}&page=${page}`;
-      try {
-        const res = await fetch(url, { headers: headers() });
-        if (!res.ok) {
-          console.warn(`[rebuild] 搜索失败 ${res.status}：${q}（第 ${page} 页）`);
-          break;
+      let done = false;
+      for (let attempt = 1; attempt <= 3 && !done; attempt++) {
+        try {
+          const res = await fetch(url, { headers: headers() });
+          if (res.status === 403 || res.status === 429) {
+            /* 搜索限流：退避后重试同一页，别把整个查询丢掉 */
+            const wait = 20_000 * attempt;
+            console.warn(`[rebuild] 搜索限流 ${res.status}：${q}（第 ${page} 页）→ 等待 ${wait / 1000}s 重试`);
+            await sleep(wait);
+            continue;
+          }
+          if (!res.ok) {
+            console.warn(`[rebuild] 搜索失败 ${res.status}：${q}（第 ${page} 页）`);
+            break;
+          }
+          const data = (await res.json()) as { items?: SearchItem[] };
+          if (!data.items?.length) {
+            done = true;
+            break;
+          }
+          for (const it of data.items) {
+            const key = it.full_name.toLowerCase();
+            if (found.has(key)) continue;
+            found.set(key, it);
+            addedTotal++;
+          }
+          done = true;
+          if (data.items.length < PER_PAGE) break;
+        } catch (e) {
+          console.warn(`[rebuild] 搜索异常 ${q}（第 ${page} 页，第 ${attempt} 次）：`, e instanceof Error ? e.message : e);
+          await sleep(3000 * attempt);
         }
-        const data = (await res.json()) as { items?: SearchItem[] };
-        if (!data.items?.length) break;
-        for (const it of data.items) {
-          const key = it.full_name.toLowerCase();
-          if (found.has(key)) continue;
-          found.set(key, it);
-          addedTotal++;
-        }
-        if (data.items.length < PER_PAGE) break;
-      } catch (e) {
-        console.warn(`[rebuild] 搜索异常 ${q}：`, e instanceof Error ? e.message : e);
-        break;
       }
-      await sleep(2300);
+      if (!done) break;
+      await sleep(SEARCH_DELAY);
     }
-    console.log(`[rebuild] (${i + 1}/${QUERIES.length}) ${q} → 新增候选 ${addedTotal}，累计 ${found.size}`);
-    }
+    console.log(`[rebuild] (${i + 1}/${todoQueries.length}) ${q} → 新增候选 ${addedTotal}，累计 ${found.size}`);
+  }
 
   try {
+    const allQueries = [...new Set([...cachedQueries, ...todoQueries])];
     fs.mkdirSync(path.dirname(cacheFile), { recursive: true });
     fs.writeFileSync(
       cacheFile,
-      JSON.stringify({ fetchedAt: new Date().toISOString(), items: [...found.values()] }, null, 2) + "\n",
+      JSON.stringify(
+        { fetchedAt: new Date().toISOString(), queries: allQueries, items: [...found.values()] },
+        null,
+        2,
+      ) + "\n",
       "utf-8",
     );
     console.log(`[rebuild] 候选池已缓存 → ${cacheFile}`);

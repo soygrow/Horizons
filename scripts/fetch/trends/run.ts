@@ -217,6 +217,8 @@ const VARIANT_TOKENS = new Set([
   "install", "installing", "marketplace", "example", "examples", "directory", "awesome",
   "github", "gitlab", "download", "list", "guide", "tutorial", "tutorials", "tips",
   "template", "templates", "usage", "docs", "documentation",
+  // 「ai customer support」与「ai customer support chatbot」是同一需求换了个载体说法
+  "chatbot", "chatbots", "assistant", "assistants", "bot", "bots",
 ]);
 
 /**
@@ -360,8 +362,18 @@ async function main(): Promise<void> {
   }
 
   let valueRejected = 0;
+  // 预算有限时先跑短词：4–5 个 token 的长尾在美国区近 90 天基本无量，
+  // 上一轮 66% 的预算耗在它们身上，换回来的全是空序列。
+  // 库内词排最前（它们要刷新数据），新词按词长升序。
+  const ordered = [...filtered].sort((a, b) => {
+    const aOld = existingIndex.has(a.normalizedKey) ? 0 : 1;
+    const bOld = existingIndex.has(b.normalizedKey) ? 0 : 1;
+    if (aOld !== bOld) return aOld - bOld;
+    return a.keyword.split(/\s+/).length - b.keyword.split(/\s+/).length;
+  });
+
   const passed: TrendCandidate[] = [];
-  for (const c of filtered) {
+  for (const c of ordered) {
     if (existingIndex.has(c.normalizedKey)) {
       passed.push(c);
       continue;

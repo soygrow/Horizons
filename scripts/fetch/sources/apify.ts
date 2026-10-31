@@ -29,7 +29,7 @@ export interface SimilarwebRawItem {
   trafficSources?: { source?: string; rank?: number | null; share?: number | null }[];
   topCountries?: { countryCode?: string; share?: number | null }[];
   topKeywords?: { keyword?: string; cpc?: number | null; volume?: number | null }[];
-  similarSites?: string[];
+  similarSites?: { domain?: string; category?: string; categoryRank?: number; affinity?: number }[];
   technologies?: { category?: string; topTechnology?: string; count?: number }[];
   organicSearchShare?: number;
   paidSearchShare?: number;
@@ -168,8 +168,8 @@ async function runLergassyBatch(websites: string[]): Promise<SimilarwebRawItem[]
   const runId = ((await runRes.json()) as { data?: { id?: string } }).data?.id;
   if (!runId) throw new Error("lergassy 未返回 runId");
 
-  // 实测单站 run 需 40~90s，批量更多域名会更久，上限给到 5 分钟
-  const deadline = Date.now() + 300_000;
+  // 实测单站 run 需 40~90s，批量更多域名会更久，上限给到 8 分钟
+  const deadline = Date.now() + 480_000;
   let status = "";
   while (Date.now() < deadline) {
     await new Promise((r) => setTimeout(r, 3000));
@@ -203,8 +203,11 @@ async function fetchLergassyRaw(domain: string): Promise<SimilarwebRawItem | nul
   }
 }
 
-/** 单次 run 可容纳的域名数量（实测 25 个约 90s，再多收益递减） */
-const LERGASSY_BATCH = 25;
+/**
+ * 单次 run 可容纳的域名数量。
+ * 实测 25 个遇到拥堵时会超过 5 分钟被判定超时，12 个稳定在 60~90s，整体更省时间。
+ */
+const LERGASSY_BATCH = 12;
 
 /**
  * 批量查询月访问量：一次 run 查多个域名，把「N × 42s」压到「N/25 × 90s」。

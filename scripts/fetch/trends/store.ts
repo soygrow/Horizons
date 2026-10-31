@@ -162,13 +162,14 @@ export function planBatch(params: {
     if (keyed.has(c.normalizedKey)) continue;
     fresh.push(c);
   }
-  // 先按来源可信度排，再按热度信号：手工种子 > 工具库 > Trending RSS > PH > GitHub
+  // 先按来源可信度排，再按热度信号：手工种子 > 工具库 > 已收词相关搜索 > Trending RSS > PH > GitHub
   const ORIGIN_RANK: Record<TrendCandidate["origin"], number> = {
     seed: 0,
     aitools: 1,
-    rss: 2,
-    ph: 3,
-    github: 4,
+    related: 2,
+    rss: 3,
+    ph: 4,
+    github: 5,
   };
   fresh.sort(
     (a, b) => ORIGIN_RANK[a.origin] - ORIGIN_RANK[b.origin] || b.weight - a.weight,

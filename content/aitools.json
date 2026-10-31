@@ -119576,11 +119576,90 @@
     "githubStars": null,
     "launchedAt": "2026-10-10T07:01:00Z",
     "firstSeenAt": "2026-10-30T06:05:28.404Z",
-    "collectedAt": "2026-10-30T06:05:28.404Z",
+    "collectedAt": "2026-10-30T09:47:02.993Z",
     "verified": "pending",
     "sourceType": "producthunt",
     "sourceUrl": "https://www.producthunt.com/r/YPRI2YBH6V3NM5?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
-    "phUrl": "https://www.producthunt.com/posts/luneresearch.com"
+    "phUrl": "https://www.producthunt.com/posts/luneresearch.com",
+    "trafficMetrics": {
+      "monthlyVisits": 8811,
+      "monthlyVisitsGrowth": 3.3,
+      "organicSearchVisits": 0,
+      "directVisits": 2993,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 13745,
+      "avgVisitDurationSec": 45,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 8811,
+      "organicVisits": 0,
+      "directVisits": 2993,
+      "momGrowth": 3.3
+    },
+    "channelShares": {
+      "direct": 34
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 56.4
+      },
+      {
+        "country": "Germany",
+        "share": 11.1
+      },
+      {
+        "country": "Vietnam",
+        "share": 9.8
+      },
+      {
+        "country": "India",
+        "share": 9
+      },
+      {
+        "country": "Italy",
+        "share": 5.1
+      }
+    ],
+    "ranks": {
+      "global": 2451781,
+      "country": 1227074
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 9867,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 2789,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 8811,
+        "organic": 0
+      }
+    ]
   },
   {
     "id": "tool-ph-agibot-sh",
@@ -119631,10 +119710,7083 @@
     "githubStars": null,
     "launchedAt": "2026-10-18T07:01:00Z",
     "firstSeenAt": "2026-10-30T06:06:15.007Z",
-    "collectedAt": "2026-10-30T06:06:15.007Z",
+    "collectedAt": "2026-10-30T09:47:02.993Z",
     "verified": "pending",
     "sourceType": "producthunt",
     "sourceUrl": "https://www.producthunt.com/r/OSPNBXUM3TCV22?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
-    "phUrl": "https://www.producthunt.com/posts/krea.ai"
+    "phUrl": "https://www.producthunt.com/posts/krea.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 4454375,
+      "monthlyVisitsGrowth": 9.2,
+      "organicSearchVisits": 0,
+      "directVisits": 2092024,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 20356494,
+      "avgVisitDurationSec": 261,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 4454375,
+      "organicVisits": 0,
+      "directVisits": 2092024,
+      "momGrowth": 9.2
+    },
+    "channelShares": {
+      "direct": 47
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 14.7
+      },
+      {
+        "country": "Russia",
+        "share": 13.5
+      },
+      {
+        "country": "India",
+        "share": 9
+      },
+      {
+        "country": "Brazil",
+        "share": 4.7
+      },
+      {
+        "country": "United Kingdom",
+        "share": 3.8
+      }
+    ],
+    "ranks": {
+      "global": 11386,
+      "country": 13891
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 4249728,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 4127635,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 4454375,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-builder-ai",
+    "name": "Builder",
+    "domain": "builder.ai",
+    "url": "https://builder.ai",
+    "description": "Get your software applications developed easily. AI makes developing your software applications on our award-winning pla",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 62,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T07:43:09.761Z",
+    "collectedAt": "2026-10-30T07:43:09.761Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://floot.com",
+    "trafficMetrics": {
+      "monthlyVisits": 26768,
+      "monthlyVisitsGrowth": -29.6,
+      "organicSearchVisits": 12675,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 40955,
+      "avgVisitDurationSec": 5,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 26768,
+      "organicVisits": 12675,
+      "organicShare": 47.4,
+      "directVisits": 0,
+      "momGrowth": -29.6
+    },
+    "channelShares": {
+      "organicSearch": 47.4
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 19.7
+      },
+      {
+        "country": "India",
+        "share": 14.6
+      },
+      {
+        "country": "United Kingdom",
+        "share": 8.5
+      },
+      {
+        "country": "Indonesia",
+        "share": 6.9
+      },
+      {
+        "country": "Vietnam",
+        "share": 5.1
+      }
+    ],
+    "ranks": {
+      "global": 1134998,
+      "country": 240035
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 45455,
+        "organic": 21524
+      },
+      {
+        "date": "2026-08",
+        "total": 36073,
+        "organic": 17081
+      },
+      {
+        "date": "2026-09",
+        "total": 26768,
+        "organic": 12675
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-flot-ai",
+    "name": "Flot",
+    "domain": "flot.ai",
+    "url": "https://flot.ai",
+    "description": "Your AI Ally: Blending with Your Workflow, Growing with Your Knowledge.",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 60,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T07:43:09.761Z",
+    "collectedAt": "2026-10-30T07:43:09.761Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://floot.com",
+    "trafficMetrics": {
+      "monthlyVisits": 8064,
+      "monthlyVisitsGrowth": -37.7,
+      "organicSearchVisits": 0,
+      "directVisits": 3274,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 10322,
+      "avgVisitDurationSec": 2,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 8064,
+      "organicVisits": 0,
+      "directVisits": 3274,
+      "momGrowth": -37.7
+    },
+    "channelShares": {
+      "direct": 40.6
+    },
+    "geoDistribution": [
+      {
+        "country": "India",
+        "share": 41.5
+      },
+      {
+        "country": "Russia",
+        "share": 22.7
+      },
+      {
+        "country": "Peru",
+        "share": 12.2
+      },
+      {
+        "country": "Australia",
+        "share": 11.4
+      },
+      {
+        "country": "United Kingdom",
+        "share": 6
+      }
+    ],
+    "ranks": {
+      "global": 2763790,
+      "country": 235434
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 15240,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 10953,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 8064,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-claude-ai",
+    "name": "Claude",
+    "domain": "claude.ai",
+    "url": "https://claude.ai",
+    "description": "Talk with Claude, an AI assistant from Anthropic",
+    "descriptionSource": "source",
+    "categories": [
+      "AI Chat"
+    ],
+    "heatScore": 85,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T07:49:29.495Z",
+    "collectedAt": "2026-10-30T07:49:29.495Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://perplexity.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 1012660998,
+      "monthlyVisitsGrowth": 6.6,
+      "organicSearchVisits": 0,
+      "directVisits": 736292647,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 4222796362,
+      "avgVisitDurationSec": 357,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 1012660998,
+      "organicVisits": 0,
+      "directVisits": 736292647,
+      "momGrowth": 6.6
+    },
+    "channelShares": {
+      "direct": 72.7
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 25.1
+      },
+      {
+        "country": "India",
+        "share": 10.2
+      },
+      {
+        "country": "United Kingdom",
+        "share": 4.1
+      },
+      {
+        "country": "France",
+        "share": 3.6
+      },
+      {
+        "country": "Japan",
+        "share": 3.4
+      }
+    ],
+    "ranks": {
+      "global": 38,
+      "country": 47
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 957813514,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 933638958,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 1012660998,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-popvid-ai",
+    "name": "Popvid",
+    "domain": "popvid.ai",
+    "url": "https://popvid.ai",
+    "description": "PopVid AI (formerly MemeGen) is an interactive AI video platform where you don’t just watch videos — you play them. Make",
+    "descriptionSource": "source",
+    "categories": [
+      "Video"
+    ],
+    "heatScore": 72,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T07:49:29.495Z",
+    "collectedAt": "2026-10-30T07:49:29.495Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://viggle.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 2326094,
+      "monthlyVisitsGrowth": -19.9,
+      "organicSearchVisits": 0,
+      "directVisits": 1661831,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 61594969,
+      "avgVisitDurationSec": 885,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 2326094,
+      "organicVisits": 0,
+      "directVisits": 1661831,
+      "momGrowth": -19.9
+    },
+    "channelShares": {
+      "direct": 71.4
+    },
+    "geoDistribution": [
+      {
+        "country": "Brazil",
+        "share": 14.7
+      },
+      {
+        "country": "United States",
+        "share": 12
+      },
+      {
+        "country": "Indonesia",
+        "share": 7.7
+      },
+      {
+        "country": "United Kingdom",
+        "share": 6.8
+      },
+      {
+        "country": "Argentina",
+        "share": 6.2
+      }
+    ],
+    "ranks": {
+      "global": 10108,
+      "country": 1161
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 3960529,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 2750769,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 2326094,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-vidnoz-com",
+    "name": "Vidnoz",
+    "domain": "vidnoz.com",
+    "url": "https://vidnoz.com",
+    "description": "Explore Vidnoz AI text to speech online free unlimited generator. 1200+ lifelike AI voices in 140+ languages are availab",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 72,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T07:49:29.495Z",
+    "collectedAt": "2026-10-30T07:49:29.495Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://viggle.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 2048828,
+      "monthlyVisitsGrowth": -3.4,
+      "organicSearchVisits": 0,
+      "directVisits": 1005001,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 8174824,
+      "avgVisitDurationSec": 311,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 2048828,
+      "organicVisits": 0,
+      "directVisits": 1005001,
+      "momGrowth": -3.4
+    },
+    "channelShares": {
+      "direct": 49.1
+    },
+    "geoDistribution": [
+      {
+        "country": "Japan",
+        "share": 19
+      },
+      {
+        "country": "Taiwan",
+        "share": 7.8
+      },
+      {
+        "country": "Italy",
+        "share": 7.4
+      },
+      {
+        "country": "United States",
+        "share": 6.9
+      },
+      {
+        "country": "Brazil",
+        "share": 6.1
+      }
+    ],
+    "ranks": {
+      "global": 24592,
+      "country": 8437
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 2135801,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 2088101,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 2048828,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-sobot-io",
+    "name": "Sobot",
+    "domain": "sobot.io",
+    "url": "https://sobot.io",
+    "description": "Boost Your Live Chat Efficiency with Sobot AI Copilot! (Game-Changing Features)\nDiscover how Sobot AI Copilot revolution",
+    "descriptionSource": "source",
+    "categories": [
+      "Marketing"
+    ],
+    "heatScore": 66,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T07:49:29.495Z",
+    "collectedAt": "2026-10-30T07:49:29.495Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://salesmartly.com",
+    "trafficMetrics": {
+      "monthlyVisits": 149628,
+      "monthlyVisitsGrowth": -19.3,
+      "organicSearchVisits": 0,
+      "directVisits": 70635,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 306737,
+      "avgVisitDurationSec": 70,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 149628,
+      "organicVisits": 0,
+      "directVisits": 70635,
+      "momGrowth": -19.3
+    },
+    "channelShares": {
+      "direct": 47.2
+    },
+    "geoDistribution": [
+      {
+        "country": "Indonesia",
+        "share": 15.6
+      },
+      {
+        "country": "Germany",
+        "share": 15.1
+      },
+      {
+        "country": "Türkiye",
+        "share": 13.3
+      },
+      {
+        "country": "Malaysia",
+        "share": 8.4
+      },
+      {
+        "country": "Vietnam",
+        "share": 7.8
+      }
+    ],
+    "ranks": {
+      "global": 312419,
+      "country": 10939
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 203343,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 175670,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 149628,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-suno-com",
+    "name": "Suno",
+    "domain": "suno.com",
+    "url": "https://suno.com",
+    "description": "Create music with AI. Generate songs, covers, and instrumentals with Suno.",
+    "descriptionSource": "source",
+    "categories": [
+      "Voice & Audio"
+    ],
+    "heatScore": 79,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:00:16.225Z",
+    "collectedAt": "2026-10-30T08:00:16.225Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://elevenlabs.io",
+    "trafficMetrics": {
+      "monthlyVisits": 75452317,
+      "monthlyVisitsGrowth": 3.8,
+      "organicSearchVisits": 0,
+      "directVisits": 47737474,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 464031750,
+      "avgVisitDurationSec": 523,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 75452317,
+      "organicVisits": 0,
+      "directVisits": 47737474,
+      "momGrowth": 3.8
+    },
+    "channelShares": {
+      "direct": 63.3
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 19.6
+      },
+      {
+        "country": "Germany",
+        "share": 5.4
+      },
+      {
+        "country": "Japan",
+        "share": 4.9
+      },
+      {
+        "country": "Russia",
+        "share": 4.4
+      },
+      {
+        "country": "Brazil",
+        "share": 4
+      }
+    ],
+    "ranks": {
+      "global": 445,
+      "country": 597
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 71288540,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 72910191,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 75452317,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-turboscribe-ai",
+    "name": "Turboscribe",
+    "domain": "turboscribe.ai",
+    "url": "https://turboscribe.ai",
+    "description": "start transcribing for free — convert unlimited audio and video files to accurate text. 99.8% accuracy. 98+ languages. t",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 77,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:00:16.225Z",
+    "collectedAt": "2026-10-30T08:00:16.225Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://elevenlabs.io",
+    "trafficMetrics": {
+      "monthlyVisits": 27101386,
+      "monthlyVisitsGrowth": 0.9,
+      "organicSearchVisits": 13482398,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 87537477,
+      "avgVisitDurationSec": 204,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 27101386,
+      "organicVisits": 13482398,
+      "organicShare": 49.7,
+      "directVisits": 0,
+      "momGrowth": 0.9
+    },
+    "channelShares": {
+      "organicSearch": 49.7
+    },
+    "geoDistribution": [
+      {
+        "country": "Brazil",
+        "share": 12.8
+      },
+      {
+        "country": "United States",
+        "share": 11.7
+      },
+      {
+        "country": "Spain",
+        "share": 5.6
+      },
+      {
+        "country": "Peru",
+        "share": 4.3
+      },
+      {
+        "country": "Italy",
+        "share": 4.2
+      }
+    ],
+    "ranks": {
+      "global": 1927,
+      "country": 3487
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 27359365,
+        "organic": 13610737
+      },
+      {
+        "date": "2026-08",
+        "total": 26719521,
+        "organic": 13292428
+      },
+      {
+        "date": "2026-09",
+        "total": 27101386,
+        "organic": 13482398
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-lalal-ai",
+    "name": "Lalal",
+    "domain": "lalal.ai",
+    "url": "https://lalal.ai",
+    "description": "Remove vocals and instrumentals quickly and accurately with LALAL.AI. Upload any audio file and receive high-quality ext",
+    "descriptionSource": "source",
+    "categories": [
+      "Voice & Audio"
+    ],
+    "heatScore": 72,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:00:16.225Z",
+    "collectedAt": "2026-10-30T08:00:16.225Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://elevenlabs.io",
+    "trafficMetrics": {
+      "monthlyVisits": 2233618,
+      "monthlyVisitsGrowth": -8.2,
+      "organicSearchVisits": 1057071,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 6857207,
+      "avgVisitDurationSec": 144,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 2233618,
+      "organicVisits": 1057071,
+      "organicShare": 47.3,
+      "directVisits": 0,
+      "momGrowth": -8.2
+    },
+    "channelShares": {
+      "organicSearch": 47.3
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 19
+      },
+      {
+        "country": "France",
+        "share": 5.4
+      },
+      {
+        "country": "India",
+        "share": 4.9
+      },
+      {
+        "country": "Germany",
+        "share": 4
+      },
+      {
+        "country": "Spain",
+        "share": 3.6
+      }
+    ],
+    "ranks": {
+      "global": 25140,
+      "country": 32881
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 2303215,
+        "organic": 1090008
+      },
+      {
+        "date": "2026-08",
+        "total": 2349389,
+        "organic": 1111860
+      },
+      {
+        "date": "2026-09",
+        "total": 2233618,
+        "organic": 1057071
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-typecast-ai",
+    "name": "Typecast",
+    "domain": "typecast.ai",
+    "url": "https://typecast.ai",
+    "description": "타입캐스트 AI보이스 대길·현주·예나·한준이 다양한 장르에서 빠르게 주목받고 있습니다.요즘은 다큐 톤의 쇼츠 콘텐츠가 인기이며, 이들이 대표 내레이션으로 활약 중입니다.타입캐스트에서는 감정과 톤을 자유롭게 조절해 나",
+    "descriptionSource": "source",
+    "categories": [
+      "Voice & Audio"
+    ],
+    "heatScore": 71,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:00:16.225Z",
+    "collectedAt": "2026-10-30T08:00:16.225Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://elevenlabs.io",
+    "trafficMetrics": {
+      "monthlyVisits": 1281863,
+      "monthlyVisitsGrowth": 2,
+      "organicSearchVisits": 0,
+      "directVisits": 730795,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 4806986,
+      "avgVisitDurationSec": 204,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 1281863,
+      "organicVisits": 0,
+      "directVisits": 730795,
+      "momGrowth": 2
+    },
+    "channelShares": {
+      "direct": 57
+    },
+    "geoDistribution": [
+      {
+        "country": "South Korea",
+        "share": 85.2
+      },
+      {
+        "country": "United States",
+        "share": 3.5
+      },
+      {
+        "country": "Philippines",
+        "share": 2.3
+      },
+      {
+        "country": "Peru",
+        "share": 0.5
+      },
+      {
+        "country": "Canada",
+        "share": 0.4
+      }
+    ],
+    "ranks": {
+      "global": 41890,
+      "country": 1512
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 1310809,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 1272274,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 1281863,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-fliki-ai",
+    "name": "Fliki",
+    "domain": "fliki.ai",
+    "url": "https://fliki.ai",
+    "description": "Turn text, scripts, and blog posts into videos with 2,000+ AI voices in 80+ languages. No camera, no editing skills need",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 70,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:00:16.225Z",
+    "collectedAt": "2026-10-30T08:00:16.225Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://pexo.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 815780,
+      "monthlyVisitsGrowth": -0.5,
+      "organicSearchVisits": 0,
+      "directVisits": 344068,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 4421528,
+      "avgVisitDurationSec": 232,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 815780,
+      "organicVisits": 0,
+      "directVisits": 344068,
+      "momGrowth": -0.5
+    },
+    "channelShares": {
+      "direct": 42.2
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 16
+      },
+      {
+        "country": "India",
+        "share": 15.6
+      },
+      {
+        "country": "Pakistan",
+        "share": 4.7
+      },
+      {
+        "country": "Philippines",
+        "share": 3.9
+      },
+      {
+        "country": "Italy",
+        "share": 3.5
+      }
+    ],
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 757763,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 819830,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 815780,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-voicemaker-in",
+    "name": "Voicemaker",
+    "domain": "voicemaker.in",
+    "url": "https://voicemaker.in",
+    "description": "See what's new in Voicemaker: AI voice features, product updates, bug fixes, and platform improvements.",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 69,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:00:16.225Z",
+    "collectedAt": "2026-10-30T08:00:16.225Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://elevenlabs.io",
+    "trafficMetrics": {
+      "monthlyVisits": 564806,
+      "monthlyVisitsGrowth": -7,
+      "organicSearchVisits": 398507,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 1400719,
+      "avgVisitDurationSec": 67,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 564806,
+      "organicVisits": 398507,
+      "organicShare": 70.6,
+      "directVisits": 0,
+      "momGrowth": -7
+    },
+    "channelShares": {
+      "organicSearch": 70.6
+    },
+    "geoDistribution": [
+      {
+        "country": "India",
+        "share": 35.5
+      },
+      {
+        "country": "Indonesia",
+        "share": 8.9
+      },
+      {
+        "country": "United States",
+        "share": 7.6
+      },
+      {
+        "country": "Philippines",
+        "share": 4.2
+      },
+      {
+        "country": "Pakistan",
+        "share": 4.1
+      }
+    ],
+    "ranks": {
+      "global": 89670,
+      "country": 12598
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 659070,
+        "organic": 465016
+      },
+      {
+        "date": "2026-08",
+        "total": 603343,
+        "organic": 425697
+      },
+      {
+        "date": "2026-09",
+        "total": 564806,
+        "organic": 398507
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-justoneapi-com",
+    "name": "Justoneapi",
+    "domain": "justoneapi.com",
+    "url": "https://justoneapi.com",
+    "description": "学习如何在 Claude Code、Codex、Cursor、Hermes Agent 等客户端中接入 JustOneAPI MCP Server，让 AI 助手帮你查找接口、查看参数并调用 API。",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 62,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:00:16.225Z",
+    "collectedAt": "2026-10-30T08:00:16.225Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://zernio.com",
+    "trafficMetrics": {
+      "monthlyVisits": 26612,
+      "monthlyVisitsGrowth": -1.3,
+      "organicSearchVisits": 0,
+      "directVisits": 18290,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 158608,
+      "avgVisitDurationSec": 219,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 26612,
+      "organicVisits": 0,
+      "directVisits": 18290,
+      "momGrowth": -1.3
+    },
+    "channelShares": {
+      "direct": 68.7
+    },
+    "geoDistribution": [
+      {
+        "country": "China",
+        "share": 72.6
+      },
+      {
+        "country": "United States",
+        "share": 12.8
+      },
+      {
+        "country": "Indonesia",
+        "share": 4.8
+      },
+      {
+        "country": "Taiwan",
+        "share": 4.1
+      },
+      {
+        "country": "Brazil",
+        "share": 2.4
+      }
+    ],
+    "ranks": {
+      "global": 728538,
+      "country": 35506
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 19618,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 26896,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 26612,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-bigmodel-cn",
+    "name": "Bigmodel",
+    "domain": "bigmodel.cn",
+    "url": "https://bigmodel.cn",
+    "description": "智谱大模型开放平台-新一代国产自主通用ai大模型开放平台，是国内大模型排名前列的大模型网站，研发了多款llm模型，多模态视觉模型产品，致力于将ai产品技术与行业场景双轮驱动的中国先进的认知智能技术和千行百业应用相结合，构建更高精度、高效率、",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 74,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:34:03.139Z",
+    "collectedAt": "2026-10-30T08:34:03.139Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://z.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 6869578,
+      "monthlyVisitsGrowth": 3.8,
+      "organicSearchVisits": 0,
+      "directVisits": 4989217,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 36202676,
+      "avgVisitDurationSec": 283,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 6869578,
+      "organicVisits": 0,
+      "directVisits": 4989217,
+      "momGrowth": 3.8
+    },
+    "channelShares": {
+      "direct": 72.6
+    },
+    "geoDistribution": [
+      {
+        "country": "China",
+        "share": 83.7
+      },
+      {
+        "country": "United States",
+        "share": 5
+      },
+      {
+        "country": "Singapore",
+        "share": 2.7
+      },
+      {
+        "country": "Hong Kong SAR China",
+        "share": 2.2
+      },
+      {
+        "country": "Taiwan",
+        "share": 1.2
+      }
+    ],
+    "ranks": {
+      "global": 7295,
+      "country": 157
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 5440566,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 6607792,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 6869578,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-dacon-io",
+    "name": "Dacon",
+    "domain": "dacon.io",
+    "url": "https://dacon.io",
+    "description": "13만 AI 팀이 협업하는 데이터 사이언스 플랫폼. AI 경진대회와 대상 맞춤 온/오프라인 교육, 문제 기반 학습 서비스를 제공합니다.",
+    "descriptionSource": "source",
+    "categories": [
+      "Data & Analytics"
+    ],
+    "heatScore": 66,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:34:03.139Z",
+    "collectedAt": "2026-10-30T08:34:03.139Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://simular.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 147331,
+      "monthlyVisitsGrowth": -23.2,
+      "organicSearchVisits": 0,
+      "directVisits": 102627,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 990064,
+      "avgVisitDurationSec": 527,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 147331,
+      "organicVisits": 0,
+      "directVisits": 102627,
+      "momGrowth": -23.2
+    },
+    "channelShares": {
+      "direct": 69.7
+    },
+    "geoDistribution": [
+      {
+        "country": "South Korea",
+        "share": 97.5
+      },
+      {
+        "country": "United States",
+        "share": 0.6
+      },
+      {
+        "country": "Vietnam",
+        "share": 0.5
+      },
+      {
+        "country": "Pakistan",
+        "share": 0.5
+      },
+      {
+        "country": "India",
+        "share": 0.3
+      }
+    ],
+    "ranks": {
+      "global": 219188,
+      "country": 6169
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 178387,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 179601,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 147331,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-heyvid-ai",
+    "name": "Heyvid",
+    "domain": "heyvid.ai",
+    "url": "https://heyvid.ai",
+    "description": "Transform any image to video with AI. Our image to video converter turns photos into professional video clips. Create im",
+    "descriptionSource": "source",
+    "categories": [
+      "Video"
+    ],
+    "heatScore": 65,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:34:03.139Z",
+    "collectedAt": "2026-10-30T08:34:03.139Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://pexo.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 104829,
+      "monthlyVisitsGrowth": 48.8,
+      "organicSearchVisits": 0,
+      "directVisits": 47191,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 228527,
+      "avgVisitDurationSec": 38,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 104829,
+      "organicVisits": 0,
+      "directVisits": 47191,
+      "momGrowth": 48.8
+    },
+    "channelShares": {
+      "direct": 45
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 16.3
+      },
+      {
+        "country": "Vietnam",
+        "share": 9.8
+      },
+      {
+        "country": "Indonesia",
+        "share": 9.2
+      },
+      {
+        "country": "India",
+        "share": 8.6
+      },
+      {
+        "country": "Brazil",
+        "share": 7.8
+      }
+    ],
+    "ranks": {
+      "global": 370652,
+      "country": 224164
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 49457,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 82371,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 104829,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-clerk-chat",
+    "name": "Clerk",
+    "domain": "clerk.chat",
+    "url": "https://clerk.chat",
+    "description": "Add unlimited SMS, MMS, RCS, WhatsApp, and eFax to your Teams numbers. Replace expensive Microsoft Calling Plans with Op",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 65,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:34:03.139Z",
+    "collectedAt": "2026-10-30T08:34:03.139Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://simular.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 81546,
+      "monthlyVisitsGrowth": -23.7,
+      "organicSearchVisits": 0,
+      "directVisits": 54497,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 511293,
+      "avgVisitDurationSec": 373,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 81546,
+      "organicVisits": 0,
+      "directVisits": 54497,
+      "momGrowth": -23.7
+    },
+    "channelShares": {
+      "direct": 66.8
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 44.3
+      },
+      {
+        "country": "Philippines",
+        "share": 23.9
+      },
+      {
+        "country": "Italy",
+        "share": 6
+      },
+      {
+        "country": "Canada",
+        "share": 3.5
+      },
+      {
+        "country": "India",
+        "share": 1.7
+      }
+    ],
+    "ranks": {
+      "global": 321592,
+      "country": 127289
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 111119,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 114740,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 81546,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-vidsoul-ai",
+    "name": "Vidsoul",
+    "domain": "vidsoul.ai",
+    "url": "https://vidsoul.ai",
+    "description": "Create stunning AI Images and Videos in seconds with Vidsoul’s powerful AI tools. Whether you need to generate, edit, ex",
+    "descriptionSource": "source",
+    "categories": [
+      "Video"
+    ],
+    "heatScore": 62,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:34:03.139Z",
+    "collectedAt": "2026-10-30T08:34:03.139Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://pexo.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 26411,
+      "monthlyVisitsGrowth": -57.2,
+      "organicSearchVisits": 0,
+      "directVisits": 12789,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 85836,
+      "avgVisitDurationSec": 50,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 26411,
+      "organicVisits": 0,
+      "directVisits": 12789,
+      "momGrowth": -57.2
+    },
+    "channelShares": {
+      "direct": 48.4
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 24.8
+      },
+      {
+        "country": "Brazil",
+        "share": 17.7
+      },
+      {
+        "country": "Vietnam",
+        "share": 17.1
+      },
+      {
+        "country": "Germany",
+        "share": 14.1
+      },
+      {
+        "country": "United Kingdom",
+        "share": 11.7
+      }
+    ],
+    "ranks": {
+      "global": 886322,
+      "country": 104951
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 53461,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 55522,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 26411,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-pygpt-net",
+    "name": "Pygpt",
+    "domain": "pygpt.net",
+    "url": "https://pygpt.net",
+    "description": "One desktop app for cloud and local AI. Chat, build agents, connect your knowledge with RAG, and get things done with sk",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 61,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:34:03.139Z",
+    "collectedAt": "2026-10-30T08:34:03.139Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://simular.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 13937,
+      "monthlyVisitsGrowth": 6.6,
+      "organicSearchVisits": 0,
+      "directVisits": 5599,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 21463,
+      "avgVisitDurationSec": 7,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 13937,
+      "organicVisits": 0,
+      "directVisits": 5599,
+      "momGrowth": 6.6
+    },
+    "channelShares": {
+      "direct": 40.2
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 26.5
+      },
+      {
+        "country": "India",
+        "share": 18.9
+      },
+      {
+        "country": "France",
+        "share": 10.3
+      },
+      {
+        "country": "Spain",
+        "share": 8.1
+      },
+      {
+        "country": "Brazil",
+        "share": 6.7
+      }
+    ],
+    "ranks": {
+      "global": 1791843,
+      "country": 1337441
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 16897,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 13140,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 13937,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-fireflies-ai",
+    "name": "Fireflies",
+    "domain": "fireflies.ai",
+    "url": "https://fireflies.ai",
+    "description": "Fireflies 官方网站，月访问量 4,284,664。详情请见官网。",
+    "descriptionSource": "auto",
+    "categories": [
+      "Productivity"
+    ],
+    "heatScore": 73,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:48:25.224Z",
+    "collectedAt": "2026-10-30T08:48:25.224Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://twinmind.com",
+    "trafficMetrics": {
+      "monthlyVisits": 4284664,
+      "monthlyVisitsGrowth": 5.6,
+      "organicSearchVisits": 0,
+      "directVisits": 2215047,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 15639024,
+      "avgVisitDurationSec": 153,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 4284664,
+      "organicVisits": 0,
+      "directVisits": 2215047,
+      "momGrowth": 5.6
+    },
+    "channelShares": {
+      "direct": 51.7
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 38.1
+      },
+      {
+        "country": "United Kingdom",
+        "share": 7.8
+      },
+      {
+        "country": "India",
+        "share": 6.5
+      },
+      {
+        "country": "Netherlands",
+        "share": 3.7
+      },
+      {
+        "country": "Australia",
+        "share": 3.5
+      }
+    ],
+    "ranks": {
+      "global": 12922,
+      "country": 8181
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 4409162,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 4087034,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 4284664,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-kaleido-ai",
+    "name": "Kaleido",
+    "domain": "kaleido.ai",
+    "url": "https://kaleido.ai",
+    "description": "If you are curious to know more about visual AI, discover our products remove.bg, Unscreen and Designify.",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 68,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:48:25.224Z",
+    "collectedAt": "2026-10-30T08:48:25.224Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://memories.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 355397,
+      "monthlyVisitsGrowth": -7.5,
+      "organicSearchVisits": 0,
+      "directVisits": 239734,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 714348,
+      "avgVisitDurationSec": 24,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 355397,
+      "organicVisits": 0,
+      "directVisits": 239734,
+      "momGrowth": -7.5
+    },
+    "channelShares": {
+      "direct": 67.5
+    },
+    "geoDistribution": [
+      {
+        "country": "Russia",
+        "share": 16.5
+      },
+      {
+        "country": "India",
+        "share": 14.9
+      },
+      {
+        "country": "United States",
+        "share": 12.5
+      },
+      {
+        "country": "Indonesia",
+        "share": 7.3
+      },
+      {
+        "country": "Brazil",
+        "share": 7.3
+      }
+    ],
+    "ranks": {
+      "global": 141182,
+      "country": 37252
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 421954,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 407878,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 355397,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-netus-ai",
+    "name": "Netus",
+    "domain": "netus.ai",
+    "url": "https://netus.ai",
+    "description": "Netus AI 解析工具--经过微调的 AI 解析器模型。 使用 Chat GPT 水印去除工具击败任何人工智能检测器。 人工智能与人类的转换器。",
+    "descriptionSource": "source",
+    "categories": [
+      "Writing"
+    ],
+    "heatScore": 67,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:48:25.224Z",
+    "collectedAt": "2026-10-30T08:48:25.224Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://twinmind.com",
+    "trafficMetrics": {
+      "monthlyVisits": 212159,
+      "monthlyVisitsGrowth": -9.4,
+      "organicSearchVisits": 148008,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 335211,
+      "avgVisitDurationSec": 13,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 212159,
+      "organicVisits": 148008,
+      "organicShare": 69.8,
+      "directVisits": 0,
+      "momGrowth": -9.4
+    },
+    "channelShares": {
+      "organicSearch": 69.8
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 12.3
+      },
+      {
+        "country": "India",
+        "share": 6.7
+      },
+      {
+        "country": "Philippines",
+        "share": 3.6
+      },
+      {
+        "country": "Indonesia",
+        "share": 3.3
+      },
+      {
+        "country": "United Kingdom",
+        "share": 3.3
+      }
+    ],
+    "ranks": {
+      "global": 234196,
+      "country": 84108
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 260243,
+        "organic": 181553
+      },
+      {
+        "date": "2026-08",
+        "total": 229628,
+        "organic": 160195
+      },
+      {
+        "date": "2026-09",
+        "total": 212159,
+        "organic": 148008
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-yomu-ai",
+    "name": "Yomu",
+    "domain": "yomu.ai",
+    "url": "https://yomu.ai",
+    "description": "Yomu 官方网站，月访问量 68,386。详情请见官网。",
+    "descriptionSource": "auto",
+    "categories": [
+      "Writing"
+    ],
+    "heatScore": 64,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:48:25.224Z",
+    "collectedAt": "2026-10-30T08:48:25.224Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://twinmind.com",
+    "trafficMetrics": {
+      "monthlyVisits": 68386,
+      "monthlyVisitsGrowth": 7.7,
+      "organicSearchVisits": 0,
+      "directVisits": 29036,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 131985,
+      "avgVisitDurationSec": 21,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 68386,
+      "organicVisits": 0,
+      "directVisits": 29036,
+      "momGrowth": 7.7
+    },
+    "channelShares": {
+      "direct": 42.5
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 18.1
+      },
+      {
+        "country": "Egypt",
+        "share": 7.1
+      },
+      {
+        "country": "India",
+        "share": 6.8
+      },
+      {
+        "country": "United Kingdom",
+        "share": 5.3
+      },
+      {
+        "country": "Philippines",
+        "share": 5.1
+      }
+    ],
+    "ranks": {
+      "global": 521459,
+      "country": 677570
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 62530,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 63879,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 68386,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-design-extractor-com",
+    "name": "Design-extractor",
+    "domain": "design-extractor.com",
+    "url": "https://design-extractor.com",
+    "description": "Browse pre-extracted DESIGN.md files from popular sites. Filter by category and copy tokens for your AI workflow.",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 61,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T08:48:25.224Z",
+    "collectedAt": "2026-10-30T08:48:25.224Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://context.dev",
+    "trafficMetrics": {
+      "monthlyVisits": 17621,
+      "monthlyVisitsGrowth": -11.8,
+      "organicSearchVisits": 9596,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 48105,
+      "avgVisitDurationSec": 30,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 17621,
+      "organicVisits": 9596,
+      "organicShare": 54.5,
+      "directVisits": 0,
+      "momGrowth": -11.8
+    },
+    "channelShares": {
+      "organicSearch": 54.5
+    },
+    "geoDistribution": [
+      {
+        "country": "India",
+        "share": 24.5
+      },
+      {
+        "country": "Indonesia",
+        "share": 12.2
+      },
+      {
+        "country": "Brazil",
+        "share": 7.8
+      },
+      {
+        "country": "United States",
+        "share": 7.6
+      },
+      {
+        "country": "Italy",
+        "share": 7.4
+      }
+    ],
+    "ranks": {
+      "global": 1244939,
+      "country": 272239
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 24959,
+        "organic": 13592
+      },
+      {
+        "date": "2026-08",
+        "total": 21520,
+        "organic": 11719
+      },
+      {
+        "date": "2026-09",
+        "total": 17621,
+        "organic": 9596
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-gamma-app",
+    "name": "Gamma",
+    "domain": "gamma.app",
+    "url": "https://gamma.app",
+    "description": "a new medium for presenting ideas, powered by ai. create beautiful, engaging content with none of the formatting and des",
+    "descriptionSource": "source",
+    "categories": [
+      "AI Chat"
+    ],
+    "heatScore": 77,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:00:29.805Z",
+    "collectedAt": "2026-10-30T09:00:29.805Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://genspark.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 21097464,
+      "monthlyVisitsGrowth": 6.5,
+      "organicSearchVisits": 0,
+      "directVisits": 10073195,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 188822303,
+      "avgVisitDurationSec": 463,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 21097464,
+      "organicVisits": 0,
+      "directVisits": 10073195,
+      "momGrowth": 6.5
+    },
+    "channelShares": {
+      "direct": 47.7
+    },
+    "geoDistribution": [
+      {
+        "country": "India",
+        "share": 13.1
+      },
+      {
+        "country": "Brazil",
+        "share": 8.7
+      },
+      {
+        "country": "United States",
+        "share": 6.1
+      },
+      {
+        "country": "Indonesia",
+        "share": 5.2
+      },
+      {
+        "country": "Russia",
+        "share": 5.2
+      }
+    ],
+    "ranks": {
+      "global": 1508,
+      "country": 1086
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 23090002,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 18979292,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 21097464,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-autoshorts-ai",
+    "name": "Autoshorts",
+    "domain": "autoshorts.ai",
+    "url": "https://autoshorts.ai",
+    "description": "Create and automate faceless videos effortlessly with AutoShorts.ai. Our AI-powered platform generates and posts fresh c",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 67,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:00:29.805Z",
+    "collectedAt": "2026-10-30T09:00:29.805Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://syllaby.io",
+    "trafficMetrics": {
+      "monthlyVisits": 279253,
+      "monthlyVisitsGrowth": -6.7,
+      "organicSearchVisits": 0,
+      "directVisits": 76092,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 927120,
+      "avgVisitDurationSec": 56,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 279253,
+      "organicVisits": 0,
+      "directVisits": 76092,
+      "momGrowth": -6.7
+    },
+    "channelShares": {
+      "direct": 27.2
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 17.6
+      },
+      {
+        "country": "Germany",
+        "share": 12.5
+      },
+      {
+        "country": "India",
+        "share": 7.5
+      },
+      {
+        "country": "Georgia",
+        "share": 5.9
+      },
+      {
+        "country": "Brazil",
+        "share": 5.9
+      }
+    ],
+    "ranks": {
+      "global": 150676,
+      "country": 39696
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 271352,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 295994,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 279253,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-spot-ai",
+    "name": "Spot",
+    "domain": "spot.ai",
+    "url": "https://spot.ai",
+    "description": "Your privacy is important to us. The privacy statement explains the data Spot AI processes, how Spot AI processes it, an",
+    "descriptionSource": "source",
+    "categories": [
+      "Video"
+    ],
+    "heatScore": 64,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:00:29.805Z",
+    "collectedAt": "2026-10-30T09:00:29.805Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://twelvelabs.io",
+    "trafficMetrics": {
+      "monthlyVisits": 70430,
+      "monthlyVisitsGrowth": -17.6,
+      "organicSearchVisits": 0,
+      "directVisits": 46572,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 507096,
+      "avgVisitDurationSec": 226,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 70430,
+      "organicVisits": 0,
+      "directVisits": 46572,
+      "momGrowth": -17.6
+    },
+    "channelShares": {
+      "direct": 66.1
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 79.8
+      },
+      {
+        "country": "Canada",
+        "share": 10.3
+      },
+      {
+        "country": "India",
+        "share": 2.7
+      },
+      {
+        "country": "Vietnam",
+        "share": 1.3
+      },
+      {
+        "country": "Brazil",
+        "share": 1.3
+      }
+    ],
+    "ranks": {
+      "global": 341146,
+      "country": 92525
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 86647,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 89820,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 70430,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-jenni-ai",
+    "name": "Jenni",
+    "domain": "jenni.ai",
+    "url": "https://jenni.ai",
+    "description": "Jenni is an AI research and academic writing assistant that helps students, researchers, and academics create essays, pa",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 71,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:11:10.267Z",
+    "collectedAt": "2026-10-30T09:11:10.267Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://yomu.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 1423854,
+      "monthlyVisitsGrowth": 9.4,
+      "organicSearchVisits": 0,
+      "directVisits": 486263,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 4114938,
+      "avgVisitDurationSec": 134,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 1423854,
+      "organicVisits": 0,
+      "directVisits": 486263,
+      "momGrowth": 9.4
+    },
+    "channelShares": {
+      "direct": 34.2
+    },
+    "geoDistribution": [
+      {
+        "country": "Indonesia",
+        "share": 9.1
+      },
+      {
+        "country": "India",
+        "share": 9
+      },
+      {
+        "country": "Philippines",
+        "share": 5.7
+      },
+      {
+        "country": "Türkiye",
+        "share": 5.4
+      },
+      {
+        "country": "United States",
+        "share": 5.1
+      }
+    ],
+    "ranks": {
+      "global": 40354,
+      "country": 16307
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 1434079,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 1374083,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 1423854,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-tavily-com",
+    "name": "Tavily",
+    "domain": "tavily.com",
+    "url": "https://tavily.com",
+    "description": "Real-time web search, extract, crawl, map, and research APIs for AI agents and RAG workflows.",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 70,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:11:10.267Z",
+    "collectedAt": "2026-10-30T09:11:10.267Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://firecrawl.dev",
+    "trafficMetrics": {
+      "monthlyVisits": 998335,
+      "monthlyVisitsGrowth": -6.7,
+      "organicSearchVisits": 0,
+      "directVisits": 468756,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 4602324,
+      "avgVisitDurationSec": 153,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 998335,
+      "organicVisits": 0,
+      "directVisits": 468756,
+      "momGrowth": -6.7
+    },
+    "channelShares": {
+      "direct": 47
+    },
+    "geoDistribution": [
+      {
+        "country": "China",
+        "share": 21.4
+      },
+      {
+        "country": "United States",
+        "share": 18
+      },
+      {
+        "country": "India",
+        "share": 10.8
+      },
+      {
+        "country": "Germany",
+        "share": 4.3
+      },
+      {
+        "country": "Vietnam",
+        "share": 3.5
+      }
+    ],
+    "ranks": {
+      "global": 44339,
+      "country": 6242
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 1008338,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 1020275,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 998335,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-gitbook-com",
+    "name": "Gitbook",
+    "domain": "gitbook.com",
+    "url": "https://gitbook.com",
+    "description": "Create and publish AI-native documentation your users will love. GitBook gives you intelligent tools to build product gu",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 69,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:11:10.267Z",
+    "collectedAt": "2026-10-30T09:11:10.267Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://ferndesk.com",
+    "trafficMetrics": {
+      "monthlyVisits": 584067,
+      "monthlyVisitsGrowth": -7.5,
+      "organicSearchVisits": 0,
+      "directVisits": 311678,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 2967060,
+      "avgVisitDurationSec": 224,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 584067,
+      "organicVisits": 0,
+      "directVisits": 311678,
+      "momGrowth": -7.5
+    },
+    "channelShares": {
+      "direct": 53.4
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 22.2
+      },
+      {
+        "country": "Vietnam",
+        "share": 10.8
+      },
+      {
+        "country": "India",
+        "share": 4.7
+      },
+      {
+        "country": "Mexico",
+        "share": 4.1
+      },
+      {
+        "country": "France",
+        "share": 3.9
+      }
+    ],
+    "ranks": {
+      "global": 68242,
+      "country": 61231
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 700322,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 627210,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 584067,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-thesisai-io",
+    "name": "Thesisai",
+    "domain": "thesisai.io",
+    "url": "https://thesisai.io",
+    "description": "Join the ThesisAI affiliate program and earn commissions promoting AI academic writing tools.",
+    "descriptionSource": "source",
+    "categories": [
+      "Writing"
+    ],
+    "heatScore": 66,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:11:10.267Z",
+    "collectedAt": "2026-10-30T09:11:10.267Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://yomu.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 189761,
+      "monthlyVisitsGrowth": -7.3,
+      "organicSearchVisits": 114930,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 402293,
+      "avgVisitDurationSec": 56,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 189761,
+      "organicVisits": 114930,
+      "organicShare": 60.6,
+      "directVisits": 0,
+      "momGrowth": -7.3
+    },
+    "channelShares": {
+      "organicSearch": 60.6
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 11
+      },
+      {
+        "country": "Germany",
+        "share": 7.6
+      },
+      {
+        "country": "Pakistan",
+        "share": 4.9
+      },
+      {
+        "country": "India",
+        "share": 4.8
+      },
+      {
+        "country": "Mexico",
+        "share": 4.6
+      }
+    ],
+    "ranks": {
+      "global": 232390,
+      "country": 17520
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 240867,
+        "organic": 145883
+      },
+      {
+        "date": "2026-08",
+        "total": 215372,
+        "organic": 130441
+      },
+      {
+        "date": "2026-09",
+        "total": 189761,
+        "organic": 114930
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-sourcely-net",
+    "name": "Sourcely",
+    "domain": "sourcely.net",
+    "url": "https://sourcely.net",
+    "description": "AI-powered academic source finder that instantly finds relevant papers and citations from input text, essay, or paper. F",
+    "descriptionSource": "source",
+    "categories": [
+      "Data & Analytics"
+    ],
+    "heatScore": 66,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:11:10.267Z",
+    "collectedAt": "2026-10-30T09:11:10.267Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://yomu.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 132766,
+      "monthlyVisitsGrowth": 9.3,
+      "organicSearchVisits": 81783,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 256238,
+      "avgVisitDurationSec": 38,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 132766,
+      "organicVisits": 81783,
+      "organicShare": 61.6,
+      "directVisits": 0,
+      "momGrowth": 9.3
+    },
+    "channelShares": {
+      "organicSearch": 61.6
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 19.2
+      },
+      {
+        "country": "Australia",
+        "share": 6.5
+      },
+      {
+        "country": "Philippines",
+        "share": 6.1
+      },
+      {
+        "country": "Canada",
+        "share": 5.3
+      },
+      {
+        "country": "India",
+        "share": 5.2
+      }
+    ],
+    "ranks": {
+      "global": 317368,
+      "country": 327636
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 116452,
+        "organic": 71734
+      },
+      {
+        "date": "2026-08",
+        "total": 116719,
+        "organic": 71898
+      },
+      {
+        "date": "2026-09",
+        "total": 132766,
+        "organic": 81783
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-document360-com",
+    "name": "Document360",
+    "domain": "document360.com",
+    "url": "https://document360.com",
+    "description": "Start building intelligent documentation today with AI search, AI chatbot, and writing tools inside Document360, the kno",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 65,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:11:10.267Z",
+    "collectedAt": "2026-10-30T09:11:10.267Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://ferndesk.com",
+    "trafficMetrics": {
+      "monthlyVisits": 114020,
+      "monthlyVisitsGrowth": 16.7,
+      "organicSearchVisits": 46505,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 247423,
+      "avgVisitDurationSec": 34,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 114020,
+      "organicVisits": 46505,
+      "organicShare": 40.8,
+      "directVisits": 0,
+      "momGrowth": 16.7
+    },
+    "channelShares": {
+      "organicSearch": 40.8
+    },
+    "geoDistribution": [
+      {
+        "country": "India",
+        "share": 22.4
+      },
+      {
+        "country": "United States",
+        "share": 18.3
+      },
+      {
+        "country": "Brazil",
+        "share": 7.6
+      },
+      {
+        "country": "United Kingdom",
+        "share": 4.3
+      },
+      {
+        "country": "France",
+        "share": 4
+      }
+    ],
+    "ranks": {
+      "global": 343369,
+      "country": 96847
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 106497,
+        "organic": 43437
+      },
+      {
+        "date": "2026-08",
+        "total": 93120,
+        "organic": 37981
+      },
+      {
+        "date": "2026-09",
+        "total": 114020,
+        "organic": 46505
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-facia-ai",
+    "name": "Facia",
+    "domain": "facia.ai",
+    "url": "https://facia.ai",
+    "description": "1. Overview South Korea revised the Public Official Election Act in December 2023 to particularly address the widespread",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "heatScore": 64,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:11:10.267Z",
+    "collectedAt": "2026-10-30T09:11:10.267Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://spot.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 76737,
+      "monthlyVisitsGrowth": -8.4,
+      "organicSearchVisits": 0,
+      "directVisits": 36398,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 181099,
+      "avgVisitDurationSec": 30,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 76737,
+      "organicVisits": 0,
+      "directVisits": 36398,
+      "momGrowth": -8.4
+    },
+    "channelShares": {
+      "direct": 47.4
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 14
+      },
+      {
+        "country": "India",
+        "share": 11.6
+      },
+      {
+        "country": "Pakistan",
+        "share": 9.4
+      },
+      {
+        "country": "Brazil",
+        "share": 5.7
+      },
+      {
+        "country": "France",
+        "share": 4.8
+      }
+    ],
+    "ranks": {
+      "global": 443764,
+      "country": 110288
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 85965,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 80804,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 76737,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-diffbot-com",
+    "name": "Diffbot",
+    "domain": "diffbot.com",
+    "url": "https://diffbot.com",
+    "description": "Transform the raw web into structured knowledge for your AI. Add Diffbot Skills to any agent harness to instantly unlock",
+    "descriptionSource": "source",
+    "categories": [
+      "Data & Analytics"
+    ],
+    "heatScore": 63,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:11:10.267Z",
+    "collectedAt": "2026-10-30T09:11:10.267Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://firecrawl.dev",
+    "trafficMetrics": {
+      "monthlyVisits": 32792,
+      "monthlyVisitsGrowth": -6.8,
+      "organicSearchVisits": 0,
+      "directVisits": 16123,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 78045,
+      "avgVisitDurationSec": 26,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 32792,
+      "organicVisits": 0,
+      "directVisits": 16123,
+      "momGrowth": -6.8
+    },
+    "channelShares": {
+      "direct": 49.2
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 29.8
+      },
+      {
+        "country": "India",
+        "share": 17.2
+      },
+      {
+        "country": "Canada",
+        "share": 7.7
+      },
+      {
+        "country": "Brazil",
+        "share": 6.5
+      },
+      {
+        "country": "Germany",
+        "share": 6.5
+      }
+    ],
+    "ranks": {
+      "global": 840296,
+      "country": 498725
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 43166,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 34830,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 32792,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-lumana-ai",
+    "name": "Lumana",
+    "domain": "lumana.ai",
+    "url": "https://lumana.ai",
+    "description": "Protect your bottom line and enhance the shopping experience. Discover how Lumana’s AI-powered security helps retail, gr",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 62,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:11:10.267Z",
+    "collectedAt": "2026-10-30T09:11:10.267Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://spot.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 24229,
+      "monthlyVisitsGrowth": 3.9,
+      "organicSearchVisits": 10902,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 52092,
+      "avgVisitDurationSec": 29,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 24229,
+      "organicVisits": 10902,
+      "organicShare": 45,
+      "directVisits": 0,
+      "momGrowth": 3.9
+    },
+    "channelShares": {
+      "organicSearch": 45
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 57.5
+      },
+      {
+        "country": "Israel",
+        "share": 14.3
+      },
+      {
+        "country": "India",
+        "share": 8.7
+      },
+      {
+        "country": "Brazil",
+        "share": 5
+      },
+      {
+        "country": "Canada",
+        "share": 3.9
+      }
+    ],
+    "ranks": {
+      "global": 1073657,
+      "country": 399083
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 24667,
+        "organic": 11099
+      },
+      {
+        "date": "2026-08",
+        "total": 22686,
+        "organic": 10208
+      },
+      {
+        "date": "2026-09",
+        "total": 24229,
+        "organic": 10902
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-you-com",
+    "name": "You",
+    "domain": "you.com",
+    "url": "https://you.com",
+    "description": "We're launching the You.com Answer API. In some instances, a workflow may require search results (as we deliver via our ",
+    "descriptionSource": "source",
+    "categories": [
+      "AI Chat"
+    ],
+    "heatScore": 70,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:21:21.972Z",
+    "collectedAt": "2026-10-30T09:21:21.972Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://exa.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 886426,
+      "monthlyVisitsGrowth": -8.7,
+      "organicSearchVisits": 0,
+      "directVisits": 601389,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 2481993,
+      "avgVisitDurationSec": 113,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 886426,
+      "organicVisits": 0,
+      "directVisits": 601389,
+      "momGrowth": -8.7
+    },
+    "channelShares": {
+      "direct": 67.8
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 24.3
+      },
+      {
+        "country": "Germany",
+        "share": 11.8
+      },
+      {
+        "country": "India",
+        "share": 10.3
+      },
+      {
+        "country": "United Kingdom",
+        "share": 7
+      },
+      {
+        "country": "France",
+        "share": 4.6
+      }
+    ],
+    "ranks": {
+      "global": 59556,
+      "country": 48581
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 919971,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 910056,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 886426,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-hix-ai",
+    "name": "Hix",
+    "domain": "hix.ai",
+    "url": "https://hix.ai",
+    "description": "Узнайте о стремлении HIX.AI обеспечить удовлетворенность клиентов с помощью нашей политики возврата средств в течение 3 ",
+    "descriptionSource": "source",
+    "categories": [
+      "Writing"
+    ],
+    "heatScore": 70,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:21:21.972Z",
+    "collectedAt": "2026-10-30T09:21:21.972Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://exa.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 849186,
+      "monthlyVisitsGrowth": -6.1,
+      "organicSearchVisits": 0,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 1910669,
+      "avgVisitDurationSec": 88,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 849186,
+      "organicVisits": 0,
+      "directVisits": 0,
+      "momGrowth": -6.1
+    },
+    "channelShares": {
+      "paidSearch": 38.2
+    },
+    "geoDistribution": [
+      {
+        "country": "India",
+        "share": 10.8
+      },
+      {
+        "country": "Japan",
+        "share": 9.6
+      },
+      {
+        "country": "United States",
+        "share": 8.6
+      },
+      {
+        "country": "Brazil",
+        "share": 3.9
+      },
+      {
+        "country": "Peru",
+        "share": 3.9
+      }
+    ],
+    "ranks": {
+      "global": 66391,
+      "country": 26068
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 986468,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 900591,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 849186,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-docsbot-ai",
+    "name": "Docsbot",
+    "domain": "docsbot.ai",
+    "url": "https://docsbot.ai",
+    "description": "Build AI agents that combine trusted knowledge with real actions for customers and teams across your business tools and ",
+    "descriptionSource": "source",
+    "categories": [
+      "Marketing"
+    ],
+    "heatScore": 69,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:21:21.972Z",
+    "collectedAt": "2026-10-30T09:21:21.972Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://exa.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 514588,
+      "monthlyVisitsGrowth": -7.3,
+      "organicSearchVisits": 388488,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 1003447,
+      "avgVisitDurationSec": 47,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 514588,
+      "organicVisits": 388488,
+      "organicShare": 75.5,
+      "directVisits": 0,
+      "momGrowth": -7.3
+    },
+    "channelShares": {
+      "organicSearch": 75.5
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 19
+      },
+      {
+        "country": "India",
+        "share": 13
+      },
+      {
+        "country": "United Kingdom",
+        "share": 4.1
+      },
+      {
+        "country": "Indonesia",
+        "share": 3.1
+      },
+      {
+        "country": "France",
+        "share": 2.8
+      }
+    ],
+    "ranks": {
+      "global": 108129,
+      "country": 33971
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 609575,
+        "organic": 460198
+      },
+      {
+        "date": "2026-08",
+        "total": 550900,
+        "organic": 415902
+      },
+      {
+        "date": "2026-09",
+        "total": 514588,
+        "organic": 388488
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-luxonis-com",
+    "name": "Luxonis",
+    "domain": "luxonis.com",
+    "url": "https://luxonis.com",
+    "description": "Explore Luxonis depth perception technology for precise 3D understanding across stereo, neural, and ToF vision pipelines",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 64,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:21:21.972Z",
+    "collectedAt": "2026-10-30T09:21:21.972Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://spot.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 71032,
+      "monthlyVisitsGrowth": -29.8,
+      "organicSearchVisits": 39018,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 206703,
+      "avgVisitDurationSec": 65,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 71032,
+      "organicVisits": 39018,
+      "organicShare": 54.9,
+      "directVisits": 0,
+      "momGrowth": -29.8
+    },
+    "channelShares": {
+      "organicSearch": 54.9
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 25.4
+      },
+      {
+        "country": "India",
+        "share": 8.2
+      },
+      {
+        "country": "Australia",
+        "share": 6.9
+      },
+      {
+        "country": "South Korea",
+        "share": 3.8
+      },
+      {
+        "country": "Canada",
+        "share": 3.8
+      }
+    ],
+    "ranks": {
+      "global": 442898,
+      "country": 386696
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 103139,
+        "organic": 56654
+      },
+      {
+        "date": "2026-08",
+        "total": 87929,
+        "organic": 48300
+      },
+      {
+        "date": "2026-09",
+        "total": 71032,
+        "organic": 39018
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-leadcapture-io",
+    "name": "Leadcapture",
+    "domain": "leadcapture.io",
+    "url": "https://leadcapture.io",
+    "description": "An AI-powered lead capture platform for businesses, lead generators, and lead gen agencies. Founded in 2019 by John Porr",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 62,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:21:21.972Z",
+    "collectedAt": "2026-10-30T09:21:21.972Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://zenabm.com",
+    "trafficMetrics": {
+      "monthlyVisits": 21194,
+      "monthlyVisitsGrowth": -50.1,
+      "organicSearchVisits": 0,
+      "directVisits": 7476,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 39845,
+      "avgVisitDurationSec": 28,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 21194,
+      "organicVisits": 0,
+      "directVisits": 7476,
+      "momGrowth": -50.1
+    },
+    "channelShares": {
+      "direct": 35.3
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 33.7
+      },
+      {
+        "country": "Canada",
+        "share": 13.6
+      },
+      {
+        "country": "United Kingdom",
+        "share": 10.1
+      },
+      {
+        "country": "India",
+        "share": 6
+      },
+      {
+        "country": "Brazil",
+        "share": 5.7
+      }
+    ],
+    "ranks": {
+      "global": 1246530,
+      "country": 608327
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 27184,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 38083,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 21194,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-openrouter-ai",
+    "name": "Openrouter",
+    "domain": "openrouter.ai",
+    "url": "https://openrouter.ai",
+    "description": "Stay up to date with the latest news, updates, and posts from OpenRouter.",
+    "descriptionSource": "source",
+    "categories": [
+      "AI Chat"
+    ],
+    "heatScore": 77,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:24:36.920Z",
+    "collectedAt": "2026-10-30T09:24:36.920Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://together.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 21267929,
+      "monthlyVisitsGrowth": -3.4,
+      "organicSearchVisits": 0,
+      "directVisits": 12422427,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 166315205,
+      "avgVisitDurationSec": 351,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 21267929,
+      "organicVisits": 0,
+      "directVisits": 12422427,
+      "momGrowth": -3.4
+    },
+    "channelShares": {
+      "direct": 58.4
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 16.4
+      },
+      {
+        "country": "India",
+        "share": 11
+      },
+      {
+        "country": "China",
+        "share": 8.4
+      },
+      {
+        "country": "Germany",
+        "share": 5.4
+      },
+      {
+        "country": "Indonesia",
+        "share": 3.8
+      }
+    ],
+    "ranks": {
+      "global": 1703,
+      "country": 2906
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 18176969,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 22379881,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 21267929,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-replicate-com",
+    "name": "Replicate",
+    "domain": "replicate.com",
+    "url": "https://replicate.com",
+    "description": "run open-source machine learning models with a cloud api",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 70,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:24:36.920Z",
+    "collectedAt": "2026-10-30T09:24:36.920Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://together.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 986630,
+      "monthlyVisitsGrowth": -5.7,
+      "organicSearchVisits": 0,
+      "directVisits": 622194,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 6215769,
+      "avgVisitDurationSec": 364,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 986630,
+      "organicVisits": 0,
+      "directVisits": 622194,
+      "momGrowth": -5.7
+    },
+    "channelShares": {
+      "direct": 63.1
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 17.6
+      },
+      {
+        "country": "India",
+        "share": 6
+      },
+      {
+        "country": "United Kingdom",
+        "share": 5.3
+      },
+      {
+        "country": "Kazakhstan",
+        "share": 4
+      },
+      {
+        "country": "France",
+        "share": 3.7
+      }
+    ],
+    "ranks": {
+      "global": 40393,
+      "country": 15801
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 1015210,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 1004881,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 986630,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-fireworks-ai",
+    "name": "Fireworks",
+    "domain": "fireworks.ai",
+    "url": "https://fireworks.ai",
+    "description": "Fireworks 官方网站，月访问量 622,402。详情请见官网。",
+    "descriptionSource": "auto",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 69,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:24:36.920Z",
+    "collectedAt": "2026-10-30T09:24:36.920Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://together.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 622402,
+      "monthlyVisitsGrowth": -12.8,
+      "organicSearchVisits": 0,
+      "directVisits": 302766,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 1780070,
+      "avgVisitDurationSec": 140,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 622402,
+      "organicVisits": 0,
+      "directVisits": 302766,
+      "momGrowth": -12.8
+    },
+    "channelShares": {
+      "direct": 48.6
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 57.6
+      },
+      {
+        "country": "India",
+        "share": 4.2
+      },
+      {
+        "country": "Vietnam",
+        "share": 3.2
+      },
+      {
+        "country": "Brazil",
+        "share": 2.6
+      },
+      {
+        "country": "Canada",
+        "share": 2.2
+      }
+    ],
+    "ranks": {
+      "global": 81851,
+      "country": 33437
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 880952,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 706162,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 622402,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-dust-tt",
+    "name": "Dust",
+    "domain": "dust.tt",
+    "url": "https://dust.tt",
+    "description": "Get in touch with the Dust team. Schedule a demo call to learn how AI agents can help address your team's challenges and",
+    "descriptionSource": "source",
+    "categories": [
+      "Automation"
+    ],
+    "heatScore": 69,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:24:36.920Z",
+    "collectedAt": "2026-10-30T09:24:36.920Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://lyzr.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 537734,
+      "monthlyVisitsGrowth": 9.5,
+      "organicSearchVisits": 0,
+      "directVisits": 455343,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 3102725,
+      "avgVisitDurationSec": 332,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 537734,
+      "organicVisits": 0,
+      "directVisits": 455343,
+      "momGrowth": 9.5
+    },
+    "channelShares": {
+      "direct": 84.7
+    },
+    "geoDistribution": [
+      {
+        "country": "France",
+        "share": 66.1
+      },
+      {
+        "country": "United States",
+        "share": 8.8
+      },
+      {
+        "country": "Spain",
+        "share": 2.4
+      },
+      {
+        "country": "Russia",
+        "share": 2.3
+      },
+      {
+        "country": "Australia",
+        "share": 1.8
+      }
+    ],
+    "ranks": {
+      "global": 78138,
+      "country": 4494
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 682421,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 495563,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 537734,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-deepinfra-com",
+    "name": "Deepinfra",
+    "domain": "deepinfra.com",
+    "url": "https://deepinfra.com",
+    "description": "Low pay-as-you-go pricing. No long-term contracts. Simple APIs. Scale to trillions of tokens. 100+ AI models.",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 69,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:24:36.920Z",
+    "collectedAt": "2026-10-30T09:24:36.920Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://together.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 502318,
+      "monthlyVisitsGrowth": -8.1,
+      "organicSearchVisits": 0,
+      "directVisits": 282316,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 2094666,
+      "avgVisitDurationSec": 153,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 502318,
+      "organicVisits": 0,
+      "directVisits": 282316,
+      "momGrowth": -8.1
+    },
+    "channelShares": {
+      "direct": 56.2
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 12.4
+      },
+      {
+        "country": "India",
+        "share": 6.1
+      },
+      {
+        "country": "Philippines",
+        "share": 5.6
+      },
+      {
+        "country": "South Korea",
+        "share": 5
+      },
+      {
+        "country": "China",
+        "share": 5
+      }
+    ],
+    "ranks": {
+      "global": 84213,
+      "country": 96387
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 491558,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 542103,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 502318,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-mihup-ai",
+    "name": "Mihup",
+    "domain": "mihup.ai",
+    "url": "https://mihup.ai",
+    "description": "In-car voice AI for automotive OEMs. Control functions hands-free in 20+ languages with 95%+ accuracy. Works online & of",
+    "descriptionSource": "source",
+    "categories": [
+      "Productivity"
+    ],
+    "heatScore": 59,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:24:36.920Z",
+    "collectedAt": "2026-10-30T09:24:36.920Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://lyzr.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 6000,
+      "monthlyVisitsGrowth": 4.4,
+      "organicSearchVisits": 0,
+      "directVisits": 2335,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 12900,
+      "avgVisitDurationSec": 90,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 6000,
+      "organicVisits": 0,
+      "directVisits": 2335,
+      "momGrowth": 4.4
+    },
+    "channelShares": {
+      "direct": 38.9
+    },
+    "geoDistribution": [
+      {
+        "country": "India",
+        "share": 92
+      },
+      {
+        "country": "Pakistan",
+        "share": 8
+      }
+    ],
+    "ranks": {
+      "global": 2918462,
+      "country": 236120
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 6185,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 5785,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 6000,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-agent-so",
+    "name": "Agent",
+    "domain": "agent.so",
+    "url": "https://agent.so",
+    "description": "Chat with hundreds of AI agents, create custom AI agents, train them with data, give them skills, and use them to get th",
+    "descriptionSource": "source",
+    "categories": [
+      "AI Chat"
+    ],
+    "heatScore": 59,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:24:36.920Z",
+    "collectedAt": "2026-10-30T09:24:36.920Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://lyzr.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 5251,
+      "monthlyVisitsGrowth": 1,
+      "organicSearchVisits": 0,
+      "directVisits": 2066,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 6774,
+      "avgVisitDurationSec": 9,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 5251,
+      "organicVisits": 0,
+      "directVisits": 2066,
+      "momGrowth": 1
+    },
+    "channelShares": {
+      "direct": 39.3
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 51
+      },
+      {
+        "country": "Nigeria",
+        "share": 26.4
+      },
+      {
+        "country": "India",
+        "share": 22.6
+      }
+    ],
+    "ranks": {
+      "global": 3721651,
+      "country": 1715598
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 4582,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 3056,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 5251,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-wizr-ai",
+    "name": "Wizr",
+    "domain": "wizr.ai",
+    "url": "https://wizr.ai",
+    "description": "Explore how Gen AI chatbot integration transforms the customer experience with AI and chatbots, offering 24/7 service & ",
+    "descriptionSource": "source",
+    "categories": [
+      "AI Chat"
+    ],
+    "heatScore": 59,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:24:36.920Z",
+    "collectedAt": "2026-10-30T09:24:36.920Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://lyzr.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 5131,
+      "monthlyVisitsGrowth": -10,
+      "organicSearchVisits": 0,
+      "directVisits": 1958,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 10878,
+      "avgVisitDurationSec": 19,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 5131,
+      "organicVisits": 0,
+      "directVisits": 1958,
+      "momGrowth": -10
+    },
+    "channelShares": {
+      "direct": 38.2
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 47.7
+      },
+      {
+        "country": "India",
+        "share": 38.5
+      },
+      {
+        "country": "Pakistan",
+        "share": 13.8
+      }
+    ],
+    "ranks": {
+      "global": 3260587,
+      "country": 1507983
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 4777,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 5599,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 5131,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-prompts-ai",
+    "name": "Prompts",
+    "domain": "prompts.ai",
+    "url": "https://prompts.ai",
+    "description": "आधिकारिक Prompts.ai सेवा की शर्तें पढ़ें। अपने अधिकारों, ज़िम्मेदारियों और उन नीतियों को समझें जो हमारे प्लेटफ़ॉर्म के स",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 62,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:35:24.534Z",
+    "collectedAt": "2026-10-30T09:35:24.534Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://lyzr.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 29019,
+      "monthlyVisitsGrowth": -0.8,
+      "organicSearchVisits": 0,
+      "directVisits": 11688,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 49332,
+      "avgVisitDurationSec": 16,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 29019,
+      "organicVisits": 0,
+      "directVisits": 11688,
+      "momGrowth": -0.8
+    },
+    "channelShares": {
+      "direct": 40.3
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 8.3
+      },
+      {
+        "country": "India",
+        "share": 7.5
+      },
+      {
+        "country": "Brazil",
+        "share": 7.3
+      },
+      {
+        "country": "Türkiye",
+        "share": 7
+      },
+      {
+        "country": "United Kingdom",
+        "share": 6.4
+      }
+    ],
+    "ranks": {
+      "global": 1031647,
+      "country": 182777
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 36481,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 29214,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 29019,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-atlabs-ai",
+    "name": "Atlabs",
+    "domain": "atlabs.ai",
+    "url": "https://atlabs.ai",
+    "description": "Atlabs is the #1 AI Video Creation Platform. Our storytelling-first platform enables marketers to craft on-brand & engag",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 66,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:44:53.273Z",
+    "collectedAt": "2026-10-30T09:44:53.273Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://vidsoul.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 148913,
+      "monthlyVisitsGrowth": -2.4,
+      "organicSearchVisits": 53889,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 548000,
+      "avgVisitDurationSec": 121,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 148913,
+      "organicVisits": 53889,
+      "organicShare": 36.2,
+      "directVisits": 0,
+      "momGrowth": -2.4
+    },
+    "channelShares": {
+      "organicSearch": 36.2
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 30
+      },
+      {
+        "country": "Pakistan",
+        "share": 10.1
+      },
+      {
+        "country": "India",
+        "share": 8.4
+      },
+      {
+        "country": "Indonesia",
+        "share": 3.8
+      },
+      {
+        "country": "United Kingdom",
+        "share": 3.4
+      }
+    ],
+    "ranks": {
+      "global": 233274,
+      "country": 152127
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 95937,
+        "organic": 34718
+      },
+      {
+        "date": "2026-08",
+        "total": 153779,
+        "organic": 55650
+      },
+      {
+        "date": "2026-09",
+        "total": 148913,
+        "organic": 53889
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-soulfun-ai",
+    "name": "Soulfun",
+    "domain": "soulfun.ai",
+    "url": "https://soulfun.ai",
+    "description": "Engage in immersive converstions with text, images, voice and videos of AI Girlfriends. Find your soul mate AI chat that",
+    "descriptionSource": "source",
+    "categories": [
+      "AI Chat"
+    ],
+    "heatScore": 65,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:44:53.273Z",
+    "collectedAt": "2026-10-30T09:44:53.273Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://vidsoul.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 109210,
+      "monthlyVisitsGrowth": -17.5,
+      "organicSearchVisits": 48211,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 226065,
+      "avgVisitDurationSec": 24,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 109210,
+      "organicVisits": 48211,
+      "organicShare": 44.1,
+      "directVisits": 0,
+      "momGrowth": -17.5
+    },
+    "channelShares": {
+      "organicSearch": 44.1
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 38
+      },
+      {
+        "country": "Germany",
+        "share": 6.5
+      },
+      {
+        "country": "United Kingdom",
+        "share": 5.3
+      },
+      {
+        "country": "France",
+        "share": 4.4
+      },
+      {
+        "country": "Brazil",
+        "share": 3.8
+      }
+    ],
+    "ranks": {
+      "global": 356894,
+      "country": 226722
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 135593,
+        "organic": 59858
+      },
+      {
+        "date": "2026-08",
+        "total": 140421,
+        "organic": 61989
+      },
+      {
+        "date": "2026-09",
+        "total": 109210,
+        "organic": 48211
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-tooljet-com",
+    "name": "Tooljet",
+    "domain": "tooljet.com",
+    "url": "https://tooljet.com",
+    "description": "Explore ToolJet's open-source integrations for databases, APIs, and AI providers. Extend an existing connector or build ",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 64,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:44:53.273Z",
+    "collectedAt": "2026-10-30T09:44:53.273Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://builder.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 72692,
+      "monthlyVisitsGrowth": -17,
+      "organicSearchVisits": 29545,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 169372,
+      "avgVisitDurationSec": 20,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 72692,
+      "organicVisits": 29545,
+      "organicShare": 40.6,
+      "directVisits": 0,
+      "momGrowth": -17
+    },
+    "channelShares": {
+      "organicSearch": 40.6
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 27.5
+      },
+      {
+        "country": "India",
+        "share": 10.1
+      },
+      {
+        "country": "Brazil",
+        "share": 6.7
+      },
+      {
+        "country": "Germany",
+        "share": 5.4
+      },
+      {
+        "country": "Canada",
+        "share": 5
+      }
+    ],
+    "ranks": {
+      "global": 460786,
+      "country": 89304
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 72358,
+        "organic": 29409
+      },
+      {
+        "date": "2026-08",
+        "total": 86489,
+        "organic": 35153
+      },
+      {
+        "date": "2026-09",
+        "total": 72692,
+        "organic": 29545
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-promptai-co",
+    "name": "Promptai",
+    "domain": "promptai.co",
+    "url": "https://promptai.co",
+    "description": "PromptAI is an AI company specializing in visual intelligence for consumer applications. Our groundbreaking home AI app,",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 63,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:44:53.273Z",
+    "collectedAt": "2026-10-30T09:44:53.273Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://prompts.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 42189,
+      "monthlyVisitsGrowth": -7.5,
+      "organicSearchVisits": 35727,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 67502,
+      "avgVisitDurationSec": 17,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 42189,
+      "organicVisits": 35727,
+      "organicShare": 84.7,
+      "directVisits": 0,
+      "momGrowth": -7.5
+    },
+    "channelShares": {
+      "organicSearch": 84.7
+    },
+    "geoDistribution": [
+      {
+        "country": "India",
+        "share": 26.3
+      },
+      {
+        "country": "United States",
+        "share": 11.4
+      },
+      {
+        "country": "Vietnam",
+        "share": 10.2
+      },
+      {
+        "country": "Indonesia",
+        "share": 9.4
+      },
+      {
+        "country": "United Kingdom",
+        "share": 4.1
+      }
+    ],
+    "ranks": {
+      "global": 804300,
+      "country": 164624
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 53147,
+        "organic": 45007
+      },
+      {
+        "date": "2026-08",
+        "total": 45217,
+        "organic": 38291
+      },
+      {
+        "date": "2026-09",
+        "total": 42189,
+        "organic": 35727
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-vitara-ai",
+    "name": "Vitara",
+    "domain": "vitara.ai",
+    "url": "https://vitara.ai",
+    "description": "Need help with our AI tools or vibe coding platform? Contact the Vitara team for quick support and expert guidance.",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 63,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:44:53.273Z",
+    "collectedAt": "2026-10-30T09:44:53.273Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://builder.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 32971,
+      "monthlyVisitsGrowth": -11,
+      "organicSearchVisits": 0,
+      "directVisits": 13562,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 54732,
+      "avgVisitDurationSec": 12,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 32971,
+      "organicVisits": 0,
+      "directVisits": 13562,
+      "momGrowth": -11
+    },
+    "channelShares": {
+      "direct": 41.1
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 15.1
+      },
+      {
+        "country": "India",
+        "share": 11.4
+      },
+      {
+        "country": "Brazil",
+        "share": 9.1
+      },
+      {
+        "country": "Indonesia",
+        "share": 7.5
+      },
+      {
+        "country": "Vietnam",
+        "share": 7
+      }
+    ],
+    "ranks": {
+      "global": 955253,
+      "country": 1056899
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 39259,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 36473,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 32971,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-soulgen-net",
+    "name": "Soulgen",
+    "domain": "soulgen.net",
+    "url": "https://soulgen.net",
+    "description": "SoulGen is an AI Magic Tool to create stunning art of real characters from text or prompt. Get FREE trial now and create",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 62,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:44:53.273Z",
+    "collectedAt": "2026-10-30T09:44:53.273Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://vidsoul.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 29267,
+      "monthlyVisitsGrowth": -40.9,
+      "organicSearchVisits": 0,
+      "directVisits": 17788,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 42730,
+      "avgVisitDurationSec": 6,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 29267,
+      "organicVisits": 0,
+      "directVisits": 17788,
+      "momGrowth": -40.9
+    },
+    "channelShares": {
+      "direct": 60.8
+    },
+    "geoDistribution": [
+      {
+        "country": "Italy",
+        "share": 11.6
+      },
+      {
+        "country": "Germany",
+        "share": 9
+      },
+      {
+        "country": "United States",
+        "share": 8
+      },
+      {
+        "country": "Peru",
+        "share": 6.6
+      },
+      {
+        "country": "United Kingdom",
+        "share": 6.1
+      }
+    ],
+    "ranks": {
+      "global": 1077910,
+      "country": 201078
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 71723,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 46317,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 29267,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-protex-ai",
+    "name": "Protex",
+    "domain": "protex.ai",
+    "url": "https://protex.ai",
+    "description": "Built for Safety. Designed for Privacy. Protex AI helps enterprises monitor and respond to safety and operational events",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "heatScore": 62,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:44:53.273Z",
+    "collectedAt": "2026-10-30T09:44:53.273Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://lumana.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 26946,
+      "monthlyVisitsGrowth": -2.6,
+      "organicSearchVisits": 0,
+      "directVisits": 19202,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 70599,
+      "avgVisitDurationSec": 43,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 26946,
+      "organicVisits": 0,
+      "directVisits": 19202,
+      "momGrowth": -2.6
+    },
+    "channelShares": {
+      "direct": 71.3
+    },
+    "geoDistribution": [
+      {
+        "country": "India",
+        "share": 42.8
+      },
+      {
+        "country": "United States",
+        "share": 19
+      },
+      {
+        "country": "Ireland",
+        "share": 8.8
+      },
+      {
+        "country": "United Kingdom",
+        "share": 4
+      },
+      {
+        "country": "France",
+        "share": 3.4
+      }
+    ],
+    "ranks": {
+      "global": 949779,
+      "country": 155691
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 30784,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 28162,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 26946,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-musevideo-ai",
+    "name": "Musevideo",
+    "domain": "musevideo.ai",
+    "url": "https://musevideo.ai",
+    "description": "Create 5 or 10-second AI videos with Kling 2.6. Turn text or a first-frame image into synchronized video, dialogue, ambi",
+    "descriptionSource": "source",
+    "categories": [
+      "Video"
+    ],
+    "heatScore": 62,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:44:53.273Z",
+    "collectedAt": "2026-10-30T09:44:53.273Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://muse.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 23335,
+      "monthlyVisitsGrowth": 6.8,
+      "organicSearchVisits": 0,
+      "directVisits": 9329,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 41303,
+      "avgVisitDurationSec": 10,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 23335,
+      "organicVisits": 0,
+      "directVisits": 9329,
+      "momGrowth": 6.8
+    },
+    "channelShares": {
+      "direct": 40
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 16.9
+      },
+      {
+        "country": "Brazil",
+        "share": 11
+      },
+      {
+        "country": "India",
+        "share": 7.9
+      },
+      {
+        "country": "Colombia",
+        "share": 7.9
+      },
+      {
+        "country": "Mexico",
+        "share": 7.2
+      }
+    ],
+    "ranks": {
+      "global": 1194644,
+      "country": 969851
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 13261,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 22132,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 23335,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-videonetics-com",
+    "name": "Videonetics",
+    "domain": "videonetics.com",
+    "url": "https://videonetics.com",
+    "description": "Get in touch with Videonetics to learn more about AI-powered video intelligence solutions, partnerships, demos, and ente",
+    "descriptionSource": "source",
+    "categories": [
+      "Productivity"
+    ],
+    "heatScore": 58,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:44:53.273Z",
+    "collectedAt": "2026-10-30T09:44:53.273Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://lumana.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 4445,
+      "monthlyVisitsGrowth": -9.5,
+      "organicSearchVisits": 0,
+      "directVisits": 1606,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 8401,
+      "avgVisitDurationSec": 53,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 4445,
+      "organicVisits": 0,
+      "directVisits": 1606,
+      "momGrowth": -9.5
+    },
+    "channelShares": {
+      "direct": 36.1
+    },
+    "geoDistribution": [
+      {
+        "country": "India",
+        "share": 78.5
+      },
+      {
+        "country": "United States",
+        "share": 21.5
+      }
+    ],
+    "ranks": {
+      "global": 3713152,
+      "country": 292855
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 4047,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 4819,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 4445,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-aibuilders-ai",
+    "name": "Aibuilders",
+    "domain": "aibuilders.ai",
+    "url": "https://aibuilders.ai",
+    "description": "Le shadow AI n’est plus un phénomène marginal. Ce que l’on désignait il y a encore deux ans comme l’usage clandestin de ",
+    "descriptionSource": "source",
+    "categories": [
+      "Productivity"
+    ],
+    "heatScore": 57,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:44:53.273Z",
+    "collectedAt": "2026-10-30T09:44:53.273Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://builder.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 2511,
+      "monthlyVisitsGrowth": 66.3,
+      "organicSearchVisits": 807,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 14463,
+      "avgVisitDurationSec": 567,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 2511,
+      "organicVisits": 807,
+      "organicShare": 32.1,
+      "directVisits": 0,
+      "momGrowth": 66.3
+    },
+    "channelShares": {
+      "organicSearch": 32.1
+    },
+    "geoDistribution": [
+      {
+        "country": "France",
+        "share": 100
+      }
+    ],
+    "ranks": {
+      "global": 3990168,
+      "country": 158705
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 3762,
+        "organic": 1209
+      },
+      {
+        "date": "2026-08",
+        "total": 1817,
+        "organic": 584
+      },
+      {
+        "date": "2026-09",
+        "total": 2511,
+        "organic": 807
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-elai-io",
+    "name": "Elai",
+    "domain": "elai.io",
+    "url": "https://elai.io",
+    "description": "Check out our use cases and see how Elai.io can bring your work to the next level. Start generating AI videos now!",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "heatScore": 65,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:54:47.134Z",
+    "collectedAt": "2026-10-30T09:54:47.134Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://vidsoul.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 82192,
+      "monthlyVisitsGrowth": 5.7,
+      "organicSearchVisits": 0,
+      "directVisits": 36661,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 174247,
+      "avgVisitDurationSec": 27,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 82192,
+      "organicVisits": 0,
+      "directVisits": 36661,
+      "momGrowth": 5.7
+    },
+    "channelShares": {
+      "direct": 44.6
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 9.6
+      },
+      {
+        "country": "India",
+        "share": 7.1
+      },
+      {
+        "country": "Vietnam",
+        "share": 6
+      },
+      {
+        "country": "United Kingdom",
+        "share": 5.1
+      },
+      {
+        "country": "Brazil",
+        "share": 4.2
+      }
+    ],
+    "ranks": {
+      "global": 439066,
+      "country": 106793
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 117238,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 76149,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 82192,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-boolv-video",
+    "name": "Boolv",
+    "domain": "boolv.video",
+    "url": "https://boolv.video",
+    "description": "Experience the power of AI with Boolvideo, your ultimate AI tool for generating video. Benefit from our script generatio",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 61,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:54:47.134Z",
+    "collectedAt": "2026-10-30T09:54:47.134Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://vidsoul.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 16207,
+      "monthlyVisitsGrowth": -18.9,
+      "organicSearchVisits": 0,
+      "directVisits": 6605,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 29173,
+      "avgVisitDurationSec": 12,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 16207,
+      "organicVisits": 0,
+      "directVisits": 6605,
+      "momGrowth": -18.9
+    },
+    "channelShares": {
+      "direct": 40.8
+    },
+    "geoDistribution": [
+      {
+        "country": "Brazil",
+        "share": 24
+      },
+      {
+        "country": "Mexico",
+        "share": 10
+      },
+      {
+        "country": "United States",
+        "share": 9.8
+      },
+      {
+        "country": "Spain",
+        "share": 7.9
+      },
+      {
+        "country": "Indonesia",
+        "share": 7.5
+      }
+    ],
+    "ranks": {
+      "global": 1539069,
+      "country": 332416
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 25112,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 19012,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 16207,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-askvideo-ai",
+    "name": "Askvideo",
+    "domain": "askvideo.ai",
+    "url": "https://askvideo.ai",
+    "description": "AskVideo.ai is a free tool that allows you to chat with any Youtube video. It's a great way to learn from Youtube videos",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 60,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T09:54:47.134Z",
+    "collectedAt": "2026-10-30T09:54:47.134Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://lumana.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 11517,
+      "monthlyVisitsGrowth": -32.5,
+      "organicSearchVisits": 0,
+      "directVisits": 4581,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 19233,
+      "avgVisitDurationSec": 13,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 11517,
+      "organicVisits": 0,
+      "directVisits": 4581,
+      "momGrowth": -32.5
+    },
+    "channelShares": {
+      "direct": 39.8
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 50.5
+      },
+      {
+        "country": "India",
+        "share": 19.7
+      },
+      {
+        "country": "Canada",
+        "share": 9.1
+      },
+      {
+        "country": "Indonesia",
+        "share": 8.4
+      },
+      {
+        "country": "Philippines",
+        "share": 7.1
+      }
+    ],
+    "ranks": {
+      "global": 1989085,
+      "country": 1012071
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 17870,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 15258,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 11517,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-groq-com",
+    "name": "Groq",
+    "domain": "groq.com",
+    "url": "https://groq.com",
+    "description": "Groq®, a generative AI solutions company, is the clear winner in the latest large language model (LLM) benchmark by Arti",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "heatScore": 73,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T10:03:23.642Z",
+    "collectedAt": "2026-10-30T10:03:23.642Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://fastrouter.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 3625201,
+      "monthlyVisitsGrowth": -13.6,
+      "organicSearchVisits": 0,
+      "directVisits": 1476428,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 20627394,
+      "avgVisitDurationSec": 205,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 3625201,
+      "organicVisits": 0,
+      "directVisits": 1476428,
+      "momGrowth": -13.6
+    },
+    "channelShares": {
+      "direct": 40.7
+    },
+    "geoDistribution": [
+      {
+        "country": "India",
+        "share": 21.2
+      },
+      {
+        "country": "United States",
+        "share": 16.5
+      },
+      {
+        "country": "Brazil",
+        "share": 7.2
+      },
+      {
+        "country": "Indonesia",
+        "share": 3.8
+      },
+      {
+        "country": "Pakistan",
+        "share": 3.7
+      }
+    ],
+    "ranks": {
+      "global": 12109,
+      "country": 4273
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 4581770,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 4099457,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 3625201,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-scribe-com",
+    "name": "Scribe",
+    "domain": "scribe.com",
+    "url": "https://scribe.com",
+    "description": "MediLogix transforms medical documentation with AI speech recognition, workflow automation & EHR integration. HIPAA & SO",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "heatScore": 69,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T10:03:23.642Z",
+    "collectedAt": "2026-10-30T10:03:23.642Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://supademo.com",
+    "trafficMetrics": {
+      "monthlyVisits": 552364,
+      "monthlyVisitsGrowth": -19.5,
+      "organicSearchVisits": 243493,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 1314626,
+      "avgVisitDurationSec": 39,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 552364,
+      "organicVisits": 243493,
+      "organicShare": 44.1,
+      "directVisits": 0,
+      "momGrowth": -19.5
+    },
+    "channelShares": {
+      "organicSearch": 44.1
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 49.5
+      },
+      {
+        "country": "Canada",
+        "share": 6.1
+      },
+      {
+        "country": "India",
+        "share": 6
+      },
+      {
+        "country": "United Kingdom",
+        "share": 5.2
+      },
+      {
+        "country": "Australia",
+        "share": 4.8
+      }
+    ],
+    "ranks": {
+      "global": 92991,
+      "country": 33673
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 694440,
+        "organic": 306123
+      },
+      {
+        "date": "2026-08",
+        "total": 674120,
+        "organic": 297165
+      },
+      {
+        "date": "2026-09",
+        "total": 552364,
+        "organic": 243493
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-testsigma-com",
+    "name": "Testsigma",
+    "domain": "testsigma.com",
+    "url": "https://testsigma.com",
+    "description": "Testsigma Terms for automation testing software, Testsigma Technologies Inc. AI-driven test automation. Sign up for a fr",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 68,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T10:03:23.642Z",
+    "collectedAt": "2026-10-30T10:03:23.642Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://botgauge.com",
+    "trafficMetrics": {
+      "monthlyVisits": 399541,
+      "monthlyVisitsGrowth": 19.7,
+      "organicSearchVisits": 307627,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 914949,
+      "avgVisitDurationSec": 46,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 399541,
+      "organicVisits": 307627,
+      "organicShare": 77,
+      "directVisits": 0,
+      "momGrowth": 19.7
+    },
+    "channelShares": {
+      "organicSearch": 77
+    },
+    "geoDistribution": [
+      {
+        "country": "India",
+        "share": 18.9
+      },
+      {
+        "country": "United States",
+        "share": 14.3
+      },
+      {
+        "country": "Mexico",
+        "share": 4.6
+      },
+      {
+        "country": "Bangladesh",
+        "share": 3.7
+      },
+      {
+        "country": "Egypt",
+        "share": 3.4
+      }
+    ],
+    "ranks": {
+      "global": 122497,
+      "country": 33148
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 295269,
+        "organic": 227343
+      },
+      {
+        "date": "2026-08",
+        "total": 341752,
+        "organic": 263132
+      },
+      {
+        "date": "2026-09",
+        "total": 399541,
+        "organic": 307627
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-fast-ai",
+    "name": "Fast",
+    "domain": "fast.ai",
+    "url": "https://fast.ai",
+    "description": "Making neural nets uncool again",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "heatScore": 67,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T10:03:23.642Z",
+    "collectedAt": "2026-10-30T10:03:23.642Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://fastrouter.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 279848,
+      "monthlyVisitsGrowth": -12.6,
+      "organicSearchVisits": 0,
+      "directVisits": 158175,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 554099,
+      "avgVisitDurationSec": 61,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 279848,
+      "organicVisits": 0,
+      "directVisits": 158175,
+      "momGrowth": -12.6
+    },
+    "channelShares": {
+      "direct": 56.5
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 25.7
+      },
+      {
+        "country": "India",
+        "share": 14.5
+      },
+      {
+        "country": "Germany",
+        "share": 7
+      },
+      {
+        "country": "Poland",
+        "share": 3.8
+      },
+      {
+        "country": "United Kingdom",
+        "share": 3.7
+      }
+    ],
+    "ranks": {
+      "global": 176299,
+      "country": 157551
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 368347,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 313402,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 279848,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-aivideocut-com",
+    "name": "Aivideocut",
+    "domain": "aivideocut.com",
+    "url": "https://aivideocut.com",
+    "description": "Instantly generate accurate, engaging captions for any video with our free AI-powered tool & customize them with ease.",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 66,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T10:03:23.642Z",
+    "collectedAt": "2026-10-30T10:03:23.642Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://boolv.video",
+    "trafficMetrics": {
+      "monthlyVisits": 141986,
+      "monthlyVisitsGrowth": -25.1,
+      "organicSearchVisits": 45159,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 448676,
+      "avgVisitDurationSec": 89,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 141986,
+      "organicVisits": 45159,
+      "organicShare": 31.8,
+      "directVisits": 0,
+      "momGrowth": -25.1
+    },
+    "channelShares": {
+      "organicSearch": 31.8
+    },
+    "geoDistribution": [
+      {
+        "country": "Brazil",
+        "share": 17.5
+      },
+      {
+        "country": "United States",
+        "share": 5.6
+      },
+      {
+        "country": "Spain",
+        "share": 4.4
+      },
+      {
+        "country": "France",
+        "share": 3.7
+      },
+      {
+        "country": "Colombia",
+        "share": 3.5
+      }
+    ],
+    "ranks": {
+      "global": 249938,
+      "country": 51364
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 189424,
+        "organic": 60247
+      },
+      {
+        "date": "2026-08",
+        "total": 176199,
+        "organic": 56041
+      },
+      {
+        "date": "2026-09",
+        "total": 141986,
+        "organic": 45159
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-datarobot-com",
+    "name": "Datarobot",
+    "domain": "datarobot.com",
+    "url": "https://datarobot.com",
+    "description": "Build, deploy, and govern AI agents on any infrastructure: on-premise, air-gapped, sovereign, or hybrid. DataRobot runs ",
+    "descriptionSource": "source",
+    "categories": [
+      "Coding"
+    ],
+    "heatScore": 65,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T10:03:23.642Z",
+    "collectedAt": "2026-10-30T10:03:23.642Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://fastrouter.ai",
+    "trafficMetrics": {
+      "monthlyVisits": 105246,
+      "monthlyVisitsGrowth": 10.7,
+      "organicSearchVisits": 54794,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 293636,
+      "avgVisitDurationSec": 74,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 105246,
+      "organicVisits": 54794,
+      "organicShare": 52.1,
+      "directVisits": 0,
+      "momGrowth": 10.7
+    },
+    "channelShares": {
+      "organicSearch": 52.1
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 20.1
+      },
+      {
+        "country": "Japan",
+        "share": 17.5
+      },
+      {
+        "country": "United Arab Emirates",
+        "share": 7.6
+      },
+      {
+        "country": "India",
+        "share": 6.3
+      },
+      {
+        "country": "Canada",
+        "share": 4.6
+      }
+    ],
+    "ranks": {
+      "global": 342798,
+      "country": 370727
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 125483,
+        "organic": 65330
+      },
+      {
+        "date": "2026-08",
+        "total": 91646,
+        "organic": 47713
+      },
+      {
+        "date": "2026-09",
+        "total": 105246,
+        "organic": 54794
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-shortfy-io",
+    "name": "Shortfy",
+    "domain": "shortfy.io",
+    "url": "https://shortfy.io",
+    "description": "Transform your content creation with AI-powered short-form videos. Launching in 3 weeks. Join the waitlist for early acc",
+    "descriptionSource": "source",
+    "categories": [
+      "Image Gen"
+    ],
+    "heatScore": 64,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T10:03:23.642Z",
+    "collectedAt": "2026-10-30T10:03:23.642Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://boolv.video",
+    "trafficMetrics": {
+      "monthlyVisits": 55392,
+      "monthlyVisitsGrowth": 12.5,
+      "organicSearchVisits": 30875,
+      "directVisits": 0,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 201073,
+      "avgVisitDurationSec": 127,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 55392,
+      "organicVisits": 30875,
+      "organicShare": 55.7,
+      "directVisits": 0,
+      "momGrowth": 12.5
+    },
+    "channelShares": {
+      "organicSearch": 55.7
+    },
+    "geoDistribution": [
+      {
+        "country": "France",
+        "share": 81.2
+      },
+      {
+        "country": "Brazil",
+        "share": 3.4
+      },
+      {
+        "country": "Belgium",
+        "share": 3.4
+      },
+      {
+        "country": "Colombia",
+        "share": 2.9
+      },
+      {
+        "country": "Italy",
+        "share": 2.4
+      }
+    ],
+    "ranks": {
+      "global": 489907,
+      "country": 22280
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 48311,
+        "organic": 26928
+      },
+      {
+        "date": "2026-08",
+        "total": 49781,
+        "organic": 27747
+      },
+      {
+        "date": "2026-09",
+        "total": 55392,
+        "organic": 30875
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-needl-ai",
+    "name": "Needl",
+    "domain": "needl.ai",
+    "url": "https://needl.ai",
+    "description": "Cited, decision-ready answers from your own data, deployed inside your perimeter. Secure AI for investment teams. Book a",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "heatScore": 60,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T10:03:23.642Z",
+    "collectedAt": "2026-10-30T10:03:23.642Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://needle.app",
+    "trafficMetrics": {
+      "monthlyVisits": 10750,
+      "monthlyVisitsGrowth": 67.3,
+      "organicSearchVisits": 0,
+      "directVisits": 4167,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 20210,
+      "avgVisitDurationSec": 519,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 10750,
+      "organicVisits": 0,
+      "directVisits": 4167,
+      "momGrowth": 67.3
+    },
+    "channelShares": {
+      "direct": 38.8
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 59.8
+      },
+      {
+        "country": "India",
+        "share": 40.2
+      }
+    ],
+    "ranks": {
+      "global": 1998332,
+      "country": 213467
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 5992,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 6829,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 10750,
+        "organic": 0
+      }
+    ]
+  },
+  {
+    "id": "tool-sw-finbrain-tech",
+    "name": "Finbrain",
+    "domain": "finbrain.tech",
+    "url": "https://finbrain.tech",
+    "description": "Integrate FinBrain financial data with AI assistants using the Model Context Protocol (MCP). Connect Claude Desktop, VS ",
+    "descriptionSource": "source",
+    "categories": [
+      "Other"
+    ],
+    "heatScore": 59,
+    "phUpvotes": null,
+    "phComments": null,
+    "firstSeenAt": "2026-10-30T10:03:23.642Z",
+    "collectedAt": "2026-10-30T10:03:23.642Z",
+    "verified": "pending",
+    "sourceType": "directory",
+    "sourceUrl": "https://nuvio.io",
+    "trafficMetrics": {
+      "monthlyVisits": 5184,
+      "monthlyVisitsGrowth": -24.1,
+      "organicSearchVisits": 0,
+      "directVisits": 2042,
+      "referralVisits": 0,
+      "socialVisits": 0,
+      "monthlyPageviews": 6998,
+      "avgVisitDurationSec": 17,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "metrics": {
+      "monthlyVisits": 5184,
+      "organicVisits": 0,
+      "directVisits": 2042,
+      "momGrowth": -24.1
+    },
+    "channelShares": {
+      "direct": 39.4
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 97
+      },
+      {
+        "country": "United Kingdom",
+        "share": 3
+      }
+    ],
+    "ranks": {
+      "global": 4222442,
+      "country": 2251111
+    },
+    "trend": [
+      {
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
+      },
+      {
+        "date": "2026-07",
+        "total": 7681,
+        "organic": 0
+      },
+      {
+        "date": "2026-08",
+        "total": 6542,
+        "organic": 0
+      },
+      {
+        "date": "2026-09",
+        "total": 5184,
+        "organic": 0
+      }
+    ]
   }
 ]
