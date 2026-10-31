@@ -2,8 +2,8 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "horizons-site",
   "compatibility_date": "2026-10-01",
-  // 截图体积大，走 R2；Worker 只接管 /screenshots/*，其余请求由静态资产直出
-  "main": "src/worker.ts",
+  // 站点是纯静态产物；截图若日后迁到 R2，再加 main/src/worker.ts 与 r2_buckets
+  // （当前账号未开通 R2，绑一个不存在的桶会让 wrangler deploy 直接失败）
   // 2026-10-29 切换：新站接管主域，旧 Next 站（horizons-web）不再持有该路由
   "routes": [
     {
@@ -13,17 +13,8 @@
   ],
   "assets": {
     "directory": "./dist",
-    "binding": "ASSETS",
     // 保持与现有站一致的 URL 形态（无尾斜杠，不做 301）
     "html_handling": "drop-trailing-slash",
-    "not_found_handling": "404-page",
-    // 只有截图请求进 Worker，页面与静态资源仍由资产层直出，不受脚本影响
-    "run_worker_first": ["/screenshots/*"]
-  },
-  "r2_buckets": [
-    {
-      "binding": "IMAGES",
-      "bucket_name": "horizons-images"
-    }
-  ]
+    "not_found_handling": "404-page"
+  }
 }
