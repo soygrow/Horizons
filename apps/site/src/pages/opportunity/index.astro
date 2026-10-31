@@ -23,7 +23,15 @@ const currentBatch = opportunityIndex.batches.find((b) => b.isLatest);
 const archiveCount = archivedOpportunityRows.length;
 
 const totalEvidence = rows.reduce((s, r) => s + r.evidenceCount, 0);
-const maxBoard = Math.max(...rows.map((r) => r.boardCount), 1);
+const avgOverall = rows.reduce((s, r) => s + r.overall, 0) / Math.max(rows.length, 1);
+const avgBoards = rows.reduce((s, r) => s + r.boardCount, 0) / Math.max(rows.length, 1);
+const weekMin = Math.min(...rows.map((r) => r.solo.weeks));
+const weekMax = Math.max(...rows.map((r) => r.solo.weeks));
+const snapshot = rows[0]?.updatedShort ?? policy.updatedAt;
+const weightDots = ["bg-data-1", "bg-data-2", "bg-data-3", "bg-data-4", "bg-data-5"];
+const weightBars = ["bg-data-1/85", "bg-data-2/85", "bg-data-3/85", "bg-data-4/85", "bg-data-5/85"];
+const sourceCount = (key: string) =>
+  rows.reduce((s, r) => s + (r.banners.find((b) => b.board === key)?.count ?? 0), 0);
 
 const title = "机会榜 · Horizons";
 const description =
@@ -38,79 +46,113 @@ const actionPoints = [
 
 <Base title={title} description={description}>
   <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-    <header>
-      <div class="flex flex-wrap items-center gap-2 text-xs">
-        <span class="rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 font-medium text-primary">
-          本周新批
-        </span>
-        <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-secondary">
-          {currentBatch?.label ?? "—"}
-          {currentBatch?.range && <span class="ml-1 text-ink-muted">{currentBatch.range}</span>}
-        </span>
-        <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-muted">
-          {rows.length} 条 · 证据 {totalEvidence} 条
-        </span>
-        <a
-          href="/opportunity/archive"
-          class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-muted transition hover:border-primary/40 hover:text-ink"
-        >
-          历史机会 {archiveCount > 0 ? `${archiveCount} 条` : "· 归档"} →
-        </a>
+    <header class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-14">
+      <div class="min-w-0">
+        <p class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-muted">
+          <span class="inline-flex items-center gap-1.5 font-medium text-primary">
+            <span class="h-1.5 w-1.5 rounded-full bg-primary" />
+            本期
+          </span>
+          <span class="text-ink-secondary">{currentBatch?.label ?? "—"}</span>
+          {currentBatch?.range && (
+            <span class="font-mono tabular-nums">
+              <span class="mr-2.5 text-border">·</span>
+              {currentBatch.range}
+            </span>
+          )}
+          <span class="font-mono tabular-nums">
+            <span class="mr-2.5 text-border">·</span>
+            快照 {snapshot}
+          </span>
+        </p>
+
+        <h1 class="mt-3 text-3xl font-bold leading-[1.15] tracking-tight text-ink sm:text-[2.5rem]">
+          机会榜
+        </h1>
+
+        <p class="mt-4 max-w-2xl text-[15px] leading-7 text-ink-secondary">
+          这里只回答一个问题：<span class="font-medium text-ink">一个人、几千块、六周内，现在能站哪个位置</span>。
+          趋势词告诉你谁在搜，工具榜告诉你谁在付费，GitHub 告诉你地基是否已经写好，模型榜告诉你成本降到了哪里。
+          四种信号交叉处如果还留着一道缝，那才是一条一个人能动手的机会。
+        </p>
+
+        <p class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-ink-muted">
+          <span>信号来自</span>
+          {policy.boards.map((b) => (
+            <a
+              href={`/${b.key}`}
+              class="text-ink-secondary underline decoration-border decoration-1 underline-offset-4 transition hover:text-primary hover:decoration-primary/40"
+            >
+              {b.label}
+            </a>
+          ))}
+          <span class="hidden h-3 w-px bg-border sm:inline" />
+          <a href="#policy" class="transition hover:text-ink">收录原则 ↓</a>
+        </p>
       </div>
 
-      <h1 class="mt-4 text-2xl font-bold tracking-tight text-ink sm:text-3xl">机会榜</h1>
-      <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink-secondary">
-        这里只回答一个问题：<span class="font-medium text-ink">一个人、几千块、六周内，现在能站哪个位置</span>。
-        四条信号放在一起看——趋势词告诉你谁在搜，工具榜告诉你谁在付费，GitHub 告诉你谁已经把地基写好了，模型榜告诉你成本降到了哪里。
-        四种信号交叉处如果还留着一道缝，那才是一条一个人能动手的机会。每条都写清缺口、第一周做什么、谁自己刷卡、什么条件下不成立。
-      </p>
-
-      <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
-        {policy.boards.map((b) => (
-          <a
-            href={`/${b.key}`}
-            class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-secondary transition hover:border-primary/40 hover:text-ink"
-          >
-            {b.label}
-          </a>
-        ))}
-        <a href="#policy" class="rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-primary transition hover:border-primary/60">
-          收录原则
+      <!-- 本期速览：给页头一个落点，替代原来四个等重胶囊 -->
+      <div class="rounded-2xl border border-border bg-surface p-5">
+        <div class="flex items-baseline justify-between">
+          <h2 class="text-xs font-semibold tracking-wide text-ink">本期速览</h2>
+          <span class="font-mono text-[11px] text-ink-muted">{rows.length} 条</span>
+        </div>
+        <dl class="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border">
+          <div class="bg-surface px-3 py-2.5">
+            <dt class="text-[11px] text-ink-muted">综合分均值</dt>
+            <dd class="mt-1 font-mono text-lg font-semibold leading-none tabular-nums text-ink">
+              {avgOverall.toFixed(1)}
+            </dd>
+          </div>
+          <div class="bg-surface px-3 py-2.5">
+            <dt class="text-[11px] text-ink-muted">证据引用</dt>
+            <dd class="mt-1 font-mono text-lg font-semibold leading-none tabular-nums text-ink">{totalEvidence}</dd>
+          </div>
+          <div class="bg-surface px-3 py-2.5">
+            <dt class="text-[11px] text-ink-muted">平均跨榜</dt>
+            <dd class="mt-1 font-mono text-lg font-semibold leading-none tabular-nums text-ink">
+              {avgBoards.toFixed(1)}
+            </dd>
+          </div>
+          <div class="bg-surface px-3 py-2.5">
+            <dt class="text-[11px] text-ink-muted">单人交付</dt>
+            <dd class="mt-1 font-mono text-lg font-semibold leading-none tabular-nums text-ink">
+              {weekMin === weekMax ? `${weekMin}` : `${weekMin}–${weekMax}`}<span class="ml-0.5 text-xs font-normal text-ink-muted">周</span>
+            </dd>
+          </div>
+        </dl>
+        <a
+          href="/opportunity/archive"
+          class="mt-3 flex items-center justify-between text-xs text-ink-secondary transition hover:text-primary"
+        >
+          <span>历史机会归档</span>
+          <span class="font-mono text-[11px] text-ink-muted">
+            {archiveCount > 0 ? `${archiveCount} 条 →` : "从下批开始 →"}
+          </span>
         </a>
       </div>
     </header>
 
-    <!-- 行动主张：左边一句判断，右边三条动作 -->
-    <div class="mt-8 overflow-hidden rounded-2xl border border-primary/25 bg-primary/5">
-      <div class="grid gap-5 p-5 sm:p-6 lg:grid-cols-12 lg:items-center lg:gap-8">
-        <div class="lg:col-span-5">
-          <div class="flex items-center gap-1.5 text-[11px] font-medium tracking-wider text-primary">
-            <span class="h-1 w-1 rounded-full bg-primary" />
-            行动优先
-          </div>
-          <h2 class="mt-2 text-xl font-bold leading-tight tracking-tight text-ink sm:text-2xl">
-            先动手，再判断
-          </h2>
-          <p class="mt-2 text-sm leading-relaxed text-ink-secondary">
-            AI 时代不缺机会，缺的是把一条机会做成最小版本的人。
-            <span class="font-medium text-ink">行不行，做出来才有答案。</span>
-          </p>
-        </div>
-
-        <ul class="grid divide-y divide-border/60 overflow-hidden rounded-xl border border-border/60 bg-surface/70 lg:col-span-7">
-          {actionPoints.map((p, i) => (
-            <li class="flex items-start gap-3 px-4 py-3">
-              <span class="mt-0.5 font-mono text-[11px] font-semibold tabular-nums text-primary/70">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span class="min-w-0">
-                <span class="block text-xs font-semibold text-ink">{p.k}</span>
-                <span class="mt-0.5 block text-[11px] leading-relaxed text-ink-secondary">{p.v}</span>
-              </span>
-            </li>
-          ))}
-        </ul>
+    <!-- 读法：三句话，不抢版面 -->
+    <div class="mt-10 grid gap-6 border-y border-border py-5 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-10">
+      <div>
+        <div class="text-[11px] font-medium uppercase tracking-[0.14em] text-primary">读法</div>
+        <h2 class="mt-1.5 text-sm font-semibold text-ink">先动手，再判断</h2>
+        <p class="mt-1.5 text-xs leading-5 text-ink-muted">行不行，做出来才有答案。</p>
       </div>
+      <ol class="grid gap-5 sm:grid-cols-3 sm:gap-8">
+        {actionPoints.map((p, i) => (
+          <li class="flex gap-3">
+            <span class="font-mono text-[11px] font-semibold tabular-nums text-primary/70">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <div class="min-w-0">
+              <div class="text-sm font-medium text-ink">{p.k}</div>
+              <p class="mt-1 text-xs leading-5 text-ink-secondary">{p.v}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
     </div>
 
     <div class="mt-8 space-y-4">
@@ -216,164 +258,159 @@ const actionPoints = [
       ))}
     </div>
 
-    <section id="policy" class="mt-16 scroll-mt-20">
-      <div class="rounded-2xl border border-border bg-surface p-6 sm:p-8">
-        <div class="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 class="text-lg font-semibold text-ink sm:text-xl">{policy.title}</h2>
-            <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink-secondary">{policy.intro}</p>
-          </div>
-          <span class="rounded-full border border-border bg-surface-2 px-2.5 py-1 text-[11px] text-ink-muted">
-            v{policy.version} · {policy.updatedAt}
-          </span>
+    <section id="policy" class="mt-16 scroll-mt-24">
+      <div class="grid gap-8 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-14">
+        <div class="lg:sticky lg:top-24 lg:self-start">
+          <div class="text-[11px] font-medium uppercase tracking-[0.14em] text-primary">收录原则</div>
+          <h2 class="mt-2 text-xl font-bold leading-snug tracking-tight text-ink">
+            什么样的机会<br class="hidden lg:block" />能进这张榜
+          </h2>
+          <p class="mt-3 text-xs leading-6 text-ink-secondary">{policy.intro}</p>
+          <p class="mt-4 font-mono text-[11px] text-ink-muted">v{policy.version} · {policy.updatedAt}</p>
         </div>
 
-        <!-- 收录规则：编号 + 名称 + 说明，逐行排列 -->
-        <div class="mt-6 overflow-hidden rounded-xl border border-border">
-          {policy.rules.map((rule) => (
-            <div
-              class:list={[
-                "grid gap-1.5 border-b border-border px-4 py-3.5 last:border-b-0 sm:grid-cols-[3rem_12.5rem_1fr] sm:items-baseline sm:gap-x-5 sm:px-5",
-                rule.id === "00" ? "bg-primary/5" : "bg-canvas/30",
-              ]}
-            >
-              <span class="flex items-center gap-1.5 font-mono text-xs text-primary">
-                {rule.id}
-                {rule.id === "00" && (
-                  <span class="rounded border border-primary/40 bg-primary/10 px-1 py-px font-sans text-[10px] font-medium">
-                    准入否决
-                  </span>
-                )}
-              </span>
-              <h3 class="text-sm font-semibold text-ink">{rule.name}</h3>
-              <p class="text-xs leading-relaxed text-ink-secondary">{rule.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        <!-- 评分口径：横条展示，权重用分段比例条表达 -->
-        <div class="mt-4 rounded-xl border border-border bg-canvas/30 p-4 sm:p-5">
-          <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-8">
-            <div>
-              <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <h3 class="text-sm font-semibold text-ink">评分口径</h3>
-                <span class="font-mono text-[11px] leading-relaxed text-primary">{policy.formula}</span>
-              </div>
-              <div class="mt-4 flex h-2 gap-px overflow-hidden rounded-full">
-                {policy.weights.map((w, i) => (
-                  <div
-                    class:list={["h-full", i === 0 ? "bg-primary" : "bg-primary/50"]}
-                    style={`width: ${w.weight * 100}%`}
-                  />
-                ))}
-              </div>
-              <div class="mt-2.5 flex flex-wrap gap-x-4 gap-y-1">
-                {policy.weights.map((w) => (
-                  <span class="text-[11px] text-ink-muted">
-                    <span class="font-medium text-ink-secondary">{w.label}</span>
-                    <span class="ml-1 font-mono tabular-nums">{Math.round(w.weight * 100)}%</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div class="lg:border-l lg:border-border lg:pl-8">
-              <div class="text-[11px] text-ink-muted">分档</div>
-              <div class="mt-2 flex flex-wrap gap-1.5">
-                {policy.grades.map((g) => (
-                  <span
-                    class:list={[
-                      "rounded border px-1.5 py-0.5 text-[10px] font-medium",
-                      gradeTone[g.grade] ?? gradeTone.C,
-                    ]}
-                  >
-                    {g.grade} {g.range}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/5 p-4 sm:p-5">
-          <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <h3 class="text-sm font-semibold text-ink">构建期硬闸门</h3>
-            <p class="text-[11px] text-ink-muted">
-              机器只取数、校验、渲染，不做主观打分；任一条不通过即中断构建。
-            </p>
-          </div>
-          <ul class="mt-3 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
-            {policy.gates.map((g) => (
-              <li class="flex gap-2 text-xs leading-relaxed text-ink-secondary">
-                <span class="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-500" />
-                <span>{g}</span>
+        <div class="min-w-0 space-y-6">
+          <ol class="overflow-hidden rounded-2xl border border-border bg-surface">
+            {policy.rules.map((rule) => (
+              <li
+                class:list={[
+                  "grid gap-1 border-b border-border px-5 py-4 last:border-b-0 sm:grid-cols-[2.5rem_11rem_minmax(0,1fr)] sm:items-baseline sm:gap-5",
+                  rule.id === "00" && "bg-primary/[0.04]",
+                ]}
+              >
+                <span
+                  class:list={[
+                    "font-mono text-[11px] tabular-nums",
+                    rule.id === "00" ? "font-semibold text-primary" : "text-ink-muted",
+                  ]}
+                >
+                  {rule.id}
+                </span>
+                <h3 class="flex flex-wrap items-center gap-1.5 text-sm font-semibold text-ink">
+                  {rule.name}
+                  {rule.id === "00" && (
+                    <span class="rounded bg-primary/10 px-1.5 py-px text-[10px] font-medium text-primary">准入否决</span>
+                  )}
+                </h3>
+                <p class="text-xs leading-6 text-ink-secondary">{rule.desc}</p>
               </li>
             ))}
-          </ul>
-        </div>
+          </ol>
 
-        <p class="mt-5 text-[11px] leading-relaxed text-ink-muted">
-          所有分数是基于公开信号的相对排序，不是成功率预测；榜单只做方向判断与路径拆解，不构成投资、法律或商业承诺。证据数值来自各榜单采集快照，可能滞后于真实世界。
-          {policy.policyDoc && <span class="ml-1">完整原则见仓库 {policy.policyDoc}。</span>}
-        </p>
+          <div class="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <h3 class="text-sm font-semibold text-ink">评分口径</h3>
+              <code class="font-mono text-[11px] tracking-tight text-ink-muted">{policy.formula}</code>
+            </div>
+
+            <ul class="mt-5 space-y-3 sm:space-y-2.5">
+              {policy.weights.map((w, i) => (
+                <li class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 sm:grid-cols-[6.5rem_minmax(0,1fr)_3rem]">
+                  <span class="order-1 flex items-center gap-2 text-xs text-ink-secondary">
+                    <span class:list={["h-1.5 w-1.5 shrink-0 rounded-full", weightDots[i] ?? "bg-primary"]} />
+                    {w.label}
+                  </span>
+                  <span class="order-3 col-span-2 h-1.5 overflow-hidden rounded-full bg-surface-2 sm:order-2 sm:col-span-1">
+                    <span
+                      class:list={["block h-full rounded-full", weightBars[i] ?? "bg-primary/60"]}
+                      style={`width: ${w.weight * 100}%`}
+                    />
+                  </span>
+                  <span class="order-2 text-right font-mono text-[11px] tabular-nums text-ink-muted sm:order-3">
+                    {Math.round(w.weight * 100)}%
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div class="mt-5 border-t border-border pt-4">
+              <div class="text-[11px] text-ink-muted">分档</div>
+              <div class="mt-2 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-4">
+                {policy.grades.map((g) => (
+                  <div class:list={["flex items-baseline gap-2 px-3 py-3", gradeTone[g.grade] ?? gradeTone.C]}>
+                    <span class="text-lg font-bold leading-none">{g.grade}</span>
+                    <span class="font-mono text-[11px] leading-none opacity-75">{g.range}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <h3 class="text-sm font-semibold text-ink">构建期硬闸门</h3>
+              <span class="text-[11px] text-ink-muted">机器只取数、校验、渲染；任一条不通过即中断构建</span>
+            </div>
+            <div class="mt-4 grid gap-y-2 sm:grid-cols-2 sm:gap-x-0 sm:divide-x sm:divide-border">
+              {[policy.gates.slice(0, Math.ceil(policy.gates.length / 2)), policy.gates.slice(Math.ceil(policy.gates.length / 2))].map(
+                (col, ci) => (
+                  <ul class:list={["space-y-2", ci === 0 ? "sm:pr-6" : "sm:pl-6"]}>
+                    {col.map((g) => (
+                      <li class="flex gap-2 text-xs leading-6 text-ink-secondary">
+                        <span class="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-amber-500" />
+                        <span>{g}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ),
+              )}
+            </div>
+          </div>
+
+          <p class="text-[11px] leading-6 text-ink-muted">
+            所有分数是基于公开信号的相对排序，不是成功率预测；榜单只做方向判断与路径拆解，不构成投资、法律或商业承诺。证据数值来自各榜单采集快照，可能滞后于真实世界。
+            {policy.policyDoc && <span class="ml-1">完整原则见仓库 {policy.policyDoc}。</span>}
+          </p>
+        </div>
       </div>
     </section>
 
-    <div class="mt-10 rounded-2xl border border-border bg-surface p-5">
-      <h2 class="text-sm font-semibold text-ink">四榜交叉的证据来源</h2>
-      <p class="mt-1 text-xs text-ink-muted">
-        每条证据都可点回原榜单条目；数字由构建期从榜单注入，人工判断只写逻辑不写死数字。
-      </p>
-      <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <section class="mt-16">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-semibold tracking-tight text-ink">证据来自四个榜单</h2>
+          <p class="mt-1 text-xs leading-5 text-ink-muted">
+            每条证据都能点回原条目核对；数字由构建期注入，判断只写逻辑。
+          </p>
+        </div>
+        <span class="font-mono text-[11px] tabular-nums text-ink-muted">本期共 {totalEvidence} 条引用</span>
+      </div>
+      <div class="mt-4 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
         {policy.boards.map((b) => (
-          <a
-            href={`/${b.key}`}
-            class="rounded-xl border border-border bg-canvas/40 p-4 transition hover:border-primary/40"
-          >
-            <div class="text-sm font-medium text-ink">{b.label}</div>
-            <div class="mt-1 text-[11px] text-ink-muted">
-              {rows.reduce(
-                (s, r) => s + (r.banners.find((x) => x.board === b.key)?.count ?? 0),
-                0,
-              )}{" "}
-              条引用
+          <a href={`/${b.key}`} class="group bg-surface px-4 py-4 transition hover:bg-surface-2/50">
+            <div class="flex items-baseline justify-between gap-2">
+              <span class="text-xs text-ink-muted transition group-hover:text-ink">{b.label}</span>
+              <span class="text-[11px] text-ink-muted transition group-hover:text-primary">→</span>
+            </div>
+            <div class="mt-1 flex items-baseline gap-1.5">
+              <span class="font-mono text-2xl font-semibold leading-none tabular-nums text-ink">{sourceCount(b.key)}</span>
+              <span class="text-[11px] text-ink-muted">条引用</span>
             </div>
           </a>
         ))}
       </div>
-      <div class="mt-4 flex items-center gap-2">
-        <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2">
-          <div class="h-full rounded-full bg-primary/60" style={`width: ${(maxBoard / policy.boards.length) * 100}%`} />
-        </div>
-        <span class="text-[11px] text-ink-muted">单条机会最多跨 {maxBoard} 个榜单</span>
+    </section>
+
+    <div class="mt-10 flex flex-col gap-4 rounded-2xl border border-border bg-surface p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-sm font-medium text-ink">挑一条最顺手的，今晚把第一件事做完。</p>
+        <p class="mt-1 text-xs text-ink-muted">试错只花几个小时，错过要等下一轮。</p>
+      </div>
+      <div class="flex shrink-0 items-center gap-2">
+        <a
+          href={`/opportunity/${rows[0].slug}`}
+          class="rounded-lg border border-primary/40 bg-primary/10 px-3.5 py-2 text-xs font-medium text-primary transition hover:border-primary/70 hover:bg-primary/15"
+        >
+          从第一条开始 →
+        </a>
+        <a
+          href="/opportunity/archive"
+          class="rounded-lg border border-border px-3.5 py-2 text-xs text-ink-secondary transition hover:border-primary/40 hover:text-ink"
+        >
+          历史归档{archiveCount > 0 ? ` ${archiveCount} 条` : ""}
+        </a>
       </div>
     </div>
-
-    <div class="mt-6 flex flex-col gap-3 rounded-2xl border border-border bg-surface p-5 sm:flex-row sm:items-center sm:justify-between">
-      <p class="max-w-3xl text-xs leading-relaxed text-ink-secondary">
-        榜单只给方向，路要自己走完。挑一条最顺手的，今晚就把第一周的第一件事做完——试错只花几个小时，错过要等下一轮。
-      </p>
-      <a
-        href={`/opportunity/${rows[0].slug}`}
-        class="shrink-0 rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition hover:border-primary/60"
-      >
-        从第一条开始 →
-      </a>
-    </div>
-
-    <!-- 历史归档入口：轻量承接，不抢最新批次的注意力 -->
-    <a
-      href="/opportunity/archive"
-      class="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border bg-surface/60 px-5 py-4 transition hover:border-primary/40 hover:bg-surface"
-    >
-      <span class="text-xs leading-relaxed text-ink-secondary">
-        <span class="font-medium text-ink">历史机会</span>
-        {archiveCount > 0
-          ? ` · 共 ${opportunityIndex.batches.length - 1} 批 ${archiveCount} 条，含已完成窗口的旧机会`
-          : " · 归档从下一批开始累积，已过期机会不进归档"}
-      </span>
-      <span class="text-xs text-primary">查看归档 →</span>
-    </a>
   </div>
 
   <script>

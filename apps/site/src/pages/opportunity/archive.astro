@@ -1,7 +1,8 @@
 ---
 /**
  * 历史机会归档：只承接「非最新批次」。
- * 最新一批留在 /opportunity，保证首页注意力集中；归档页只做检索与回看，不抢主榜。
+ * 最新一批留在 /opportunity，保证首页注意力集中；归档页只做回看，不抢主榜。
+ * 版式按「时间轴」组织：左侧批次坐标，右侧该批 5 条的索引。
  */
 import Base from "../../layouts/Base.astro";
 import { gradeTone, scoreTone } from "../../lib/opportunity";
@@ -24,80 +25,114 @@ const description =
   <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6">
     <nav class="text-[11px] text-ink-muted">
       <a href="/opportunity" class="transition hover:text-ink">机会榜</a>
-      <span class="mx-1.5">/</span>
+      <span class="mx-1.5 text-border">/</span>
       <span class="text-ink-secondary">历史归档</span>
     </nav>
 
-    <header class="mt-3">
-      <div class="flex flex-wrap items-center gap-2 text-xs">
-        <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-secondary">
-          历史 {pastBatches.length} 批 · {total} 条
+    <header class="mt-4">
+      <p class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-muted">
+        <span class="inline-flex items-center gap-1.5 font-medium text-primary">
+          <span class="h-1.5 w-1.5 rounded-full bg-primary" />
+          归档
         </span>
-        <span class="rounded-full border border-border bg-surface px-2.5 py-1 text-ink-muted">
-          当前最新 {currentBatch?.label ?? "—"}
-        </span>
-      </div>
+        <span class="text-ink-secondary">{pastBatches.length} 批 · {total} 条</span>
+        <span class="text-border">·</span>
+        <span>当前最新 {currentBatch?.label ?? "—"}</span>
+      </p>
 
-      <h1 class="mt-4 text-2xl font-bold tracking-tight text-ink sm:text-3xl">历史机会</h1>
-      <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink-secondary">
+      <h1 class="mt-3 text-3xl font-bold leading-tight tracking-tight text-ink sm:text-[2.25rem]">
+        历史机会
+      </h1>
+      <p class="mt-4 max-w-2xl text-[15px] leading-7 text-ink-secondary">
         每周一批 5 条，主榜只保留最新一批，更早的批次收在这里。
         机会有时效：窗口多在 6–12 个月，越早的批次越可能已经被填上或被证伪，读的时候请连同时效条件一起看。
       </p>
     </header>
 
     {pastBatches.length === 0 ? (
-      <div class="mt-8 rounded-2xl border border-dashed border-border bg-surface/60 px-6 py-12 text-center">
-        <p class="text-sm font-medium text-ink">暂无更早批次</p>
-        <p class="mx-auto mt-2 max-w-md text-xs leading-relaxed text-ink-muted">
-          当前只有 {currentBatch?.label ?? "最新一批"}（{opportunityIndex.latestBatch}）。
-          下一批上线后，本周这 5 条会整体移到这里，归档从下周开始累积。
-        </p>
-        <a
-          href="/opportunity"
-          class="mt-5 inline-block rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition hover:border-primary/60"
-        >
-          ← 返回本期 5 条
-        </a>
+      <div class="mt-8 overflow-hidden rounded-2xl border border-dashed border-border">
+        <div class="px-6 py-10 text-center">
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-2.5 py-1 text-[11px] text-ink-muted">
+            <span class="h-1.5 w-1.5 rounded-full bg-ink-muted/50" />
+            下周开始累积
+          </span>
+          <p class="mt-4 text-sm font-semibold text-ink">还没有更早的批次</p>
+          <p class="mx-auto mt-2 max-w-sm text-xs leading-6 text-ink-muted">
+            当前只有 {currentBatch?.label ?? "最新一批"}（{opportunityIndex.latestBatch}）。下一批上线时，这一批 5 条会整体移到此处，按周向下累积。
+          </p>
+        </div>
+        <div class="flex flex-col items-center gap-3 border-t border-border bg-surface-2/40 px-6 py-4 sm:flex-row sm:justify-between">
+          <span class="text-[11px] text-ink-muted">归档只保留发布时的判断与证据，不再更新预算与价格。</span>
+          <a
+            href="/opportunity"
+            class="shrink-0 rounded-lg border border-primary/40 bg-primary/10 px-3.5 py-2 text-xs font-medium text-primary transition hover:border-primary/70 hover:bg-primary/15"
+          >
+            ← 返回本期 5 条
+          </a>
+        </div>
       </div>
     ) : (
-      <div class="mt-8 space-y-8">
+      <div class="mt-12 space-y-12">
         {pastBatches.map((batch) => (
-          <section>
-            <div class="flex flex-wrap items-baseline justify-between gap-2 border-b border-border pb-2">
-              <h2 class="text-sm font-semibold text-ink">
-                {batch.label}
-                <span class="ml-2 font-normal text-ink-muted">{batch.range}</span>
-              </h2>
-              <span class="text-[11px] text-ink-muted">
-                {batch.count} 条 · 平均 {batch.avgOverall.toFixed(1)} 分
-              </span>
+          <section class="grid gap-4 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-8">
+            <!-- 批次坐标 -->
+            <div class="sm:sticky sm:top-24 sm:self-start">
+              <div class="flex items-center gap-2">
+                <span class="h-1.5 w-1.5 rounded-full bg-ink-muted/50" />
+                <h2 class="text-sm font-semibold text-ink">{batch.label}</h2>
+              </div>
+              <p class="mt-1 pl-3.5 font-mono text-[11px] tabular-nums text-ink-muted">{batch.range}</p>
+              <p class="mt-0.5 pl-3.5 text-[11px] text-ink-muted">
+                {batch.count} 条 · 均分 {batch.avgOverall.toFixed(1)}
+              </p>
+              <div class="ml-3.5 mt-2 h-1 w-16 overflow-hidden rounded-full bg-surface-2">
+                <div class="h-full rounded-full bg-ink-muted/40" style={`width: ${batch.avgOverall}%`} />
+              </div>
             </div>
 
-            <ul class="mt-3 space-y-2">
+            <!-- 该批索引 -->
+            <ul class="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface">
               {archivedOpportunityRows
                 .filter((r) => r.batch === batch.batch)
                 .map((row) => (
                   <li>
                     <a
                       href={`/opportunity/${row.slug}`}
-                      class="group flex flex-col gap-2 rounded-xl border border-border bg-surface px-4 py-3 transition hover:border-primary/40 hover:bg-surface-2/40 sm:flex-row sm:items-center sm:gap-4"
+                      class="group grid gap-1.5 px-4 py-3.5 transition hover:bg-surface-2/40 sm:grid-cols-[2rem_minmax(0,1fr)_auto] sm:items-center sm:gap-4 sm:px-5"
                     >
-                      <span class="font-mono text-xs text-ink-muted sm:w-6">
+                      <span class="font-mono text-xs tabular-nums text-ink-muted">
                         {String(row.rank).padStart(2, "0")}
                       </span>
-                      <span class="min-w-0 flex-1">
-                        <span class="block truncate text-sm font-medium text-ink group-hover:text-primary">
-                          {row.title}
+
+                      <span class="min-w-0">
+                        <span class="flex items-center gap-2">
+                          <span class="truncate text-sm font-medium text-ink transition group-hover:text-primary">
+                            {row.title}
+                          </span>
+                          <span
+                            class:list={[
+                              "shrink-0 rounded border px-1 py-px text-[10px] font-bold leading-tight",
+                              gradeTone[row.grade],
+                            ]}
+                          >
+                            {row.grade}
+                          </span>
                         </span>
-                        <span class="mt-0.5 block truncate text-[11px] text-ink-muted">
-                          一个人 {row.solo.weeks} 周 · {row.money.price}
+                        <span class="mt-1 block truncate text-[11px] text-ink-muted">
+                          一个人 {row.solo.weeks} 周 · {row.money.price} · 窗口 {row.window}
                         </span>
                       </span>
-                      <span class="flex shrink-0 items-center gap-3 text-[11px] text-ink-muted">
-                        <span class:list={["rounded border px-1.5 py-0.5 font-medium", gradeTone[row.grade]]}>
-                          {row.grade}
+
+                      <span class="flex items-center gap-3 sm:justify-end">
+                        <span class="text-[11px] text-ink-muted">
+                          {row.boardCount} 榜 · {row.evidenceCount} 证据
                         </span>
-                        <span class:list={["font-mono text-sm font-semibold tabular-nums", scoreTone(row.overall)]}>
+                        <span
+                          class:list={[
+                            "font-mono text-sm font-semibold tabular-nums",
+                            scoreTone(row.overall),
+                          ]}
+                        >
                           {row.overall.toFixed(1)}
                         </span>
                       </span>
@@ -110,19 +145,11 @@ const description =
       </div>
     )}
 
-    <div class="mt-10 rounded-2xl border border-border bg-surface p-5">
-      <p class="text-xs leading-relaxed text-ink-secondary">
-        归档里的机会不再更新预算与价格，只保留发布时的判断与证据。
-        如果一条机会的窗口已经关闭，它仍然是可读的：知道自己错过了什么、为什么错过，比再多看五条新机会更有用。
+    <div class="mt-10 border-t border-border pt-5">
+      <p class="max-w-2xl text-xs leading-6 text-ink-muted">
+        窗口已经关闭的机会仍然可读：知道自己错过了什么、为什么错过，比再多看五条新机会更有用。
+        <a href="/opportunity#policy" class="ml-1 font-medium text-primary hover:underline">收录原则 →</a>
       </p>
-      <div class="mt-3 flex flex-wrap gap-2 text-[11px]">
-        <a href="/opportunity" class="rounded border border-primary/30 bg-primary/10 px-2 py-1 text-primary transition hover:border-primary/60">
-          看本期 5 条 →
-        </a>
-        <a href="/opportunity#policy" class="rounded border border-border bg-surface-2 px-2 py-1 text-ink-secondary transition hover:border-primary/40">
-          收录原则
-        </a>
-      </div>
     </div>
   </div>
 </Base>
