@@ -1,0 +1,704 @@
+---
+/**
+ * 机会详情：证据、路径、效果全部来自构建期产物；
+ * 每条证据带榜单主键与实时数值，可点回原榜单条目。
+ */
+import Base from "../../layouts/Base.astro";
+import SectionHeader from "../../components/detail/SectionHeader.astro";
+import Stat from "../../components/detail/Stat.astro";
+import {
+  BOARD_LABELS,
+  OPPORTUNITY_WEIGHTS,
+  gradeTone,
+  scoreTone,
+} from "../../lib/opportunity";
+import type { BoardKey, OpportunityDetail } from "../../lib/opportunity";
+import { allOpportunities } from "../../lib/dataset";
+
+export function getStaticPaths() {
+  const all = allOpportunities();
+  return all.map((opp, i) => ({
+    params: { slug: opp.slug },
+    props: { opp, prev: all[i - 1] ?? null, next: all[i + 1] ?? null },
+  }));
+}
+
+const { opp, prev, next } = Astro.props as {
+  opp: OpportunityDetail;
+  prev: OpportunityDetail | null;
+  next: OpportunityDetail | null;
+};
+
+const BOARD_ORDER: BoardKey[] = ["trends", "tools", "github", "models"];
+const grouped = BOARD_ORDER.map((board) => ({
+  board,
+  label: BOARD_LABELS[board],
+  items: opp.evidence.filter((e) => e.board === board),
+})).filter((g) => g.items.length);
+
+const firstAction = opp.path[0]?.actions[0];
+const leverageLabels = opp.build.leverage.map(
+  (l) => opp.build.leverageLabels.find((x) => x.kind === l.kind)?.label ?? l.kind,
+);
+
+const title = `${opp.title} · 机会榜`;
+const description = opp.oneLiner;
+---
+
+<Base title={title} description={description}>
+  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <div class="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+      <a href="/opportunity" class="hover:text-ink">机会榜</a>
+      <span>/</span>
+      <span class="text-ink-secondary">{opp.title}</span>
+      <span class="ml-auto flex items-center gap-2">
+        <span class="rounded-full border border-border bg-surface px-2.5 py-1">
+          {opp.batchLabel}
+        </span>
+        <span class="rounded-full border border-border bg-surface px-2.5 py-1">
+          快照 {opp.updatedShort}
+        </span>
+      </span>
+    </div>
+
+    {!opp.isLatest && (
+      <div class="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-2.5 text-[11px] text-ink-secondary">
+        <span class="font-medium text-amber-500">历史批次</span>
+        <span>
+          本条发布于 {opp.batchLabel}（{opp.batchRange}），窗口与价格可能已经变化，请结合「什么条件下不成立」一起读。
+        </span>
+        <a href="/opportunity" class="ml-auto shrink-0 text-primary hover:underline">看本期 5 条 →</a>
+      </div>
+    )}
+
+    <!-- Hero -->
+    <div class="mt-4 rounded-2xl border border-border bg-surface p-6">
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-primary">
+              NO.{String(opp.rank).padStart(2, "0")}
+            </span>
+            <span
+              class:list={[
+                "rounded-full border px-2 py-0.5 text-[11px] font-bold",
+                gradeTone[opp.grade],
+              ]}
+            >
+              {opp.grade} 级机会
+            </span>
+            <span class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-secondary">
+              {opp.entryLabel}
+            </span>
+            <span class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-secondary">
+              窗口 {opp.window}
+            </span>
+            <span class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-muted">
+              跨 {opp.boardCount} 榜 · {opp.evidenceCount} 条证据
+            </span>
+          </div>
+
+          <h1 class="mt-3 text-2xl font-bold tracking-tight text-ink sm:text-3xl">{opp.title}</h1>
+          <p class="mt-3 max-w-3xl text-sm leading-relaxed text-ink-secondary sm:text-base">
+            {opp.oneLiner}
+          </p>
+
+          <div class="mt-4 flex flex-wrap gap-1.5">
+            {opp.audience.map((a) => (
+              <span class="rounded border border-border bg-canvas/40 px-2 py-0.5 text-[11px] text-ink-muted">
+                适合 {a}
+              </span>
+            ))}
+          </div>
+
+          <div class="mt-3 flex flex-wrap items-center gap-1.5">
+            <span class="rounded border border-primary/30 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+              一个人 {opp.solo.weeks} 周可交付
+            </span>
+            <span class="rounded border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-secondary">
+              {opp.money.price}
+            </span>
+            <span class="rounded border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-muted">
+              {opp.solo.budget}
+            </span>
+          </div>
+        </div>
+
+        <div class="shrink-0 rounded-xl border border-border bg-canvas/40 p-5 lg:w-64">
+          <div class="flex items-end justify-between">
+            <div>
+              <div class="text-[11px] text-ink-muted">机会综合分</div>
+              <div class:list={["font-mono text-4xl font-bold tabular-nums leading-none", scoreTone(opp.overall)]}>
+                {opp.overall.toFixed(1)}
+              </div>
+            </div>
+            <span class:list={["rounded-md border px-2 py-1 text-sm font-bold", gradeTone[opp.grade]]}>
+              {opp.grade}
+            </span>
+          </div>
+
+          <div class="mt-4 space-y-2">
+            {OPPORTUNITY_WEIGHTS.map((w) => (
+              <div>
+                <div class="flex items-baseline justify-between">
+                  <span class="text-[11px] text-ink-muted">{w.label}</span>
+                  <span class="text-[11px] font-medium tabular-nums text-ink-secondary">
+                    {opp.scores[w.key]}
+                  </span>
+                </div>
+                <div class="mt-1 h-1 overflow-hidden rounded-full bg-surface-2">
+                  <div class="h-full rounded-full bg-primary/70" style={`width: ${opp.scores[w.key]}%`} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {firstAction && (
+        <div class="mt-5 flex flex-col gap-2 rounded-xl border border-primary/25 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p class="text-sm text-ink-secondary">
+            <span class="font-medium text-ink">第一步：</span>
+            {firstAction}
+          </p>
+          <a href="#path" class="shrink-0 text-xs font-medium text-primary hover:underline">
+            查看完整路径 →
+          </a>
+        </div>
+      )}
+    </div>
+
+    <!-- 指标条 -->
+    <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+      <Stat label="综合分" value={opp.overall.toFixed(1)} tone={scoreTone(opp.overall)} />
+      <Stat label="需求证据" value={String(opp.scores.demand)} />
+      <Stat label="供给缺口" value={String(opp.scores.gap)} />
+      <Stat label="可执行性" value={String(opp.scores.feasible)} />
+      <Stat label="时机窗口" value={String(opp.scores.timing)} />
+      <Stat label="自助变现" value={String(opp.scores.monetize)} />
+      <Stat label="单人交付" value={`${opp.solo.weeks} 周`} />
+      <Stat label="证据 / 跨榜" value={`${opp.evidenceCount} / ${opp.boardCount}`} />
+    </div>
+
+    <!-- 我在做：参与名单 + 留言入口 -->
+    <section
+      data-doing
+      data-doing-slug={opp.slug}
+      class="mt-4 rounded-2xl border border-border bg-surface p-5"
+    >
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="text-sm font-semibold text-ink">谁在做</h2>
+            <span
+              data-doing-count
+              class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-muted"
+            >
+              读取中…
+            </span>
+          </div>
+          <p class="mt-1.5 max-w-xl text-xs leading-relaxed text-ink-muted">
+            点了「我在做」的人会留在这里，可以反复记录进展——做到哪一步、卡在哪、还是不是个机会。点开头像看他写过什么。
+          </p>
+        </div>
+
+        <button
+          type="button"
+          data-doing-join
+          class="shrink-0 rounded-lg border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-medium text-primary transition hover:border-primary/60 hover:bg-primary/15"
+        >
+          <span data-doing-join-label>我在做</span>
+        </button>
+      </div>
+
+      <div data-doing-avatars class="mt-3 hidden flex-wrap items-center gap-1"></div>
+      <p data-doing-empty class="mt-3 hidden text-xs text-ink-muted">
+        还没有人动手。第一个标记的人在做什么，后来者都会看到。
+      </p>
+    </section>
+
+    <div class="mt-10 grid gap-8 lg:grid-cols-3">
+      <div class="space-y-10 lg:col-span-2">
+        <!-- 01 机会在哪里 -->
+        <section>
+          <SectionHeader
+            no="01"
+            title="机会在哪里"
+            desc="缺口的位置、为什么是现在，以及最容易走错的那一步。"
+          />
+          <div class="mt-5 space-y-4">
+            <div class="rounded-xl border border-border bg-surface p-5">
+              <h3 class="text-sm font-semibold text-ink">缺口</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-secondary">{opp.thesis.where}</p>
+            </div>
+            <div class="rounded-xl border border-border bg-surface p-5">
+              <h3 class="text-sm font-semibold text-ink">为什么是现在</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-secondary">{opp.thesis.whyNow}</p>
+            </div>
+            <div class="rounded-xl border border-amber-500/25 bg-amber-500/5 p-5">
+              <h3 class="text-sm font-semibold text-ink">不要做什么</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-secondary">{opp.thesis.dont}</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 02 一个人怎么干 -->
+        <section>
+          <SectionHeader
+            no="02"
+            title="一个人怎么干"
+            desc="成本、时间、获客、收钱——四件事都落到一个人身上，才叫能开工。"
+          />
+          <div class="mt-5 space-y-4">
+            <div class="grid gap-3 sm:grid-cols-3">
+              <div class="rounded-xl border border-border bg-surface p-4">
+                <div class="text-[11px] text-ink-muted">启动与持有成本</div>
+                <div class="mt-1 text-sm font-medium leading-relaxed text-ink">{opp.solo.budget}</div>
+              </div>
+              <div class="rounded-xl border border-primary/25 bg-primary/5 p-4">
+                <div class="text-[11px] text-ink-muted">单人交付时间</div>
+                <div class="mt-1 font-mono text-2xl font-bold leading-none text-primary">
+                  {opp.solo.weeks} 周
+                </div>
+                <div class="mt-1.5 text-[11px] text-ink-muted">做出能收费的版本</div>
+              </div>
+              <div class="rounded-xl border border-border bg-surface p-4">
+                <div class="text-[11px] text-ink-muted">获客渠道（自己就能触发）</div>
+                <div class="mt-2 flex flex-wrap gap-1.5">
+                  {opp.solo.channels.map((c) => (
+                    <span class="rounded border border-border bg-surface-2 px-1.5 py-0.5 text-[11px] text-ink-secondary">
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-emerald-500/25 bg-emerald-500/5 p-5">
+              <h3 class="text-sm font-semibold text-ink">钱从哪来</h3>
+              <dl class="mt-3 grid gap-3 sm:grid-cols-3">
+                <div>
+                  <dt class="text-[10px] uppercase tracking-wide text-ink-muted">定价</dt>
+                  <dd class="mt-0.5 text-sm font-medium text-ink">{opp.money.price}</dd>
+                </div>
+                <div>
+                  <dt class="text-[10px] uppercase tracking-wide text-ink-muted">谁自己刷卡</dt>
+                  <dd class="mt-0.5 text-sm text-ink-secondary">{opp.money.payer}</dd>
+                </div>
+                <div>
+                  <dt class="text-[10px] uppercase tracking-wide text-ink-muted">前 10 个付费用户</dt>
+                  <dd class="mt-0.5 text-sm leading-relaxed text-ink-secondary">{opp.money.first10}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="rounded-xl border border-border bg-surface p-5">
+              <h3 class="flex items-center gap-2 text-sm font-semibold text-ink">
+                第一周就做这三件事
+                <span class="rounded border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] font-normal text-ink-muted">
+                  不需要写完整产品
+                </span>
+              </h3>
+              <ol class="mt-3 space-y-3">
+                {opp.solo.firstWeek.map((s, i) => (
+                  <li class="flex gap-3">
+                    <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded bg-primary/10 font-mono text-[11px] font-bold text-primary">
+                      {i + 1}
+                    </span>
+                    <span class="text-sm leading-relaxed text-ink-secondary">{s}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <!-- 03 四榜证据 -->
+        <section>
+          <SectionHeader
+            no="03"
+            title="四榜证据"
+            desc="每条证据都指向榜单中的具体条目，数值由构建期从榜单注入，可点回原条目核对。"
+          />
+          <div class="mt-5 space-y-5">
+            {grouped.map((g) => (
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="text-sm font-semibold text-ink">{g.label}</h3>
+                  <span class="rounded border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] text-ink-muted">
+                    {g.items.length} 条
+                  </span>
+                  <span class="text-[11px] text-ink-muted">{g.items[0].boardHint}</span>
+                </div>
+
+                <div class="mt-3 space-y-3">
+                  {g.items.map((e) => (
+                    <div class="rounded-xl border border-border bg-surface p-4">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <a href={e.href} class="group min-w-0">
+                          <div class="truncate text-sm font-medium text-ink group-hover:text-primary">
+                            {e.title}
+                          </div>
+                          <div class="mt-0.5 truncate text-[11px] text-ink-muted">{e.subtitle}</div>
+                        </a>
+                        <a
+                          href={e.href}
+                          class="shrink-0 rounded border border-border px-1.5 py-0.5 text-[10px] text-ink-muted transition hover:border-primary/40 hover:text-primary"
+                        >
+                          查看条目 →
+                        </a>
+                      </div>
+
+                      <div class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                        {e.metrics.map((m) => (
+                          <div class="rounded-lg border border-border/60 bg-canvas/40 px-2.5 py-1.5">
+                            <div class="text-[10px] text-ink-muted">{m.label}</div>
+                            <div class:list={["text-xs font-medium tabular-nums", m.tone ?? "text-ink"]}>
+                              {m.value}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <p class="mt-3 border-l-2 border-primary/30 pl-3 text-xs leading-relaxed text-ink-secondary">
+                        {e.note}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- 04 怎么做 -->
+        <section>
+          <SectionHeader
+            no="04"
+            title="怎么做"
+            desc="产品形态、最小可用范围，以及可以直接复用的开源件与模型。"
+          />
+          <div class="mt-5 space-y-4">
+            <div class="rounded-xl border border-border bg-surface p-5">
+              <h3 class="text-sm font-semibold text-ink">产品形态</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-secondary">{opp.build.form}</p>
+            </div>
+
+            <div class="rounded-xl border border-border bg-surface p-5">
+              <h3 class="text-sm font-semibold text-ink">最小可用范围（MVP）</h3>
+              <ul class="mt-3 space-y-2">
+                {opp.build.mvpScope.map((s, i) => (
+                  <li class="flex gap-2.5 text-sm leading-relaxed text-ink-secondary">
+                    <span class="mt-0.5 font-mono text-xs text-ink-muted">{String(i + 1).padStart(2, "0")}</span>
+                    <span>{s}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="text-sm font-semibold text-ink">可以直接利用的东西</h3>
+              <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                {opp.build.leverage.map((l, i) => (
+                  <div class="rounded-xl border border-border bg-surface p-4">
+                    <div class="flex items-center gap-2">
+                      <span class="rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                        {leverageLabels[i]}
+                      </span>
+                      <span class="truncate text-xs font-medium text-ink">{l.ref}</span>
+                    </div>
+                    <p class="mt-2 text-xs leading-relaxed text-ink-secondary">{l.how}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-border bg-surface p-5">
+              <h3 class="text-sm font-semibold text-ink">技术栈建议</h3>
+              <div class="mt-3 flex flex-wrap gap-1.5">
+                {opp.build.stack.map((s) => (
+                  <span class="rounded border border-border bg-surface-2 px-2 py-1 text-[11px] text-ink-secondary">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 05 实施路径 -->
+        <section id="path" class="scroll-mt-20">
+          <SectionHeader
+            no="05"
+            title="实施路径"
+            desc="每个阶段都有通过标准：达不到就停，不继续投入。"
+          />
+          <ol class="mt-5 space-y-4">
+            {opp.path.map((p) => (
+              <li class="relative rounded-xl border border-border bg-surface p-5">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 font-mono text-xs font-bold text-primary">
+                    {p.phase}
+                  </span>
+                  <h3 class="text-sm font-semibold text-ink">{p.name}</h3>
+                  <span class="rounded border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] text-ink-muted">
+                    {p.weeks}
+                  </span>
+                </div>
+
+                <ul class="mt-3 space-y-1.5">
+                  {p.actions.map((a) => (
+                    <li class="flex gap-2 text-xs leading-relaxed text-ink-secondary">
+                      <span class="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-ink-muted" />
+                      <span>{a}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div class="mt-3 grid gap-2 sm:grid-cols-2">
+                  <div class="rounded-lg border border-border/60 bg-canvas/40 px-3 py-2">
+                    <div class="text-[10px] text-ink-muted">交付物</div>
+                    <div class="mt-0.5 text-xs text-ink-secondary">{p.deliverable}</div>
+                  </div>
+                  <div class="rounded-lg border border-emerald-500/25 bg-emerald-500/5 px-3 py-2">
+                    <div class="text-[10px] text-ink-muted">通过标准</div>
+                    <div class="mt-0.5 text-xs text-ink-secondary">{p.gate}</div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <!-- 06 效果 -->
+        <section>
+          <SectionHeader
+            no="06"
+            title="可以达到什么效果"
+            desc="目标数字、天花板，以及这些数字在什么条件下不成立。"
+          />
+          <div class="mt-5 space-y-4">
+            <div class="grid gap-3 sm:grid-cols-2">
+              {opp.outcome.targets.map((t) => (
+                <div class="rounded-xl border border-border bg-surface p-4">
+                  <div class="text-[11px] text-ink-muted">{t.metric}</div>
+                  <div class="mt-1 font-mono text-lg font-semibold tabular-nums text-ink">
+                    {t.value}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div class="rounded-xl border border-border bg-surface p-5">
+              <h3 class="text-sm font-semibold text-ink">天花板</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-secondary">{opp.outcome.ceiling}</p>
+            </div>
+
+            <div class="rounded-xl border border-rose-400/25 bg-rose-400/5 p-5">
+              <h3 class="text-sm font-semibold text-ink">现实边界</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-secondary">{opp.outcome.reality}</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 07 风险 -->
+        <section>
+          <SectionHeader
+            no="07"
+            title="风险与失效条件"
+            desc="每条风险都配一个应对方式；没有应对的风险说明判断还不成熟。"
+          />
+          <div class="mt-5 space-y-3">
+            {opp.risks.map((r, i) => (
+              <div class="rounded-xl border border-border bg-surface p-4">
+                <div class="flex gap-2.5">
+                  <span class="mt-0.5 font-mono text-xs text-amber-500">R{i + 1}</span>
+                  <div class="min-w-0">
+                    <p class="text-sm font-medium text-ink">{r.risk}</p>
+                    <p class="mt-1.5 text-xs leading-relaxed text-ink-secondary">
+                      <span class="text-emerald-500">应对：</span>
+                      {r.mitigation}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <!-- 右侧栏 -->
+      <aside class="space-y-4 lg:sticky lg:top-24 lg:self-start">
+        <div class="rounded-xl border border-border bg-surface p-5">
+          <h2 class="text-sm font-semibold text-ink">分项依据</h2>
+          <ul class="mt-3 space-y-3">
+            {OPPORTUNITY_WEIGHTS.map((w) => (
+              <li>
+                <div class="flex items-baseline justify-between gap-2">
+                  <span class="text-xs font-medium text-ink">{w.label}</span>
+                  <span class="font-mono text-xs tabular-nums text-ink-secondary">
+                    {opp.scores[w.key]}
+                    <span class="ml-1 text-[10px] text-ink-muted">×{Math.round(w.weight * 100)}%</span>
+                  </span>
+                </div>
+                <p class="mt-1 text-[11px] leading-relaxed text-ink-muted">{opp.scoreBasis[w.key]}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="rounded-xl border border-border bg-surface p-5">
+          <h2 class="text-sm font-semibold text-ink">证据来源</h2>
+          <ul class="mt-3 space-y-2">
+            {opp.banners.map((b) => (
+              <li class="flex items-center justify-between">
+                <a href={`/${b.board === "github" ? "github" : b.board}`} class="text-xs text-ink-secondary hover:text-ink">
+                  {b.label}
+                </a>
+                <span class="font-mono text-xs tabular-nums text-ink-muted">{b.count}</span>
+              </li>
+            ))}
+          </ul>
+          <p class="mt-3 border-t border-border pt-3 text-[11px] leading-relaxed text-ink-muted">
+            证据数值来自榜单快照，会随采集刷新；人工判断只写逻辑，不写死数字。
+          </p>
+        </div>
+
+        <div class="rounded-xl border border-border bg-surface p-5">
+          <h2 class="text-sm font-semibold text-ink">榜单原则</h2>
+          <ul class="mt-2 space-y-1.5 text-[11px] leading-relaxed text-ink-muted">
+            <li>· 一个人 6 周内能做出收费版</li>
+            <li>· 至少跨 3 个榜单，且必须有趋势词</li>
+            <li>· 每条证据可回查，找不到即中断构建</li>
+            <li>· 可执行性低于 60、自助变现低于 50 不进榜</li>
+            <li>· 必须写明效果不成立的条件</li>
+          </ul>
+          <a href="/opportunity#policy" class="mt-3 inline-block text-xs font-medium text-primary hover:underline">
+            查看完整原则 →
+          </a>
+        </div>
+
+        <div class="grid gap-2">
+          {prev && (
+            <a href={`/opportunity/${prev.slug}`} class="rounded-xl border border-border bg-surface p-3 transition hover:border-primary/40">
+              <div class="text-[10px] text-ink-muted">上一条 · NO.{String(prev.rank).padStart(2, "0")}</div>
+              <div class="mt-0.5 truncate text-xs font-medium text-ink">{prev.title}</div>
+            </a>
+          )}
+          {next && (
+            <a href={`/opportunity/${next.slug}`} class="rounded-xl border border-border bg-surface p-3 transition hover:border-primary/40">
+              <div class="text-[10px] text-ink-muted">下一条 · NO.{String(next.rank).padStart(2, "0")}</div>
+              <div class="mt-0.5 truncate text-xs font-medium text-ink">{next.title}</div>
+            </a>
+          )}
+        </div>
+
+        <div class="rounded-xl border border-border bg-surface p-5">
+          <h2 class="text-sm font-semibold text-ink">对照榜单</h2>
+          <div class="mt-3 grid grid-cols-2 gap-2">
+            <a href="/trends" class="rounded-lg border border-border px-2 py-1.5 text-[11px] text-ink-secondary hover:border-primary/40 hover:text-ink">趋势词</a>
+            <a href="/tools" class="rounded-lg border border-border px-2 py-1.5 text-[11px] text-ink-secondary hover:border-primary/40 hover:text-ink">AI 工具</a>
+            <a href="/github" class="rounded-lg border border-border px-2 py-1.5 text-[11px] text-ink-secondary hover:border-primary/40 hover:text-ink">开源仓库</a>
+            <a href="/models" class="rounded-lg border border-border px-2 py-1.5 text-[11px] text-ink-secondary hover:border-primary/40 hover:text-ink">AI 模型</a>
+          </div>
+        </div>
+
+        <a
+          href="/opportunity"
+          class="block rounded-xl border border-border bg-surface p-3 text-center text-xs text-ink-secondary transition hover:border-primary/40 hover:text-ink"
+        >
+          ← 返回机会榜
+        </a>
+      </aside>
+    </div>
+  </div>
+
+  <!-- 我在做：提交进展 -->
+  <dialog
+    data-doing-dialog
+    class="fixed inset-0 m-auto max-h-[85vh] w-[min(36rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-border bg-surface p-0 text-ink backdrop:bg-black/50"
+  >
+    <form data-doing-form class="p-5">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h2 data-doing-title class="text-base font-semibold text-ink">标记我在做</h2>
+          <p class="mt-1 text-[11px] leading-relaxed text-ink-muted">
+            留言会公开显示你的头像和名字。随时可以再回来更新，之前的记录都保留。
+          </p>
+        </div>
+        <button type="button" data-doing-close class="text-ink-muted transition hover:text-ink" aria-label="关闭">✕</button>
+      </div>
+
+      <div class="mt-4" data-doing-status>
+        <div class="text-[11px] text-ink-muted">进展到哪一步</div>
+        <div class="mt-2 flex flex-wrap gap-2">
+          <button type="button" data-status="doing" class="rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">在做</button>
+          <button type="button" data-status="shipped" class="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] text-ink-secondary transition hover:border-primary/40 hover:text-ink">已上线</button>
+          <button type="button" data-status="paused" class="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] text-ink-secondary transition hover:border-primary/40 hover:text-ink">暂停了</button>
+          <button type="button" data-status="dropped" class="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] text-ink-secondary transition hover:border-primary/40 hover:text-ink">放弃了</button>
+        </div>
+      </div>
+
+      <label class="mt-4 block">
+        <span class="text-[11px] text-ink-muted">说两句（可留空）</span>
+        <textarea
+          data-doing-text
+          rows="4"
+          maxlength="280"
+          placeholder="比如：第 3 周，已经做出能收费的版本，第一笔来自一个做播客的朋友；坑是转写准确率在方言上掉得厉害。"
+          class="mt-1.5 w-full resize-none rounded-xl border border-border bg-canvas/60 px-3 py-2 text-sm leading-relaxed text-ink outline-none transition placeholder:text-ink-muted/60 focus:border-primary/50"
+        ></textarea>
+      </label>
+      <div class="mt-1 flex items-center justify-between text-[10px] text-ink-muted">
+        <span data-doing-error class="hidden text-rose-500"></span>
+        <span data-doing-counter class="ml-auto">0 / 280</span>
+      </div>
+
+      <div data-doing-history class="mt-3 hidden max-h-48 space-y-2 overflow-y-auto"></div>
+
+      <div class="mt-4 flex items-center justify-between gap-3">
+        <button type="button" data-doing-leave class="hidden text-[11px] text-ink-muted transition hover:text-rose-500">
+          退出（删除我的留言）
+        </button>
+        <div class="ml-auto flex items-center gap-2">
+          <button type="button" data-doing-close class="rounded-lg border border-border px-3 py-1.5 text-xs text-ink-secondary transition hover:border-primary/40 hover:text-ink">
+            取消
+          </button>
+          <button
+            type="submit"
+            data-doing-submit
+            class="rounded-lg border border-primary/30 bg-primary px-3.5 py-1.5 text-xs font-medium text-canvas transition hover:bg-primary/90 disabled:opacity-60"
+          >
+            发布
+          </button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 我在做：某人的留言 -->
+  <dialog
+    data-doing-viewer
+    class="fixed inset-0 m-auto max-h-[85vh] w-[min(34rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-border bg-surface p-0 text-ink backdrop:bg-black/50"
+  >
+    <div class="p-5">
+      <div class="flex items-start justify-between gap-4">
+        <div data-viewer-head class="flex items-center gap-3"></div>
+        <button type="button" data-viewer-close class="text-ink-muted transition hover:text-ink" aria-label="关闭">✕</button>
+      </div>
+      <div data-viewer-body class="mt-4 max-h-[60vh] overflow-y-auto"></div>
+    </div>
+  </dialog>
+
+  <script>
+    import { initDoing } from "../../scripts/doing";
+    initDoing();
+
+    document.querySelectorAll<HTMLButtonElement>("[data-doing-close]").forEach((btn) => {
+      btn.addEventListener("click", () => btn.closest("dialog")?.close());
+    });
+    document.querySelector<HTMLButtonElement>("[data-viewer-close]")?.addEventListener("click", () => {
+      document.querySelector<HTMLDialogElement>("[data-doing-viewer]")?.close();
+    });
+  </script>
+</Base>
