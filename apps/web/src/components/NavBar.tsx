@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AuthButton } from "./AuthButton";
+import { MobileNav } from "./MobileNav";
 import { ThemeToggle } from "./ThemeToggle";
 
 const channels: { label: string; href: string; soon?: boolean }[] = [
@@ -42,7 +43,8 @@ export function NavBar() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <MobileNav items={channels.filter((c) => !c.soon)} />
           <ThemeToggle />
           <AuthButton />
           <Link

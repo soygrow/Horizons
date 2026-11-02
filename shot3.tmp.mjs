@@ -1,0 +1,13 @@
+import { chromium } from "playwright";
+const b = await chromium.launch();
+const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
+await p.goto("http://localhost:4351/opportunity", { waitUntil: "load" });
+await p.waitForTimeout(900);
+await p.screenshot({ path: "/tmp/n-idx-top.png", clip: { x: 0, y: 0, width: 1440, height: 900 } });
+await p.evaluate(() => document.getElementById("policy").scrollIntoView());
+await p.waitForTimeout(300);
+await p.screenshot({ path: "/tmp/n-idx-policy.png", clip: { x: 0, y: 0, width: 1440, height: 900 } });
+await p.goto("http://localhost:4351/opportunity/video-to-publishable-notes", { waitUntil: "load" });
+await p.waitForTimeout(900);
+await p.screenshot({ path: "/tmp/n-det-top.png", clip: { x: 0, y: 0, width: 1440, height: 900 } });
+await b.close();
