@@ -118,8 +118,9 @@ if [ "$BUILD" = "1" ]; then
   fi
   ok "数据产物已生成"
 
-  log "全量重建 horizons-site（清空 dist 后 astro build）"
-  rm -rf "$DIST"
+  log "全量重建 horizons-site（astro build，其自身会清空 outDir）"
+  # 不手动 rm -rf dist：astro build 会自行清空 outDir（已验证），
+  # 且环境对一次性删除数千文件的命令有拦截，交给 astro 更稳。
   if ! pnpm --filter @horizons/site run build >>"$BUILD_LOG" 2>&1; then
     tail -60 "$BUILD_LOG" >&2
     die "构建失败，完整日志：$BUILD_LOG"
@@ -131,16 +132,22 @@ else
 fi
 
 # ---------- 产物完整性断言（防止“只部署了一部分页面”） ----------
+# 频道清单与 apps/site/src/pages 对应；新增频道时同步补在这里
+CHANNELS="/ /tools /github /trends /daily /models /opportunity /opportunity/archive"
+
 log "产物完整性检查"
 require_page() {
   [ -f "$DIST/$1" ] || die "缺少页面产物：dist/$1（构建不完整）"
 }
-for p in index.html tools/index.html github/index.html trends/index.html daily/index.html 404.html; do
-  require_page "$p"
+require_page "index.html"
+require_page "404.html"
+for c in $CHANNELS; do
+  [ "$c" = "/" ] && continue
+  require_page "${c#/}/index.html"
 done
 html_count=$(find "$DIST" -name '*.html' | wc -l | tr -d ' ')
 [ "$html_count" -ge 200 ] || die "HTML 页面只有 $html_count 个，明显少于预期（详情页未生成？）"
-ok "关键页面齐全，HTML 共 $html_count 个"
+ok "关键页面齐全（$(echo $CHANNELS | wc -w | tr -d ' ') 个频道），HTML 共 $html_count 个"
 
 # ---------- 启动本地服务 ----------
 log "启动本地服务（端口 $PORT）"
@@ -171,7 +178,7 @@ check() {
   code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:$PORT$path" 2>/dev/null || true)
   if [ "$code" = "$expect" ]; then ok "$path → $code"; else warn "$path → ${code:-000}（期望 $expect）"; fail=1; fi
 }
-for p in / /tools /github /trends /daily; do check "$p" 200; done
+for p in $CHANNELS; do check "$p" 200; done
 check /local-deploy-should-not-exist 404
 
 # 404 必须是站点自定义页，不能是空响应
