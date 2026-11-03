@@ -33,6 +33,16 @@ const SYSTEM = `你是 AI 工具目录网站的资深编辑。根据用户提供
 - "segmentLabel": 6-12 字的细分赛道标签，如「AI 视频生成」「会议转写助手」。
 只输出 JSON，不要多余文本。`;
 
+/** 只翻译简介用的提示词：不动分类与赛道，避免机器重判覆盖已校准的品类 */
+const SYSTEM_DESC = `你是 AI 工具目录的中文编辑。用户给出若干工具的名称与英文简介。
+把每条英文简介翻译成中文，要求：
+- 不超过 40 字，说清「做什么」和「给谁用」；
+- 产品名 / 品牌名保持原文，不翻译；
+- 不要「该工具」「这是一款」这类冗余开头，直接说功能；
+- API、SaaS、LLM 等专业术语保留原文，不硬译；
+- 语气客观，不夸大（不写「最强」「颠覆」）。
+输出 JSON：{"items":[{"id":<原样返回的 id>,"zh":"<中文简介>"}]}，条数与输入一致，不要多余文本。`;
+
 function loadTools(): AITool[] {
   try {
     return JSON.parse(fs.readFileSync(TOOLS_PATH, "utf-8")) as AITool[];
@@ -64,6 +74,66 @@ interface LLMOut {
   segmentLabel?: string;
 }
 
+/**
+ * 批量把英文简介翻成中文。按 10 条一批请求，逐批落盘，中断后可续跑。
+ * 判定依据是「描述里有没有中文字符」，而不是 descriptionSource，
+ * 这样历史上被误标成 ai 却仍是英文的条目也能覆盖到。
+ */
+async function translateDescriptions(tools: AITool[], dry: boolean, limit: number): Promise<void> {
+  const ZH = /[\u4e00-\u9fa5]/;
+  let targets = tools.filter((t) => t.description && !ZH.test(t.description));
+  if (limit > 0) targets = targets.slice(0, limit);
+
+  if (targets.length === 0) {
+    console.log("[llm] 没有需要翻译的英文简介");
+    return;
+  }
+  console.log(`[llm] 待翻译 ${targets.length} 条${dry ? "（dry-run）" : ""}`);
+
+  const BATCH = 10;
+  let done = 0;
+  let failed = 0;
+
+  for (let i = 0; i < targets.length; i += BATCH) {
+    const chunk = targets.slice(i, i + BATCH);
+    const input = JSON.stringify(
+      chunk.map((t, idx) => ({ id: idx, name: t.name, tagline: t.description })),
+    );
+
+    try {
+      const out = await chatJSON<{ items?: Array<{ id?: number; zh?: string }> }>(
+        SYSTEM_DESC,
+        input,
+      );
+      for (const item of out.items ?? []) {
+        const idx = item.id;
+        const target = typeof idx === "number" ? chunk[idx] : undefined;
+        const zh = item.zh?.trim();
+        // 必须真的含中文，避免模型原样返回英文却被当成翻译结果
+        if (!target || !zh || !ZH.test(zh)) continue;
+        target.description = zh.slice(0, 60);
+        target.descriptionSource = "ai";
+        done++;
+      }
+    } catch (e) {
+      failed += chunk.length;
+      console.warn(
+        `[llm] 批次 ${Math.floor(i / BATCH) + 1} 失败：`,
+        e instanceof Error ? e.message.slice(0, 120) : e,
+      );
+    }
+
+    if (!dry && done > 0) saveTools(tools);
+    console.log(`[llm] 进度 ${Math.min(i + BATCH, targets.length)}/${targets.length}｜已译 ${done}`);
+    await sleep(300);
+  }
+
+  if (!dry && done > 0) saveTools(tools);
+  console.log(
+    `[llm] 翻译完成：成功 ${done}｜失败 ${failed}${dry ? "（dry-run 未写入）" : ""}`,
+  );
+}
+
 async function main(): Promise<void> {
   if (!hasLLM()) {
     console.error("[llm] 未配置 DEEPSEEK_API_KEY，请在 .env.local 填写");
@@ -72,6 +142,12 @@ async function main(): Promise<void> {
   const dry = process.argv.includes("--dry");
   const limit = parseLimit();
   const tools = loadTools();
+
+  // --desc-only：只把英文简介翻译成中文，不重判分类 / 赛道
+  if (process.argv.includes("--desc-only")) {
+    await translateDescriptions(tools, dry, limit);
+    return;
+  }
 
   let processed = 0;
   let updated = 0;

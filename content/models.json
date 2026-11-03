@@ -71,7 +71,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "与 GPT-6.1 Terra 同底模，以 reasoning.mode 设为 pro 提供服务，在复杂任务上给出更高质量回答，但成本显著更高。"
     },
     {
       "slug": "gpt-6-1-sol-pro",
@@ -121,7 +122,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "与 GPT-6.1 Sol 同底模，以 reasoning.mode 设为 pro 提供服务，在复杂任务上给出更高质量回答，但成本显著更高。"
     },
     {
       "slug": "gpt-6-1-terra",
@@ -175,7 +177,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI GPT-6.1 系列的中端模型，定价低于 GPT-6.1 Sol，适合日常 agentic、编程与写作，尤擅理解截图。"
     },
     {
       "slug": "gpt-6-1-sol",
@@ -229,7 +232,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI GPT-6 Sol 的升级版，在 GPT-6 系列中定位低于旗舰 GPT-6 Astra，适合 agentic 编程、computer use 与"
     },
     {
       "slug": "gpt-6-luna-pro",
@@ -280,7 +284,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "与 GPT-6 Luna 同底模，以 reasoning.mode 设为 pro 提供服务，在复杂任务上给出更高质量回答，但成本显著更高。"
     },
     {
       "slug": "gpt-6-luna",
@@ -335,7 +340,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI GPT-6 系列中快速、低成本的模型，定位低于 GPT-6 Sol，适合高并发与低延迟场景，如对话、分类和轻量 agentic 任务。"
     },
     {
       "slug": "gpt-6-sol-pro",
@@ -385,7 +391,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "与 GPT-6 Sol 同底模，以 reasoning.mode 设为 pro 提供服务，在复杂任务上给出更高质量回答，但成本显著更高。"
     },
     {
       "slug": "gpt-6-sol",
@@ -439,7 +446,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI GPT-6 系列中高性价比的高端模型，定位低于旗舰 GPT-6 Astra、高于快速档 GPT-6 Luna，适合高要求的专业任务。"
     },
     {
       "slug": "claude-opus-5-5",
@@ -493,7 +501,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic 的旗舰模型，接替 Claude Opus 5，面向高难度推理、编程与长周期 agentic 任务，尤擅大型代码库中的多步修改。"
     },
     {
       "slug": "grok-4-7",
@@ -543,7 +552,8 @@
           "label": "xAI 定价",
           "url": "https://docs.x.ai/docs/models"
         }
-      ]
+      ],
+      "descZh": "SpaceXAI 的旗舰模型，接替 Grok 4.6，面向编程、agentic 任务与知识工作，尤擅长时间运行的软件工程任务与自我校验。"
     },
     {
       "slug": "gpt-6-astra",
@@ -598,7 +608,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI 旗舰模型，面向高难度端到端任务，擅长高级分析、软件工程、深度研究、科研与文档创作，尤擅长周期任务。"
     },
     {
       "slug": "gpt-6-astra-pro",
@@ -649,7 +660,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "与 GPT-6 Astra 同底模，以 reasoning.mode 设为 pro 提供更高质量复杂任务响应，pro 模式消耗显著更高。"
     },
     {
       "slug": "grok-4-6",
@@ -699,7 +711,8 @@
           "label": "xAI 定价",
           "url": "https://docs.x.ai/docs/models"
         }
-      ]
+      ],
+      "descZh": "SpaceXAI 模型，在编程、知识工作与 STEM 领域具备前沿表现，后续版本为 Grok 4.7。"
     },
     {
       "slug": "claude-opus-5",
@@ -754,7 +767,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic 旗舰模型，面向高难度推理、编程与长周期智能体任务，擅长端到端软件任务、代码审查与缺陷定位、视觉分析。"
     },
     {
       "slug": "grok-4-5",
@@ -804,7 +818,8 @@
           "label": "xAI 定价",
           "url": "https://docs.x.ai/docs/models"
         }
-      ]
+      ],
+      "descZh": "SpaceXAI 模型，在编程、知识工作与 STEM 领域具备前沿表现。"
     },
     {
       "slug": "claude-opus-4-8",
@@ -859,7 +874,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic Opus 家族中能力最强的通用可用模型，支持文本、图像与文件输入并输出文本，具备推理能力与 1M token 上下文。"
     },
     {
       "slug": "grok-4-3",
@@ -909,7 +925,8 @@
           "label": "xAI 定价",
           "url": "https://docs.x.ai/docs/models"
         }
-      ]
+      ],
+      "descZh": "SpaceXAI 推理模型，接受文本与图像输入并输出文本，适用于智能体工作流、指令遵循及高事实准确性要求的应用。"
     },
     {
       "slug": "claude-opus-4-7",
@@ -964,7 +981,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic Opus 家族新一代模型，面向长时间运行的异步智能体，在 Opus 4.6 的编程与智能体能力基础上进一步提升。"
     },
     {
       "slug": "grok-4-20-multi-agent",
@@ -1014,7 +1032,8 @@
           "label": "xAI 定价",
           "url": "https://docs.x.ai/docs/models"
         }
-      ]
+      ],
+      "descZh": "SpaceXAI Grok 4.20 的变体，面向协作式智能体工作流，多个智能体并行开展深度研究、协同工具调用与信息综合。"
     },
     {
       "slug": "grok-4-20",
@@ -1064,7 +1083,8 @@
           "label": "xAI 定价",
           "url": "https://docs.x.ai/docs/models"
         }
-      ]
+      ],
+      "descZh": "SpaceXAI 推理模型，具备业界领先的速度与智能体工具调用能力，幻觉率低且严格遵循提示词。"
     },
     {
       "slug": "grok-4-20-0309-reasoning",
@@ -1110,7 +1130,8 @@
           "label": "xAI 官方定价",
           "url": "https://docs.x.ai/docs/models"
         }
-      ]
+      ],
+      "descZh": "Grok 推理版本，侧重文档密集型分析与长周期工具调用"
     },
     {
       "slug": "claude-opus-4-6",
@@ -1165,7 +1186,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic 面向编程与长周期专业任务的模型，为跨整个工作流的 agent 设计，而非单次提示"
     },
     {
       "slug": "gpt-5-6-luna-pro",
@@ -1216,7 +1238,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "与 GPT-5.6 Luna 同底模，reasoning.mode 设为 pro，复杂任务响应质量更高，但成本显著增加"
     },
     {
       "slug": "gpt-5-6-luna",
@@ -1271,7 +1294,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI GPT-5.6 系列中快速、低成本模型，适合高并发低延迟任务，如聊天、分类与轻量 agent 工作流"
     },
     {
       "slug": "gpt-5-6-terra-pro",
@@ -1321,7 +1345,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "与 GPT-5.6 Terra 同底模，reasoning.mode 设为 pro，复杂任务响应质量更高，但成本显著增加"
     },
     {
       "slug": "gpt-5-6-terra",
@@ -1375,7 +1400,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "GPT-5.6 系列均衡档模型，介于旗舰 Sol 与低成本 Luna 之间，适合日常编程、推理与 agent 任务"
     },
     {
       "slug": "gpt-5-6-sol-pro",
@@ -1425,7 +1451,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "与 GPT-5.6 Sol 同底模，reasoning.mode 设为 pro，复杂任务响应质量更高，但成本显著增加"
     },
     {
       "slug": "gpt-5-6-sol",
@@ -1479,7 +1506,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "GPT-5.6 系列旗舰模型，适合复杂推理、编程与 agent 工作流，命令行及多步编程任务表现突出"
     },
     {
       "slug": "gpt-5-6",
@@ -1525,7 +1553,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "前沿 GPT-5.6 模型，面向复杂专业工作、编程与 agent 工作流"
     },
     {
       "slug": "gpt-5-5-pro",
@@ -1580,7 +1609,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI 高能力模型，针对复杂高风险任务的深度推理与准确性优化，上下文 1M+ token（输入 922K、输出 128K）"
     },
     {
       "slug": "gpt-5-5",
@@ -1635,7 +1665,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI 的前沿模型，面向复杂专业工作负载，在 GPT-5.4 基础上强化推理、可靠性与 token 效率，支持 1M+ token 上下文。"
     },
     {
       "slug": "gpt-5-4-pro",
@@ -1690,7 +1721,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI 最先进的模型，基于 GPT-5.4 统一架构，推理能力增强，面向复杂高风险任务，支持 1M+ token 上下文（922K 输入、128K 输出）"
     },
     {
       "slug": "gpt-5-4",
@@ -1744,7 +1776,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI 最新前沿模型，将 Codex 与 GPT 系列统一为单一系统，支持 1M+ token 上下文（922K 输入、128K 输出）。"
     },
     {
       "slug": "gemini-3-1-pro-preview-customtools",
@@ -1798,7 +1831,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Gemini 3.1 Pro 的变体，优化工具选择行为，避免在存在更高效第三方工具时过度使用通用 bash 工具。"
     },
     {
       "slug": "gemini-3-1-pro-preview",
@@ -1852,7 +1886,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Google 的前沿推理模型，提升软件工程表现与 agentic 可靠性，token 使用更高效，基于多模态基础构建。"
     },
     {
       "slug": "gemini-pro-latest",
@@ -1898,7 +1933,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "以推理为先的 Gemini 预览模型，面向 agentic 编程与复杂问题求解。"
     },
     {
       "slug": "claude-opus-4-5",
@@ -1953,7 +1989,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic 的前沿推理模型，针对复杂软件工程、agentic 工作流与长时程计算机操作优化，具备较强多模态能力。"
     },
     {
       "slug": "claude-opus-4-1",
@@ -2015,7 +2052,8 @@
           "label": "Anthropic 定价",
           "url": "https://www.anthropic.com/pricing"
         }
-      ]
+      ],
+      "descZh": "Anthropic 旗舰模型的更新版本，在编程、推理与 agentic 任务上表现提升，SWE-bench Verified 得分 74.5%。"
     },
     {
       "slug": "gemini-2-5-pro",
@@ -2069,7 +2107,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Google 的先进 AI 模型，面向高级推理、编程、数学与科学任务，具备“thinking”能力以提升回答准确性。"
     },
     {
       "slug": "gemini-2-5-pro-preview",
@@ -2119,7 +2158,8 @@
           "label": "Google 定价",
           "url": "https://ai.google.dev/pricing"
         }
-      ]
+      ],
+      "descZh": "Google 的先进 AI 模型，面向高级推理、编程、数学与科学任务，具备“thinking”能力以提升回答准确性。"
     },
     {
       "slug": "claude-sonnet-5-5",
@@ -2173,7 +2213,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic 的 Sonnet 级模型，为边界清晰的日常任务设计，是 Sonnet 5 的直接升级版，擅长功能开发、修复 bug 与产出内容。"
     },
     {
       "slug": "qwen3-8-max-prime",
@@ -2223,7 +2264,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "阿里 Qwen 团队 Qwen3.8 Max 的高吞吐量变体，作为独立 SKU 以更高价格提供，支持文本、图像与视频输入。"
     },
     {
       "slug": "qwen3-8-max-0902",
@@ -2273,7 +2315,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "阿里 Qwen 团队 Qwen3.8 Max 的更新快照，2.4 万亿参数 MoE 模型，支持文本、图像、视频输入并输出文本。"
     },
     {
       "slug": "qwen3-8-max",
@@ -2319,7 +2362,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "2.4 万亿参数 MoE 旗舰模型，面向编程、专业工作、多模态理解与长程 agentic 工作流。"
     },
     {
       "slug": "claude-sonnet-5",
@@ -2373,7 +2417,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic 能力最强的 Sonnet 级模型，在编程、agent 与专业工作上达前沿水平，支持自适应思考与多档推理强度。"
     },
     {
       "slug": "qwen3-7-max",
@@ -2426,7 +2471,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "阿里 Qwen3.7 系列旗舰模型，支持文本输入输出，面向以 agent 为中心的工作负载，擅长编程、办公与生产力任务。"
     },
     {
       "slug": "grok-4-20-0309-non-reasoning",
@@ -2471,7 +2517,8 @@
           "label": "xAI 官方定价",
           "url": "https://docs.x.ai/docs/models"
         }
-      ]
+      ],
+      "descZh": "Grok 模型，面向 agentic 工具调用、推理、编程与实时辅助。"
     },
     {
       "slug": "gpt-5-3-codex",
@@ -2525,7 +2572,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI 最先进的 agentic 编程模型，融合 GPT-5.2-Codex 的前沿软件工程能力与 GPT-5.2 的推理及专业知识，取得 SOTA 结果"
     },
     {
       "slug": "claude-sonnet-4-6",
@@ -2579,7 +2627,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic 迄今最强的 Sonnet 级模型，在编程、agent 与专业工作上达前沿水平，擅长迭代开发、复杂代码库导航与端到端项目管理。"
     },
     {
       "slug": "gpt-5-3-codex-spark",
@@ -2623,7 +2672,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "面向编程优化的 GPT 模型，用于代码仓库修改、审查与 agentic 软件工作。"
     },
     {
       "slug": "gpt-5-2-codex",
@@ -2673,7 +2723,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "GPT-5.1-Codex 的升级版，针对软件工程与编码工作流优化，支持交互式开发和长时间独立执行复杂工程任务。"
     },
     {
       "slug": "gpt-5-2-pro",
@@ -2728,7 +2779,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI 的高级模型，在 agentic 编码与长上下文性能上较 GPT-5 Pro 显著提升，擅长需要逐步推理的复杂任务。"
     },
     {
       "slug": "gpt-5-2",
@@ -2782,7 +2834,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "GPT-5 系列前沿模型，相比 GPT-5.1 增强 agentic 与长上下文能力，采用自适应推理动态分配算力，响应迅速。"
     },
     {
       "slug": "gpt-5-1-codex-max",
@@ -2832,7 +2885,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "OpenAI 的 agentic 编码模型，面向长时间、高上下文的软件开发任务，基于更新版 5.1 推理栈训练。"
     },
     {
       "slug": "gpt-5-1",
@@ -2886,7 +2940,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "GPT-5 系列前沿模型，相比 GPT-5 提升通用推理与指令遵循能力，对话风格更自然，采用自适应推理。"
     },
     {
       "slug": "gpt-5-1-codex",
@@ -2936,7 +2991,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "GPT-5.1 的专用版本，针对软件工程与编码工作流优化，支持交互式开发和长时间独立执行复杂工程任务。"
     },
     {
       "slug": "gemini-2-5-computer-use-preview-10-2025",
@@ -2981,7 +3037,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Gemini 2.5 专用模型，用于浏览器控制 agent，自动化 UI 操作任务。"
     },
     {
       "slug": "gpt-5-pro",
@@ -3036,7 +3093,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI 的高级模型，在推理、代码质量和用户体验上大幅改进，擅长需逐步推理、指令遵循与准确性的复杂任务。"
     },
     {
       "slug": "claude-sonnet-4-5",
@@ -3090,7 +3148,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic 迄今最先进的 Sonnet 模型，面向真实场景 agent 与编码工作流优化，在 SWE-bench Verified 等编码基准上达 SO"
     },
     {
       "slug": "gpt-5",
@@ -3144,7 +3203,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI 的高级模型，在推理、代码质量和用户体验上大幅改进，擅长需逐步推理、指令遵循与准确性的复杂任务。"
     },
     {
       "slug": "deepseek-v4-1-flash-1017",
@@ -3196,7 +3256,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "DeepSeek V4.1 Flash 于 2026 年 10 月 17 日的快照版本，通过 deepseek-flash API 提供，属稀疏 MoE 模型。"
     },
     {
       "slug": "deepseek-v4-1-flash",
@@ -3248,7 +3309,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "DeepSeek 的稀疏 MoE 模型，首个采用 Causal Encoder-Decoder（CED）架构，输入激活 8B、输出激活 16B 参数。"
     },
     {
       "slug": "deepseek-v4-flash-vision-exp",
@@ -3300,7 +3362,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "DeepSeek V4 Flash 0731 的实验性视觉版本，新增图像理解，文本能力（含 agent）与基座模型持平。"
     },
     {
       "slug": "deepseek-v4-pro",
@@ -3346,7 +3409,8 @@
           "label": "DeepSeek 官方定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "DeepSeek V4 Pro 快照，支持百万 token 上下文及思考与非思考两种模式。"
     },
     {
       "slug": "deepseek-v4-pro-0813",
@@ -3396,7 +3460,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "DeepSeek 的大规模 MoE 模型，为 DeepSeek V4 Pro 的 GA 正式发布版。"
     },
     {
       "slug": "deepseek-v4-flash-0731",
@@ -3447,7 +3512,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "DeepSeek 的稀疏 MoE 模型，总参数 284B、激活 13B，经重新后训练，适合编码、推理与 agent 工作流。"
     },
     {
       "slug": "deepseek-deepseek-v4-pro",
@@ -3497,7 +3563,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "DeepSeek 的大规模 MoE 模型，总参数 1.6T、激活 49B，支持 1M token 上下文，面向高级推理与编码。"
     },
     {
       "slug": "deepseek-v4-flash",
@@ -3548,7 +3615,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "DeepSeek 的效率优化 MoE 模型，总参数 284B、激活 13B，支持 1M token 上下文，侧重快速推理。"
     },
     {
       "slug": "kimi-k2-thinking",
@@ -3598,7 +3666,8 @@
           "label": "Moonshot AI 定价",
           "url": "https://platform.moonshot.cn/docs/pricing"
         }
-      ]
+      ],
+      "descZh": "Moonshot AI 迄今最先进的开放推理模型，将 K2 系列扩展至 agent 与长程推理，基于万亿参数 MoE 架构。"
     },
     {
       "slug": "glm-5-3-prime",
@@ -3648,7 +3717,8 @@
           "label": "Z.ai 定价",
           "url": "https://open.bigmodel.cn/pricing"
         }
-      ]
+      ],
+      "descZh": "Z.ai GLM-5.3 的高速变体，继承完整能力，经推理加速实现 1.5–2 倍输出吞吐，支持文本输入输出与 1M token 上下文。"
     },
     {
       "slug": "glm-5-3-flashx",
@@ -3704,7 +3774,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "Z.ai GLM-5.3-Flash 的高速变体，原生多模态，推理速度最高 200 tokens/s，采用混合稀疏与线性注意力架构。"
     },
     {
       "slug": "glm-5-3-flash",
@@ -3760,7 +3831,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "Z.ai 原生多模态模型，适合高效编码与长程 agent 任务，混合稀疏与线性注意力架构保持长上下文准确性。"
     },
     {
       "slug": "glm-5-3",
@@ -3815,7 +3887,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "Z.ai 大规模推理模型，面向复杂软件工程与长程 agent 任务，支持文本输入输出，上下文窗口 1M tokens。"
     },
     {
       "slug": "glm-5-2",
@@ -3870,7 +3943,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "Z.ai 大规模推理模型，支持文本输入输出，上下文窗口 1M tokens，适合长程 agent 工作流与项目级软件工程。"
     },
     {
       "slug": "gpt-5-2-chat",
@@ -3917,7 +3991,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "5.2 系列中快速轻量的成员，面向低延迟对话优化，保留较强通用智能，通过自适应推理按需思考。"
     },
     {
       "slug": "deepseek-v3-2",
@@ -3967,7 +4042,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "兼顾高计算效率与强推理、agent 工具调用能力的大语言模型，引入细粒度稀疏注意力机制 DeepSeek Sparse Attention（DSA）。"
     },
     {
       "slug": "deepseek-v3-2-exp",
@@ -4017,7 +4093,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "DeepSeek 发布的实验性大语言模型，介于 V3.1 与后续架构之间，引入细粒度稀疏注意力机制 DeepSeek Sparse Attention（DSA）"
     },
     {
       "slug": "glm-5-1",
@@ -4071,7 +4148,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "编码能力大幅提升，长程任务处理增益显著，可独立持续工作，不再局限于分钟级交互。"
     },
     {
       "slug": "glm-5v-turbo",
@@ -4126,7 +4204,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "Z.ai 首个原生多模态 agent 基础模型，面向视觉编码与 agent 任务，原生处理图像、视频和文本，擅长长程规划与复杂编码。"
     },
     {
       "slug": "glm-5-turbo",
@@ -4180,7 +4259,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.z.ai/guides/overview/pricing"
         }
-      ]
+      ],
+      "descZh": "Z.ai 新模型，面向快速推理与 OpenClaw 等 agent 场景的强劲表现，针对真实 agent 工作流深度优化。"
     },
     {
       "slug": "glm-5",
@@ -4234,7 +4314,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "Z.ai 旗舰开源基础模型，面向复杂系统设计与长周期 agent 工作流，在大规模编程任务上具备生产级表现。"
     },
     {
       "slug": "minimax-m3-1-flash",
@@ -4290,7 +4371,8 @@
           "label": "MiniMax 官方定价",
           "url": "https://platform.minimax.io/docs/guides/quickstart"
         }
-      ]
+      ],
+      "descZh": "MiniMax 多模态模型，相比 M3 在多项基准显著提升，尤其擅长复杂 agent 任务、编程与网络安全。"
     },
     {
       "slug": "minimax-m3",
@@ -4346,7 +4428,8 @@
           "label": "MiniMax 官方定价",
           "url": "https://platform.minimax.io/docs/guides/quickstart"
         }
-      ]
+      ],
+      "descZh": "MiniMax 多模态基础模型，支持文本、图像、视频输入并输出文本，1M token 上下文，适合长周期 agent 与编程任务。"
     },
     {
       "slug": "kimi-k2-7-code",
@@ -4401,7 +4484,8 @@
           "label": "Moonshot AI 官方定价",
           "url": "https://platform.moonshot.ai/docs/api/chat"
         }
-      ]
+      ],
+      "descZh": "Moonshot AI Kimi K2 系列中专注编程的模型，可在长上下文中可靠完成端到端编程任务，采用原生多模态 MoE 架构。"
     },
     {
       "slug": "kimi-k2-7-code-highspeed",
@@ -4448,7 +4532,8 @@
           "label": "Moonshot AI 官方定价",
           "url": "https://platform.moonshot.ai/docs/api/chat"
         }
-      ]
+      ],
+      "descZh": "专注编程的 Kimi 模型，在长周期仓库级任务上更强，减少过度思考。"
     },
     {
       "slug": "kimi-k2-6",
@@ -4503,7 +4588,8 @@
           "label": "Moonshot AI 官方定价",
           "url": "https://platform.moonshot.ai/docs/api/chat"
         }
-      ]
+      ],
+      "descZh": "Moonshot AI 新一代多模态模型，面向长周期编程、编程驱动的 UI/UX 生成与多 agent 编排，可处理 Python、Rust、Go 端到端编程任"
     },
     {
       "slug": "minimax-m2-7",
@@ -4554,7 +4640,8 @@
           "label": "MiniMax 定价",
           "url": "https://www.minimaxi.com/price"
         }
-      ]
+      ],
+      "descZh": "面向自主、真实场景生产力与持续进化的大语言模型，通过多 agent 集成先进 agent 能力。"
     },
     {
       "slug": "minimax-m2-5",
@@ -4605,7 +4692,8 @@
           "label": "MiniMax 定价",
           "url": "https://www.minimaxi.com/price"
         }
-      ]
+      ],
+      "descZh": "面向真实生产力的 SOTA 大语言模型，在多样复杂数字工作环境中训练，延续 M2.1 的编程专长。"
     },
     {
       "slug": "kimi-k2-5",
@@ -4657,7 +4745,8 @@
           "label": "Moonshot AI 定价",
           "url": "https://platform.moonshot.cn/docs/pricing"
         }
-      ]
+      ],
+      "descZh": "Moonshot AI 原生多模态模型，具备 SOTA 视觉编程能力与自主 agent 集群范式，基于 Kimi K2 继续预训练约 15T 混合数据。"
     },
     {
       "slug": "minimax-m2-1",
@@ -4708,7 +4797,8 @@
           "label": "MiniMax 定价",
           "url": "https://www.minimaxi.com/price"
         }
-      ]
+      ],
+      "descZh": "轻量级 SOTA 大语言模型，仅 10B 激活参数，专为编程、agent 工作流与现代应用开发优化。"
     },
     {
       "slug": "minimax-m2",
@@ -4759,7 +4849,8 @@
           "label": "MiniMax 定价",
           "url": "https://www.minimaxi.com/price"
         }
-      ]
+      ],
+      "descZh": "紧凑高效的大语言模型，激活参数 10B（总参数 230B），面向端到端编码与 agentic 工作流，兼顾通用推理。"
     },
     {
       "slug": "qwen3-vl-30b-a3b-thinking",
@@ -4811,7 +4902,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "多模态模型，统一文本生成与图像、视频理解；Thinking 版本强化 STEM、数学及复杂任务推理。"
     },
     {
       "slug": "qwen3-235b-a22b-thinking-2507",
@@ -4861,7 +4953,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "高性能开源 MoE 语言模型，235B 总参数每步激活 22B，面向复杂推理，原生支持 262,144 上下文。"
     },
     {
       "slug": "o3-pro",
@@ -4916,7 +5009,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "o 系列经强化学习训练，先思考再作答；o3-pro 投入更多算力进行更深推理，输出更稳定。"
     },
     {
       "slug": "o3",
@@ -4970,7 +5064,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "综合能力均衡的模型，在数学、科学、编码与视觉推理上表现突出，擅长技术写作与指令遵循。"
     },
     {
       "slug": "mistral-large-4-0",
@@ -5025,7 +5120,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "Mistral AI 的前沿多模态模型（文本与图像输入），面向推理、编码与 agentic 任务，支持 1M token 上下文。"
     },
     {
       "slug": "mistral-large-4-0-8",
@@ -5071,7 +5167,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "Mistral 的 1T 参数多模态 MoE 模型，面向推理、编码与 agentic 任务。"
     },
     {
       "slug": "qwen3-7-plus",
@@ -5126,7 +5223,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "阿里 Qwen3.7 系列的高性价比模型，支持文本与图像输入、文本输出，在系列文本能力上全面升级。"
     },
     {
       "slug": "qwen3-5-plus-20260420",
@@ -5177,7 +5275,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "阿里大规模多模态语言模型，接受文本、图像与视频输入并输出文本，上下文窗口 1M token。"
     },
     {
       "slug": "qwen3-6-plus",
@@ -5232,7 +5331,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "采用线性注意力与稀疏 MoE 路由的混合架构，扩展性强、推理性能高，较 3.5 系列进一步提升。"
     },
     {
       "slug": "qwen3-5-plus-02-15",
@@ -5283,7 +5383,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen3.5 原生视觉语言系列 Plus 模型，采用线性注意力与稀疏 MoE 结合的混合架构，推理效率更高。"
     },
     {
       "slug": "qwen3-5-plus",
@@ -5330,7 +5431,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 视觉语言模型，侧重视觉推理、文档理解与 agent 任务。"
     },
     {
       "slug": "deepseek-r1-0528",
@@ -5380,7 +5482,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "DeepSeek R1 的 5 月 28 日更新版，性能与 OpenAI o1 相当，开源且推理 token 完全公开，671B 参数、37B 激活。"
     },
     {
       "slug": "minimax-m2-her",
@@ -5428,7 +5531,8 @@
           "label": "MiniMax 定价",
           "url": "https://www.minimaxi.com/price"
         }
-      ]
+      ],
+      "descZh": "MiniMax 对话优先大语言模型，面向沉浸式角色扮演与多轮对话，保持语气与人设一致。"
     },
     {
       "slug": "qwen3-vl-235b-a22b-instruct",
@@ -5480,7 +5584,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen3-VL 开源多模态模型，统一文本生成与图像、视频视觉理解，面向通用视觉语言任务。"
     },
     {
       "slug": "qwen3-vl-plus",
@@ -5527,7 +5632,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 视觉语言模型，侧重视觉推理、文档理解与 agent 任务。"
     },
     {
       "slug": "kimi-k2-0905",
@@ -5577,7 +5683,8 @@
           "label": "Moonshot AI 定价",
           "url": "https://platform.moonshot.cn/docs/pricing"
         }
-      ]
+      ],
+      "descZh": "Kimi K2 0711 的 9 月更新版，Moonshot AI 开发的大规模 MoE 语言模型，总参数 1 万亿、激活 32B。"
     },
     {
       "slug": "qwen3-235b-a22b-2507",
@@ -5628,7 +5735,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen3 架构的多语言指令微调 MoE 语言模型，每次前向 22B 激活参数，面向通用文本生成。"
     },
     {
       "slug": "kimi-k2",
@@ -5676,7 +5784,8 @@
           "label": "Moonshot AI 定价",
           "url": "https://platform.moonshot.cn/docs/pricing"
         }
-      ]
+      ],
+      "descZh": "Moonshot AI 开发的大规模 MoE 语言模型，总参数 1 万亿、每次前向激活 32B，面向指令任务优化。"
     },
     {
       "slug": "gemini-3-8-flash",
@@ -5730,7 +5839,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Google 的 Flash 模型，在软件工程、agent 任务与多步推理上较 3.7 Flash 明显提升。"
     },
     {
       "slug": "gemini-3-7-flash",
@@ -5784,7 +5894,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Google 多模态模型，面向快速 agentic 工作流、编程与复杂多步推理，强调响应速度与多步任务可靠性。"
     },
     {
       "slug": "gemini-flash-latest",
@@ -5830,7 +5941,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "高效 Gemini 模型，侧重 agentic 工作流、编程与多模态推理。"
     },
     {
       "slug": "gemini-3-6-flash",
@@ -5884,7 +5996,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Google 高效模型，面向编程、agentic 工作流及 Web 与应用开发，输出更精炼、减少多余改动。"
     },
     {
       "slug": "gemini-3-5-flash",
@@ -5938,7 +6051,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Google 高效多模态模型，以 Flash 级成本与速度提供接近 Pro 的编程和推理，优化并行 agentic 执行。"
     },
     {
       "slug": "gemini-3-flash-preview",
@@ -5993,7 +6107,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "高速高性价比思考模型，面向 agentic 工作流、多轮对话与编程辅助，推理与工具调用接近 Pro 水平。"
     },
     {
       "slug": "deepseek-v3-1-terminus",
@@ -6043,7 +6158,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "DeepSeek V3.1 的更新版，保留原有能力并修复语言一致性、agent 能力等用户反馈问题。"
     },
     {
       "slug": "deepseek-chat-v3-1",
@@ -6093,7 +6209,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "671B 参数、37B 激活的混合推理大模型，经提示模板支持思考与非思考模式，扩展长上下文能力。"
     },
     {
       "slug": "gemini-2-5-flash",
@@ -6148,7 +6265,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Google 主力模型，面向高级推理、编程、数学与科学任务，内置思考能力以提升回答质量。"
     },
     {
       "slug": "llama-4-maverick",
@@ -6200,7 +6318,8 @@
           "label": "Meta 定价",
           "url": "https://www.llama.com/"
         }
-      ]
+      ],
+      "descZh": "Meta 多模态语言模型，采用 128 专家 MoE 架构，每轮前向 17B 激活参数，容量高。"
     },
     {
       "slug": "seed-2-1-turbo",
@@ -6251,7 +6370,8 @@
           "label": "ByteDance 官方定价",
           "url": "https://www.volcengine.com/docs/82379/1330310"
         }
-      ]
+      ],
+      "descZh": "字节跳动 Seed 多模态模型，面向编程与长程 agent 工作流，适合端到端软件交付与多步任务执行。"
     },
     {
       "slug": "doubao-seed-character-260628",
@@ -6298,7 +6418,8 @@
           "label": "ByteDance 官方定价",
           "url": "https://www.volcengine.com/docs/82379/1330310"
         }
-      ]
+      ],
+      "descZh": "ByteDance Seed 模型，针对角色驱动对话和一致的多轮对话行为优化。"
     },
     {
       "slug": "doubao-seed-evolving",
@@ -6344,7 +6465,8 @@
           "label": "ByteDance 官方定价",
           "url": "https://www.volcengine.com/docs/82379/1330310"
         }
-      ]
+      ],
+      "descZh": "ByteDance Seed 滚动更新模型，快速迭代推理、编码与 agent 能力。"
     },
     {
       "slug": "doubao-seed-2-1-pro-260628",
@@ -6390,7 +6512,8 @@
           "label": "ByteDance 官方定价",
           "url": "https://www.volcengine.com/docs/82379/1330310"
         }
-      ]
+      ],
+      "descZh": "ByteDance Seed 2.1 旗舰模型，面向复杂多模态推理、编码与 agent 任务。"
     },
     {
       "slug": "nemotron-3-ultra-550b-a55b",
@@ -6436,7 +6559,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/nvidia/nemotron-3-ultra-550b-a55b"
         }
-      ]
+      ],
+      "descZh": "NVIDIA 开放前沿推理与编排模型，550B 总参数中 55B 激活（MoE），基于 Transformer-Mamba 混合专家架构。"
     },
     {
       "slug": "gpt-5-4-mini",
@@ -6490,7 +6614,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "GPT-5.4 的轻量版，面向高吞吐负载，支持文本与图像输入，在推理、编码等方面表现良好。"
     },
     {
       "slug": "seed-2-0-lite",
@@ -6541,7 +6666,8 @@
           "label": "ByteDance 官方定价",
           "url": "https://www.volcengine.com/docs/82379/1330310"
         }
-      ]
+      ],
+      "descZh": "高性价比企业通用模型，具备较强多模态与 agent 能力，延迟更低，适合多数生产负载。"
     },
     {
       "slug": "seed-2-0-mini",
@@ -6592,7 +6718,8 @@
           "label": "ByteDance 官方定价",
           "url": "https://www.volcengine.com/docs/82379/1330310"
         }
-      ]
+      ],
+      "descZh": "面向低延迟、高并发与成本敏感场景，支持 256K 上下文、四档推理强度与多模态理解。"
     },
     {
       "slug": "glm-4-6v",
@@ -6647,7 +6774,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "面向高保真视觉理解与长上下文推理的大规模多模态模型，支持 128K tokens 与复杂版面处理。"
     },
     {
       "slug": "mistral-large-2512",
@@ -6698,7 +6826,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "Mistral 能力最强的模型，采用稀疏 MoE 架构，41B 激活参数（675B 总量），Apache 2.0 许可。"
     },
     {
       "slug": "gpt-5-1-codex-mini",
@@ -6749,7 +6878,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "GPT-5.1-Codex 的更小更快版本。"
     },
     {
       "slug": "glm-4-6",
@@ -6804,7 +6934,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "相比 GLM-4.5，上下文窗口从 128K 扩展至 200K tokens，可处理更复杂的任务。"
     },
     {
       "slug": "glm-4-5v",
@@ -6859,7 +6990,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "面向多模态 agent 应用的视觉语言基础模型，采用 MoE 架构，106B 参数、12B 激活参数，视频理解等任务达 SOTA。"
     },
     {
       "slug": "gpt-5-mini",
@@ -6914,7 +7046,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "GPT-5 的紧凑版本，面向较轻量推理任务，具备与 GPT-5 相同的指令遵循与安全调优，延迟和成本更低。"
     },
     {
       "slug": "glm-4-5",
@@ -6967,7 +7100,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "面向 agent 应用的最新旗舰基础模型，采用 MoE 架构，支持最长 128K tokens 上下文。"
     },
     {
       "slug": "glm-4-5-air",
@@ -7021,7 +7155,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "旗舰模型家族的轻量版本，同样面向 agent 应用，采用 MoE 架构，参数规模更紧凑。"
     },
     {
       "slug": "hunyuan-a13b-instruct",
@@ -7067,7 +7202,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/tencent/hunyuan-a13b-instruct"
         }
-      ]
+      ],
+      "descZh": "腾讯开发的 13B 激活参数 MoE 语言模型，总参数 80B，支持 Chain-of-Thought 推理。"
     },
     {
       "slug": "mistral-large-2407",
@@ -7117,7 +7253,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "Mistral AI 旗舰模型 Mistral Large 2（mistral-large-2407），擅长推理、代码、JSON 与对话。"
     },
     {
       "slug": "mistral-ai-mistral-large-2512",
@@ -7165,7 +7302,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "Mistral 最大的通用模型，面向企业 agent、编程与多语言推理。"
     },
     {
       "slug": "mistral-large",
@@ -7221,7 +7359,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "Mistral AI 旗舰模型 Mistral Large 2（mistral-large-2407），擅长推理、代码、JSON 与对话。"
     },
     {
       "slug": "deepseek-chat-v3-0324",
@@ -7271,7 +7410,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "685B 参数的 MoE 模型，DeepSeek 旗舰对话模型家族最新版本，接替 DeepSeek V3。"
     },
     {
       "slug": "qwen3-8-omni-flash",
@@ -7327,7 +7467,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "阿里巴巴的全模态推理模型，首个围绕 agentic 能力构建、原生支持音视频理解的 Qwen 模型，适用于音视频分析与摘要等任务。"
     },
     {
       "slug": "qwen3-8-flash",
@@ -7383,7 +7524,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "阿里巴巴的多模态推理模型，适用于编程辅助、agentic 工作流、视觉理解、文档与代码库分析、桌面交互、图表分析及长视频分析。"
     },
     {
       "slug": "qwen3-8-27b",
@@ -7435,7 +7577,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 开源权重的 27B 稠密视觉语言模型，适用于编程、专业工作流、研究、多模态交互及长时 agent 任务，支持灵活思考。"
     },
     {
       "slug": "qwen3-8-2-4t-a95b",
@@ -7485,7 +7628,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 开源权重的稀疏 MoE 模型，为 Qwen3.8 Max 的开源版本，总参数 2.4T、激活参数 95B。"
     },
     {
       "slug": "qwen3-7-flash",
@@ -7541,7 +7685,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "阿里巴巴的视觉语言推理模型，适用于多模态 agent、视觉编程、搜索与计算机交互，擅长物体识别、空间理解与真实场景任务。"
     },
     {
       "slug": "qwen3-6-flash",
@@ -7597,7 +7742,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "阿里巴巴 Qwen 3.6 系列中快速高效的语言模型，支持文本、图像、视频输入，上下文窗口 1M token，采用阶梯定价。"
     },
     {
       "slug": "qwen3-5-flash-02-23",
@@ -7653,7 +7799,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen3.5 原生视觉语言 Flash 模型，采用线性注意力与稀疏 MoE 结合的混合架构，推理效率更高。"
     },
     {
       "slug": "gpt-oss-120b",
@@ -7703,7 +7850,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "OpenAI 开源权重的 117B 参数 MoE 语言模型，面向高推理、agentic 及通用生产场景，每次前向激活 5.1B 参数。"
     },
     {
       "slug": "gpt-oss-20b",
@@ -7753,7 +7901,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "OpenAI 以 Apache 2.0 许可发布的开源权重 21B 参数模型，采用 MoE 架构，每次前向激活 3.6B 参数。"
     },
     {
       "slug": "claude-haiku-5-5",
@@ -7808,7 +7957,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic 的小型快速模型，面向高并发、成本敏感任务，如摘要、子 agent 与浏览器操作，编程与计算机使用能力较 4.5 更强。"
     },
     {
       "slug": "qwen3-6-35b-a3b",
@@ -7864,7 +8014,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "阿里云开源多模态模型，总参数 35B、每 token 激活 3B，采用混合稀疏 MoE 架构，兼顾多模态理解与推理效率。"
     },
     {
       "slug": "qwen3-6-27b",
@@ -7920,7 +8071,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "阿里 Qwen 团队 2026 年 4 月发布的 27B 稠密语言模型，支持文本、图像、视频输入，具备混合多模态能力。"
     },
     {
       "slug": "qwen3-5-9b",
@@ -7972,7 +8124,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen3.5 系列多模态基础模型，9B 参数高效架构，采用统一视觉-语言设计，侧重推理、编程与视觉理解。"
     },
     {
       "slug": "qwen3-5-35b-a3b",
@@ -8028,7 +8181,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "原生视觉-语言模型，混合架构结合线性注意力与稀疏 MoE，推理效率更高，兼顾多模态理解与生成。"
     },
     {
       "slug": "qwen3-5-27b",
@@ -8084,7 +8238,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "原生视觉-语言稠密模型，引入线性注意力机制，响应快，推理速度与性能均衡，整体能力接近同级模型。"
     },
     {
       "slug": "qwen3-5-122b-a10b",
@@ -8140,7 +8295,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "原生视觉-语言模型，混合架构结合线性注意力与稀疏 MoE，总参数 122B、激活 10B，推理效率更高。"
     },
     {
       "slug": "qwen3-5-397b-a17b",
@@ -8196,7 +8352,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "原生视觉-语言模型，混合架构结合线性注意力与稀疏 MoE，总参数 397B、激活 17B，推理效率更高。"
     },
     {
       "slug": "nova-premier-v1",
@@ -8241,7 +8398,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/amazon/nova-premier-v1"
         }
-      ]
+      ],
+      "descZh": "亚马逊多模态模型中能力最强的一款，面向复杂推理任务，并可作为蒸馏定制模型的最佳教师模型。"
     },
     {
       "slug": "qwen3-30b-a3b",
@@ -8291,7 +8449,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 系列新一代大模型，含稠密与 MoE 架构，擅长推理、多语言支持与高级 agent 任务。"
     },
     {
       "slug": "qwen3-14b",
@@ -8341,7 +8500,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen3 系列 14.8B 稠密因果语言模型，兼顾复杂推理与高效对话，支持「思考」模式无缝切换。"
     },
     {
       "slug": "qwen3-32b",
@@ -8391,7 +8551,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen3 系列 32.8B 稠密因果语言模型，兼顾复杂推理与高效对话，支持在思考模式间无缝切换。"
     },
     {
       "slug": "qwen3-vl-30b-a3b",
@@ -8438,7 +8599,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 视觉语言模型，侧重视觉推理、文档理解与智能体任务。"
     },
     {
       "slug": "step-3-7-flash",
@@ -8490,7 +8652,8 @@
           "label": "StepFun 官方定价",
           "url": "https://platform.stepfun.com/docs/zh/overview/concept"
         }
-      ]
+      ],
+      "descZh": "StepFun 高效多模态 MoE 模型，196B 语言主干配视觉编码器，原生理解图像与视频，每 token 约激活 11B 参数。"
     },
     {
       "slug": "mistral-medium-3-5",
@@ -8545,7 +8708,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "Mistral AI 的 128B 稠密指令模型，支持文本与图像输入、文本输出，面向智能体工作流、编程与复杂任务。"
     },
     {
       "slug": "mistral-medium-latest",
@@ -8592,7 +8756,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "Mistral 均衡型模型，适用于企业助手、多语言办公与工具调用。"
     },
     {
       "slug": "step-3-5-flash-2603",
@@ -8639,7 +8804,8 @@
           "label": "StepFun 官方定价",
           "url": "https://platform.stepfun.com/docs/zh/overview/concept"
         }
-      ]
+      ],
+      "descZh": "StepFun 轻量模型，侧重高效多模态推理、编程与工具调用。"
     },
     {
       "slug": "step-3-5-flash",
@@ -8690,7 +8856,8 @@
           "label": "StepFun 官方定价",
           "url": "https://platform.stepfun.com/docs/zh/overview/concept"
         }
-      ]
+      ],
+      "descZh": "StepFun 开源基础模型，采用稀疏 MoE 架构，196B 参数中每 token 仅激活 11B。"
     },
     {
       "slug": "claude-haiku-4-5",
@@ -8744,7 +8911,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic 最快、最高效的模型，以更低成本与延迟提供接近前沿的智能，性能比肩 Claude Sonnet 4。"
     },
     {
       "slug": "qwen3-coder-flash",
@@ -8799,7 +8967,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "阿里 Qwen3 Coder Plus 的快速低成本版本，专注通过工具调用实现自主编程的编码智能体模型。"
     },
     {
       "slug": "sonar-reasoning-pro",
@@ -8844,7 +9013,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/perplexity/sonar-reasoning-pro"
         }
-      ]
+      ],
+      "descZh": "基于 DeepSeek R1 的推理模型，采用思维链（CoT），面向复杂推理任务。"
     },
     {
       "slug": "qwen3-coder-next",
@@ -8895,7 +9065,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "开放权重因果语言模型，面向编码智能体与本地开发流程优化，采用稀疏 MoE 设计，总参数 80B，每次仅激活 3B。"
     },
     {
       "slug": "qwen3-vl-8b-instruct",
@@ -8947,7 +9118,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen3-VL 系列多模态视觉语言模型，支持文本、图像、视频的高保真理解与推理，采用 Interleaved-MRoPE 改进多模态融合。"
     },
     {
       "slug": "qwen3-vl-30b-a3b-instruct",
@@ -8999,7 +9171,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "多模态模型，统一强文本生成与图像、视频视觉理解，Instruct 版本优化通用多模态任务的指令遵循，擅长感知。"
     },
     {
       "slug": "qwen3-next-80b-a3b-instruct",
@@ -9050,7 +9223,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen3-Next 系列指令微调对话模型，无需“思考”轨迹即可快速稳定响应，面向推理、代码生成、知识问答与多语言等复杂任务。"
     },
     {
       "slug": "qwen3-coder-30b-a3b-instruct",
@@ -9101,7 +9275,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "30.5B 参数 MoE 模型，含 128 个专家、每次前向激活 8 个，面向高级代码生成、仓库级理解与智能体工具调用。"
     },
     {
       "slug": "qwen3-30b-a3b-instruct-2507",
@@ -9152,7 +9327,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "30.5B 参数 MoE 语言模型，每次推理激活 3.3B，以非思考模式运行，侧重高质量指令遵循与多语言理解。"
     },
     {
       "slug": "qwen3-coder",
@@ -9203,7 +9379,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 团队开发的 MoE 代码生成模型，面向函数调用、工具使用与长上下文推理等智能体编码任务优化。"
     },
     {
       "slug": "command-a-plus",
@@ -9255,7 +9432,8 @@
           "label": "Cohere 官方定价",
           "url": "https://docs.cohere.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "Cohere 旗舰模型，面向企业智能体工作流，支持文本与图像输入、192K 上下文窗口及严格 schema 的原生工具调用。"
     },
     {
       "slug": "command-a-plus-05-2026",
@@ -9301,7 +9479,8 @@
           "label": "Cohere 官方定价",
           "url": "https://docs.cohere.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "Cohere 面向多语言智能体与企业工作流的增强版命令模型。"
     },
     {
       "slug": "sonar-pro-search",
@@ -9347,7 +9526,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/perplexity/sonar-pro-search"
         }
-      ]
+      ],
+      "descZh": "Perplexity 最先进的智能体搜索系统，仅通过 OpenRouter API 提供，侧重深度推理与分析。"
     },
     {
       "slug": "command-a-reasoning-08-2025",
@@ -9393,7 +9573,8 @@
           "label": "Cohere 官方定价",
           "url": "https://docs.cohere.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "Cohere 推理模型，面向多语言企业智能体、工具调用与复杂工作流。"
     },
     {
       "slug": "mistral-medium-3-1",
@@ -9444,7 +9625,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "Mistral Medium 3 的更新版，高性能企业级语言模型，以更低运营成本提供前沿级能力。"
     },
     {
       "slug": "mistral-medium-3",
@@ -9495,7 +9677,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "高性能企业级语言模型，兼顾 SOTA 推理与多模态表现，运营成本降低 8 倍。"
     },
     {
       "slug": "qwen2-5-vl-72b-instruct",
@@ -9545,7 +9728,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 视觉语言模型，可识别花鸟鱼虫等常见物体，并分析图像中的文本、图表、图标与版面。"
     },
     {
       "slug": "qwen-2-5-coder-32b-instruct",
@@ -9592,7 +9776,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 代码专用模型系列，在代码生成与代码推理等能力上较 CodeQwen1.5 显著提升。"
     },
     {
       "slug": "qwen-2-5-72b-instruct",
@@ -9641,7 +9826,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 大语言模型，知识量显著增加，编码等能力大幅提升。"
     },
     {
       "slug": "gpt-5-4-nano",
@@ -9696,7 +9882,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "GPT-5.4 系列中最轻量、成本最低的版本，支持文本与图像输入，面向低延迟高并发任务。"
     },
     {
       "slug": "command-a-translate-08-2025",
@@ -9740,7 +9927,8 @@
           "label": "Cohere 官方定价",
           "url": "https://docs.cohere.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "翻译模型，用于多语言转换、本地化与跨语言工作流。"
     },
     {
       "slug": "gpt-5-nano",
@@ -9795,7 +9983,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "GPT-5 系列中最小最快的版本，面向开发者工具与超低延迟场景，推理深度有限。"
     },
     {
       "slug": "command-a-vision-07-2025",
@@ -9840,7 +10029,8 @@
           "label": "Cohere 官方定价",
           "url": "https://docs.cohere.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "Cohere 视觉模型，用于多语言文档分析、OCR 与图像理解。"
     },
     {
       "slug": "sonar-pro",
@@ -9885,7 +10075,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/perplexity/sonar-pro"
         }
-      ]
+      ],
+      "descZh": "面向企业的搜索增强 API，可处理多步深度查询，并支持扩展能力。"
     },
     {
       "slug": "deepseek-chat",
@@ -9934,7 +10125,8 @@
           "label": "DeepSeek 定价",
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
-      ]
+      ],
+      "descZh": "DeepSeek 团队最新模型，延续前代指令遵循与编码能力，基于近 15 万亿 token 预训练。"
     },
     {
       "slug": "llama-3-3-70b-instruct",
@@ -9983,7 +10175,8 @@
           "label": "Meta 定价",
           "url": "https://www.llama.com/"
         }
-      ]
+      ],
+      "descZh": "Meta 70B 多语言生成模型，经预训练与指令微调，支持纯文本输入输出。"
     },
     {
       "slug": "kimi-k3-1-pro",
@@ -10037,7 +10230,8 @@
           "label": "Moonshot AI 官方定价",
           "url": "https://platform.moonshot.ai/docs/api/chat"
         }
-      ]
+      ],
+      "descZh": "Moonshot AI 开源多模态推理模型，1M token 上下文，侧重长程编码与 3D 任务。"
     },
     {
       "slug": "kimi-k3-1-pro-highspeed",
@@ -10083,7 +10277,8 @@
           "label": "Moonshot AI 官方定价",
           "url": "https://platform.moonshot.ai/docs/api/chat"
         }
-      ]
+      ],
+      "descZh": "多模态 Kimi 模型，1M 上下文，常开推理，面向编码、3D 创作、金融研究与智能体任务。"
     },
     {
       "slug": "gemini-3-5-flash-lite",
@@ -10138,7 +10333,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Google 高效模型，增强智能体能力，适合在多智能体流程中执行聚焦任务的子智能体。"
     },
     {
       "slug": "gemini-flash-lite-latest",
@@ -10185,7 +10381,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "快速 Gemini 模型，兼顾多模态推理、工具调用与成本。"
     },
     {
       "slug": "kimi-k3",
@@ -10241,7 +10438,8 @@
           "label": "Moonshot AI 官方定价",
           "url": "https://platform.moonshot.ai/docs/api/chat"
         }
-      ]
+      ],
+      "descZh": "Moonshot AI 2.8T 参数开源多模态推理模型，适合复杂编码、知识工作与长程智能体流程。"
     },
     {
       "slug": "gemini-3-1-flash-lite",
@@ -10296,7 +10494,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Google 高效多模态模型，面向低延迟高吞吐场景，支持文本、图像、视频、音频与 PDF 输入。"
     },
     {
       "slug": "gemini-3-1-flash-lite-preview",
@@ -10347,7 +10546,8 @@
           "label": "Google 定价",
           "url": "https://ai.google.dev/pricing"
         }
-      ]
+      ],
+      "descZh": "Google 高效模型预览版，面向高吞吐场景，整体质量优于 Gemini 2.5 Flash Lite。"
     },
     {
       "slug": "gemini-2-5-flash-lite",
@@ -10402,7 +10602,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Gemini 2.5 系列中的轻量推理模型，针对超低延迟与成本效率优化，吞吐更高、token 生成更快。"
     },
     {
       "slug": "llama-4-scout",
@@ -10454,7 +10655,8 @@
           "label": "Meta 定价",
           "url": "https://www.llama.com/"
         }
-      ]
+      ],
+      "descZh": "Meta 开发的 MoE 语言模型，总参数 109B、激活 17B，支持原生多模态输入。"
     },
     {
       "slug": "codestral-2508",
@@ -10510,7 +10712,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "Mistral 2025 年 7 月底发布的编码语言模型，专注低延迟高频任务，如 FIM、代码纠错与测试生成。"
     },
     {
       "slug": "codestral-latest",
@@ -10559,7 +10762,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "Mistral 代码模型，用于代码补全、重构及开发者 IDE 工作流。"
     },
     {
       "slug": "minimax-01",
@@ -10611,7 +10815,8 @@
           "label": "MiniMax 定价",
           "url": "https://www.minimaxi.com/price"
         }
-      ]
+      ],
+      "descZh": "结合 MiniMax-Text-01 文本生成与 MiniMax-VL-01 图像理解，总参数 456B、每次推理激活 45.9B，支持长上下文。"
     },
     {
       "slug": "nova-pro-v1",
@@ -10657,7 +10862,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/amazon/nova-pro-v1"
         }
-      ]
+      ],
+      "descZh": "Amazon 的多模态模型，兼顾准确率、速度与成本，适用于多种任务。"
     },
     {
       "slug": "hermes-3-llama-3-1-70b",
@@ -10700,7 +10906,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/nousresearch/hermes-3-llama-3.1-70b"
         }
-      ]
+      ],
+      "descZh": "通用语言模型，较 Hermes 2 提升智能体能力、角色扮演、推理、多轮对话与长上下文连贯性。"
     },
     {
       "slug": "hermes-3-llama-3-1-405b",
@@ -10743,7 +10950,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/nousresearch/hermes-3-llama-3.1-405b"
         }
-      ]
+      ],
+      "descZh": "通用语言模型，较 Hermes 2 提升智能体能力、角色扮演、推理、多轮对话与长上下文连贯性。"
     },
     {
       "slug": "llama-3-1-70b-instruct",
@@ -10792,7 +11000,8 @@
           "label": "Meta 定价",
           "url": "https://www.llama.com/"
         }
-      ]
+      ],
+      "descZh": "Meta Llama 3.1 的 70B 指令微调版本，针对高质量对话场景优化。"
     },
     {
       "slug": "ling-3-1-flash",
@@ -10839,7 +11048,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/inclusionai/ling-3.1-flash"
         }
-      ]
+      ],
+      "descZh": "inclusionAI 的混合推理 MoE 模型，总参数 560B、激活 25B。"
     },
     {
       "slug": "inkling-small",
@@ -10891,7 +11101,8 @@
           "label": "Thinking Machines 官方定价",
           "url": "https://tinker-docs.thinkingmachines.ai/tinker/compatible-apis/anthropic/"
         }
-      ]
+      ],
+      "descZh": "Thinking Machines Lab 开源多模态 MoE 模型，276B 总参数中 12B 激活，定位为更小更高效的成员。"
     },
     {
       "slug": "devstral-2512",
@@ -10943,7 +11154,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "Mistral AI 的 SOTA 开源模型，专注 agentic 编程，123B 稠密 Transformer，支持 256K 上下文。"
     },
     {
       "slug": "ling-3-0-flash-vl",
@@ -10990,7 +11202,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/inclusionai/ling-3.0-flash-vl"
         }
-      ]
+      ],
+      "descZh": "基于 Ling 3.0 Flash（124B 总参数 / 5.5B 激活 MoE）构建，强化语言能力并新增原生视觉感知。"
     },
     {
       "slug": "ling-3-0-flash",
@@ -11037,7 +11250,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/inclusionai/ling-3.0-flash"
         }
-      ]
+      ],
+      "descZh": "124B 参数 MoE 模型，每 token 约激活 5.1B，侧重 token 效率与生产级 agentic 推理。"
     },
     {
       "slug": "inkling",
@@ -11088,7 +11302,8 @@
           "label": "Thinking Machines 官方定价",
           "url": "https://tinker-docs.thinkingmachines.ai/tinker/compatible-apis/anthropic/"
         }
-      ]
+      ],
+      "descZh": "Thinking Machines Lab 开源多模态 MoE 模型，975B 总参数中 41B 激活，面向通用推理、编程与工具调用。"
     },
     {
       "slug": "glm-4-7-flash",
@@ -11139,7 +11354,8 @@
           "label": "Z.ai 定价",
           "url": "https://open.bigmodel.cn/pricing"
         }
-      ]
+      ],
+      "descZh": "30B 级 SOTA 模型，兼顾性能与效率，针对 agentic 编程优化，强化编码与长程任务规划。"
     },
     {
       "slug": "glm-4-7-flashx",
@@ -11186,7 +11402,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "高效 GLM 模型，面向快速推理、编程与 agent 工作流。"
     },
     {
       "slug": "glm-4-7",
@@ -11241,7 +11458,8 @@
           "label": "Z.ai 官方定价",
           "url": "https://docs.bigmodel.cn/cn/guide/start/pricing"
         }
-      ]
+      ],
+      "descZh": "Z.ai 最新旗舰模型，提升编程能力与多步推理执行稳定性，改进复杂 agent 任务表现。"
     },
     {
       "slug": "gemma-3-27b-it",
@@ -11292,7 +11510,8 @@
           "label": "Google 定价",
           "url": "https://ai.google.dev/pricing"
         }
-      ]
+      ],
+      "descZh": "支持视觉语言输入与文本输出的多模态模型，上下文达 128K，覆盖 140 多种语言，数学与推理增强。"
     },
     {
       "slug": "mixtral-8x22b-instruct",
@@ -11341,7 +11560,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "Mixtral 8x22B 的官方 instruct 微调版，141B 总参数中 39B 激活，擅长数学与编程，性价比高。"
     },
     {
       "slug": "mistral-small-2603",
@@ -11397,7 +11617,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "Mistral Small 系列新一代模型，将多个旗舰模型能力整合为单一系统，具备强推理能力。"
     },
     {
       "slug": "mistral-small-latest",
@@ -11445,7 +11666,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "高效 Mistral 模型，适用于快速对话、信息抽取与生产级助手。"
     },
     {
       "slug": "sonar-deep-research",
@@ -11488,7 +11710,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/perplexity/sonar-deep-research"
         }
-      ]
+      ],
+      "descZh": "面向深度研究的模型，支持多步检索、综合与推理，可自主搜索、阅读并评估来源。"
     },
     {
       "slug": "phi-4",
@@ -11533,7 +11756,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/microsoft/phi-4"
         }
-      ]
+      ],
+      "descZh": "微软研究院 Phi-4，14B 参数，擅长复杂推理，可在内存受限或需快速响应的场景高效运行。"
     },
     {
       "slug": "reka-edge",
@@ -11581,7 +11805,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/rekaai/reka-edge"
         }
-      ]
+      ],
+      "descZh": "Reka 的 7B 高效多模态视觉语言模型，接受图像/视频与文本输入并生成文本，侧重图像理解。"
     },
     {
       "slug": "jamba-mini",
@@ -11629,7 +11854,8 @@
           "label": "AI21 Labs 官方定价",
           "url": "https://docs.ai21.com/docs/jamba-foundation-models"
         }
-      ]
+      ],
+      "descZh": "AI21 的轻量高效混合 SSM-Transformer 模型，适用于多种任务。"
     },
     {
       "slug": "jamba-large",
@@ -11675,7 +11901,8 @@
           "label": "AI21 Labs 官方定价",
           "url": "https://docs.ai21.com/docs/jamba-foundation-models"
         }
-      ]
+      ],
+      "descZh": "AI21 的混合 SSM-Transformer 长上下文模型，面向企业智能体与有据生成。"
     },
     {
       "slug": "mistral-small-3-2-24b-instruct",
@@ -11727,7 +11954,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "Mistral 24B 指令模型更新版，优化指令遵循、减少重复并改进函数调用，准确率较 3.1 提升。"
     },
     {
       "slug": "mistral-small-3-1-24b-instruct",
@@ -11778,7 +12006,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "Mistral Small 3 升级版，24B 参数，具备多模态能力，文本推理性能领先。"
     },
     {
       "slug": "reka-flash-3",
@@ -11824,7 +12053,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/rekaai/reka-flash-3"
         }
-      ]
+      ],
+      "descZh": "Reka 的 21B 通用指令微调大模型，擅长通用对话、编程、指令遵循与函数调用。"
     },
     {
       "slug": "mistral-small-24b-instruct-2501",
@@ -11872,7 +12102,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "24B 参数语言模型，针对常见 AI 任务的低延迟性能优化，Apache 2.0 许可，含预训练与指令微调版本。"
     },
     {
       "slug": "sonar",
@@ -11916,7 +12147,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/perplexity/sonar"
         }
-      ]
+      ],
+      "descZh": "轻量、低成本、快速易用的问答模型，支持引用与自定义来源，适合企业集成轻量问答功能。"
     },
     {
       "slug": "solar-mini4",
@@ -11967,7 +12199,8 @@
           "label": "Upstage 官方定价",
           "url": "https://developers.upstage.ai/docs/apis/chat"
         }
-      ]
+      ],
+      "descZh": "Upstage 紧凑低成本语言模型，35B 参数 MoE、3B 激活参数、524K 上下文，面向智能体场景。"
     },
     {
       "slug": "solar-pro4",
@@ -12018,7 +12251,8 @@
           "label": "Upstage 官方定价",
           "url": "https://developers.upstage.ai/docs/apis/chat"
         }
-      ]
+      ],
+      "descZh": "Upstage 低成本大语言模型，524K 上下文窗口，面向长周期任务与智能体工作流，擅长办公与文档处理。"
     },
     {
       "slug": "command-r7b-arabic-02-2025",
@@ -12064,7 +12298,8 @@
           "label": "Cohere 官方定价",
           "url": "https://docs.cohere.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "开放 Command R 模型，针对阿拉伯语企业聊天、RAG 与文化知识优化。"
     },
     {
       "slug": "command-r7b-12-2024",
@@ -12108,7 +12343,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/cohere/command-r7b-12-2024"
         }
-      ]
+      ],
+      "descZh": "Command R+ 的小型快速更新版，擅长 RAG、工具调用、智能体及需复杂推理的任务。"
     },
     {
       "slug": "cohere-command-r7b-12-2024",
@@ -12154,7 +12390,8 @@
           "label": "Cohere 官方定价",
           "url": "https://docs.cohere.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "Cohere 检索模型，面向长上下文聊天与企业 RAG 工作流。"
     },
     {
       "slug": "nova-lite-v1",
@@ -12202,7 +12439,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/amazon/nova-lite-v1"
         }
-      ]
+      ],
+      "descZh": "亚马逊低成本多模态模型，侧重快速处理图像、视频与文本输入并生成文本。"
     },
     {
       "slug": "command-r-08-2024",
@@ -12246,7 +12484,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/cohere/command-r-08-2024"
         }
-      ]
+      ],
+      "descZh": "Command R 更新版，提升多语言 RAG 与工具调用表现，数学、代码与推理能力更强。"
     },
     {
       "slug": "cohere-command-r-08-2024",
@@ -12292,7 +12531,8 @@
           "label": "Cohere 官方定价",
           "url": "https://docs.cohere.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "Cohere 检索模型，面向长上下文聊天与企业 RAG 工作流。"
     },
     {
       "slug": "solar-pro3",
@@ -12336,7 +12576,8 @@
           "label": "Upstage 官方定价",
           "url": "https://developers.upstage.ai/docs/apis/chat"
         }
-      ]
+      ],
+      "descZh": "面向高要求分析、编程与生产级 agent 工作流的旗舰模型"
     },
     {
       "slug": "nemotron-3-nano-30b-a3b",
@@ -12383,7 +12624,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/nvidia/nemotron-3-nano-30b-a3b"
         }
-      ]
+      ],
+      "descZh": "NVIDIA 小型语言 MoE 模型，计算效率与精度高，便于开发者构建专用 agentic AI 系统"
     },
     {
       "slug": "hermes-4-405b",
@@ -12428,7 +12670,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/nousresearch/hermes-4-405b"
         }
-      ]
+      ],
+      "descZh": "Nous Research 基于 Meta-Llama-3.1-405B 构建的大规模推理模型，引入混合推理模式，可选择内部深思"
     },
     {
       "slug": "solar-pro2",
@@ -12472,7 +12715,8 @@
           "label": "Upstage 官方定价",
           "url": "https://developers.upstage.ai/docs/apis/chat"
         }
-      ]
+      ],
+      "descZh": "面向高要求分析、编程与生产级 agent 工作流的旗舰模型"
     },
     {
       "slug": "solar-mini",
@@ -12516,7 +12760,8 @@
           "label": "Upstage 官方定价",
           "url": "https://developers.upstage.ai/docs/apis/chat"
         }
-      ]
+      ],
+      "descZh": "高效模型，侧重低延迟辅助、信息抽取与常规自动化"
     },
     {
       "slug": "granite-4-2-8b",
@@ -12562,7 +12807,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/ibm-granite/granite-4.2-8b"
         }
-      ]
+      ],
+      "descZh": "IBM 稠密推理模型，适用于数学、代码生成、多语言对话及需多步推理的 agentic 工作流，支持多档推理力度"
     },
     {
       "slug": "dolphin-mistral-24b-venice-edition",
@@ -12607,7 +12853,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/cognitivecomputations/dolphin-mistral-24b-venice-edition"
         }
-      ]
+      ],
+      "descZh": "dphn.ai 与 Venice.ai 基于 Mistral-Small-24B-Instruct-2501 微调的“无审查”指令模型"
     },
     {
       "slug": "aion-rp-llama-3-1-8b",
@@ -12650,7 +12897,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/aion-labs/aion-rp-llama-3.1-8b"
         }
-      ]
+      ],
+      "descZh": "基于 Llama-3.1-8B 微调的角色扮演模型，在 RPBench-Auto 角色评测部分排名最高"
     },
     {
       "slug": "llama-3-1-8b-instruct",
@@ -12700,7 +12948,8 @@
           "label": "Meta 定价",
           "url": "https://www.llama.com/"
         }
-      ]
+      ],
+      "descZh": "Meta Llama 3.1 系列的 8B 指令微调版本，快速高效，性能表现较强"
     },
     {
       "slug": "particle-1",
@@ -12747,7 +12996,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/particle-ai/particle-1"
         }
-      ]
+      ],
+      "descZh": "Particle AI 基于 DeepSeek V4.1 Flash 后训练的 token 高效 agentic 编程模型，适用于终端工作流、代码库修改与数据处"
     },
     {
       "slug": "beam-1-0-501b-a23b",
@@ -12794,7 +13044,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/reflection/beam-1.0-501b-a23b"
         }
-      ]
+      ],
+      "descZh": "Reflection 的开源权重推理模型，面向编程与长程 agentic 工作流，采用稀疏 MoE 架构，总参数 501B、每 token 激活 23B。"
     },
     {
       "slug": "mercury-3",
@@ -12844,7 +13095,8 @@
           "label": "Inception 官方定价",
           "url": "https://docs.inceptionlabs.ai/get-started/models"
         }
-      ]
+      ],
+      "descZh": "Inception 的扩散式语言模型，为延迟叠加的 agentic 工作流与实时应用设计，是其实验室目前能力最强的模型。"
     },
     {
       "slug": "muse-spark-open",
@@ -12895,7 +13147,8 @@
           "label": "Meta 定价",
           "url": "https://www.llama.com/"
         }
-      ]
+      ],
+      "descZh": "面向编程优化的开源权重模型，专为 agentic 编程工作流训练，首次尝试准确率更高，工具调用可靠，能深入理解代码库。"
     },
     {
       "slug": "nemotron-3-5-super-vl",
@@ -12943,7 +13196,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/nvidia/nemotron-3.5-super-vl"
         }
-      ]
+      ],
+      "descZh": "NVIDIA 的开源多模态 MoE 模型，总参数 120B、激活 12B，可处理文本、图像、文档、GUI 截图与视频。"
     },
     {
       "slug": "gemini-4-argon",
@@ -12997,7 +13251,8 @@
           "label": "Google 官方定价",
           "url": "https://ai.google.dev/gemini-api/docs/models"
         }
-      ]
+      ],
+      "descZh": "Google 的旗舰推理模型，面向复杂软件工程、数学与科学难题求解及自主多步 agent，支持跨长上下文保持信息。"
     },
     {
       "slug": "muse-wonder",
@@ -13051,7 +13306,8 @@
           "label": "Meta 官方定价",
           "url": "https://dev.meta.ai/docs"
         }
-      ]
+      ],
+      "descZh": "Meta 的前沿推理模型，面向复杂的个人与专业 agentic 任务，接受文本、图像、视频、音频与 PDF 输入并输出文本。"
     },
     {
       "slug": "step-5-preview",
@@ -13102,7 +13358,8 @@
           "label": "StepFun 官方定价",
           "url": "https://platform.stepfun.com/docs/zh/overview/concept"
         }
-      ]
+      ],
+      "descZh": "StepFun 的旗舰 agentic 模型，基于稀疏 MoE 架构（激活 27B／总参数 600B），在软件工程与专业任务中表现突出。"
     },
     {
       "slug": "longcat-2-5-preview",
@@ -13149,7 +13406,8 @@
           "label": "LongCat 官方定价",
           "url": "https://longcat.chat/platform/docs/"
         }
-      ]
+      ],
+      "descZh": "美团的多模态推理模型，面向编程与 agent 任务，具备图像理解能力，上下文窗口达 1M token。"
     },
     {
       "slug": "ember-1",
@@ -13195,7 +13453,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/fireworks/ember-1"
         }
-      ]
+      ],
+      "descZh": "Fireworks Research 基于 Kimi K3 构建的专用推理模型，推理链更短，约节省 40% token，让每个 token 更高效。"
     },
     {
       "slug": "mimo-v2-6-pro-ultraspeed",
@@ -13246,7 +13505,8 @@
           "label": "Xiaomi 官方定价",
           "url": "https://platform.xiaomimimo.com/#/docs"
         }
-      ]
+      ],
+      "descZh": "小米旗舰基础模型 MiMo-V2.6-Pro 的高速版，基于同一 1T checkpoint，质量与原版相当，速度约提升 10 倍。"
     },
     {
       "slug": "mimo-v2-6-flash",
@@ -13298,7 +13558,8 @@
           "label": "Xiaomi 官方定价",
           "url": "https://platform.xiaomimimo.com/#/docs"
         }
-      ]
+      ],
+      "descZh": "小米开源的基座模型，采用 MoE 架构，总参数 309B、每 token 激活 15B，结合混合注意力机制。"
     },
     {
       "slug": "mimo-v2-6-pro",
@@ -13350,7 +13611,8 @@
           "label": "Xiaomi 官方定价",
           "url": "https://platform.xiaomimimo.com/#/docs"
         }
-      ]
+      ],
+      "descZh": "小米的旗舰基座模型，参数规模超 1T，面向最严苛任务追求能力上限。"
     },
     {
       "slug": "fugu-ultra-v2",
@@ -13397,7 +13659,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/sakana/fugu-ultra-v2"
         }
-      ]
+      ],
+      "descZh": "Sakana AI Fugu 系列的高性能模型，并非单一模型，而是可学习的多智能体编排系统。"
     },
     {
       "slug": "fugu-max",
@@ -13443,7 +13706,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/sakana/fugu-max"
         }
-      ]
+      ],
+      "descZh": "Sakana AI Fugu 系列的高性价比模型，以可学习语言模型路由多智能体完成编排。"
     },
     {
       "slug": "muse-spark-1-3",
@@ -13497,7 +13761,8 @@
           "label": "Meta 官方定价",
           "url": "https://dev.meta.ai/docs"
         }
-      ]
+      ],
+      "descZh": "Meta 的多模态推理模型，面向长时程智能体、多智能体与编码工作流，可跨长任务追踪信息。"
     },
     {
       "slug": "muse-spark-1-3-contributor",
@@ -13544,7 +13809,8 @@
           "label": "Meta 官方定价",
           "url": "https://dev.meta.ai/docs"
         }
-      ]
+      ],
+      "descZh": "Meta 的多模态推理模型，面向长时程智能体、多智能体与编码工作流，较 1.2 提升长程协作、指令遵循与编码效率。"
     },
     {
       "slug": "claude-fable-5-1",
@@ -13599,7 +13865,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "在智能体编码、长时程智能体工作流与知识工作上全面提升，擅长长代码重构与前端视觉任务。"
     },
     {
       "slug": "hy4-preview",
@@ -13649,7 +13916,8 @@
           "label": "Tencent 官方定价",
           "url": "https://cloud.tencent.com/document/product/1823/130050"
         }
-      ]
+      ],
+      "descZh": "腾讯的 MoE 模型，总参数 770B、激活 49B，面向编码智能体、复杂工具调用与生产力任务。"
     },
     {
       "slug": "gpt-daybreak-blue-latest",
@@ -13695,7 +13963,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "旗舰通用模型的别名，内置面向防御性网络安全工作的安全防护。"
     },
     {
       "slug": "muse-spark-1-2",
@@ -13749,7 +14018,8 @@
           "label": "Meta 官方定价",
           "url": "https://dev.meta.ai/docs"
         }
-      ]
+      ],
+      "descZh": "Meta 的推理模型，面向复杂智能体任务，支持文本、图像、视频与 PDF 输入，上下文窗口 1M token。"
     },
     {
       "slug": "muse-spark-1-2-contributor",
@@ -13796,7 +14066,8 @@
           "label": "Meta 官方定价",
           "url": "https://dev.meta.ai/docs"
         }
-      ]
+      ],
+      "descZh": "Muse Spark 1.1 的编程向更新，提升代码生成、复杂调试、代码库理解与端到端开发流程能力。"
     },
     {
       "slug": "laguna-s-2-1",
@@ -13849,7 +14120,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/poolside/laguna-s-2.1"
         }
-      ]
+      ],
+      "descZh": "Poolside 的编程 agent 模型，总参数 118B、激活 8B，Terminal-Bench 2.1 得分 70.2%。"
     },
     {
       "slug": "longcat-2-0",
@@ -13896,7 +14168,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/meituan/longcat-2.0"
         }
-      ]
+      ],
+      "descZh": "美团稀疏 MoE 语言模型，总参数 1.6T、激活 48B，面向编程、仓库级修改、长程问题求解与 agent 任务。"
     },
     {
       "slug": "muse-spark-1-1",
@@ -13950,7 +14223,8 @@
           "label": "Meta 官方定价",
           "url": "https://dev.meta.ai/docs"
         }
-      ]
+      ],
+      "descZh": "Meta 的多模态推理模型，面向 agent 任务，支持文本、图像、视频、PDF 输入并输出文本，上下文窗口 1M token。"
     },
     {
       "slug": "longcat-longcat-2-0",
@@ -13997,7 +14271,8 @@
           "label": "LongCat 官方定价",
           "url": "https://longcat.chat/platform/docs/"
         }
-      ]
+      ],
+      "descZh": "美团推理模型，支持工具调用，上下文窗口 1M token。"
     },
     {
       "slug": "fugu-ultra",
@@ -14048,7 +14323,8 @@
           "label": "Sakana AI 官方定价",
           "url": "https://console.sakana.ai/models"
         }
-      ]
+      ],
+      "descZh": "Sakana AI Fugu 系列的高性能型号，采用学习式多 agent 编排系统，由语言模型负责路由调度。"
     },
     {
       "slug": "claude-fable-5",
@@ -14103,7 +14379,8 @@
           "label": "Anthropic 官方定价",
           "url": "https://docs.anthropic.com/en/docs/about-claude/models"
         }
-      ]
+      ],
+      "descZh": "Anthropic 的 Mythos 级模型，面向自主知识工作与编程，支持文本、图像、文件输入并输出文本，具备推理能力。"
     },
     {
       "slug": "mimo-v2-5-pro",
@@ -14150,7 +14427,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/xiaomi/mimo-v2.5-pro"
         }
-      ]
+      ],
+      "descZh": "小米旗舰模型，擅长通用 agent 能力、复杂软件工程与长程任务，在 ClawEval、GDPVal、SWE-bench Pro 等基准居前。"
     },
     {
       "slug": "mimo-v2-5",
@@ -14198,7 +14476,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/xiaomi/mimo-v2.5"
         }
-      ]
+      ],
+      "descZh": "小米原生全模态模型，以约一半推理成本达到 Pro 级 agent 表现，图像与视频理解优于 MiMo-V2-Omni。"
     },
     {
       "slug": "nemotron-3-super-120b-a12b",
@@ -14245,7 +14524,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/nvidia/nemotron-3-super-120b-a12b"
         }
-      ]
+      ],
+      "descZh": "NVIDIA 开源混合 MoE 模型，总参数 120B、激活 12B，基于 Mamba-Transformer 架构，面向复杂多 agent 应用。"
     },
     {
       "slug": "nova-2-lite-v1",
@@ -14292,7 +14572,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/amazon/nova-2-lite-v1"
         }
-      ]
+      ],
+      "descZh": "快速、低成本的推理模型，面向日常任务，可处理文本、图像和视频并生成文本。"
     },
     {
       "slug": "qwen-flash",
@@ -14338,7 +14619,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "高效 Qwen 模型，适用于快速对话、信息抽取及高并发批量任务。"
     },
     {
       "slug": "minimax-m1",
@@ -14386,7 +14668,8 @@
           "label": "MiniMax 定价",
           "url": "https://www.minimaxi.com/price"
         }
-      ]
+      ],
+      "descZh": "大规模开放权重推理模型，采用混合 MoE 架构与自研 lightning attention，支持长上下文与高效推理。"
     },
     {
       "slug": "qwen-plus",
@@ -14440,7 +14723,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "基于 Qwen2.5 的 131K 上下文模型，在性能、速度与成本间取得平衡。"
     },
     {
       "slug": "moondream3-preview",
@@ -14488,7 +14772,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/moondream/moondream3-preview"
         }
-      ]
+      ],
+      "descZh": "Moondream 视觉语言模型，总参数 9B、激活 2B（MoE），支持图像问答、描述、OCR 与视觉推理。"
     },
     {
       "slug": "moondream3-1-9b-a2b",
@@ -14536,7 +14821,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/moondream/moondream3.1-9b-a2b"
         }
-      ]
+      ],
+      "descZh": "Moondream 视觉语言模型，Moondream 3 Preview 的后续版本，总参数 9B、激活 2B（MoE），支持图像问答、描述、OCR 与视觉推理"
     },
     {
       "slug": "lfm-2-5-24b-a2b",
@@ -14582,7 +14868,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/liquid/lfm-2.5-24b-a2b"
         }
-      ]
+      ],
+      "descZh": "Liquid AI 的 MoE 推理模型，总参数 24B、激活 2.45B，先推理后作答，面向调用工具的智能体。"
     },
     {
       "slug": "aion-3-5-mini",
@@ -14626,7 +14913,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/aion-labs/aion-3.5-mini"
         }
-      ]
+      ],
+      "descZh": "AionLabs 基于 GLM 系列的多模型角色扮演与叙事系统，是 Aion 3.5 的低成本小尺寸版本。"
     },
     {
       "slug": "aion-3-5",
@@ -14670,7 +14958,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/aion-labs/aion-3.5"
         }
-      ]
+      ],
+      "descZh": "AionLabs 基于 GLM 系列的多模型角色扮演与叙事系统，由多个专用模型协同生成内容。"
     },
     {
       "slug": "mercury-2-5",
@@ -14720,7 +15009,8 @@
           "label": "Inception 官方定价",
           "url": "https://docs.inceptionlabs.ai/get-started/models"
         }
-      ]
+      ],
+      "descZh": "Inception 的扩散式 LLM，并行生成并优化多个 token，主打推理速度。"
     },
     {
       "slug": "nex-n2-5-mini",
@@ -14768,7 +15058,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/nex-agi/nex-n2.5-mini"
         }
-      ]
+      ],
+      "descZh": "Nex-N2.5 系列智能体模型，擅长在视觉反馈循环中进行智能体编程，可探索代码库并实现多文件改动。"
     },
     {
       "slug": "nex-n2-5-pro",
@@ -14816,7 +15107,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/nex-agi/nex-n2.5-pro"
         }
-      ]
+      ],
+      "descZh": "Nex-N2.5 系列智能体模型，擅长在视觉反馈循环中进行智能体编程，可探索代码库并实现多文件改动。"
     },
     {
       "slug": "seed-2-0-code",
@@ -14863,7 +15155,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/bytedance-seed/seed-2.0-code"
         }
-      ]
+      ],
+      "descZh": "字节跳动 Seed 推出的智能体编程模型，侧重前端开发、多语言编程及 Claude 等工具中的编程智能体工作流。"
     },
     {
       "slug": "lfm-2-5-2-6b",
@@ -14909,7 +15202,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/liquid/lfm-2.5-2.6b"
         }
-      ]
+      ],
+      "descZh": "Liquid AI 的小型推理模型，适合智能体工作流、数据抽取、RAG 与长上下文处理，不建议用于智能体编程。"
     },
     {
       "slug": "nemotron-3-5-lightning",
@@ -14956,7 +15250,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/nvidia/nemotron-3.5-lightning"
         }
-      ]
+      ],
+      "descZh": "NVIDIA 开源 MoE 模型，30B 总参数中 3B 激活，适合高吞吐智能体负载及特定专用任务。"
     },
     {
       "slug": "sakana-namazu",
@@ -15006,7 +15301,8 @@
           "label": "Sakana AI 官方定价",
           "url": "https://console.sakana.ai/models"
         }
-      ]
+      ],
+      "descZh": "Sakana AI 的日语专用推理模型，基于 Kimi K2.6 追加日语与商务场景训练，擅长日语指令跟随。"
     },
     {
       "slug": "muse-glimmer-30b",
@@ -15057,7 +15353,8 @@
           "label": "Meta 定价",
           "url": "https://www.llama.com/"
         }
-      ]
+      ],
+      "descZh": "Meta Superintelligence Labs 的稠密开源多模态模型，由 Muse Spark 蒸馏而来，针对消费级硬件上的自主智能体优化，适合长程任务"
     },
     {
       "slug": "gpt-daybreak-red-latest",
@@ -15104,7 +15401,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "面向授权漏洞研究与安全测试的高级网络安全模型别名。"
     },
     {
       "slug": "thinkingmachines-inkling-peft-262144",
@@ -15151,7 +15449,8 @@
           "label": "Thinking Machines 官方定价",
           "url": "https://tinker-docs.thinkingmachines.ai/tinker/compatible-apis/anthropic/"
         }
-      ]
+      ],
+      "descZh": "多模态 MoE 推理模型，975B 总参数、41B 激活，支持文本、图像与音频。"
     },
     {
       "slug": "aion-3-0-mini",
@@ -15193,7 +15492,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/aion-labs/aion-3.0-mini"
         }
-      ]
+      ],
+      "descZh": "AionLabs 的多模型角色扮演与叙事系统，基于 DeepSeek 系列，由多个专用模型协作生成内容。"
     },
     {
       "slug": "aion-3-0",
@@ -15235,7 +15535,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/aion-labs/aion-3.0"
         }
-      ]
+      ],
+      "descZh": "AionLabs 基于 GLM 系列的多模型角色扮演与叙事系统，由多个专用模型协作生成内容。"
     },
     {
       "slug": "hy3",
@@ -15282,7 +15583,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/tencent/hy3"
         }
-      ]
+      ],
+      "descZh": "腾讯 295B 参数 MoE 模型（21B 激活，192 专家 top-8 路由），面向推理、智能体工作流与生产环境，推理强度可配置。"
     },
     {
       "slug": "laguna-xs-2-1",
@@ -15329,7 +15631,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/poolside/laguna-xs-2.1"
         }
-      ]
+      ],
+      "descZh": "Poolside 33B-A3B 类别的最新编码智能体模型，为 Laguna XS.2 的升级版，侧重代码与智能体任务。"
     },
     {
       "slug": "grok-build-0-1",
@@ -15379,7 +15682,8 @@
           "label": "xAI 定价",
           "url": "https://docs.x.ai/docs/models"
         }
-      ]
+      ],
+      "descZh": "SpaceXAI 的快速编码模型，专为智能体软件工程工作流训练，支持文本与图像输入、文本输出，优化交互式编码。"
     },
     {
       "slug": "hy3-preview",
@@ -15426,7 +15730,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/tencent/hy3-preview"
         }
-      ]
+      ],
+      "descZh": "腾讯高效 MoE 模型，面向智能体工作流与生产使用，推理级别可配置为关闭、低、高三档。"
     },
     {
       "slug": "gemma-4-26b-a4b-it",
@@ -15478,7 +15783,8 @@
           "label": "Google 定价",
           "url": "https://ai.google.dev/pricing"
         }
-      ]
+      ],
+      "descZh": "Google DeepMind 指令微调 MoE 模型，总参数 25.2B、每 token 仅激活 3.8B，推理质量接近 31B 级模型。"
     },
     {
       "slug": "gemma-4-31b-it",
@@ -15530,7 +15836,8 @@
           "label": "Google 定价",
           "url": "https://ai.google.dev/pricing"
         }
-      ]
+      ],
+      "descZh": "Google DeepMind 30.7B 稠密多模态模型，支持文本与图像输入，256K 上下文，思考模式可配置，原生支持函数调用。"
     },
     {
       "slug": "trinity-large-thinking",
@@ -15577,7 +15884,8 @@
           "label": "Arcee AI 官方定价",
           "url": "https://docs.arcee.ai"
         }
-      ]
+      ],
+      "descZh": "面向推理优化的 398B MoE 智能体模型，具备扩展思考能力，适合长程与多轮工具调用。"
     },
     {
       "slug": "mercury-2",
@@ -15625,7 +15933,8 @@
           "label": "Inception 官方定价",
           "url": "https://docs.inceptionlabs.ai/get-started/models"
         }
-      ]
+      ],
+      "descZh": "极快的推理 LLM，首个推理扩散 LLM（dLLM），并行生成并精炼多个 token 而非逐 token 输出。"
     },
     {
       "slug": "aion-2-0",
@@ -15667,7 +15976,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/aion-labs/aion-2.0"
         }
-      ]
+      ],
+      "descZh": "基于 DeepSeek V3.2 的变体，针对沉浸式角色扮演与叙事优化，擅长在故事中引入张力、危机与冲突。"
     },
     {
       "slug": "seed-1-6-flash",
@@ -15714,7 +16024,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/bytedance-seed/seed-1.6-flash"
         }
-      ]
+      ],
+      "descZh": "ByteDance Seed 推出的超高速多模态深度思考模型，支持文本与视觉理解，256k 上下文窗口，可生成较长输出。"
     },
     {
       "slug": "seed-1-6",
@@ -15761,7 +16072,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/bytedance-seed/seed-1.6"
         }
-      ]
+      ],
+      "descZh": "ByteDance Seed 团队发布的通用模型，具备多模态能力与自适应深度思考，256K 上下文窗口。"
     },
     {
       "slug": "ring-1t",
@@ -15805,7 +16117,8 @@
           "label": "Bailing 官方定价",
           "url": "https://alipaytbox.yuque.com/sxs0ba/ling/intro"
         }
-      ]
+      ],
+      "descZh": "面向审慎分析、多步问题求解与工具调用的推理模型。"
     },
     {
       "slug": "nova-micro-v1",
@@ -15849,7 +16162,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/amazon/nova-micro-v1"
         }
-      ]
+      ],
+      "descZh": "Amazon Nova 系列中的纯文本模型，响应延迟最低、成本极低，具备较长上下文长度。"
     },
     {
       "slug": "palmyra-x5",
@@ -15892,7 +16206,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/writer/palmyra-x5"
         }
-      ]
+      ],
+      "descZh": "Writer 面向企业级 AI agent 构建与扩展打造的高级模型，在最高 100 万上下文窗口下具备高速度与高效率。"
     },
     {
       "slug": "gpt-4-1",
@@ -15945,7 +16260,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "旗舰大语言模型，侧重复杂指令遵循、真实软件工程与长上下文推理，支持 100 万 token 上下文窗口。"
     },
     {
       "slug": "gpt-4-1-mini",
@@ -16000,7 +16316,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "中等规模模型，性能可与 GPT-4o 竞争，延迟与成本显著更低，保留 100 万 token 上下文窗口。"
     },
     {
       "slug": "gpt-4-1-nano",
@@ -16051,7 +16368,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "GPT-4.1 系列中速度最快、成本最低的模型，适合低延迟任务，体积小且支持 100 万 token 上下文。"
     },
     {
       "slug": "gemma-3-4b-it",
@@ -16102,7 +16420,8 @@
           "label": "Google 定价",
           "url": "https://ai.google.dev/pricing"
         }
-      ]
+      ],
+      "descZh": "引入多模态，支持视觉语言输入与文本输出，128k 上下文窗口，理解 140 多种语言，数学、推理与对话能力提升。"
     },
     {
       "slug": "gemma-3-12b-it",
@@ -16153,7 +16472,8 @@
           "label": "Google 定价",
           "url": "https://ai.google.dev/pricing"
         }
-      ]
+      ],
+      "descZh": "引入多模态，支持视觉语言输入与文本输出，128k 上下文窗口，理解 140 多种语言，数学、推理与对话能力提升。"
     },
     {
       "slug": "qwen-long",
@@ -16198,7 +16518,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 指令模型，支持多语言对话、推理与工具调用。"
     },
     {
       "slug": "gemma-2-27b-it",
@@ -16246,7 +16567,8 @@
           "label": "Google 定价",
           "url": "https://ai.google.dev/pricing"
         }
-      ]
+      ],
+      "descZh": "Google 基于 Gemini 同源技术构建的开放模型，适用于多种任务。"
     },
     {
       "slug": "qwen-deep-research",
@@ -16290,7 +16612,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 指令模型，支持多语言对话、推理与工具调用。"
     },
     {
       "slug": "schematron-v2-turbo",
@@ -16335,7 +16658,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/inference-net/schematron-v2-turbo"
         }
-      ]
+      ],
+      "descZh": "Inference.net 的 3B 参数 HTML 转 JSON 抽取模型，侧重高吞吐批量抽取，需通过 JSON schema 提供抽取指令。"
     },
     {
       "slug": "schematron-v2-small",
@@ -16381,7 +16705,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/inference-net/schematron-v2-small"
         }
-      ]
+      ],
+      "descZh": "Inference.net 的 3B 参数 HTML 转 JSON 抽取模型，侧重复杂 schema 与长页面的抽取质量，需通过 JSON schema 提供抽"
     },
     {
       "slug": "hy-mt2-1-8b",
@@ -16427,7 +16752,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/tencent/hy-mt2-1.8b"
         }
-      ]
+      ],
+      "descZh": "腾讯 1.8B 参数轻量翻译模型，支持 33 种语言对及 5 种中文方言与少数民族语言对，支持结构化、分隔符、上下文、术语表与风格引导等工作流。"
     },
     {
       "slug": "hy-mt2-30b-a3b",
@@ -16473,7 +16799,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/tencent/hy-mt2-30b-a3b"
         }
-      ]
+      ],
+      "descZh": "腾讯 Hy-MT2 系列旗舰翻译模型，支持 33 种语言对及 5 种中文方言与少数民族语言对，支持结构化、分隔符、上下文、术语表等工作流。"
     },
     {
       "slug": "hy-mt2-7b",
@@ -16519,7 +16846,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/tencent/hy-mt2-7b"
         }
-      ]
+      ],
+      "descZh": "腾讯 7B 参数翻译模型，支持 33 种语言对及 5 种中文方言与少数民族语言对，支持结构化、分隔符、上下文、术语表与风格引导翻译。"
     },
     {
       "slug": "mercury-edit-2",
@@ -16562,7 +16890,8 @@
           "label": "Inception 官方定价",
           "url": "https://docs.inceptionlabs.ai/get-started/models"
         }
-      ]
+      ],
+      "descZh": "代码编辑 dLLM，用于自动补全（FIM）与下一步编辑建议。"
     },
     {
       "slug": "relace-search",
@@ -16606,7 +16935,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/relace/relace-search"
         }
-      ]
+      ],
+      "descZh": "并行调用 4-12 个 viewfile 与 grep 工具探索代码库，按用户请求返回相关文件，采用 agentic 方式而非 RAG。"
     },
     {
       "slug": "ministral-14b-2512",
@@ -16658,7 +16988,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "Ministral 3 系列最大模型，能力与性能接近更大的 Mistral Small 3.2 24B，高效且强大的语言模型。"
     },
     {
       "slug": "ministral-8b-2512",
@@ -16710,7 +17041,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "Ministral 3 系列均衡型号，高效的小型语言模型，具备视觉能力。"
     },
     {
       "slug": "ministral-3b-2512",
@@ -16761,7 +17093,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "Ministral 3 系列最小模型，高效的小型语言模型，具备视觉能力。"
     },
     {
       "slug": "mistral-ai-ministral-3b-2512",
@@ -16808,7 +17141,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "紧凑的开源视觉语言模型，面向边缘部署、指令遵循与工具调用。"
     },
     {
       "slug": "mistral-ai-ministral-8b-2512",
@@ -16856,7 +17190,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "紧凑的开源视觉语言模型，面向边缘部署、指令遵循与工具调用。"
     },
     {
       "slug": "mistral-ai-ministral-14b-2512",
@@ -16904,7 +17239,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "开源视觉语言模型，适合本地高效部署、指令遵循与工具调用。"
     },
     {
       "slug": "voxtral-small-24b-2507",
@@ -16955,7 +17291,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "在 Mistral Small 3 基础上增强，加入 SOTA 音频输入能力并保留顶级文本性能，擅长语音转写、翻译与音频理解。"
     },
     {
       "slug": "relace-apply-3",
@@ -16999,7 +17336,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/relace/relace-apply-3"
         }
-      ]
+      ],
+      "descZh": "专用代码补丁 LLM，可将 GPT-4o、Claude 等 AI 建议的修改直接合并进源文件。"
     },
     {
       "slug": "ui-tars-1-5-7b",
@@ -17047,7 +17385,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/bytedance/ui-tars-1.5-7b"
         }
-      ]
+      ],
+      "descZh": "字节跳动推出的多模态视觉语言智能体，针对桌面、浏览器、移动端与游戏等 GUI 环境优化，基于 UI-TARS 框架并采用强化学习。"
     },
     {
       "slug": "voxtral-small-2507",
@@ -17094,7 +17433,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "支持原生音频输入的指令模型，用于语音理解与工具调用。"
     },
     {
       "slug": "morph-v3-large",
@@ -17138,7 +17478,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/morph/morph-v3-large"
         }
-      ]
+      ],
+      "descZh": "Morph 的高精度代码编辑应用模型，约 4500 tokens/秒，精确代码转换准确率 98%，需按指定格式组织 prompt。"
     },
     {
       "slug": "morph-v3-fast",
@@ -17182,7 +17523,8 @@
           "label": "OpenRouter 模型页",
           "url": "https://openrouter.ai/morph/morph-v3-fast"
         }
-      ]
+      ],
+      "descZh": "Morph 最快的代码编辑应用模型，约 10500 tokens/秒，快速代码转换准确率 96%，需按指定格式组织 prompt。"
     },
     {
       "slug": "mistral-saba",
@@ -17233,7 +17575,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "Mistral Saba 是 24B 参数语言模型，面向中东与南亚，提供准确且贴合语境的回答，兼顾高效性能。"
     },
     {
       "slug": "qwen-mt-plus",
@@ -17275,7 +17618,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "面向多语言转换、本地化与跨语言工作流的翻译模型。"
     },
     {
       "slug": "gpt-4o-2024-11-20",
@@ -17326,7 +17670,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "GPT-4o 的 2024-11-20 版本，创意写作更自然、贴合需求，可读性提升，处理上传文件能力也更强。"
     },
     {
       "slug": "qwen-vl-ocr",
@@ -17372,7 +17717,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "从文档与截图中提取结构化文本的 OCR 模型。"
     },
     {
       "slug": "c4ai-aya-expanse-32b",
@@ -17418,7 +17764,8 @@
           "label": "Cohere 官方定价",
           "url": "https://docs.cohere.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "开放多语言模型，针对 23 种语言的生成任务优化。"
     },
     {
       "slug": "qwen-2-5-7b-instruct",
@@ -17467,7 +17814,8 @@
           "label": "Qwen 定价",
           "url": "https://help.aliyun.com/zh/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen2.5 7B 属 Qwen 大模型最新系列，较 Qwen2 知识量显著增加，编码等能力大幅提升。"
     },
     {
       "slug": "ministral-8b-latest",
@@ -17515,7 +17863,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "紧凑型 Mistral 模型，适用于边缘部署、低延迟与低成本场景。"
     },
     {
       "slug": "ministral-3b-latest",
@@ -17562,7 +17911,8 @@
           "label": "Mistral AI 官方定价",
           "url": "https://docs.mistral.ai/getting-started/models/"
         }
-      ]
+      ],
+      "descZh": "紧凑型 Mistral 模型，适用于边缘部署、低延迟与低成本场景。"
     },
     {
       "slug": "llama-3-2-1b-instruct",
@@ -17611,7 +17961,8 @@
           "label": "Meta 定价",
           "url": "https://www.llama.com/"
         }
-      ]
+      ],
+      "descZh": "10亿参数语言模型，高效完成摘要、对话和多语言文本分析等自然语言任务，体积小便于部署运行。"
     },
     {
       "slug": "llama-3-2-3b-instruct",
@@ -17661,7 +18012,8 @@
           "label": "Meta 定价",
           "url": "https://www.llama.com/"
         }
-      ]
+      ],
+      "descZh": "30亿参数多语言大语言模型，采用最新 transformer 架构，侧重对话生成、推理和摘要等自然语言处理任务。"
     },
     {
       "slug": "gpt-4o-2024-08-06",
@@ -17712,7 +18064,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "GPT-4o 的 2024-08-06 版本，增强结构化输出能力，可在响应格式中提供 JSON schema。"
     },
     {
       "slug": "mistral-nemo",
@@ -17761,7 +18114,8 @@
           "label": "Mistral AI 定价",
           "url": "https://mistral.ai/pricing"
         }
-      ]
+      ],
+      "descZh": "Mistral 与 NVIDIA 合作构建的 12B 参数模型，128k token 上下文，支持英法德西意葡中日等多语言。"
     },
     {
       "slug": "gpt-4o-mini",
@@ -17814,7 +18168,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI 在 GPT-4 Omni 之后推出的模型，支持文本与图像输入、文本输出，为先进的小型模型，成本更低。"
     },
     {
       "slug": "gpt-4o-mini-2024-07-18",
@@ -17863,7 +18218,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "OpenAI 在 GPT-4 Omni 之后推出的模型，支持文本与图像输入、文本输出，为先进的小型模型，成本更低。"
     },
     {
       "slug": "gpt-4o",
@@ -17914,7 +18270,8 @@
           "label": "OpenAI 官方定价",
           "url": "https://platform.openai.com/docs/models"
         }
-      ]
+      ],
+      "descZh": "OpenAI 模型，支持文本与图像输入、文本输出，保持 GPT-4 Turbo 的智能水平，速度提升约一倍。"
     },
     {
       "slug": "gpt-4o-2024-05-13",
@@ -17962,7 +18319,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "OpenAI 模型，支持文本与图像输入、文本输出，保持 GPT-4 Turbo 的智能水平，速度提升约一倍。"
     },
     {
       "slug": "qwen-max",
@@ -18003,7 +18361,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 旗舰模型，面向复杂推理、编程和 agentic 工作流。"
     },
     {
       "slug": "gpt-3-5-turbo-0613",
@@ -18049,7 +18408,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "OpenAI 速度最快的模型，可理解并生成自然语言或代码，针对对话和传统补全任务优化，训练数据截至 2021 年 9 月。"
     },
     {
       "slug": "qwen-plus-character-ja",
@@ -18093,7 +18453,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 指令模型，支持多语言对话、推理与工具调用"
     },
     {
       "slug": "qwen-plus-character",
@@ -18137,7 +18498,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "Qwen 指令模型，支持多语言对话、推理与工具调用"
     },
     {
       "slug": "qwen-doc-turbo",
@@ -18180,7 +18542,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "高效 Qwen 模型，适用于快速对话、信息抽取及高并发任务"
     },
     {
       "slug": "tongyi-intent-detect-v3",
@@ -18224,7 +18587,8 @@
           "label": "Qwen 官方定价",
           "url": "https://www.alibabacloud.com/help/en/model-studio/models"
         }
-      ]
+      ],
+      "descZh": "通用对话模型，侧重指令遵循、写作与分析"
     },
     {
       "slug": "gpt-3-5-turbo-16k",
@@ -18270,7 +18634,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "上下文长度为 gpt-3.5-turbo 四倍，单次请求约支持 20 页文本，成本更高"
     },
     {
       "slug": "gpt-4",
@@ -18316,7 +18681,8 @@
           "label": "OpenAI 定价",
           "url": "https://openai.com/api/pricing/"
         }
-      ]
+      ],
+      "descZh": "OpenAI 旗舰大规模多模态语言模型，知识面广、推理能力强，解题准确率高于前代"
     }
   ]
 }

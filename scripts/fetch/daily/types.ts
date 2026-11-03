@@ -74,8 +74,10 @@ export interface Event {
 
 /* ---------- 成稿层 ---------- */
 
+/** rumor 只作为内部判定（命中后直接丢弃），不会出现在成稿里 */
 export type EvidenceLevel = "verified" | "pending" | "rumor";
-export type ModuleKey = "headline" | "model" | "oss" | "business" | "action" | "rumor";
+/** 四个模块，顺序即读者动作：知道 → 拿来用 → 算账 → 动手 */
+export type ModuleKey = "headline" | "tools" | "money" | "action";
 
 export interface DigestSource {
   type: "official" | "repo" | "community" | "media";

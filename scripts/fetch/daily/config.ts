@@ -38,7 +38,9 @@ export const dailyConfig = {
     { name: "theverge", url: "https://www.theverge.com/rss/index.xml" },
     { name: "arstechnica", url: "https://feeds.arstechnica.com/arstechnica/index" },
     { name: "bbc-tech", url: "https://feeds.bbci.co.uk/news/technology/rss.xml" },
+    { name: "mit-tech-review", url: "https://www.technologyreview.com/topic/artificial-intelligence/feed" },
     { name: "openai-blog", url: "https://openai.com/news/rss.xml", firstHand: true },
+    { name: "deepmind-blog", url: "https://deepmind.google/blog/rss.xml", firstHand: true },
     { name: "huggingface-blog", url: "https://huggingface.co/blog/feed.xml", firstHand: true },
   ] as RssSource[],
 };

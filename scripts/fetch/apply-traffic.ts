@@ -98,6 +98,19 @@ export function applyTraffic(tool: AITool, raw: SimilarwebRawItem | null, metric
     tool.ranks = { global: raw.globalRank, country: raw.countryRank };
   }
 
+  // 竞品：Similarweb similarSites（受众重叠站）替代 DFS ranked_keywords 的竞品口径。
+  // 只在原值为空时写入，不覆盖已由 DFS 采到的竞品，避免同一字段两种口径混用。
+  if (!tool.observations?.competitors?.length && raw.similarSites?.length) {
+    const self = tool.domain.toLowerCase();
+    const domains = raw.similarSites
+      .map((s) => s.domain?.toLowerCase().trim())
+      .filter((d): d is string => !!d && d !== self);
+    const uniq = [...new Set(domains)].slice(0, 8);
+    if (uniq.length) {
+      tool.observations = { ...(tool.observations ?? {}), competitors: uniq };
+    }
+  }
+
   // 趋势：Actor 自带分月历史，直接取真实序列，不再用占比反推
   const rawTrend: TrafficTrendPoint[] = (raw.monthlyVisitsHistory ?? [])
     .map((m) => {

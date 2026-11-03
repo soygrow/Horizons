@@ -127,18 +127,6 @@ export function isBusiness(s: Scored): boolean {
   return s.category === "business" || hit(s.ev.items.map(textOf).join(" "), BUSINESS_HINTS);
 }
 
-/** 仓库是否真的属于「模型」类，而不是被关键词误判成 model_release 的工具仓库 */
-function isModelRepo(s: Scored): boolean {
-  const primary = s.ev.items[0];
-  if (primary.source !== "github") return true;
-  const topics = Array.isArray(primary.raw.topics) ? (primary.raw.topics as string[]).join(" ") : "";
-  const text = `${topics} ${textOf(primary)}`.toLowerCase();
-  return hit(text, ["llm", "model", "diffusion", "inference", "text-to-image", "vision", "multimodal"]);
-}
-
-/** 「模型与产品」只收产品/模型类类别，other 的行业报道不能靠来源是 RSS 就混进来 */
-const MODEL_CATEGORIES = new Set(["model_release", "product_launch", "ai_coding"]);
-
 export function isActionable(s: Scored): boolean {
   if (s.evidence !== "verified") return false;
   const primary = s.ev.items[0];
@@ -165,11 +153,10 @@ export interface Allocation {
 
 /**
  * 模块分配：每个事件只进一个模块，不重复出现。
- * 头条先拿走最强的几条，其余按类别归位；条数不足 10 时不硬凑，如实记录。
+ * 传闻、单一转述一律不发布——这里卖的是能用的确定信息，不是「大概」。
  */
 export function allocate(scored: Scored[]): Allocation {
   const sorted = [...scored].sort((a, b) => b.score - a.score);
-  const rumor = sorted.filter((s) => s.evidence === "rumor").slice(0, 2);
   const eligible = sorted.filter(
     (s) => s.evidence !== "rumor" && !s.ev.items[0].repeat && s.score >= 45,
   );
@@ -199,33 +186,26 @@ export function allocate(scored: Scored[]): Allocation {
   }
   const rest = eligible;
 
-  // 顺序即优先级：先认钱，再认能直接用的东西，最后才是泛模型新闻。
-  // 否则「模型与产品」会被 Star 高的工具仓库占满（实测把 3D CAD 仓库塞了进去）。
-  const business = take(rest, 2, isBusiness);
-  const oss = take(rest, 4, (s) =>
+  // 顺序即优先级：先认钱，再认能直接用的东西，最后才是可执行动作。
+  // 否则「能直接用的」会被 Star 高的仓库占满，商业信号一条都进不来。
+  const money = take(rest, 3, isBusiness);
+  const tools = take(rest, 5, (s) =>
     s.ev.items[0].source === "github" ||
     s.category === "open_source" ||
     s.category === "ai_agent" ||
     s.category === "ai_coding",
   );
-  const model = take(
-    rest,
-    4,
-    (s) => MODEL_CATEGORIES.has(s.category) && isModelRepo(s) && !isBusiness(s),
-  );
   const action = take(rest, 2, (s) => isActionable(s) && !isBusiness(s));
 
   const modules: Array<{ key: ModuleKey; items: Scored[] }> = [
     { key: "headline", items: headline },
-    { key: "model", items: model },
-    { key: "oss", items: oss },
-    { key: "business", items: business },
+    { key: "tools", items: tools },
+    { key: "money", items: money },
     { key: "action", items: action },
-    { key: "rumor", items: rumor },
   ];
 
   return {
     modules: modules.filter((m) => m.items.length > 0),
-    dropped: scored.length - used.size - rumor.length,
+    dropped: scored.length - used.size,
   };
 }

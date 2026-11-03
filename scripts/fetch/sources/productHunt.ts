@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { chromium, type Browser } from "playwright";
 import { getDomain } from "tldts";
-import type { AITool } from "@horizons/shared";
+import { isBlockedDomain, type AITool } from "@horizons/shared";
 import { getProductHuntToken, config } from "../config";
 
 // 大厂 / 平台域名：通常是模型发布或官方公告，不是独立 AI 工具产品
@@ -45,6 +45,7 @@ const EXCLUDED_SUFFIXES = [
 ];
 
 function isExcludedDomain(domain: string): boolean {
+  if (isBlockedDomain(domain)) return true;
   if (EXCLUDED_DOMAINS.has(domain)) return true;
   return EXCLUDED_SUFFIXES.some((s) => domain === s || domain.endsWith("." + s));
 }

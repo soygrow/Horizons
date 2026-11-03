@@ -666,6 +666,8 @@ export interface GitHubSnapshot {
   stars: number;
   forks: number;
   openIssues: number;
+  /** true = 由 backfillHistory 按当前星标回推的估算点，不是真实采样，不可用于计算增速 */
+  synthetic?: boolean;
 }
 
 /** 面向创业者/独立开发者的一个可落地产品方向 */
@@ -697,6 +699,25 @@ export interface ExpectedEffect {
 }
 
 /** 中文创业情报（DeepSeek 生成；面向想动手做产品的人） */
+/**
+ * 加工空间评估（LLM 判断，pps-v4 起参与打分）。
+ *
+ * 榜单读者不是来找「好项目」的，是来找「能加工出不一样产品」的原材料。
+ * 一个项目越完善、越像成品，照抄的价值越低——这正是本字段要区分的东西。
+ */
+export interface GitHubDerivative {
+  /** 它现在是什么形态：库 / 引擎 / CLI 工具 / 服务端 / 成品应用 / 协议标准 */
+  base: string;
+  /** 它自己已经占住的产品场景；它本身不是成品时留空 */
+  occupancy?: string;
+  /** 0-10：加工后能否做出与原项目不同的产品（0-3 基本只能照抄或做周边，7-10 可嵌进完全不同的产品） */
+  space: number;
+  /** 它自己没做、但基于它能做的 2 个具体方向 */
+  untapped: string[];
+  /** 可接入 / 可扩展 / 可定制的技术入口（输出 JSON、HTTP 接口、插件目录、可换模型等） */
+  hook?: string;
+}
+
 export interface GitHubInsight {
   taglineZh: string; // 一句话中文定位
   whatZh: string; // 它是什么、核心能力（中文，替代英文原文）
@@ -716,7 +737,7 @@ export interface GitHubInsight {
 
 /** 综合得分构成项（用于详情页说明「分是怎么来的」） */
 export interface ScorePart {
-  key: "light" | "commercial" | "effort" | "dev" | "growth" | "heat" | "active";
+  key: "light" | "commercial" | "effort" | "dev" | "growth" | "heat" | "active" | "demand";
   label: string; // 中文名，如「热度」
   weight: number; // 权重（满分 100 中的占比）
   value: number; // 该项归一值 0-100
@@ -771,6 +792,9 @@ export interface GitHubRepo {
   insight?: GitHubInsight;
   // 情报来源：curated=人工精编，llm=大模型生成，local=本地模板兜底（余额/限流失败时写入，下次运行会自动重生成）
   insightSource?: "curated" | "llm" | "local";
+  // 加工空间评估：拿它加工/附加处理后，能不能做出与原项目不一样的产品
+  derivative?: GitHubDerivative;
+  derivativeSource?: "llm" | "fallback";
   // 综合得分（做产品的收益可能性，用于榜单排序与详情页展示）
   productScore?: ProductScore;
   // 日维度采集历史

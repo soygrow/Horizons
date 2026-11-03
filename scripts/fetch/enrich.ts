@@ -4,7 +4,25 @@ import { config } from "./config";
 import { detectTechStack } from "./sources/techstack";
 import { extractContact } from "./sources/contact";
 import { detectPricing } from "./sources/pricing";
+import { isBlockedDomain } from "@horizons/shared";
 import type { AITool } from "@horizons/shared";
+
+/* 榜单判定，与 apps/web/src/lib/data.ts 的 tierOf 保持同步 */
+const MIN_VISITS_CORE = 10_000;
+const MIN_VISITS_WATCH = 1_000;
+const WATCH_PH_UPVOTES = 300;
+
+function tierOf(t: AITool): "core" | "watch" | null {
+  if (isBlockedDomain(t.domain)) return null;
+  const v = t.trafficMetrics?.monthlyVisits ?? t.metrics?.monthlyVisits;
+  if (v === undefined) return (t.phUpvotes ?? 0) >= WATCH_PH_UPVOTES ? "watch" : null;
+  if (v >= MIN_VISITS_CORE) return "core";
+  if (v >= MIN_VISITS_WATCH) {
+    const g = t.trafficMetrics?.monthlyVisitsGrowth ?? t.metrics?.momGrowth;
+    return typeof g === "number" && g < 0 ? "watch" : "core";
+  }
+  return null;
+}
 
 const TOOLS_PATH = path.resolve(process.cwd(), "content/aitools.json");
 
@@ -68,10 +86,16 @@ async function main(): Promise<void> {
   );
 
   const tools = loadTools();
+  const listedOnly = process.argv.includes("--listed-only");
+  // 只跑真正缺字段的站：已有 techStack/contact/pricing 的站重抓一遍纯属浪费请求
+  const needsWork = (t: AITool): boolean =>
+    !t.techStack?.length || !t.contact || !t.pricing?.length;
+  const targets = tools.filter((t) => (!listedOnly || tierOf(t) !== null) && needsWork(t));
+  if (listedOnly) console.log(`[enrich] 仅榜内：${targets.length}/${tools.length} 个待补`);
   let processed = 0;
   let changed = 0;
 
-  for (const tool of tools) {
+  for (const tool of targets) {
     if (limit > 0 && processed >= limit) break;
     if (!tool.url || !/^https?:/i.test(tool.url)) continue;
     processed++;

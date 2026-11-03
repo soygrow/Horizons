@@ -1,11 +1,11 @@
 {
   "date": "2026-10-30",
-  "generatedAt": "2026-10-30T05:15:09.899Z",
+  "generatedAt": "2026-11-03T10:29:43.240Z",
   "stats": {
     "candidates": 111,
     "merged": 111,
-    "verified": 12,
-    "published": 15
+    "verified": 9,
+    "published": 11
   },
   "modules": [
     {
@@ -18,8 +18,8 @@
           "why": "发布类消息，先分清官方给的是基准还是演示——演示通常跑不出同样的数。目前只有转述，引用前需二次确认。",
           "category": "model_release",
           "evidence": "pending",
-          "score": 81,
-          "heat": 5,
+          "score": 78,
+          "heat": 4,
           "firstSeenAt": "2026-10-30T02:55:48.974Z",
           "sources": [
             {
@@ -42,7 +42,7 @@
           "why": "发布类消息，先分清官方给的是基准还是演示——演示通常跑不出同样的数。已有可直接核对的原始出处，可以引用。",
           "category": "model_release",
           "evidence": "verified",
-          "score": 74,
+          "score": 71,
           "heat": 4,
           "firstSeenAt": "2026-10-30T02:55:48.974Z",
           "sources": [
@@ -62,7 +62,7 @@
           "why": "偏方法与研究结论，值得看的是它给出了什么可复现的判据，而不是一句结论。已有可直接核对的原始出处，可以引用。",
           "category": "model_release",
           "evidence": "verified",
-          "score": 74,
+          "score": 71,
           "heat": 4,
           "firstSeenAt": "2026-10-30T02:55:48.974Z",
           "sources": [
@@ -74,133 +74,11 @@
             }
           ],
           "signals": {}
-        },
-        {
-          "id": "evt_20261030_107",
-          "title": "You can generate and edit Google Docs files directly in Gemini chats now",
-          "summary": "The Verge 10-30 02:45 的原文摘要：Now you can generate, preview, and edit PDFs, Google Docs, Google Sheets, slide decks, Markdown files, TXT files, and…。",
-          "why": "写代码或写文档的入口又变了一步，先看它对你现有流程是替代还是叠加。目前只有转述，引用前需二次确认。",
-          "category": "ai_coding",
-          "evidence": "pending",
-          "score": 64,
-          "heat": 4,
-          "firstSeenAt": "2026-10-30T02:55:48.974Z",
-          "sources": [
-            {
-              "type": "media",
-              "label": "The Verge",
-              "url": "https://theverge.com/ai-artificial-intelligence/1022519/google-gemini-file-editing-documents-pdfs",
-              "verified": false
-            }
-          ],
-          "signals": {},
-          "missing": "只有单一来源（rss），需等官方公告或第二家独立报道"
         }
       ]
     },
     {
-      "key": "model",
-      "items": [
-        {
-          "id": "evt_20261030_18",
-          "title": "tangency-labs/solidcraft",
-          "summary": "仓库 tangency-labs/solidcraft：SolidCraft: an open-source parametric 3D CAD application built in pure Rust. Desktop,…。当前 1.2 万 Star，创建于 2026-10-07，平均每日新增约 540.9 Star；本次采样较上次 +4；Rust · 许可证 Apache-2.0。",
-          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
-          "category": "model_release",
-          "evidence": "verified",
-          "score": 68,
-          "heat": 4,
-          "firstSeenAt": "2026-10-30T02:55:48.974Z",
-          "sources": [
-            {
-              "type": "repo",
-              "label": "GitHub · tangency-labs/solidcraft",
-              "url": "https://github.com/tangency-labs/solidcraft",
-              "verified": true
-            }
-          ],
-          "signals": {
-            "stars": 12091,
-            "starDelta": 4,
-            "starPerDay": 540.9
-          }
-        },
-        {
-          "id": "evt_20261030_67",
-          "title": "raullenchai/Rapid-MLX",
-          "summary": "仓库 raullenchai/Rapid-MLX：Rapid-MLX is an open-source (Apache 2.0) OpenAI- and Anthropic-compatible LLM inference…。当前 4,061 Star，创建于 2026-02-25，平均每日新增约 16.4 Star；Python · 许可证 NOASSERTION。",
-          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
-          "category": "model_release",
-          "evidence": "verified",
-          "score": 65,
-          "heat": 4,
-          "firstSeenAt": "2026-10-30T02:55:48.974Z",
-          "sources": [
-            {
-              "type": "repo",
-              "label": "GitHub · raullenchai/Rapid-MLX",
-              "url": "https://github.com/raullenchai/Rapid-MLX",
-              "verified": true
-            }
-          ],
-          "signals": {
-            "stars": 4061,
-            "starDelta": 0,
-            "starPerDay": 16.4
-          }
-        },
-        {
-          "id": "evt_20261030_74",
-          "title": "ashhart/TensorFold",
-          "summary": "仓库 ashhart/TensorFold：LLM Inference Engine for Metal, CUDA and Vulkan。当前 1,540 Star，创建于 2026-06-19，平均每日新增约 11.6 Star；Zig · 许可证 Apache-2.0。",
-          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
-          "category": "model_release",
-          "evidence": "verified",
-          "score": 64,
-          "heat": 4,
-          "firstSeenAt": "2026-10-30T02:55:48.974Z",
-          "sources": [
-            {
-              "type": "repo",
-              "label": "GitHub · ashhart/TensorFold",
-              "url": "https://github.com/ashhart/TensorFold",
-              "verified": true
-            }
-          ],
-          "signals": {
-            "stars": 1540,
-            "starDelta": 0,
-            "starPerDay": 11.6
-          }
-        },
-        {
-          "id": "evt_20261030_91",
-          "title": "modelstudioai/cli",
-          "summary": "仓库 modelstudioai/cli：Official Model Studio CLI（阿里云百炼 CLI）built for AI Agent frameworks, exposing models,…。当前 366 Star，创建于 2026-05-28，平均每日新增约 2.4 Star；TypeScript · 许可证 Apache-2.0。",
-          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
-          "category": "model_release",
-          "evidence": "verified",
-          "score": 64,
-          "heat": 4,
-          "firstSeenAt": "2026-10-30T03:27:39.742Z",
-          "sources": [
-            {
-              "type": "repo",
-              "label": "GitHub · modelstudioai/cli",
-              "url": "https://github.com/modelstudioai/cli",
-              "verified": true
-            }
-          ],
-          "signals": {
-            "stars": 366,
-            "starDelta": 0,
-            "starPerDay": 2.4
-          }
-        }
-      ]
-    },
-    {
-      "key": "oss",
+      "key": "tools",
       "items": [
         {
           "id": "evt_20261030_01",
@@ -209,7 +87,7 @@
           "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
           "category": "model_release",
           "evidence": "verified",
-          "score": 88,
+          "score": 85,
           "heat": 5,
           "firstSeenAt": "2026-10-30T02:55:48.974Z",
           "sources": [
@@ -233,8 +111,8 @@
           "why": "自动化边界前移，重点看权限隔离，以及失败之后能不能回滚。已有可直接核对的原始出处，可以引用。",
           "category": "ai_agent",
           "evidence": "verified",
-          "score": 82,
-          "heat": 5,
+          "score": 76,
+          "heat": 4,
           "firstSeenAt": "2026-10-30T02:55:48.974Z",
           "sources": [
             {
@@ -257,7 +135,7 @@
           "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
           "category": "model_release",
           "evidence": "verified",
-          "score": 80,
+          "score": 74,
           "heat": 4,
           "firstSeenAt": "2026-10-30T02:55:48.974Z",
           "sources": [
@@ -281,7 +159,7 @@
           "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
           "category": "model_release",
           "evidence": "verified",
-          "score": 76,
+          "score": 70,
           "heat": 4,
           "firstSeenAt": "2026-10-30T02:55:48.974Z",
           "sources": [
@@ -297,20 +175,44 @@
             "starDelta": 2,
             "starPerDay": 95.9
           }
+        },
+        {
+          "id": "evt_20261030_18",
+          "title": "tangency-labs/solidcraft",
+          "summary": "仓库 tangency-labs/solidcraft：SolidCraft: an open-source parametric 3D CAD application built in pure Rust. Desktop,…。当前 1.2 万 Star，创建于 2026-10-07，平均每日新增约 540.9 Star；本次采样较上次 +4；Rust · 许可证 Apache-2.0。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 62,
+          "heat": 4,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · tangency-labs/solidcraft",
+              "url": "https://github.com/tangency-labs/solidcraft",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 12091,
+            "starDelta": 4,
+            "starPerDay": 540.9
+          }
         }
       ]
     },
     {
-      "key": "business",
+      "key": "money",
       "items": [
         {
           "id": "evt_20261030_109",
           "title": "Google admits AI search makes less money, but it's fixing that with more ads",
           "summary": "Ars Technica 10-30 00:24 的原文摘要：Google's negative cash flow balloons to -$9.06 billion, and stock price tumbles following Q3 earnings.。",
-          "why": "价格与融资会改变成本线，但截图和转述要等官方条款确认，别先改自己的报价。目前只有转述，引用前需二次确认。",
+          "why": "价格与融资会直接改成本线，先按官方条款重算自己的单价，再谈要不要迁移。目前只有转述，引用前需二次确认。",
           "category": "other",
           "evidence": "pending",
-          "score": 58,
+          "score": 55,
           "heat": 3,
           "firstSeenAt": "2026-10-30T02:55:48.974Z",
           "sources": [
@@ -336,7 +238,7 @@
           "why": "自动化边界前移，重点看权限隔离，以及失败之后能不能回滚。已有可直接核对的原始出处，可以引用。",
           "category": "ai_agent",
           "evidence": "verified",
-          "score": 67,
+          "score": 61,
           "heat": 4,
           "firstSeenAt": "2026-10-30T02:55:48.974Z",
           "sources": [
@@ -354,27 +256,27 @@
           }
         },
         {
-          "id": "evt_20261030_12",
-          "title": "paperclipai/paperclip",
-          "summary": "仓库 paperclipai/paperclip：The open-source app everyone uses to manage agents at work。当前 10.9 万 Star，创建于 2026-03-02，平均每日新增约 450.1 Star；本次采样较上次 +12；TypeScript · 许可证 MIT。",
-          "why": "自动化边界前移，重点看权限隔离，以及失败之后能不能回滚。已有可直接核对的原始出处，可以引用。",
-          "category": "ai_agent",
+          "id": "evt_20261030_33",
+          "title": "OpenMOSS/MOSS-Image",
+          "summary": "仓库 OpenMOSS/MOSS-Image：Official repository for MOSS-Image, a 5B-parameter base DiT model with high-quality text…。当前 2,239 Star，创建于 2026-10-16，平均每日新增约 158.9 Star；Python · 许可证 Apache-2.0。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
           "evidence": "verified",
-          "score": 63,
-          "heat": 4,
-          "firstSeenAt": "2026-10-30T03:27:39.742Z",
+          "score": 59,
+          "heat": 3,
+          "firstSeenAt": "2026-10-30T02:55:48.974Z",
           "sources": [
             {
               "type": "repo",
-              "label": "GitHub · paperclipai/paperclip",
-              "url": "https://github.com/paperclipai/paperclip",
+              "label": "GitHub · OpenMOSS/MOSS-Image",
+              "url": "https://github.com/OpenMOSS/MOSS-Image",
               "verified": true
             }
           ],
           "signals": {
-            "stars": 108709,
-            "starDelta": 12,
-            "starPerDay": 450.1
+            "stars": 2239,
+            "starDelta": 0,
+            "starPerDay": 158.9
           }
         }
       ]

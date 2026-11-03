@@ -58,21 +58,33 @@ export function hashRate(name: string): number {
 }
 
 /**
- * 首日回填：当 history 不足 30 点时，以「当日真实 stars」为终点反推近 30 天估算序列，
- * 让趋势图立刻有形状。已累积到 30+ 真实点的仓库不再回填（保留真实数据）。
+ * 首日回填：history 不足 30 点时，以「当日真实 stars」为终点反推近 30 天估算序列，
+ * 让趋势图立刻有形状。
+ *
+ * 两条硬约束（pps-v3 起）：
+ * 1. 已有的真实采样点必须保留，只补缺失日期——旧实现会把不足 30 条的真实点整段丢弃；
+ * 2. 估算点一律标记 synthetic=true，增速等指标不得使用，前端需明示「估算」。
  */
 export function backfillHistory(repo: GitHubRepo): GitHubSnapshot[] {
-  const existing = repo.history ?? [];
+  const existing = [...(repo.history ?? [])].sort((a, b) => a.date.localeCompare(b.date));
   if (existing.length >= 30) return existing;
+
   const today = new Date().toISOString().slice(0, 10);
   const stars = repo.stars;
   const rate = hashRate(repo.fullName);
   const ratioForks = repo.stars > 0 ? repo.forks / repo.stars : 0;
   const ratioIssues = repo.stars > 0 ? repo.openIssues / repo.stars : 0;
   const days = 30;
+  const known = new Map(existing.map((p) => [p.date, p]));
+
   const points: GitHubSnapshot[] = [];
   for (let i = 0; i < days; i++) {
     const date = shiftDate(today, -(days - 1 - i));
+    const real = known.get(date);
+    if (real) {
+      points.push({ ...real, synthetic: false });
+      continue;
+    }
     const factor = Math.pow(1 / (1 + rate), days - 1 - i); // 第 days-1 天 factor=1 → 真实当日值
     const s = Math.max(0, Math.round(stars * factor));
     points.push({
@@ -80,6 +92,7 @@ export function backfillHistory(repo: GitHubRepo): GitHubSnapshot[] {
       stars: s,
       forks: Math.round(s * ratioForks),
       openIssues: Math.round(s * ratioIssues),
+      synthetic: true,
     });
   }
   return points;

@@ -9,17 +9,17 @@ const FEED_LABEL: Record<string, string> = {
   theverge: "The Verge",
   arstechnica: "Ars Technica",
   "bbc-tech": "BBC 科技",
+  "mit-tech-review": "MIT 科技评论",
   "openai-blog": "OpenAI 官方博客",
+  "deepmind-blog": "DeepMind 官方博客",
   "huggingface-blog": "Hugging Face 博客",
 };
 
 const MODULE_WHY: Record<ModuleKey, string> = {
   headline: "当天影响面较大的一条，先看原始发布有没有给出可复现数据——标题里的规模数字通常不等于你自己的收益。",
-  model: "能力边界和调用成本会跟着变，重点看价格、许可证、可用地区这三项是否写清楚。",
-  oss: "可以直接跑起来，先看许可证和最近一次提交时间，这两项比 Star 数更能说明它还在不在维护。",
-  business: "价格与融资会改变成本线，但截图和转述要等官方条款确认，别先改自己的报价。",
+  tools: "可以直接拿到手用，先看许可证和最近一次提交时间，这两项比 Star 数更能说明它还在不在维护。",
+  money: "价格与融资会直接改成本线，先按官方条款重算自己的单价，再谈要不要迁移。",
   action: "今天就能验证，成本可控，失败也只是浪费半小时。",
-  rumor: "只作早期信号，等官方确认再动手。",
 };
 
 /**
@@ -57,10 +57,9 @@ const WHY_BY_CATEGORY: Record<string, string> = {
 };
 
 /** 证据状态直接写进「为什么值得关注」，避免每条都读起来一样 */
-const EVIDENCE_TAIL: Record<"verified" | "pending" | "rumor", string> = {
+const EVIDENCE_TAIL: Record<"verified" | "pending", string> = {
   verified: "已有可直接核对的原始出处，可以引用。",
   pending: "目前只有转述，引用前需二次确认。",
-  rumor: "尚未证实，不要据此做决定。",
 };
 
 function beijingTime(iso: string | null): string {
@@ -169,11 +168,12 @@ function toDigestItem(s: Scored, moduleKey: ModuleKey): DigestItem {
   const angle = angleOf(primary);
   const reason =
     (angle && WHY_BY_ANGLE[angle]) || WHY_BY_CATEGORY[s.category] || MODULE_WHY[moduleKey];
+  const tail = s.evidence === "rumor" ? "" : EVIDENCE_TAIL[s.evidence];
   return {
     id: s.ev.id,
     title: primary.title,
     summary: summarize(primary, s.ev),
-    why: `${reason}${EVIDENCE_TAIL[s.evidence]}`,
+    why: `${reason}${tail}`,
     category: s.category,
     evidence: s.evidence,
     score: s.score,

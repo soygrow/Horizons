@@ -1,0 +1,366 @@
+{
+  "date": "2026-11-03",
+  "generatedAt": "2026-11-03T10:31:36.803Z",
+  "stats": {
+    "candidates": 116,
+    "merged": 116,
+    "verified": 10,
+    "published": 13
+  },
+  "modules": [
+    {
+      "key": "headline",
+      "items": [
+        {
+          "id": "evt_20261103_30",
+          "title": "Astra can read and write weights to improve Qwen",
+          "summary": "外链指向 rikiyat.github.io 的原文，讨论发生在 Hacker News 评论区。",
+          "why": "发布类消息，先分清官方给的是基准还是演示——演示通常跑不出同样的数。目前只有转述，引用前需二次确认。",
+          "category": "model_release",
+          "evidence": "pending",
+          "score": 81,
+          "heat": 5,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "community",
+              "label": "Hacker News · 2658 分",
+              "url": "https://rikiyat.github.io/blog/weight-space-programming",
+              "verified": false
+            }
+          ],
+          "signals": {
+            "points": 2658,
+            "comments": 809
+          },
+          "missing": "只有单一来源（hackernews），需等官方公告或第二家独立报道"
+        },
+        {
+          "id": "evt_20261103_106",
+          "title": "Heimstaden is changing residential real estate management with AI",
+          "summary": "OpenAI 官方博客 11-03 16:00 的原文摘要：Discover how Heimstaden uses OpenAI’s ChatGPT Enterprise and Codex to transform property management, cut costs, and…。",
+          "why": "写代码或写文档的入口又变了一步，先看它对你现有流程是替代还是叠加。已有可直接核对的原始出处，可以引用。",
+          "category": "ai_coding",
+          "evidence": "verified",
+          "score": 71,
+          "heat": 4,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "official",
+              "label": "OpenAI 官方博客",
+              "url": "https://openai.com/index/heimstaden",
+              "verified": true
+            }
+          ],
+          "signals": {}
+        },
+        {
+          "id": "evt_20261103_109",
+          "title": "Claude’s new rules against game cloning won’t stop the AI copying boom",
+          "summary": "Ars Technica 11-03 02:05 的原文摘要：The tsunami of imitators is way bigger than any one model maker can stem.。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。目前只有转述，引用前需二次确认。",
+          "category": "model_release",
+          "evidence": "pending",
+          "score": 62,
+          "heat": 4,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "media",
+              "label": "Ars Technica",
+              "url": "https://arstechnica.com/ai/2026/11/claudes-new-rules-against-game-cloning-wont-stop-the-ai-copying-boom",
+              "verified": false
+            }
+          ],
+          "signals": {},
+          "missing": "只有单一来源（rss），需等官方公告或第二家独立报道"
+        }
+      ]
+    },
+    {
+      "key": "tools",
+      "items": [
+        {
+          "id": "evt_20261103_01",
+          "title": "morluto/rea",
+          "summary": "仓库 morluto/rea：Reverse engineer anything with agents, from app behavior down to native binaries。当前 42.5 万 Star，创建于 2026-04-14，平均每日新增约 2,088 Star；本次采样较上次 +16535；TypeScript · 许可证 MIT。",
+          "why": "自动化边界前移，重点看权限隔离，以及失败之后能不能回滚。已有可直接核对的原始出处，可以引用。",
+          "category": "ai_agent",
+          "evidence": "verified",
+          "score": 83,
+          "heat": 5,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · morluto/rea",
+              "url": "https://github.com/morluto/rea",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 424794,
+            "starDelta": 16535,
+            "starPerDay": 2088.4
+          }
+        },
+        {
+          "id": "evt_20261103_89",
+          "title": "hasso5703/alzeo",
+          "summary": "仓库 hasso5703/alzeo：dgx-spark-qwen38 is an open-source installer that turns an NVIDIA DGX Spark, or any GB10…。当前 245 Star，创建于 2026-08-15，平均每日新增约 3.1 Star；Python · 许可证 MIT。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 68,
+          "heat": 4,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · hasso5703/alzeo",
+              "url": "https://github.com/hasso5703/alzeo",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 245,
+            "starDelta": 0,
+            "starPerDay": 3.1
+          }
+        },
+        {
+          "id": "evt_20261103_91",
+          "title": "pegainfer-project/pegainfer",
+          "summary": "仓库 pegainfer-project/pegainfer：Pure Rust + CUDA LLM inference engine — no PyTorch, OpenAI-compatible, serves Qwen3 to…。当前 731 Star，创建于 2026-02-17，平均每日新增约 2.8 Star；Rust · 许可证 Apache-2.0。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 68,
+          "heat": 4,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · pegainfer-project/pegainfer",
+              "url": "https://github.com/pegainfer-project/pegainfer",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 731,
+            "starDelta": 0,
+            "starPerDay": 2.8
+          }
+        },
+        {
+          "id": "evt_20261103_63",
+          "title": "microsoft/TokenEconomizer",
+          "summary": "仓库 microsoft/TokenEconomizer：Experience-Driven Black-Box Cost Control for Coding Agents。当前 4,586 Star，创建于 2026-10-13，平均每日新增约 215.7 Star；Python · 许可证 Apache-2.0。",
+          "why": "自动化边界前移，重点看权限隔离，以及失败之后能不能回滚。已有可直接核对的原始出处，可以引用。",
+          "category": "ai_agent",
+          "evidence": "verified",
+          "score": 64,
+          "heat": 4,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · microsoft/TokenEconomizer",
+              "url": "https://github.com/microsoft/TokenEconomizer",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 4586,
+            "starDelta": 0,
+            "starPerDay": 215.7
+          }
+        },
+        {
+          "id": "evt_20261103_64",
+          "title": "google/elephant-goldfish-model",
+          "summary": "仓库 google/elephant-goldfish-model：Open-source skills for designing and reviewing software with AI agents。当前 1.1 万 Star，创建于 2026-09-13，平均每日新增约 215.5 Star；Python · 许可证 Apache-2.0。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 63,
+          "heat": 4,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · google/elephant-goldfish-model",
+              "url": "https://github.com/google/elephant-goldfish-model",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 10936,
+            "starDelta": 0,
+            "starPerDay": 215.5
+          }
+        }
+      ]
+    },
+    {
+      "key": "money",
+      "items": [
+        {
+          "id": "evt_20261103_88",
+          "title": "modelscope/evalscope",
+          "summary": "仓库 modelscope/evalscope：A streamlined and customizable framework for efficient large model (LLM, VLM, AIGC)…。当前 3,640 Star，创建于 2023-12-07，平均每日新增约 3.4 Star；Python · 许可证 Apache-2.0。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 58,
+          "heat": 3,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · modelscope/evalscope",
+              "url": "https://github.com/modelscope/evalscope",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 3640,
+            "starDelta": 0,
+            "starPerDay": 3.4
+          }
+        },
+        {
+          "id": "evt_20261103_81",
+          "title": "alibaba/skill-up",
+          "summary": "仓库 alibaba/skill-up：An evaluation and evolution tool for Agent Skills。当前 1,411 Star，创建于 2026-05-09，平均每日新增约 7.9 Star；Go · 许可证 Apache-2.0。",
+          "why": "自动化边界前移，重点看权限隔离，以及失败之后能不能回滚。已有可直接核对的原始出处，可以引用。",
+          "category": "ai_agent",
+          "evidence": "verified",
+          "score": 55,
+          "heat": 3,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · alibaba/skill-up",
+              "url": "https://github.com/alibaba/skill-up",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 1411,
+            "starDelta": 0,
+            "starPerDay": 7.9
+          }
+        },
+        {
+          "id": "evt_20261103_47",
+          "title": "The SEC Should Block Anthropic's IPO to Protect the Public",
+          "summary": "外链指向 techpolicy.press 的原文，讨论发生在 Hacker News 评论区。",
+          "why": "价格与融资会直接改成本线，先按官方条款重算自己的单价，再谈要不要迁移。目前只有转述，引用前需二次确认。",
+          "category": "other",
+          "evidence": "pending",
+          "score": 49,
+          "heat": 3,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "community",
+              "label": "Hacker News · 358 分",
+              "url": "https://techpolicy.press/the-sec-should-block-anthropics-ipo-to-protect-the-public",
+              "verified": false
+            }
+          ],
+          "signals": {
+            "points": 358,
+            "comments": 262
+          },
+          "missing": "只有单一来源（hackernews），需等官方公告或第二家独立报道"
+        }
+      ]
+    },
+    {
+      "key": "action",
+      "items": [
+        {
+          "id": "evt_20261103_73",
+          "title": "prabanta-dev/janas",
+          "summary": "仓库 prabanta-dev/janas：37 tok/s from Qwen3-Next-80B (48 GB) on a 32 GB laptop, 24 without drafts vs 2.8 for…。当前 584 Star，创建于 2026-09-20，平均每日新增约 13.3 Star；C · 许可证 GPL-3.0。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 63,
+          "heat": 4,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · prabanta-dev/janas",
+              "url": "https://github.com/prabanta-dev/janas",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 584,
+            "starDelta": 0,
+            "starPerDay": 13.3
+          }
+        },
+        {
+          "id": "evt_20261103_67",
+          "title": "chenxiachan/textfold",
+          "summary": "仓库 chenxiachan/textfold：Fold papers, web pages, files, and AI replies into five levels of detail. Zoom from an…。当前 885 Star，创建于 2026-10-04，平均每日新增约 30 Star；Python · 许可证 Apache-2.0。",
+          "why": "能力边界可能变了，先看官方有没有给出可复现的基准，而不只是看演示。已有可直接核对的原始出处，可以引用。",
+          "category": "model_release",
+          "evidence": "verified",
+          "score": 62,
+          "heat": 4,
+          "firstSeenAt": "2026-11-03T10:30:43.847Z",
+          "sources": [
+            {
+              "type": "repo",
+              "label": "GitHub · chenxiachan/textfold",
+              "url": "https://github.com/chenxiachan/textfold",
+              "verified": true
+            }
+          ],
+          "signals": {
+            "stars": 885,
+            "starDelta": 0,
+            "starPerDay": 30
+          }
+        }
+      ]
+    }
+  ],
+  "sourceHealth": [
+    {
+      "source": "hackernews",
+      "ok": true,
+      "items": 18,
+      "duplicates": 0,
+      "ms": 1844,
+      "error": null,
+      "note": "扫描 90 条高分帖，AI 相关 18 条"
+    },
+    {
+      "source": "github",
+      "ok": true,
+      "items": 87,
+      "duplicates": 0,
+      "ms": 25134,
+      "error": null,
+      "note": "87 个仓库 / 12 次请求（已用 PAT）"
+    },
+    {
+      "source": "rss",
+      "ok": true,
+      "items": 12,
+      "duplicates": 1,
+      "ms": 25599,
+      "error": null,
+      "note": "theverge 2/10（AI 相关 2），arstechnica 1/20（AI 相关 1），bbc-tech 失败（fetch failed），mit-tech-review 3/10（AI 相关 3），openai-blog 6/1349（AI 相关 6），deepmind-blog 0/100（AI 相关 0），huggingface-blog 失败（fetch failed）"
+    }
+  ]
+}

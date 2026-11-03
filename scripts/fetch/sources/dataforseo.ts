@@ -36,11 +36,13 @@ export function hasDataForSEO(): boolean {
 interface DfsResponse {
   status_code?: number;
   status_message?: string;
+  tasks_error?: number;
   tasks?: Array<{
     id?: string;
     status_code?: number;
     status_message?: string;
-    result?: Array<Record<string, unknown>>;
+    cost?: number;
+    result?: Array<Record<string, unknown>> | null;
   }>;
 }
 
@@ -86,11 +88,41 @@ async function sendRaw(path: string, body?: unknown[]): Promise<DfsResponse> {
     },
     body: body ? JSON.stringify(body) : undefined,
   });
-  if (!res.ok) throw new HttpError(res.status, path);
-  const data = (await res.json()) as DfsResponse;
+  // 先拿文本再解析：DFS 会把业务失败放在 HTTP 402/200 的 body 里，
+  // 需读 body 才能给出「余额不足」这类可执行提示；非 JSON 时退回 HTTP 错误。
+  const raw = await res.text();
+  let data: DfsResponse;
+  try {
+    data = JSON.parse(raw) as DfsResponse;
+  } catch {
+    throw new HttpError(res.status, path);
+  }
+
+  // 顶层状态码：仅覆盖请求级失败（鉴权错误等）
   if (data.status_code && data.status_code >= 30000) {
     throw new Error(`DataForSEO 错误 ${data.status_code}: ${data.status_message ?? ""}`);
   }
+
+  // 任务级状态码：DataForSEO 顶层恒返回 20000(Ok)，真实失败落在 tasks[]。
+  // 典型场景：余额不足时 HTTP 402 + 顶层 20000 + tasks[0].status_code=40200，
+  // result=null、cost=0。若只看顶层会把「完全没执行」当成功，把空 items 写库
+  // —— 这正是 2026-11 全库关键词只剩 term、无搜索量的根因。
+  const failed = data.tasks?.find((t) => (t.status_code ?? 0) >= 30000);
+  if (failed) {
+    const code = failed.status_code;
+    const hint =
+      code === 40200 || code === 40210 || code === 40203
+        ? "（账户余额不足或计费失败，请到 DataForSEO 后台充值，最低 $50）"
+        : "";
+    throw new Error(`DataForSEO 任务失败 ${code}: ${failed.status_message ?? ""}${hint}`);
+  }
+  if ((data.tasks_error ?? 0) > 0 && !(data.tasks?.length ?? 0)) {
+    throw new Error(
+      `DataForSEO 请求失败：tasks_error=${data.tasks_error} 且无任务返回（常见于余额/鉴权问题）`,
+    );
+  }
+
+  if (!res.ok) throw new HttpError(res.status, path);
   return data;
 }
 

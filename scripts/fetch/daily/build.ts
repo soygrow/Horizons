@@ -15,11 +15,9 @@ import type { ModuleKey } from "./types";
 
 const MODULE_NAME: Record<ModuleKey, string> = {
   headline: "今日头条",
-  model: "模型与产品",
-  oss: "开源与工具",
-  business: "商业与赚钱信号",
+  tools: "能直接用的",
+  money: "钱与机会",
   action: "今天就能做",
-  rumor: "未证实观察区",
 };
 
 function argValue(name: string): string | undefined {
@@ -29,7 +27,7 @@ function argValue(name: string): string | undefined {
 
 /** 未采用的原因：先给结构性否决，再给分数与配额，避免把「配额满」误读成「不重要」 */
 function dropReason(s: Scored): string {
-  if (s.evidence === "rumor") return "传闻，观察区只留 2 条";
+  if (s.evidence === "rumor") return "未证实，不发布";
   if (s.ev.items[0].repeat) return "旧闻，此前已出现过";
   if (s.score < 45) return `分数 ${s.score} < 45`;
   return "分数够但模块配额已满 / 类别未命中";
@@ -117,8 +115,8 @@ function main(): void {
       if (!item.sources.some((s) => s.url.startsWith("http"))) {
         warnings.push(`缺可访问链接：${item.title.slice(0, 40)}`);
       }
-      if (m.key === "headline" && item.evidence === "rumor") {
-        warnings.push(`传闻进头条：${item.title.slice(0, 40)}`);
+      if (item.evidence === "rumor") {
+        warnings.push(`未证实内容被发布：${item.title.slice(0, 40)}`);
       }
     }
   }
@@ -127,7 +125,7 @@ function main(): void {
   if (total < 10) warnings.push(`本期仅 ${total} 条，低于 10 条下限（不凑数，照实发）`);
   console.log(
     warnings.length === 0
-      ? `\n闸门：全部通过（${total} 条，无重复、无传闻进头条、链接齐全）`
+      ? `\n闸门：全部通过（${total} 条，无重复、无未证实内容、链接齐全）`
       : `\n闸门：${warnings.length} 条提示\n  - ${warnings.join("\n  - ")}`,
   );
   if (dry) {

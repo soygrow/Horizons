@@ -3,6 +3,7 @@
  * 主：vortex_data/similarweb-scraper；备：lergassy/similarweb-traffic-scraper。
  * 获取「产品表现」8 指标；低流量站渠道份额 null 时兜底为 0。
  */
+import type { KeywordItem } from "@horizons/shared";
 import { config } from "../config";
 import { cachedCall } from "../api-cache";
 
@@ -279,6 +280,61 @@ async function fetchVortexRaw(domain: string): Promise<VortexItem | null> {
     return data.find((i) => i.domain === domain || i.totalVisits) ?? data[0] ?? null;
   } catch {
     return null;
+  }
+}
+
+/**
+ * 从 Similarweb 条目提取关键词（含搜索量）。
+ *
+ * 两口径字段不同：lergassy 用 { keyword, volume, cpc }，
+ * vortex 用 { keyword, searchVolume, cpc, estimatedValue }，此处统一成 KeywordItem。
+ * 只保留有搜索量的词：无 volume 的词（如站点自身的长尾乱码）没有展示价值，
+ * 这也是详情页关键词表格的渲染前提（见 TrafficSection.astro）。
+ */
+export function extractSimilarwebKeywords(
+  item: SimilarwebRawItem | VortexItem,
+): KeywordItem[] {
+  const raw = item.topKeywords ?? [];
+  const seen = new Set<string>();
+  const out: KeywordItem[] = [];
+
+  for (const k of raw) {
+    const term = (k.keyword ?? "").trim();
+    if (!term || seen.has(term)) continue;
+    const volume = "searchVolume" in k ? k.searchVolume : k.volume;
+    if (volume == null || volume <= 0) continue;
+    seen.add(term);
+    out.push({
+      term,
+      volume,
+      cpc: typeof k.cpc === "number" ? k.cpc : undefined,
+    });
+  }
+
+  return out.sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0));
+}
+
+/**
+ * 取域名的关键词（Similarweb 口径），DFS 不可用/欠费时的替代源。
+ *
+ * 复用 fetchLergassy / fetchVortex 的缓存 key，同域名 30 天内命中缓存，
+ * 不会因为「先取流量再取关键词」而重复扣费。
+ */
+export async function fetchSimilarwebKeywords(domain: string): Promise<KeywordItem[]> {
+  try {
+    const lg = await fetchLergassy(domain);
+    const kws = lg ? extractSimilarwebKeywords(lg) : [];
+    if (kws.length) return kws;
+  } catch (e) {
+    // 额度超限会在这一层暴露（platform-feature-disabled），不要静默
+    console.warn("[apify] lergassy 取词失败：", e instanceof Error ? e.message : e);
+  }
+  try {
+    const vx = await fetchVortex(domain);
+    return vx ? extractSimilarwebKeywords(vx) : [];
+  } catch (e) {
+    console.warn("[apify] vortex 取词失败：", e instanceof Error ? e.message : e);
+    return [];
   }
 }
 

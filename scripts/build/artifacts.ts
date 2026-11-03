@@ -17,6 +17,7 @@ import { gzipSync } from "node:zlib";
 import {
   tools,
   listedTools,
+  tierOf,
   githubRepos,
   githubUpdatedAt,
   getToolsByScore,
@@ -128,8 +129,11 @@ function tally(values: (string | null | undefined)[]) {
 /** AI 工具榜列表行（客户端筛选/渲染所需字段 + 预渲染 HTML） */
 function toToolRow(t: (typeof tools)[number], rank: number): ToolRow {
   const dw = getDomainWeight(t);
+  // 上游会把缺失的 DR 写成字符串 "n/a"，只认有限数值，否则按无数据处理
+  const drValue = typeof dw.value === "number" && Number.isFinite(dw.value) ? dw.value : null;
   const row: Omit<ToolRow, "h"> = {
     rank,
+    tier: tierOf(t) === "watch" ? "watch" : "core",
     id: t.id,
     domain: t.domain,
     name: t.name,
@@ -145,8 +149,8 @@ function toToolRow(t: (typeof tools)[number], rank: number): ToolRow {
       : t.phUpvotes
         ? `▲ ${formatCount(t.phUpvotes)}`
         : null,
-    dr: dw.value ?? null,
-    drLabel: dw.label ?? null,
+    dr: drValue,
+    drLabel: drValue === null ? null : (dw.label ?? null),
     heat: t.heatScore,
     growth: computeGrowth(t),
     spark: trafficSparklinePoints(t)?.map((v) => Math.round(v * 100)) ?? null,
@@ -181,6 +185,7 @@ function toRepoRow(r: (typeof githubRepos)[number], rank: number): RepoRow {
     forks: r.forks,
     score: s.score,
     grade: s.grade,
+    dv: typeof r.derivative?.space === "number" ? r.derivative.space : null,
     g7: computeStarGrowth(r, 7),
     g30: computeStarGrowth(r, 30),
     // 0-100 整数：88px 宽度下与 4 位小数视觉无差异，体积约为 1/3
@@ -278,6 +283,8 @@ type ModelSource = {
   knowledgeCutoff?: string | null;
   releasedAt?: string | null;
   desc?: string | null;
+  /** 中文简介（enrich:models:zh 生成）；有则列表优先展示 */
+  descZh?: string | null;
   strengths?: string[];
   weaknesses?: string[];
   useCases?: string[];
@@ -324,7 +331,8 @@ function toModelRow(
     value,
     score,
     grade: gradeOf(score),
-    desc: m.desc ?? null,
+    desc: m.descZh ?? m.desc ?? null,
+    descEn: m.desc ?? null,
     knowledgeCutoff: m.knowledgeCutoff ?? null,
     releasedAt: m.releasedAt ?? null,
     updatedShort: formatDateShort(updatedAt),

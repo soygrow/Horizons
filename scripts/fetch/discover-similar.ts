@@ -1,6 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { AITool, AIToolCategory } from "@horizons/shared";
+import {
+  AI_FIT_BLOCKLIST,
+  PLATFORM_BLOCKLIST,
+  type AITool,
+  type AIToolCategory,
+} from "@horizons/shared";
 import "./config"; // 加载 .env.local
 import { extractTrafficMetrics, fetchLergassyMulti } from "./sources/apify";
 import { applyTraffic } from "./apply-traffic";
@@ -22,18 +27,9 @@ const TOOLS_PATH = path.resolve(process.cwd(), "content/aitools.json");
 
 /** 平台/基础设施型大站，不进入工具榜（见 docs/15-AI工具榜收录原则.md A2） */
 const EXCLUDED = new Set([
-  "microsoft.com",
-  "google.com",
-  "apple.com",
-  "amazon.com",
-  "cloudflare.com",
-  "figma.com",
-  "adobe.com",
-  "notion.com",
-  "notion.so",
-  "slack.com",
-  "zoom.us",
-  "1password.com",
+  // A1/A2 与构建端共用同一份名单，避免三处漂移
+  ...PLATFORM_BLOCKLIST,
+  ...AI_FIT_BLOCKLIST,
   "openai.com",
   "chatgpt.com",
   "anthropic.com",

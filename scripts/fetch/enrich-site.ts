@@ -33,6 +33,7 @@ import {
   fetchCompetitors,
 } from "./sources/dataforseo";
 import { chatJSON, hasLLM } from "./sources/llm";
+import { fetchSimilarwebKeywords } from "./sources/apify";
 
 /**
  * 单站增强管线：为指定域名的工具补齐 V5/V6 详情页数据（自建爬虫 + DataForSEO + PH + LLM）。
@@ -188,8 +189,12 @@ function lastPeriod(): string {
 
 async function main(): Promise<void> {
   const domain = parseDomain();
+  /** 只补免费字段：跳过 DataForSEO 与 LLM，仅做页面抓取 + 体检 */
+  const freeOnly = process.argv.includes("--free-only");
   const dry = process.argv.includes("--dry");
-  const analysisOnly = process.argv.includes("--analysis-only");
+  /** 只补 AI 解读（aiInsight + 四模块 + 流量解密），跳过基础标签与创业洞察，省 token */
+  const insightOnly = process.argv.includes("--insight-only");
+  const analysisOnly = process.argv.includes("--analysis-only") || insightOnly;
   console.log(`[enrich-site] 目标：${domain}${dry ? "（dry-run）" : ""}`);
 
   const tools = loadTools();
@@ -263,7 +268,7 @@ async function main(): Promise<void> {
   // 2) DataForSEO：流量（clickstream）/ 关键词 / 排名分布 / 外链 / 竞品 / 相关关键词
   // 注：DFS 只能提供「搜索流量」口径（clickstream_etv），总访问量/渠道占比无来源 → 不采集、不展示
 
-  if (hasDataForSEO()) {
+  if (!freeOnly && hasDataForSEO()) {
     try {
       // 不调 domain_rank_overview：该端点只返回「当前 location 的单条排名概览」，
       // 没有 location_name，拿不到国家分布（实测 items 恒为 1 条），此前一直白花 $0.09/站。
@@ -331,6 +336,29 @@ async function main(): Promise<void> {
     console.log("[enrich-site] 未配置 DataForSEO 凭据，跳过流量/关键词/外链/竞品");
   }
 
+  // 2.5) 关键词兜底：DFS 欠费/失败时，用 Similarweb 的 topKeywords（含搜索量）。
+  // 只在现有词「全部没有搜索量」时触发（含空数组），DFS 有效数据不被覆盖；
+  // 免费模式跳过，避免占用 Apify 平台额度。
+  if (!freeOnly && !keywords.some((k) => k.volume != null)) {
+    try {
+      const sw = await fetchSimilarwebKeywords(domain);
+      if (sw.length) {
+        keywords = sw;
+        if (!keywordCount) keywordCount = sw.length;
+        console.log(
+          `[enrich-site] 关键词兜底（Similarweb）：${sw.length} 个，最高 ${sw[0].term}（${sw[0].volume}/月）`,
+        );
+      } else {
+        console.log("[enrich-site] 关键词兜底无结果（Apify 额度耗尽或无该站数据），保留原值");
+      }
+    } catch (e) {
+      console.warn(
+        "[enrich-site] 关键词兜底失败：",
+        e instanceof Error ? e.message : e,
+      );
+    }
+  }
+
   // 3) Product Hunt 信号
   try {
     const ph = await searchPH(tool.name);
@@ -344,6 +372,26 @@ async function main(): Promise<void> {
     /* ignore */
   }
 
+  }
+
+  // 3.5) 免费模式：只写回抓取与体检结果，跳过 DFS 与 LLM
+  if (freeOnly) {
+    tool.pageStructure = pageStructure;
+    tool.siteAudit = siteAudit;
+    if (siteAudit?.techStack?.length) tool.techStack = siteAudit.techStack;
+    if (pricingPlans?.length) tool.pricing = pricingPlans;
+    if (!tool.contact && homeHtml) {
+      const c = extractContact(homeHtml, tool.url);
+      if (c) tool.contact = c;
+    }
+    tool.collectedAt = new Date().toISOString();
+    if (dry) {
+      console.log(`[enrich-site] ${domain}：dry-run，免费字段未写入`);
+    } else {
+      saveTools(tools);
+      console.log(`[enrich-site] ${domain}：免费字段已写回`);
+    }
+    return;
   }
 
   // 4) LLM 生成（三次调用）
@@ -452,33 +500,35 @@ async function main(): Promise<void> {
   await sleep(300);
   console.log("[enrich-site] LLM#2 解读完成");
 
-  // 调用 3：创业洞察
-  const opp = await chatJSON<{
-    opportunity?: OpportunityScore;
-    monetizationBlueprint?: MonetizationBlueprint;
-    growthPlaybook?: GrowthPlaybook;
-    buildBlueprint?: BuildBlueprint;
-    ideaSparks?: IdeaSpark[];
-    performanceInsight?: PerformanceInsight;
-  }>(SYSTEM_OPPORTUNITY, buildInput(tool, inputData), 7000);
-  if (opp.opportunity) tool.opportunity = opp.opportunity;
-  if (opp.monetizationBlueprint) {
-    tool.monetizationBlueprint = {
-      ...opp.monetizationBlueprint,
-      paymentDetected: opp.monetizationBlueprint.paymentDetected?.length
-        ? opp.monetizationBlueprint.paymentDetected
-        : paymentDetected,
-      // 收入信号由我们自己的流量 × 转化率 × 客单价估算（真实可验证，不被 LLM 改写）
-      monthlyRevenueSignal: revenueEstimate.monthlyRevenue,
-      paymentConversionRate: revenueEstimate.rate,
-      revenueAov: revenueEstimate.aov,
-    };
+  // 调用 3：创业洞察（--insight-only 时跳过，只补解读）
+  if (!insightOnly) {
+    const opp = await chatJSON<{
+      opportunity?: OpportunityScore;
+      monetizationBlueprint?: MonetizationBlueprint;
+      growthPlaybook?: GrowthPlaybook;
+      buildBlueprint?: BuildBlueprint;
+      ideaSparks?: IdeaSpark[];
+      performanceInsight?: PerformanceInsight;
+    }>(SYSTEM_OPPORTUNITY, buildInput(tool, inputData), 7000);
+    if (opp.opportunity) tool.opportunity = opp.opportunity;
+    if (opp.monetizationBlueprint) {
+      tool.monetizationBlueprint = {
+        ...opp.monetizationBlueprint,
+        paymentDetected: opp.monetizationBlueprint.paymentDetected?.length
+          ? opp.monetizationBlueprint.paymentDetected
+          : paymentDetected,
+        // 收入信号由我们自己的流量 × 转化率 × 客单价估算（真实可验证，不被 LLM 改写）
+        monthlyRevenueSignal: revenueEstimate.monthlyRevenue,
+        paymentConversionRate: revenueEstimate.rate,
+        revenueAov: revenueEstimate.aov,
+      };
+    }
+    if (opp.growthPlaybook) tool.growthPlaybook = opp.growthPlaybook;
+    if (opp.buildBlueprint) tool.buildBlueprint = opp.buildBlueprint;
+    if (opp.ideaSparks?.length) tool.ideaSparks = opp.ideaSparks;
+    if (opp.performanceInsight?.overview?.what || opp.performanceInsight?.wedge) tool.performanceInsight = opp.performanceInsight;
+    console.log("[enrich-site] LLM#3 创业洞察完成");
   }
-  if (opp.growthPlaybook) tool.growthPlaybook = opp.growthPlaybook;
-  if (opp.buildBlueprint) tool.buildBlueprint = opp.buildBlueprint;
-  if (opp.ideaSparks?.length) tool.ideaSparks = opp.ideaSparks;
-  if (opp.performanceInsight?.overview?.what || opp.performanceInsight?.wedge) tool.performanceInsight = opp.performanceInsight;
-  console.log("[enrich-site] LLM#3 创业洞察完成");
 
   // 写回
   if (analysisOnly) {

@@ -444,3 +444,5 @@
 {"at":"2026-10-30T05:18:15.825Z","provider":"apify","endpoint":"vortex_data/similarweb-scraper","key":"ilha.app","costUsd":0.0028,"hit":false,"ok":false}
 {"at":"2026-10-30T06:18:19.453Z","provider":"apify","endpoint":"lergassy/similarweb-traffic-scraper","key":"claude.com","costUsd":0,"hit":true,"ok":true}
 {"at":"2026-10-30T09:48:28.872Z","provider":"apify","endpoint":"lergassy/similarweb-traffic-scraper","key":"claude.com","costUsd":0,"hit":true,"ok":true}
+{"at":"2026-11-03T07:48:56.526Z","provider":"apify","endpoint":"lergassy/similarweb-traffic-scraper","key":"coddy.tech","costUsd":0,"hit":false,"ok":false}
+{"at":"2026-11-03T07:48:57.863Z","provider":"apify","endpoint":"vortex_data/similarweb-scraper","key":"coddy.tech","costUsd":0.0028,"hit":false,"ok":false}
