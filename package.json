@@ -23,6 +23,7 @@
     "enrich": "tsx scripts/fetch/enrich.ts",
     "enrich:dry": "tsx scripts/fetch/enrich.ts --dry",
     "enrich:llm": "tsx scripts/fetch/enrich-llm.ts",
+    "enrich:models:zh": "tsx scripts/fetch/enrich-models-zh.ts",
     "screenshot": "tsx scripts/fetch/screenshot.ts",
     "ph:oauth": "tsx scripts/fetch/ph-oauth.ts",
     "trends:collect": "tsx scripts/fetch/trends/run.ts",
