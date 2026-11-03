@@ -18,7 +18,7 @@ export const ACCEPT_SCORE = 40;
 export const AUDIT_INTERVAL_DAYS = 7;
 
 export const DEFAULT_POLICY: EntryPolicy = {
-  version: 3,
+  version: 4,
   updatedAt: "",
   accept: [
     "有人在找一个具体工具或方案去做某件事——赛道拥挤不是拒的理由，拥挤说明需求真实",
@@ -26,9 +26,11 @@ export const DEFAULT_POLICY: EntryPolicy = {
     "新兴协议、开源项目、能力名词，只要周围已出现接入、调试、托管、评测等具体工程需求",
     "独立开发者或两三人团队 3 个月内能做出第一版",
     "不需要牌照、不需要自建算力、不需要地面销售团队",
+    "一人公司自己的经营问题：给 AI 产品定价、控制 token 成本、获客与留存——搜的人就是做产品的人本人，这类词不指向某个工具，但直接决定他能不能活下来",
   ],
   reject: [
     "模型 / 版本发布资讯（gpt-5、llama 4、gemini 3 这类）：搜的人只想知道新旧差异和跑分",
+    "大厂 API / 模型的定价查询词（deepseek api pricing、anthropic api pricing、openai fine tuning price 这类）：搜的人在查价不在找方案，官方文档和 OpenRouter 这类聚合器已经把「查价」做完；判据看主语——主语是厂商价格就拒，主语是自家产品怎么定价、怎么把成本省下来就收",
     "单个小产品的品牌名（Ayven、Ferndesk、Pancake、Busabase 这类）：搜的人是在找这个产品本身，不是找解决方案；只有已成品类代名词的（Figma、Notion、Cursor）例外",
     "纯概念科普的泛词（ai、machine learning、prompt engineering）：没有具体场景",
     "单公司内部功能名、单条新闻事件、纯娱乐梗",
@@ -36,6 +38,7 @@ export const DEFAULT_POLICY: EntryPolicy = {
     "只剩巨头免费功能承接、且没有任何细分角度的方向",
   ],
   notes: [
+    "v4 收敛：榜单里 pricing 类词一度涌进 18 个，其中 deepseek api pricing、anthropic api pricing 这类是纯查价，读者看完只知道多少钱，做不出东西；而 ai saas pricing model、llm cost tracking 是一人公司真在纠结的问题。区别在主语：厂商的价格 vs 自家产品怎么定价和控成本。前一类拒，后一类明确收。",
     "v3 补漏：v2 的排除项漏了「单个小产品名」，实测把 ayven、ferndesk、pancake 这类品牌词收进了榜——它们只有品牌自己的人在搜，读者拿不到任何可迁移的东西。补一条：产品名除非已成品类代名词，一律拒。",
     "v2 校准：v1 把「供给未饱和」当硬门槛，实测 212 个候选只通过 1%，ai resume builder、ai customer feedback 这类真实需求全被误杀。改为排除法——只拒「搜的人拿不到任何可动手的东西」，红海词按 40-60 分收录。",
   ],
@@ -84,12 +87,21 @@ const JUDGE_SYSTEM = `你是趋势榜单的选品编辑，读者是独立开发�
   只有品类词本身（mcp server、mcp、rag pipeline）才收
 - 纯概念科普的泛词：ai、machine learning、prompt engineering，没有具体场景
 - 单公司内部功能名、单条新闻事件、纯娱乐梗
+- 大厂 API / 模型的定价查询词：deepseek api pricing、anthropic api pricing、openai fine tuning price、
+  claude code tokens cost 这类。搜的人在查价，不在找方案；官方文档和 OpenRouter 这类聚合器已经把
+  「查价」这件事做完了，独立开发者最多做个没人用的计算器，读者拿不到可迁移的东西。
+  判据看主语：主语是厂商的价格 → 拒；主语是「我的产品该怎么定价 / 怎么把钱省下来」→ 收。
+  所以 ai saas pricing model、per seat pricing ai、llm cost tracking、monitor ai agent cost
+  这些收——付费方就是做产品的人自己，是一人公司的真问题
 - 必须大额资本或资质才能做：自建算力、GPU 租赁、医疗诊断、法律意见
 - 只剩巨头免费功能承接、且没有任何细分角度的方向
 
 收（都能进榜，只是强弱不同）：
 - 有人在找一个具体工具或方案去做某件事。赛道拥挤不是拒的理由，拥挤说明需求真实
 - 有明确使用场景和可识别人群，付费方是个人用户也算，不必是企业岗位
+- 一人公司自己的经营问题：给 AI 产品定价、控制 token 成本、获客渠道、留存与续费。
+  这类词搜的人就是做产品的人本人，它们不指向「某个工具」，但直接决定他能不能活下来，
+  是榜单里最有行动价值的一类
 - 新兴协议、开源项目、能力名词，只要周围已经出现接入、调试、托管、评测这类具体工程需求
 
 score 是创业切口强度 0-100，只用来区分强弱，不是准入门槛：

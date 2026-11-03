@@ -52,7 +52,9 @@ const SYSTEM = `你是 AI 趋势榜单的资深分析师，服务对象是想找
 
 - normalizedName: 标准名称（模型/产品/能力的正式写法，可含英文）
 - category: 从 ${CATEGORIES.join(" / ")} 中选一个；不是 AI 相关就选 broadtech
-- why: 60 字内中文，一句话说明「为什么升温」，必须引用给定数据（增长率、峰值倍数、证据标题），不要空话
+- why: 90–120 字中文，一句完整的话说明「为什么升温」，必须引用给定数据（增长率、峰值倍数、证据标题），不要空话。
+  这是详情页标题下的主文案，必须能独立读懂：结尾要有落点，禁止写到一半就停；
+  也禁止为了凑字数堆砌，读者是准备动手的创业者，一句废话都会扣分
 - 若给定 editorNote：whoPays 是真正付钱的人，entryAngle 是能开工的切入口。
   此时 why 必须同时回答「谁在为什么问题付费」，opportunities 的第一条必须落在 entryAngle 上；
   禁止写成「值得关注」「前景广阔」这类套话，读者是准备动手的创业者。
@@ -232,7 +234,9 @@ export async function enrichKeyword(params: {
   return {
     normalizedName: str(raw.normalizedName, 60) || keyword,
     category,
-    why: str(raw.why, 80) || `${keyword} 的搜索兴趣在近 7 天高于历史基线。`,
+    // 上限放到 200：原先 80 会把模型写了一半的句子切出「…」，492 个词里 178 个中招。
+    // 页面是整段展示的，宁可长一点也不能让读者看到半句话
+    why: str(raw.why, 200) || `${keyword} 的搜索兴趣在近 7 天高于历史基线。`,
     intentSummary: str(raw.intentSummary, 60),
     ...(params.editor
       ? {

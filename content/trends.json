@@ -813,7 +813,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天搜索较基线增 180%，峰值达基线 3.74 倍；HN 讨论「How are people doing AI evals」与 Vanta 成熟度…",
+      "why": "US 90 天搜索较基线增 180%，峰值达基线 3.74 倍；HN 讨论「How are people doing AI evals」与 Vanta 成熟度，说明 AI 产品团队和独立开发者都在找可落地的评估方法，需要能上传真实用例、自动跑多模型对比并给出回归告警的小团队 eval 平台。",
       "intentSummary": "搜索者想了解如何系统化评估 AI 系统（模型/Agent/RAG），寻找可落地的工具、方法与最佳实践。",
       "firstSeenAt": "2026-10-29",
       "lastSeenAt": "2026-10-29",
@@ -1078,7 +1078,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "近 7 天热度较基线下降 43.3%，峰值仅为基线的 2.81 倍，且无任何点高于基线；HN 同时出现「AI code review bubble」讨论，说明…",
+      "why": "近 7 天热度较基线下降 43.3%，峰值仅为基线的 2.81 倍，且无任何点高于基线；HN 同时出现「AI code review bubble」讨论，说明中小研发团队和开源维护者开始质疑通用工具的效果，转而寻找专攻单一技术栈、支持私有部署和按仓库定价的自托管方案。",
       "intentSummary": "想找能真正减少噪音、可本地运行、能接入现有流程的 AI 代码审查方案",
       "firstSeenAt": "2026-10-29",
       "lastSeenAt": "2026-10-29",
@@ -1331,7 +1331,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "HN 上「比 MCP 更重要」帖 738 分、Skills 发布帖 816 分，GitHub 相关仓库星标超 22 万，说明能力包生态正在形成，用户开始找现成…",
+      "why": "HN 上「比 MCP 更重要」帖 738 分、Skills 发布帖 816 分，GitHub 相关仓库星标超 22 万，说明能力包生态正在形成，用户开始找现成的 skill 来复用；Claude 重度用户和 AI 工作流开发者需要能可视化编辑、本地模拟触发、一键发布并统计调用效果的市场与调试器。",
       "intentSummary": "想找到、安装并管理可复用的 Claude 能力包",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -1863,7 +1863,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "US 90 天热度峰值 40（基线 1.91 倍），但近 7 天回落 18.7%；HN 讨论已从「能写代码」转向维护成本与产出质量（证据 3、5）。",
+      "why": "US 90 天热度峰值 40（基线 1.91 倍），但近 7 天回落 18.7%；HN 讨论已从「能写代码」转向维护成本与产出质量，说明团队不缺能写代码的 agent，缺的是能接进现有仓库、把维护成本真正降下来的方案与评测方法。",
       "intentSummary": "想找能接入现有仓库、真正降低维护成本的编码 agent 与评测方法",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -2389,7 +2389,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "US 90天热度低于基线（baseline 13.2，recent7 11.7，-11.4%），但HN上本地LLM部署讨论持续高热（648/572分），说明关…",
+      "why": "US 90天热度低于基线（baseline 13.2，recent7 11.7，-11.4%），但HN上本地LLM部署讨论持续高热（648/572分），说明关注点从概念转向实操；隐私敏感的个人开发者和小团队在找能扫描本机硬件、推荐可跑模型并一键配置 Ollama/vLLM 参数的选型助手。",
       "intentSummary": "想在自己硬件上跑模型，解决选型、量化、显存与部署问题",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -2653,7 +2653,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "US 90 天热度仅 5.6、峰值为基线 1.83 倍，且 HN 出现「RIP, vector database」（405 分）与「wrong abstrac…",
+      "why": "US 90 天热度仅 5.6、峰值为基线 1.83 倍，且 HN 出现「RIP, vector database」（405 分）与「wrong abstraction」讨论，说明做 RAG 应用的独立开发者和小团队不再盲目选型，而是需要按延迟、成本、过滤能力、托管方式打分的对比站，附一键迁移脚本和本地 docker-compose 模板。",
       "intentSummary": "想搞清向量库是否还值得选、怎么选型，以及现有索引怎么调优。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -3181,7 +3181,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "medium",
-      "why": "US 90 天热度基线 76、峰值 89（1.17 倍），HN 多篇千分级讨论（源码泄露 2095 分、隐写标记 2445 分），说明团队级配置与治理需求在升…",
+      "why": "US 90 天热度基线 76、峰值 89（1.17 倍），HN 多篇千分级讨论（源码泄露 2095 分、隐写标记 2445 分），说明团队级配置与治理需求在升温；重度命令行开发者和小团队工程负责人需要 hooks/MCP 配置管理器，提供禁 rm、禁 push main 等安全护栏和团队共享配置包。",
       "intentSummary": "想了解 Claude Code 怎么接入、配置 CLAUDE.md/MCP、控制成本与权限",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -3734,7 +3734,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "US 90天基线6、峰值11（1.82倍），但近7日均值5.1、环比-14.9%，热度回落；HN 讨论转向可访问性质疑与「Lovable for agents…",
+      "why": "US 90天基线6、峰值11（1.82倍），但近7日均值5.1、环比-14.9%，热度回落；HN 讨论转向可访问性质疑与「Lovable for agents」，说明非技术创始人和独立开发者不再满足于生成原型，而是需要把 Lovable 导出项目一键接 Supabase、配域名、加鉴权和备份的上线托管服务。",
       "intentSummary": "想用自然语言生成全栈应用，并解决生成后的部署与后端接入。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -4509,7 +4509,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "medium",
-      "why": "US 近30天热度峰值15为基线1.44倍，但近7天降至9.7、环比-6.5%，说明关注度仍高于基线却已回落，开源替代品（presenton ★11510）正…",
+      "why": "US 近30天热度峰值15为基线1.44倍，但近7天降至9.7、环比-6.5%，说明关注度仍高于基线却已回落，开源替代品（presenton ★11510）正分流用户；做销售提案和课程材料的个人与小团队需要能上传品牌规范、批量生成同风格提案并导出 PPTX 的品牌模板工具。",
       "intentSummary": "想用 AI 快速把文档或想法生成演示稿，并了解导出与品牌模板能力",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -5013,7 +5013,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天搜索较基线高 13 个点、近 7 天涨 18.8%、峰值达基线 1.59 倍；开源本地替代 VoiceStudio 获 9.4 万星，说明语音克…",
+      "why": "US 90 天搜索较基线高 13 个点、近 7 天涨 18.8%、峰值达基线 1.59 倍；开源本地替代 VoiceStudio 获 9.4 万星，说明语音克隆与配音需求正从尝鲜转向批量生产，个人创作者和小型工作室在找能稳定输出多角色音频的工具，所以谁能把脚本到成品音频的流程自动化，谁就接住这波需求。",
       "intentSummary": "找 ElevenLabs 语音克隆/配音的用法、价格与可替代方案",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -5269,7 +5269,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 近7日热度62.3、较基线增145.3%、峰值达3.94倍，GitHub 出现 Hedra 视频 API 的 MCP 封装与内容流水线仓库，说明角色说话…",
+      "why": "US 近7日热度62.3、较基线增145.3%、峰值达3.94倍，GitHub 出现 Hedra 视频 API 的 MCP 封装与内容流水线仓库，说明角色说话视频正被批量生产，虚拟主播和营销短视频团队在找固定形象、多脚本快速出片的流水线，所以谁能把角色视频的批量生成与平台适配做成一键流程，谁就满足这个需求。",
       "intentSummary": "找 Hedra 这类角色说话视频工具怎么用、多少钱、能否替代真人出镜",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -6296,7 +6296,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 7日热度31.7，较基线升58.2%，峰值49为基线2.44倍；HN 2026年仍有 ATS 关键词匹配新品，GitHub 本地优先简历工具获星，说明求…",
+      "why": "US 7日热度31.7，较基线升58.2%，峰值49为基线2.44倍；HN 2026年仍有 ATS 关键词匹配新品，GitHub 本地优先简历工具获星，说明求职者对能过筛选的简历工具需求持续，转行和海外求职者在找针对岗位 JD 自动优化关键词并检测 ATS 匹配度的工具，所以谁能把简历改写与岗位匹配做成按次服务，谁就抓住这个需求。",
       "intentSummary": "求职者想用 AI 快速生成或优化简历，通过 ATS 筛选并匹配目标岗位。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -6553,7 +6553,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "medium",
-      "why": "Trends 30 天峰值 11、为基线 8.6 的 1.28 倍，但近 7 日增长 -0.4%，热度平稳；HN 与 GitHub 上开源替代（open-ph…",
+      "why": "Trends 30 天峰值 11、为基线 8.6 的 1.28 倍，但近 7 日增长 -0.4%，热度平稳；HN 与 GitHub 上开源替代（open-photo-editor 等）持续出现，说明通用修图需求已被大厂覆盖，电商卖家和二手卖家在找能批量处理主图、适配多平台尺寸并去水印的工具，所以谁能把电商主图批量处理做成按张或包月服务，谁就满足这个细分需求。",
       "intentSummary": "用户想找能用文字指令完成修图、去背景、增强画质的 AI 图片编辑工具。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -7586,7 +7586,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "medium",
-      "why": "US 90 天峰值 28 为基线 1.88 倍，但近 7 天降至 13（-12.6%），热度回落；HN 上 Sourcetable（188 分）与 DashG…",
+      "why": "US 90 天峰值 28 为基线 1.88 倍，但近 7 天降至 13（-12.6%），热度回落；HN 上 Sourcetable（188 分）与 DashG 等产品出现，说明通用 AI 表格热度退潮，中小企业财务和电商卖家在找能接店铺 CSV、用自然语言做表格问答和批量改价的工具，所以谁能把表格操作与电商场景深度结合，谁就接住这个务实需求。",
       "intentSummary": "想用自然语言在表格里生成公式、清洗数据、做对账与看板。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -8353,7 +8353,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天热度基线 6.8→近 7 天 10.9（+60.1%），峰值 22 为基线 3.24 倍；HN 出现 llms.txt 扫描、开源 SEOBot…",
+      "why": "US 90 天热度基线 6.8→近 7 天 10.9（+60.1%），峰值 22 为基线 3.24 倍；HN 出现 llms.txt 扫描、开源 SEOBot 等项目，说明 AI 搜索正在改变流量入口，内容站站长和出海小团队在找能监测品牌在 AI 回答中引用与排名的工具，所以谁能把 AI 搜索可见度监测做成按关键词订阅的服务，谁就抓住这个新需求。",
       "intentSummary": "找能自动做关键词聚类、内容简报与批量草稿的 AI SEO 工具。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -9157,7 +9157,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "Trends 峰值达基线 23 倍，但近 7 日热度归零，说明是脉冲式关注；vanna（★23.8k）、WrenAI（★18k）等开源项目持续积累，需求真实但…",
+      "why": "Trends 峰值达基线 23 倍，但近 7 日热度归零，说明是脉冲式关注；vanna（★23.8k）、WrenAI（★18k）等开源项目持续积累，需求真实但通用产品难留存，数据分析师和中小 SaaS 团队在找能接自己数据库、带权限与审计的自托管问数工具，所以谁能把 text-to-SQL 做成开箱即用的自托管方案，谁就满足这个刚需。",
       "intentSummary": "想让 AI 把自然语言问题直接转成可执行 SQL 查询",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -9404,7 +9404,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天搜索较基线升 127.4%、峰值达 3.73 倍，HN 出现无代码客服 agent 与 LangGraph 50 个业务 agent 方案，企业…",
+      "why": "US 90 天搜索较基线升 127.4%、峰值达 3.73 倍，HN 出现无代码客服 agent 与 LangGraph 50 个业务 agent 方案，企业需求正从概念转向落地，中小企业主和运营负责人在找能串联 CRM 与表格、带调试和人工接管的业务流程 agent 搭建器，所以谁能把 agent 搭建做成按运行次数收费的轻量工具，谁就接住这波企业自动化需求。",
       "intentSummary": "中小企业主想找能直接落地的业务 agent 方案与工具。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -9660,7 +9660,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天热度较基线高 13 个点、近 7 天涨 46.2%、峰值达基线 5.45 倍，HN 已出现「AI 自动化 agency 主理人日常」类内容，说明…",
+      "why": "US 90 天热度较基线高 13 个点、近 7 天涨 46.2%、峰值达基线 5.45 倍，HN 已出现「AI 自动化 agency 主理人日常」类内容，说明中小企业主和想转型的自由职业者正在寻找可复制的自动化服务模式，他们需要按行业预置的工作流模板和部署脚本，而不是从零搭建。",
       "intentSummary": "想低成本启动或转型做 AI 自动化服务生意，找模板、定价与获客方法。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -9907,282 +9907,6 @@
         "audience": "中小企业主、想转型做自动化服务的自由职业者",
         "entryAngle": "选一个具体行业（如牙科诊所预约+回访），做一套预置工作流模板+部署脚本，按行业打包售卖，附上线清单。",
         "whyAccepted": "大量小团队在找可复用的自动化交付方案，需求真实但服务商已多，需靠垂直行业切口差异化。"
-      }
-    },
-    {
-      "slug": "ai-saas-pricing",
-      "keyword": "ai saas pricing",
-      "normalizedName": "AI SaaS Pricing",
-      "category": "business",
-      "region": "US",
-      "status": "gaining",
-      "confidence": "high",
-      "why": "US 90天搜索增长181.6%，峰值达基线4.69倍；HN 讨论「AI SaaS 定价」与 Uniqalc 等工具出现，反映创始人急需成本定价方法。",
-      "intentSummary": "AI SaaS 创始人想了解如何基于 token 成本定价、设计套餐并测算毛利。",
-      "firstSeenAt": "2026-10-30",
-      "lastSeenAt": "2026-10-30",
-      "updatedAt": "2026-10-30T02:15:55.937Z",
-      "series": {
-        "start": "2026-10-01",
-        "stepDays": 1,
-        "values": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          9,
-          0,
-          5,
-          7,
-          7,
-          9,
-          6,
-          6,
-          10,
-          6,
-          6,
-          7,
-          8,
-          5,
-          0
-        ]
-      },
-      "trendParts": {
-        "growth": 95,
-        "persistence": 86,
-        "breakout": 69,
-        "novelty": 100,
-        "reliability": 100
-      },
-      "oppParts": {
-        "demand": 75,
-        "wedge": 80,
-        "seo": 70,
-        "feasibility": 85,
-        "timing": 80
-      },
-      "sources": [
-        {
-          "label": "Google Trends · Explore（90 天，US）",
-          "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20saas%20pricing",
-          "site": "trends.google.com",
-          "kind": "google_trends"
-        },
-        {
-          "label": "手工种子词",
-          "url": "https://trends.google.com/trends/explore",
-          "site": "trends.google.com",
-          "kind": "google_trends"
-        },
-        {
-          "label": "We priced our AI SaaS product",
-          "url": "https://www.commandbar.com/blog/ai-saas-pricing/",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2024-04-02"
-        },
-        {
-          "label": "Show HN: I Made SaaS Pricing Optimizer (AI-Powered Pricing Optimizations)",
-          "url": "https://ai-pricing.co/?ref=hacker-news",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2023-11-06"
-        },
-        {
-          "label": "Pricing AI Enabled SaaS",
-          "url": "https://techcrunch.com/2023/06/01/factors-to-consider-before-pricing-ai-enabled-saas/",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2023-06-03"
-        },
-        {
-          "label": "Show HN: Uniqalc – No-code calculators for SaaS and AI pricing",
-          "url": "https://www.uniqalc.com/",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2025-09-21"
-        },
-        {
-          "label": "HugoBlox/hugo-theme-saas-landing-page（★42）",
-          "url": "https://github.com/HugoBlox/hugo-theme-saas-landing-page",
-          "site": "github.com",
-          "kind": "repo",
-          "publishedAt": "2023-12-03"
-        },
-        {
-          "label": "shalintripathi/saas-marketing-agents（★30）",
-          "url": "https://github.com/shalintripathi/saas-marketing-agents",
-          "site": "github.com",
-          "kind": "repo",
-          "publishedAt": "2026-04-02"
-        }
-      ],
-      "evidence": [
-        {
-          "claim": "Google Trends 显示 'ai saas pricing' 在 US 近90天相对热度从基线2.1升至近期6，增长181.6%，峰值10为基线4.69倍。",
-          "claimType": "fact",
-          "date": "2026-10-01",
-          "detail": "series 数据：baseline 2.1, recent7 6, growth7Pct 181.6, peak 10, peakMultiple 4.69",
-          "sources": [
-            {
-              "label": "Google Trends · Explore（90 天，US）",
-              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20saas%20pricing",
-              "site": "trends.google.com",
-              "kind": "google_trends"
-            }
-          ]
-        },
-        {
-          "claim": "HN 社区已有多次关于 AI SaaS 定价的讨论与工具发布，如 'We priced our AI SaaS product' 和 Uniqalc。",
-          "claimType": "fact",
-          "date": "2024-04-02",
-          "detail": "证据2、3、4、5 均为 HN 相关帖子",
-          "sources": [
-            {
-              "label": "We priced our AI SaaS product",
-              "url": "https://www.commandbar.com/blog/ai-saas-pricing/",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2024-04-02"
-            },
-            {
-              "label": "Show HN: I Made SaaS Pricing Optimizer (AI-Powered Pricing Optimizations)",
-              "url": "https://ai-pricing.co/?ref=hacker-news",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2023-11-06"
-            },
-            {
-              "label": "Pricing AI Enabled SaaS",
-              "url": "https://techcrunch.com/2023/06/01/factors-to-consider-before-pricing-ai-enabled-saas/",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2023-06-03"
-            },
-            {
-              "label": "Show HN: Uniqalc – No-code calculators for SaaS and AI pricing",
-              "url": "https://www.uniqalc.com/",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2025-09-21"
-            }
-          ]
-        },
-        {
-          "claim": "现有供给多为零散讨论或轻量计算器，缺少结合模型调用量与套餐结构的单位经济测算工具。",
-          "claimType": "inference",
-          "detail": "基于 HN 帖子与 GitHub 仓库（如 Uniqalc 为 no-code 计算器）判断",
-          "sources": [
-            {
-              "label": "Show HN: I Made SaaS Pricing Optimizer (AI-Powered Pricing Optimizations)",
-              "url": "https://ai-pricing.co/?ref=hacker-news",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2023-11-06"
-            },
-            {
-              "label": "Show HN: Uniqalc – No-code calculators for SaaS and AI pricing",
-              "url": "https://www.uniqalc.com/",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2025-09-21"
-            }
-          ]
-        }
-      ],
-      "intents": [
-        {
-          "intent": "howto",
-          "share": 1,
-          "queries": [
-            "how to price ai saas product",
-            "ai saas pricing model token cost"
-          ]
-        },
-        {
-          "intent": "learn",
-          "share": 0,
-          "queries": [
-            "ai saas pricing strategy",
-            "pricing ai enabled saas"
-          ]
-        },
-        {
-          "intent": "problem",
-          "share": 0,
-          "queries": [
-            "ai saas gross margin calculator",
-            "token cost pricing calculator"
-          ]
-        }
-      ],
-      "relatedQueries": [
-        "ai saas pricing model",
-        "how to price ai saas",
-        "token based pricing saas",
-        "ai saas gross margin",
-        "ai product pricing calculator",
-        "saas pricing optimizer ai",
-        "pricing ai features",
-        "ai saas unit economics"
-      ],
-      "competitors": [
-        "Uniqalc",
-        "SaaS Pricing Optimizer",
-        "CommandBar Blog"
-      ],
-      "opportunities": [
-        {
-          "type": "product",
-          "title": "AI 产品毛利测算器：输入模型/调用量/套餐，输出单位经济与推荐定价档位",
-          "why": "editorNote 明确 entryAngle；HN 多次讨论 token 成本定价痛点，现有工具（Uniqalc）仅做 no-code 计算器，未覆盖模型成本与套餐结构。",
-          "effort": "中",
-          "evidence": "证据2、3、5；editorNote"
-        },
-        {
-          "type": "content",
-          "title": "「AI SaaS 定价实战」系列：拆解 token 成本、毛利模型与套餐设计",
-          "why": "搜索意图中 howto 占 50%，learn 占 30%，但 HN 讨论零散，缺少系统化内容；可承接搜索流量并转化工具用户。",
-          "effort": "低",
-          "evidence": "证据2、4；intents 数据"
-        },
-        {
-          "type": "opensource",
-          "title": "开源的 AI SaaS 定价计算库（Python/TS），支持模型成本与套餐模拟",
-          "why": "GitHub 上仅有 landing page 主题和营销 agents，无专门定价计算库；开源可建立信任并导流付费报告。",
-          "effort": "中",
-          "evidence": "证据6、7；repoHits"
-        }
-      ],
-      "actions": [
-        {
-          "verdict": "mvp",
-          "action": "先做免费测算器 MVP：输入模型、调用量、套餐结构，输出单位经济模型和推荐定价档位，付费导出报告。",
-          "reason": "需求增长明确（181.6%），供给稀缺，独立开发可行性高（85），editorNote 给出直接切入口。",
-          "uncertainty": "搜索量绝对值仍低（峰值10），需验证付费意愿；大模型厂商可能内置成本计算器。"
-        },
-        {
-          "verdict": "content",
-          "action": "同步发布「AI SaaS 定价指南」长文与案例，嵌入测算器作为 lead magnet。",
-          "reason": "howto 意图占 50%，内容可低成本获取搜索流量并验证需求。",
-          "uncertainty": "内容竞争可能来自 SaaS 定价博客，需差异化聚焦 token 成本。"
-        }
-      ],
-      "editorNote": {
-        "audience": "AI SaaS 独立开发者、小团队创始人",
-        "entryAngle": "做一个把模型调用成本、毛利、免费额度、超额策略一起算的定价模拟器，输入用量曲线直接输出三档套餐和盈亏平衡点。",
-        "whyAccepted": "AI 产品按 token/按席位定价普遍算不清成本，创始人有真实决策需求，但已有若干计算器类工具。"
       }
     },
     {
@@ -10466,7 +10190,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "US 搜索 30 天峰值 47（1.43 倍基线），但近 7 天降至 27.6（-16.1%）；HN 上 EuConform、OpenComplAI 等开源合…",
+      "why": "US 搜索 30 天峰值 47（1.43 倍基线），但近 7 天降至 27.6（-16.1%）；HN 上 EuConform、OpenComplAI 等开源合规工具出现，说明面向欧洲市场的中小 AI 产品团队在找能快速自查模型用途、数据来源并生成风险分级报告和文档清单的轻量工具，而不是昂贵的合规咨询。",
       "intentSummary": "企业寻找 AI 合规自查、风险分级与文档生成方案，替代昂贵律所。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -11781,7 +11505,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 近7日热度较基线升58%，峰值达基线4.08倍；HN 出现 GitHub Agentic Workflows（302分）与工作流调试类 Show HN，…",
+      "why": "US 近7日热度较基线升58%，峰值达基线4.08倍；HN 出现 GitHub Agentic Workflows（302分）与工作流调试类 Show HN，说明做 AI 自动化的独立开发者与两三人小团队在找能录制、回放并单步重跑多步 agent 运行的调试器，以定位失败步骤，而不是靠日志猜测。",
       "intentSummary": "想搭建、编排并调试多步 agent 工作流，弄清工具调用与失败定位。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -12565,7 +12289,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "HN 446 分融资帖与 2850 星 skills 仓库显示，团队正为 LLM 输出不可控付费，但搜索热度仅 6.6、低于基线 14.1，说明认知尚未跟上产…",
+      "why": "HN 446 分融资帖与 2850 星 skills 仓库显示，团队正为 LLM 输出不可控付费，但搜索热度仅 6.6、低于基线 14.1，说明认知尚未跟上产品需求；用 TypeScript 做 AI 应用的独立开发者与小团队需要 TS 优先的结构化输出库，用 zod schema 在编译期推导类型并内置重试与流式解析。",
       "intentSummary": "找能约束 LLM 输出结构、编译期校验的 TS 方案",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -13067,7 +12791,7 @@
       "region": "US",
       "status": "breaking",
       "confidence": "high",
-      "why": "US 90 天搜索从基线 12 升至近 7 天 36.3（+201.3%，峰值 3.4 倍），HN 上 YTShortsDL、YTVidHub 等批量下载/字…",
+      "why": "US 90 天搜索从基线 12 升至近 7 天 36.3（+201.3%，峰值 3.4 倍），HN 上 YTShortsDL、YTVidHub 等批量下载/字幕工具出现，说明个人用户和自媒体运营在找批量转写与多语言字幕导出方案，而不是单纯下载，按分钟计费并接入垂直内容站分发正对应这一需求。",
       "intentSummary": "想找能批量下载 YouTube 视频/字幕并顺带做转写、摘要的工具。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -14358,7 +14082,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 近7日热度9.3、较基线4.1增长127%，峰值达基线3.91倍；插件目录分散（awesome-ai-plugins ★914），用户按场景挑插件缺实测…",
+      "why": "US 近7日热度9.3、较基线4.1增长127%，峰值达基线3.91倍；插件目录分散（awesome-ai-plugins ★914），用户按场景挑插件缺实测，说明重度 ChatGPT 个人用户和小型团队运营需要按岗位场景筛选并附可复现测试用例的插件榜单，而不是靠 star 数盲选。",
       "intentSummary": "找能在具体工作场景里真正好用的 ChatGPT 插件，并比较优劣。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -14872,7 +14596,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "7 日热度 10.4，较基线 4.3 增长 139.9%，峰值达基线 23 倍；HN 上 Plandex v2 获 257 分，DeepSeek V4 讨论聚…",
+      "why": "7 日热度 10.4，较基线 4.3 增长 139.9%，峰值达基线 23 倍；HN 上 Plandex v2 获 257 分，DeepSeek V4 讨论聚焦，说明自托管偏好者和小团队技术负责人在找按许可证、依赖模型、上下文长度和社区活跃度结构化对比的开源编码 agent 数据库，并希望有 Docker 试跑模板降低评估成本。",
       "intentSummary": "找可自托管、许可证清晰、能跑真实项目的开源编码 agent 并做对比选型。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -16155,7 +15879,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "90天US趋势出现100峰值，近期热度14.3，但搜索量0k/月，说明概念热而搜索需求未起；HN上Mutiny等ABM个性化产品获105点，验证B2B市场付费…",
+      "why": "90天US趋势出现100峰值，近期热度14.3，但搜索量0k/月，说明概念热而搜索需求未起；HN上Mutiny等ABM个性化产品获105点，验证B2B市场付费，B2B中小企业的市场负责人和独立增长顾问需要垂直行业的轻量ABM工具，用公开数据自动生成目标账户清单加个性化外联草稿。",
       "intentSummary": "寻找基于目标账户的自动化营销工具，实现精准获客与个性化外联。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -16395,7 +16119,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天热度较基线高 12 个点、近 7 天涨 81.1%、峰值达基线 8.26 倍，HN 上 Crayon AI、Seedream 4.0 等图片助手…",
+      "why": "US 90 天热度较基线高 12 个点、近 7 天涨 81.1%、峰值达基线 8.26 倍，HN 上 Crayon AI、Seedream 4.0 等图片助手讨论活跃，说明电商卖家和社交运营正为批量出图找工具，所以谁在找能一键适配多平台尺寸、直接对接店铺的图片助手，就是独立开发者做电商场景切入口的机会。",
       "intentSummary": "想找能处理图片的 AI 助手，做生成、编辑或批量处理。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -16658,7 +16382,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "US 搜索 7 日增 218.6%、峰值达基线 6.97 倍，HN 出现 Mistral OCR 对比 Gemini 2.0 Flash 的评测，说明用户正为…",
+      "why": "US 搜索 7 日增 218.6%、峰值达基线 6.97 倍，HN 出现 Mistral OCR 对比 Gemini 2.0 Flash 的评测，说明用户正为批量文档识别寻找更准的管线，所以谁在找能处理手写票据、多栏 PDF 并输出结构化 JSON 的 OCR 服务，就是开发者按页收费封装 Gemini 调用的需求。",
       "intentSummary": "寻找用 Gemini 做 OCR 的具体方法、效果对比与接入方式。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -16918,7 +16642,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90天热度从基线1.1升至近7日4.4（+307%），峰值13为基线12倍；HN 出现跨 agent 发现与信任、DNS 发现等讨论，说明多 agent…",
+      "why": "US 90天热度从基线1.1升至近7日4.4（+307%），峰值13为基线12倍；HN 出现跨 agent 发现与信任、DNS 发现等讨论，说明多 agent 协作正从概念走向编排，所以谁在找能定义 source、filter、dedupe、report 四段的可跑脚手架，就是小团队需要开源发现编排工具并愿为托管版付费的信号。",
       "intentSummary": "用户想找多 agent 发现、编排与信任接入的可落地方案。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -18479,7 +18203,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "近7日热度14.3、仅1个点高于基线，峰值100；Meilisearch（★59713）与xerj（★17594）等搜索API项目活跃，说明开发者正在为RAG…",
+      "why": "近7日热度14.3、仅1个点高于基线，峰值100；Meilisearch（★59713）与xerj（★17594）等搜索API项目活跃，说明开发者正在为RAG 和 Agent 产品寻找可替换的搜索后端，所以谁在找统一接口、自动 fallback、带成本对比面板的聚合网关，就是按调用量收费的多供应商搜索 API 需求。",
       "intentSummary": "找能接入RAG/Agent的搜索API，比较价格、质量与接入方式",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -18737,7 +18461,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天趋势 7 日热度 23.9、较基线涨 585.9%、峰值达基线 20.7 倍；HN 讨论「AI 从源码生成可靠 demo」与 Fraym 等工具…",
+      "why": "US 90 天趋势 7 日热度 23.9、较基线涨 585.9%、峰值达基线 20.7 倍；HN 讨论「AI 从源码生成可靠 demo」与 Fraym 等工具，说明 SaaS 创始人正为落地页演示发愁，所以谁在找输入产品 URL 就能生成可嵌入交互 demo 的生成器，就是按站点订阅的独立开发者机会。",
       "intentSummary": "找能快速生成产品演示视频或交互 demo 的 AI 工具与方法",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -18994,7 +18718,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天搜索热度从基线 1.8 升至近期 8.1（+356.8%），峰值 12 为基线 6.73 倍；Show HN 上低延迟、白标语音 agent 项…",
+      "why": "US 90 天搜索热度从基线 1.8 升至近期 8.1（+356.8%），峰值 12 为基线 6.73 倍；Show HN 上低延迟、白标语音 agent 项目频出，说明中小企业在找能快速上线的语音客服方案，所以谁在找能实时显示首字延迟、打断率并回放录音的调试面板，就是按通话量收费的语音 agent 平台需求。",
       "intentSummary": "想搭建或选型语音 agent 平台，关注延迟、电话接入与白标转售。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -19268,7 +18992,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天热度从基线 6.3 升至近 7 天 13.6（+116.8%），峰值达基线 4.15 倍；HubSpot 推出 ChatGPT 深度研究连接器、…",
+      "why": "US 90 天热度从基线 6.3 升至近 7 天 13.6（+116.8%），峰值达基线 4.15 倍；HubSpot 推出 ChatGPT 深度研究连接器、WADeck 等 AI CRM 出现，说明销售团队想用自然语言管客户，所以谁在找能语音录入跟进、自动生成下一步动作的对话式 CRM 前端，就是接 HubSpot API 做单人销售版的机会。",
       "intentSummary": "想用 ChatGPT 对话方式录入、查询和管理 CRM 客户数据。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -20029,7 +19753,7 @@
       "region": "US",
       "status": "breaking",
       "confidence": "high",
-      "why": "US 近7日热度18.6、较基线5.8增221%、峰值达基线3.98倍，HN 出现 Token-warden 等「AI 助手办公室管家」项目，说明小团队在找能…",
+      "why": "US 近7日热度18.6、较基线5.8增221%、峰值达基线3.98倍，HN 出现 Token-warden 等「AI 助手办公室管家」项目，说明小团队在找能自动处理行政杂务的轻工具，所以谁在找只读邮件日历、生成每日待办与催办清单并一键发跟进邮件的极简助手，就是远程团队运营愿意付费的单点需求。",
       "intentSummary": "想找能自动处理邮件、日历、待办与催办的 AI 行政助手，替代人工办公室管理。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -20829,7 +20553,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "US 90天峰值24、为基线3倍，近7天8.4高于基线5.4%；HN「Measuring AI agent autonomy」119分与ralph-loop-…",
+      "why": "US 90天峰值24、为基线3倍，近7天8.4高于基线5.4%；HN「Measuring AI agent autonomy」119分与ralph-loop- 等讨论显示，开发者不再满足于“能跑”，而是想知道 agent 每一步为什么这么决策、权限边界在哪、出错如何回滚。所以做 agent 产品的独立开发者正在找可观测层：记录决策、权限申请与回滚点，输出可读执行报告，先支持 2 个主流框架。",
       "intentSummary": "想了解agent能自主到什么程度，以及如何控制其权限与中断恢复。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -21087,7 +20811,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "近7日热度较基线降55.3%，但峰值达基线2.77倍；Reflection AI获130M融资、SpaceX 6.3B算力交易等新闻推高关注，开发者对agen…",
+      "why": "近7日热度较基线降55.3%，但峰值达基线2.77倍；Reflection AI获130M融资、SpaceX 6.3B算力交易等新闻推高关注，开发者对agen t 的自我反思循环既好奇又难验证效果。所以调 agent 效果的独立开发者需要反思循环调试器：同一任务跑多轮 self-critique，对比每轮输出差异并标出哪次反思真正改进了结果。",
       "intentSummary": "开发者想了解如何用反思循环提升agent输出质量，并寻找调试与评测工具。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -21626,7 +21350,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "US 90 天序列峰值达基线 5.58 倍、近 7 天涨 19.5%，HN 上 Nano AI、Pixlio、Seedream4 等免费编辑器密集发布，说明免…",
+      "why": "US 90 天序列峰值达基线 5.58 倍、近 7 天涨 19.5%，HN 上 Nano AI、Pixlio、Seedream4 等免费编辑器密集发布，说明免 费工具已把“修图”门槛打到零，但普通用户仍卡在“不知道提示词怎么写”。所以个人创作者和社媒运营在找按场景分类的提示词库加一键套用工具，免费引流、高级模板订阅。",
       "intentSummary": "找免费可用的 AI 修图提示词与能直接套用的编辑工具",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -22162,7 +21886,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 近 7 天热度 4.9、较基线涨 96%，峰值达基线 4.04 倍；HN 出现 TranslateMyCall、Vibrato 等免费 AI 通话产品，…",
+      "why": "US 近 7 天热度 4.9、较基线涨 96%，峰值达基线 4.04 倍；HN 出现 TranslateMyCall、Vibrato 等免费 AI 通话产品，说明个人和小商家对“AI 替自己接电话”的意愿在快速上升。所以个人用户和小商家在找按分钟计费、开箱即用的 AI 接听电话 SaaS，先做美甲/餐饮预约提醒这一垂直场景。",
       "intentSummary": "想找能免费让 AI 代打电话、接听或翻译通话的工具。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -23201,7 +22925,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天相对热度从基线 16.9 升至近 7 天 31.9（+88.4%），峰值 77 为基线 4.55 倍；HN 讨论 Reddit Answers …",
+      "why": "US 90 天相对热度从基线 16.9 升至近 7 天 31.9（+88.4%），峰值 77 为基线 4.55 倍；HN 讨论 Reddit Answers 与 AI 搜索把评论变广告，说明用户想绕过广告直接挖真实痛点。所以独立开发者、跨境电商选品和内容营销个人在找 Reddit 语义搜索+痛点聚类工具，输入品类词自动输出高频抱怨和未满足需求清单，按周订阅。",
       "intentSummary": "想用 AI 检索 Reddit 帖子，挖选品、舆情与用户痛点",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -23460,7 +23184,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "US 90 天趋势峰值达基线 23 倍，但近 7 天归零、仅 1 个点高于基线，说明需求是脉冲式而非持续；HN 上 AI HUD、Oaki 等求职工具反复出现…",
+      "why": "US 90 天趋势峰值达基线 23 倍，但近 7 天归零、仅 1 个点高于基线，说明需求是脉冲式而非持续；HN 上 AI HUD、Oaki 等求职工具反复出现，反映求职者只在投递窗口期集中找工具。所以主动求职的白领、转行者和应届生在找垂直岗位的 AI 求职助手：抓取目标公司招聘页+内推渠道，自动匹配简历并生成定制化申请材料，按求职周期一次性收费。",
       "intentSummary": "想找能替自己筛岗位、改简历、投申请的 AI 工具，最好直接拿到面试。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -24249,7 +23973,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天相对热度从基线 6.2 升至近 7 日 11.9（+92.1%），峰值 30 达基线 4.86 倍；HN 多次讨论 Gemini、Seedanc…",
+      "why": "US 90 天相对热度从基线 6.2 升至近 7 日 11.9（+92.1%），峰值 30 达基线 4.86 倍；HN 多次讨论 Gemini、Seedanc e 的演示视频被揭穿摆拍，说明观众对“假 demo”警惕，开发者却仍需要真材实料的展示。所以独立开发者和一人产品市场团队在找“录屏转产品演示”工具：上传屏幕录制，自动加缩放高亮、字幕和背景音乐，导出 30 秒竖版短视频，免费 3 条后订阅。",
       "intentSummary": "想做出或辨别可信的 AI 产品演示视频",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -24510,7 +24234,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "Trends 峰值达基线 23 倍但近 7 天归零，HN 上 2025-07 至 2026-07 连续出现 4 个免费 AI 可见性工具帖，说明需求脉冲式出现…",
+      "why": "Trends 峰值达基线 23 倍但近 7 天归零，HN 上 2025-07 至 2026-07 连续出现 4 个免费 AI 可见性工具帖，说明需求脉冲式出现，品牌方想知道自己在 AI 回答里是否被提及。所以做内容站和 SaaS 的独立开发者、小团队增长负责人在找免费检测页：输入域名，抓取 ChatGPT/Perplexity 回答里是否提及该品牌，输出缺失关键词清单并给出可复制的改写文案，用邮箱换报告做获客。",
       "intentSummary": "想免费查自己的品牌在 ChatGPT、Perplexity 回答里有没有被提到。",
       "firstSeenAt": "2026-10-30",
       "lastSeenAt": "2026-10-30",
@@ -25043,7 +24767,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "搜索热度峰值达基线 15.8 倍，但近 7 天归零；HN 上 Aqua Voice 获 716 分、离线听写 Yapper 与局域网转写 LymeScribe…",
+      "why": "搜索热度峰值达基线 15.8 倍，但近 7 天归零；HN 上 Aqua Voice 获 716 分、离线听写 Yapper 与局域网转写 LymeScribe 也引发讨论，说明听写工具的需求真实但用户尚未形成稳定搜索习惯。写作者、医生助理、律师助理和多语言办公的个人用户都在找能自定义术语、支持离线且保护隐私的听写方案，所以做面向中文或多语混说的桌面听写工具，主打术语自定义词典加本地离线转写，先切播客剪辑和会议记录两个场景，正是切入机会。",
       "intentSummary": "找一款能替代手打、支持离线与自定义词典的 AI 听写工具。",
       "editorNote": {
         "audience": "写作者、医生助理、律师助理、多语言办公的个人用户",
@@ -26020,7 +25744,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "medium",
-      "why": "MCP 已是能力名词，HN 上安全、插件系统、OpenAI 接入等讨论均超 700 分，awesome-mcp-servers 仓库 9.7 万星，接入与托管…",
+      "why": "MCP 已是能力名词，HN 上安全、插件系统、OpenAI 接入等讨论均超 700 分，awesome-mcp-servers 仓库 9.7 万星，接入与托管成为焦点。构建 AI agent 的独立开发者与小团队创始人都在找可靠、易用的 MCP 服务来快速集成和托管，所以做 MCP server 目录加一键托管：列出可用 server、在线试调、托管运行并给出调用成功率与延迟评测，能直接满足他们快速验证和部署的需求。",
       "intentSummary": "开发者想找可用 MCP server、接入方法、调试与托管方案。",
       "editorNote": {
         "audience": "构建 AI agent 的独立开发者与小团队创始人",
@@ -26285,7 +26009,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "Google Trends 显示该词峰值达基线 23 倍，但近 7 天热度归零；HN 上 Meetily 等本地会议记录项目获 3.2 万星，说明隐私需求真实…",
+      "why": "Google Trends 显示该词峰值达基线 23 倍，但近 7 天热度归零；HN 上 Meetily 等本地会议记录项目获 3.2 万星，说明隐私需求真实。律师、医疗行政、企业IT合规负责人和隐私敏感个人都在找录音永不上传的会议记录方案，所以做一个 macOS 本地会议记录 App，音频不出机器，用 whisper.cpp 加本地小模型做摘要，主打「录音永不上传」，按一次性买断 39 美元卖，正好切中这批人的核心诉求。",
       "intentSummary": "寻找不上传音频、可在本地运行的 AI 会议记录与摘要工具。",
       "editorNote": {
         "audience": "律师、医疗行政、企业IT合规负责人、隐私敏感个人",
@@ -27305,7 +27029,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "medium",
-      "why": "90 天峰值达基线 1.62 倍，HN 多个 Show HN 帖（Godot 游戏 337 分、棋局分析 76 分）显示用户正为具体工作流寻找可复用 skil…",
+      "why": "90 天峰值达基线 1.62 倍，HN 多个 Show HN 帖（Godot 游戏 337 分、棋局分析 76 分）显示用户正为具体工作流寻找可复用 skills。Claude Code 重度用户和独立开发者都在找能直接套用的技能模板来提升效率，所以做一套面向常见工作流（代码审查、迁移、测试补全）的 skills 模板包，配可搜索的在线预览和复制即用片段，能帮他们快速落地重复任务。",
       "intentSummary": "找现成可复用的 Claude Code skills 集合，以及怎么自己写、怎么装。",
       "editorNote": {
         "audience": "Claude Code 重度用户、独立开发者",
@@ -28356,7 +28080,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "搜索热度较基线上升 90%，峰值达 7.9 倍；HN 上出现 5MB 轻量替代方案 Shimmy 和带本地 UI 的 Jan，用户对 Ollama 体积与性能…",
+      "why": "搜索热度较基线上升 90%，峰值达 7.9 倍；HN 上出现 5MB 轻量替代方案 Shimmy 和带本地 UI 的 Jan，用户对 Ollama 体积与性能的不满在累积。对 Ollama 性能或功能不满的本地 LLM 用户都在找更轻、更可控的运行时，所以做一个更轻量的本地模型运行时，主打多模型并行调度和显存自动管理，先做 macOS 和单卡 Linux，正好承接这批寻求替代方案的用户。",
       "intentSummary": "寻找比 Ollama 更轻量、更省显存或带图形界面的本地大模型运行工具。",
       "editorNote": {
         "audience": "对Ollama性能或功能不满的本地LLM用户",
@@ -31777,7 +31501,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "90 天内峰值达基线 23 倍，但近 7 天热度归零；open-photo-ai 与 lumen-raw 各获约 200 星，说明需求真实但尚未形成稳定搜索习…",
+      "why": "90 天内峰值达基线 23 倍，但近 7 天热度归零；open-photo-ai 与 lumen-raw 各获约 200 星，说明需求真实但尚未形成稳定搜索习惯。自托管用户、隐私敏感团队和二次开发者都在找可自主部署的开源修图方案，所以做开源修图模型的一键部署托管服务，提供 API 和 Web 界面，按调用量或托管实例收费，能降低他们自建和集成的门槛。",
       "intentSummary": "找能自托管、可二次开发的开源 AI 修图工具与部署方案。",
       "editorNote": {
         "audience": "自托管用户、隐私敏感团队、二次开发者",
@@ -33848,7 +33572,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "近7天热度14.3、峰值100，HN出现「Code Review Wasn't Built for the AI Era」讨论，团队负责人开始为落地AI评审找…",
+      "why": "近 7 天热度 14.3、峰值 100，HN 出现「Code Review Wasn't Built for the AI Era」讨论，团队负责人开始为落地 AI 评审找方法。刚开始引入 AI review 的团队负责人都在找可执行的实践指南和配置模板，所以做一份可执行的检查清单加配套配置模板：把最佳实践落成各语言的规则文件和 CI 示例，以模板仓库形式分发，能帮他们快速把 AI 评审融入现有流程。",
       "intentSummary": "想找可落地的AI代码评审规则、配置模板与CI集成方法。",
       "editorNote": {
         "audience": "刚开始引入 AI review 的团队负责人",
@@ -34328,7 +34052,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 90 天热度峰值 100、近 7 天 14.3，HN 上 LoRA 实验复盘帖获 258 分、LLaMA 微调工具 Show HN 获 449 分，说明…",
+      "why": "US 90 天热度峰值 100、近 7 天 14.3，HN 上 LoRA 实验复盘帖获 258 分、LLaMA 微调工具 Show HN 获 449 分，说明微调需求持续存在。想微调小模型的独立开发者、垂直行业小团队都在找能快速上手的微调流水线，所以做垂直领域的 LoRA 微调流水线：给定行业文档自动生成指令数据集、训练配置和评测集，先选一个行业（如客服话术）做端到端模板，能直接解决他们数据准备和调参的痛点。",
       "intentSummary": "想用 LoRA 低成本微调开源模型，找教程、配置和现成流水线。",
       "editorNote": {
         "audience": "想微调小模型的独立开发者、垂直行业小团队",
@@ -34807,7 +34531,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "Docker 官方推出 Model Runner 并发布快速上手教程，HN 讨论出现，搜索热度在 30 天内从基线升至峰值 70，独立开发者需要一条命令起本地…",
+      "why": "Docker 官方推出 Model Runner 并发布快速上手教程，HN 讨论出现，搜索热度在 30 天内从基线升至峰值 70，独立开发者需要一条命令起本地 LLM 栈。这说明想自托管模型的独立开发者与小团队在找开箱即用的 Docker Compose 模板，能一条命令拉起模型服务、WebUI、API 网关和监控。",
       "intentSummary": "找 Docker 镜像或 Compose 模板，一条命令在本地跑起 LLM 服务。",
       "editorNote": {
         "audience": "想自托管模型的独立开发者与小团队",
@@ -35287,7 +35011,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "企业安全团队为 Copilot 使用合规付费；Trends 近7天热度14.3、峰值100，相关仓库 mcp-audit-extension 仅27星，第三方…",
+      "why": "企业安全团队为 Copilot 使用合规付费；Trends 近7天热度14.3、峰值100，相关仓库 mcp-audit-extension 仅27星，第三方工具稀缺。这说明有合规要求的企业安全与 IT 团队在找能拉取 GitHub 审计事件、检测异常使用并生成合规报告的审计日志采集与告警服务，按席位订阅。",
       "intentSummary": "企业安全与 IT 团队想导出、监控 Copilot 使用日志以满足合规。",
       "editorNote": {
         "audience": "有合规要求的企业安全与 IT 团队",
@@ -36339,7 +36063,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "近30天热度峰值达基线7.42倍，但最近7天归零，说明搜索集中在少数事件日，需求存在却不连续；HN 上 Descript 专业版与 Podpilot 的讨论都…",
+      "why": "近30天热度峰值达基线7.42倍，但最近7天归零，说明搜索集中在少数事件日，需求存在却不连续；HN 上 Descript 专业版与 Podpilot 的讨论都指向自动化剪辑。个人播客主和小型内容工作室在找只处理双人访谈的编辑器，能自动分轨、按说话人切段、一键删除冷场和重叠，导出带章节标记的成品。",
       "intentSummary": "找能自动剪播客、分轨去冷场的AI工具",
       "editorNote": {
         "audience": "个人播客主、小型内容工作室",
@@ -37582,7 +37306,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 90 天趋势峰值 21、近期均值 3.7，HN 出现「AI-native 客服给小团队」项目，中小电商愿为能直接改地址、查物流、发起退货的客服 Agen…",
+      "why": "US 90 天趋势峰值 21、近期均值 3.7，HN 出现「AI-native 客服给小团队」项目，中小电商愿为能直接改地址、查物流、发起退货的客服 Agent 付费。这说明中小电商运营者在找能直接操作订单系统的客服 Agent，支持改地址、查物流、发起退货，按处理工单量计费。",
       "intentSummary": "电商卖家想找能直接操作订单、物流、退货的 AI 客服工具，替代人工并降低工单成本。",
       "editorNote": {
         "audience": "中小电商运营者",
@@ -38318,7 +38042,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 搜索 7 天均值 14.3，较基线 3.7 涨 282%，峰值达基线 26.7 倍；HN 连续出现 AI UGC 广告生成器 Show HN，开源替代品…",
+      "why": "US 搜索 7 天均值 14.3，较基线 3.7 涨 282%，峰值达基线 26.7 倍；HN 连续出现 AI UGC 广告生成器 Show HN，开源替代品也在冒头。电商卖家、效果广告投手和短视频代运营在找聚焦「前 3 秒钩子」的 A/B 测试工具，同一产品生成 10 种开场钩子版本并回传投放数据对比，买的是测试效率而非生成能力。",
       "intentSummary": "找用 AI 数字人批量生成 UGC 风格视频广告并投放的工具与方法。",
       "editorNote": {
         "audience": "电商卖家、效果广告投手、短视频代运营",
@@ -38572,7 +38296,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "TikTok Shop 卖家为投流素材付费；HN 上 2026 年 10 月连续出现两个 Show HN 讨论 AI UGC 广告制作，GitHub 已有 5…",
+      "why": "TikTok Shop 卖家为投流素材付费；HN 上 2026 年 10 月连续出现两个 Show HN 讨论 AI UGC 广告制作，GitHub 已有 5 个相关项目。这说明 TikTok Shop 卖家和短视频带货团队在找 TikTok 合规+高播放结构双校验的 UGC 生成器，生成时自动检查违禁词、时长、字幕规范，输出可直接投流的成片。",
       "intentSummary": "找能直接投 TikTok 的 AI 生成 UGC 广告视频工具与合规方法",
       "editorNote": {
         "audience": "TikTok Shop 卖家、短视频带货团队",
@@ -39640,7 +39364,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "美国区 90 天搜索热度从基线 4.9 升至近期 43，峰值达基线 20 倍；HN 与 GitHub 出现小商家 agent 项目，本地服务商愿为预约、退款等…",
+      "why": "美国区 90 天搜索热度从基线 4.9 升至近期 43，峰值达基线 20 倍；HN 与 GitHub 出现小商家 agent 项目，本地服务商愿为预约、退款等流程付费。这说明本地服务商和电商小店主在找端到端 agent，接 WhatsApp 与 Google Calendar，处理预约改期、退款处理等高频流程，按门店月费卖。",
       "intentSummary": "小店主想找能自动处理客服、预约、退款的 AI 员工，替代人力。",
       "editorNote": {
         "audience": "本地服务商、电商小店主",
@@ -41406,7 +41130,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "美国 90 天内热度仅 1 个点高于基线、峰值 7，但 HN 上教师工具持续出现（Teacher Planner 2026-10-02 发布），说明需求真实但…",
+      "why": "美国 90 天内热度仅 1 个点高于基线、峰值 7，但 HN 上教师工具持续出现（Teacher Planner 2026-10-02 发布），说明需求真实但搜索不集中。中小学教师和教研组在找按本地课标对齐的教案生成器，选教材版本、课时、学情，输出含目标、活动、分层作业和评估量规的完整教案。",
       "intentSummary": "教师想用 AI 快速生成对齐课标、含目标活动与评估的完整教案。",
       "editorNote": {
         "audience": "中小学教师、教研组",
@@ -42723,7 +42447,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "该词 90 天内峰值达基线 23 倍，但近 7 天热度归零，说明是脉冲式关注；HN 上 Coverage Cat 用个人 agent 卖保险获 54 分，变现…",
+      "why": "该词 90 天内峰值达基线 23 倍，但近 7 天热度归零，说明是脉冲式关注；HN 上 Coverage Cat 用个人 agent 卖保险获 54 分，变现路径已被验证。所以独立开发者和小型 AI 工作室在找能快速上架 agent 并收款的托管页，需求是把表单生成落地页、接 Stripe 收款和试用额度打包成开箱即用服务。",
       "intentSummary": "想把做好的 AI agent 挂出去卖，找上架、定价、收款的办法。",
       "editorNote": {
         "audience": "独立开发者、prompt 工程师、小型 AI 工作室",
@@ -42965,256 +42689,6 @@
           "action": "同步写一篇 agent 定价与收款实操指南，挂到落地页做自然流量入口",
           "reason": "howto 与 problem 类意图明确，内容成本低且能验证搜索需求",
           "uncertainty": "该词搜索量绝对值小，内容可能只带来少量精准流量"
-        }
-      ]
-    },
-    {
-      "slug": "anthropic-api-pricing",
-      "keyword": "anthropic api pricing",
-      "normalizedName": "Anthropic API Pricing",
-      "category": "business",
-      "region": "US",
-      "status": "gaining",
-      "confidence": "high",
-      "why": "近7日热度15.3、较基线涨172.5%，峰值达基线4.1倍；HN出现「Claude/Codex 九折转售」和「哪家API最便宜」讨论，说明开发者在比价与控预…",
-      "intentSummary": "查Claude各型号每百万token价格、缓存读写费率，并与其他模型比价。",
-      "editorNote": {
-        "audience": "在 Claude 与其他模型间做选型的开发者、控制预算的创始人",
-        "entryAngle": "做多厂商价格与限流变更的监控页，价格或配额一变就发邮件/Webhook，附带「同样任务换模型后成本变化」的自动测算。",
-        "whyAccepted": "搜索意图明确是查价与比价，属于高频刚需但被官方文档和聚合站承接，需靠实时性和多模型对比差异化。"
-      },
-      "firstSeenAt": "2026-10-30",
-      "lastSeenAt": "2026-10-30",
-      "updatedAt": "2026-10-30T08:51:42.336Z",
-      "series": {
-        "start": "2026-10-01",
-        "stepDays": 1,
-        "values": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          23,
-          14,
-          12,
-          20,
-          15,
-          16,
-          13,
-          16,
-          13,
-          12,
-          13,
-          23,
-          18,
-          8,
-          20
-        ]
-      },
-      "trendParts": {
-        "growth": 95,
-        "persistence": 100,
-        "breakout": 65,
-        "novelty": 100,
-        "reliability": 100
-      },
-      "oppParts": {
-        "demand": 78,
-        "wedge": 62,
-        "seo": 74,
-        "feasibility": 82,
-        "timing": 70
-      },
-      "sources": [
-        {
-          "label": "Google Trends · Explore（90 天，US）",
-          "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=anthropic%20api%20pricing",
-          "site": "trends.google.com",
-          "kind": "google_trends"
-        },
-        {
-          "label": "相关搜索：ai infrastructure cost",
-          "url": "https://trends.google.com/trends/explore?geo=US&q=ai%20infrastructure%20cost",
-          "site": "trends.google.com",
-          "kind": "google_trends"
-        },
-        {
-          "label": "Show HN: Chinese are offering Claude/Codex offers 90% off",
-          "url": "https://news.ycombinator.com/item?id=49151751",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2026-08-03"
-        },
-        {
-          "label": "Show HN: CSV Analyzer – drag-and-drop data analysis with AI insights",
-          "url": "https://csv-analyzer-green.vercel.app",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2026-03-03"
-        },
-        {
-          "label": "Anthropic introduces cheaper, more powerful, more efficient Opus 4.5 model",
-          "url": "https://arstechnica.com/ai/2025/11/anthropic-introduces-opus-4-5-cuts-api-pricing-and-enables-much-longer-claude-chats/",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2025-11-25"
-        },
-        {
-          "label": "Ask HN: What is the best AI model that have cheap API pricing?",
-          "url": "https://news.ycombinator.com/item?id=43668529",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2025-04-12"
-        },
-        {
-          "label": "apimart-22w/claude-opus-5-api（★142）",
-          "url": "https://github.com/apimart-22w/claude-opus-5-api",
-          "site": "github.com",
-          "kind": "repo",
-          "publishedAt": "2026-09-18"
-        },
-        {
-          "label": "nurettincoban/claude-usage-bar（★6）",
-          "url": "https://github.com/nurettincoban/claude-usage-bar",
-          "site": "github.com",
-          "kind": "repo",
-          "publishedAt": "2026-10-12"
-        }
-      ],
-      "evidence": [
-        {
-          "claim": "近7日相对热度15.3，较基线5.6上涨172.5%，峰值23为基线4.1倍。",
-          "claimType": "fact",
-          "detail": "30天序列中14个点高于基线，升温集中在近两周。",
-          "sources": [
-            {
-              "label": "Google Trends · Explore（90 天，US）",
-              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=anthropic%20api%20pricing",
-              "site": "trends.google.com",
-              "kind": "google_trends"
-            }
-          ]
-        },
-        {
-          "claim": "HN出现「中国卖家提供Claude/Codex九折转售」的Show HN，说明官方定价与灰色渠道价差被讨论。",
-          "claimType": "fact",
-          "date": "2026-08-03",
-          "detail": "帖子获4分，讨论量不大但指向价格套利需求。",
-          "sources": [
-            {
-              "label": "Show HN: Chinese are offering Claude/Codex offers 90% off",
-              "url": "https://news.ycombinator.com/item?id=49151751",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2026-08-03"
-            }
-          ]
-        },
-        {
-          "claim": "GitHub出现专门整理Claude Opus 5每百万token价格、缓存写入/读取费率的仓库，获142星。",
-          "claimType": "fact",
-          "date": "2026-09-18",
-          "detail": "仓库名apimart-22w/claude-opus-5-api，说明有人手工维护价目表。",
-          "sources": [
-            {
-              "label": "apimart-22w/claude-opus-5-api（★142）",
-              "url": "https://github.com/apimart-22w/claude-opus-5-api",
-              "site": "github.com",
-              "kind": "repo",
-              "publishedAt": "2026-09-18"
-            }
-          ]
-        }
-      ],
-      "intents": [
-        {
-          "intent": "price",
-          "queries": [
-            "anthropic api pricing per million tokens",
-            "claude opus 5 api cost",
-            "claude cache write pricing",
-            "anthropic api pricing calculator"
-          ]
-        },
-        {
-          "intent": "compare",
-          "queries": [
-            "claude vs gpt api pricing comparison",
-            "cheapest llm api for production",
-            "anthropic vs openai cost per token"
-          ]
-        },
-        {
-          "intent": "problem",
-          "queries": [
-            "why is my anthropic api bill so high",
-            "anthropic api rate limit cost",
-            "claude api pricing changed"
-          ]
-        }
-      ],
-      "relatedQueries": [
-        "anthropic api pricing per million tokens",
-        "claude opus 5 api pricing",
-        "claude sonnet api cost",
-        "anthropic prompt caching pricing",
-        "anthropic api pricing calculator",
-        "cheapest claude api reseller",
-        "anthropic api rate limits",
-        "claude vs gpt api price"
-      ],
-      "competitors": [
-        "Anthropic 官方定价页",
-        "OpenRouter",
-        "Helicone",
-        "api-monitor"
-      ],
-      "opportunities": [
-        {
-          "type": "product",
-          "title": "多厂商价格与限流变更监控，价格/配额一变即发邮件或Webhook",
-          "why": "搜索意图明确是查价比价，但官方文档更新不通知；HN有「哪家API最便宜」的提问，GitHub已有api-monitor做余额告警但未覆盖价格变更推送。",
-          "effort": "2-3周",
-          "evidence": "GitHub baogutang/api-monitor 做余额与配额告警获3星，说明需求存在但产品尚早期；Ask HN「best AI model cheap API pricing」获3分。"
-        },
-        {
-          "type": "content",
-          "title": "「同样任务换模型后成本变化」自动测算页",
-          "why": "开发者比价时缺的是按自己token结构算账，而非价目表；GitHub有人手工维护Opus 5每百万token价目获142星，说明价目整理有流量。",
-          "effort": "1周",
-          "evidence": "apimart-22w/claude-opus-5-api 仓库获142星，内容为模型ID、每百万token价格、缓存写入/读取费率。"
-        },
-        {
-          "type": "feature",
-          "title": "Claude用量菜单栏工具加「按当前价目预估本月账单」",
-          "why": "已有claude-usage-bar做会话与周用量预测，但未接价格；搜索者关心的是花多少钱而不只是用了多少token。",
-          "effort": "3-5天",
-          "evidence": "nurettincoban/claude-usage-bar 获6星，功能为显示会话与周用量并预测触限时间。"
-        }
-      ],
-      "actions": [
-        {
-          "verdict": "mvp",
-          "action": "先做价格变更监控+邮件/Webhook推送的最小版本，覆盖Anthropic与OpenAI两家，两周内上线。",
-          "reason": "热度较基线涨172.5%、峰值4.1倍，且现有工具只做余额告警不做价格变更通知，切入口窄但明确。",
-          "uncertainty": "官方定价页可能有结构化接口，抓取稳定性与更新频率待验证；付费意愿需用落地页测试。"
-        },
-        {
-          "verdict": "content",
-          "action": "同步发一篇「Claude各型号每百万token成本+缓存读写费率+换模型测算」的对比页，承接查价搜索。",
-          "reason": "搜索意图以price和compare为主，GitHub手工价目表获142星说明内容有需求，内容可低成本验证流量。",
-          "uncertainty": "聚合站与官方文档已承接部分流量，需靠实时性和多模型对比差异化。"
         }
       ]
     },
@@ -43687,7 +43161,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "US 搜索 30 天从基线 8.1 升到 23.7，近 7 天涨 193%，峰值 31 为基线 3.83 倍；HN 有「YouTube 视频转文字与 AI 摘…",
+      "why": "US 搜索 30 天从基线 8.1 升到 23.7，近 7 天涨 193%，峰值 31 为基线 3.83 倍；HN 有「YouTube 视频转文字与 AI 摘要」工具出现。所以自媒体运营和播客剪辑在找中文优先、支持说话人分离和 SRT 导出的转文字工具，按分钟计费正好匹配他们按需处理长视频的习惯。",
       "intentSummary": "把 YouTube 视频快速转成文字稿、字幕或摘要，省去手打时间。",
       "editorNote": {
         "audience": "自媒体运营、播客剪辑、需要做字幕的独立开发者",
@@ -45178,7 +44652,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 搜索 30 天内相对热度升至 26.9，峰值 100；HN 上 Plandex v2 开源编码 agent 获 257 分，说明开发者正找可容器化隔离运…",
+      "why": "US 搜索 30 天内相对热度升至 26.9，峰值 100；HN 上 Plandex v2 开源编码 agent 获 257 分，说明开发者正找可容器化隔离运行的方案。所以使用 Claude Code 等 agent 的独立开发者在找一条命令就能把 agent 关进受限容器、带网络白名单和文件快照回滚的沙箱运行器，先支持 3 个主流 agent 就能切入。",
       "intentSummary": "想找能在 Docker 里安全隔离运行的开源编码 agent 及配置方法。",
       "editorNote": {
         "audience": "使用 Claude Code/Codex 等 agent 的独立开发者、平台工程团队",
@@ -47711,7 +47185,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "近 7 天热度较基线涨 475%，峰值达基线 8.63 倍；HN 连续出现 Keenable、Seltz、Quercle 等面向 Agent 的搜索 API …",
+      "why": "近 7 天热度较基线涨 475%，峰值达基线 8.63 倍；HN 连续出现 Keenable、Seltz、Quercle 等面向 Agent 的搜索 API，说明做 Agent 产品的团队在找专为 agent 设计的搜索接口。所以独立开发者需要的是能统一多家搜索 API、输出已去重带引用并按 token 预算裁剪结果的聚合层，按调用量收费即可。",
       "intentSummary": "开发者想找能直接接入 Agent 的搜索 API，关注结果质量、引用和成本。",
       "editorNote": {
         "audience": "做 Agent 产品的独立开发者与小团队",
@@ -49233,7 +48707,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "7 日热度较基线涨 187.5%，峰值达基线 5.75 倍；n8n 仓库 20.9 万星、模板库 2.6 万星，HN 讨论 195 分，说明技术团队正集中找可…",
+      "why": "7 日热度较基线涨 187.5%，峰值达基线 5.75 倍；n8n 仓库 20.9 万星、模板库 2.6 万星，HN 讨论 195 分，说明技术团队正集中找可复用的 AI 工作流模板。所以用 n8n 做自动化的独立开发者和小团队在找按行业打包的模板市场加一键导入，靠订阅更新和托管版收费正好满足他们快速落地的需求。",
       "intentSummary": "搜索者想找现成的 n8n AI 工作流模板、节点用法和自托管方案，直接抄作业落地。",
       "editorNote": {
         "audience": "用 n8n 做自动化的独立开发者、小团队",
@@ -50238,7 +49712,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "AGENTS.md 是新兴 agent 配置约定，opencode 为具体开源工具；HN 上已出现跨工具管理 AGENTS.md 的 Show HN，说明配置…",
+      "why": "AGENTS.md 是新兴 agent 配置约定，opencode 为具体开源工具；HN 上已出现跨工具管理 AGENTS.md 的 Show HN，说明配置管理已成为编码 agent 使用中的实际痛点。所以使用编码 agent 的独立开发者和小团队技术负责人在找能从现有仓库自动抽取构建、测试、代码风格命令并生成规范文件、还能检测 agent 执行失败原因的生成器与校验器。",
       "intentSummary": "想为编码 agent 配置 AGENTS.md，并解决 opencode 等工具间的互操作与调试问题。",
       "editorNote": {
         "audience": "使用编码 agent 的独立开发者、小团队技术负责人",
@@ -50981,7 +50455,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "US 90 天峰值达基线 2.7 倍，n8n 仓库 20.9 万星、模板库 2.6 万星，说明技术团队在把 AI 接进现有流程，但近 7 天回落 10.2%，…",
+      "why": "US 90 天峰值达基线 2.7 倍，n8n 仓库 20.9 万星、模板库 2.6 万星，说明技术团队在把 AI 接进现有流程，但近 7 天回落 10.2%，表明通用搜索热度在退潮。所以真正在找的是能直接套用的行业化 AI 工作流方案，而不是泛泛的自动化概念，独立开发者可围绕具体场景做模板和托管服务来承接需求。",
       "intentSummary": "想找能落地的 AI 工作流搭建方案、模板与自托管工具。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -51469,7 +50943,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "峰值达基线 21.6 倍，但近 7 天回落 60.6%，说明尝鲜后留存差；HN 上 Sonde、Geostorm 等 Show HN 密集出现，需求真实但产品…",
+      "why": "峰值达基线 21.6 倍，但近 7 天回落 60.6%，说明尝鲜后留存差；HN 上 Sonde、Geostorm 等 Show HN 密集出现，需求真实但产品尚未定型。所以个人品牌和小品牌创始人在找能每天自动跑问题模板、监测 ChatGPT 提及变化并邮件告警的轻量工具，先做单引擎的 Chrome 插件加后台就能验证留存。",
       "intentSummary": "想知道 ChatGPT 等 AI 回答里有没有提到自己的品牌，并持续监测变化。",
       "editorNote": {
         "audience": "个人品牌、独立开发者、小品牌创始人",
@@ -51743,7 +51217,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "US 近 30 天相对热度从基线 1.2 升到近 7 天 3.1（+158%），峰值达基线 7.4 倍；HN 上免费、免注册的生成器反复出现，说明求职者在为写…",
+      "why": "US 近 30 天相对热度从基线 1.2 升到近 7 天 3.1（+158%），峰值达基线 7.4 倍；HN 上免费、免注册的生成器反复出现，说明求职者在为写求职信找省事工具，且不愿付费或注册。所以独立开发者可以切入垂直岗位，做内置行业录用案例库和 ATS 关键词检查的 cover letter 生成器，满足求职者快速产出高质量、匹配岗位的求职信的需求。",
       "intentSummary": "求职者想快速生成贴合岗位 JD、能过 ATS 的求职信。",
       "editorNote": {
         "audience": "求职者个人用户",
@@ -52264,7 +51738,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 90 天搜索峰值 100、近期均值 14.3，相关搜索出现 text to diagram ai，HN 有 Markdown 转图库与双引擎图应用讨论，…",
+      "why": "US 90 天搜索峰值 100、近期均值 14.3，相关搜索出现 text to diagram ai，HN 有 Markdown 转图库与双引擎图应用讨论，说明写文档和方案的人需要从文字快速生成图表。所以产品经理、技术写作者和独立开发者正在找能直接输出可编辑源文件（如 Mermaid 或 draw.io）的工具，而不是只生成图片，以便二次编辑和版本对比。",
       "intentSummary": "用户想用文字描述直接生成可编辑的架构图、流程图或思维导图。",
       "editorNote": {
         "audience": "写文档/做方案的产品经理、技术写作者、独立开发者",
@@ -52788,7 +52262,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "US 90 天搜索从基线 2.3 升至 5.3，7 日涨 129.4%，峰值达基线 5.21 倍；多个 Show HN 托管项目出现，说明开发者正为 MCP …",
+      "why": "US 90 天搜索从基线 2.3 升至 5.3，7 日涨 129.4%，峰值达基线 5.21 倍；多个 Show HN 托管项目出现，说明开发者正为 MCP server 的上线运维找托管方案。所以独立开发者和小团队需要一键部署、API key 管理、调用日志和限流的托管平台，按调用量计费，以降低运维成本并快速将 MCP server 提供给用户。",
       "intentSummary": "找 MCP server 托管方案，解决部署、鉴权、多租户与监控问题。",
       "editorNote": {
         "audience": "想把 MCP server 上线给用户用的独立开发者和小团队",
@@ -53582,7 +53056,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "medium",
-      "why": "90 天内出现 16.4 倍峰值，但近 7 天回落 27.2%，说明热度来自少数事件而非持续需求；HN 上 promptbase 的帖子仅获 4 分，GitH…",
+      "why": "90 天内出现 16.4 倍峰值，但近 7 天回落 27.2%，说明热度来自少数事件而非持续需求；HN 上 promptbase 的帖子仅获 4 分，GitHub 上相关项目也未见持续热度。所以想卖 prompt 或 AI agent 的创作者需要更可靠的交易和交付渠道，而不是依赖短期事件驱动的市场，这暗示了持续性的 prompt 变现基础设施需求。",
       "intentSummary": "想找能买卖提示词或 AI 智能体的平台，或自己搭一个。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -54090,7 +53564,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "美国 90 天热度峰值达基线 6.61 倍，近 7 天较基线涨 166%；PIGuard 论文与 Prompt Guard MitM 代理同期出现，说明提示注…",
+      "why": "美国 90 天热度峰值达基线 6.61 倍，近 7 天较基线涨 166%；PIGuard 论文与 Prompt Guard MitM 代理同期出现，说明提示注入攻击的防御需求在上升。所以开发者和安全团队正在找能检测越狱、防止提示注入的防护工具，尤其是能平衡误报和漏报的方案，这反映了 LLM 应用安全防护的切实需求。",
       "intentSummary": "搜索者想找到能拦截提示注入、防止密钥泄露的防护工具或模型。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -54336,7 +53810,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 搜索 7 天涨 120.8%、峰值达基线 4.15 倍，HN 上多个 MCP Gateway 项目获 73/51 分，说明多 MCP Server 统一…",
+      "why": "US 搜索 7 天涨 120.8%、峰值达基线 4.15 倍，HN 上多个 MCP Gateway 项目获 73/51 分，说明多 MCP Server 统一接入和管控的需求在增长。所以使用多个 MCP 服务的开发者需要网关来集中管理认证、限流和审计，避免逐个对接的复杂性，这指向了 MCP 生态中统一接入层的产品机会。",
       "intentSummary": "搜索者想了解 MCP Gateway 是什么、如何统一接入多个 MCP Server 并做安全管控。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -55363,7 +54837,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "峰值达基线 23 倍，但近 7 天归零，说明是脉冲式搜索；HN 上 Void 替代方案帖获 347 分，FauxPilot 仓库 1.4 万星，需求真实但不连…",
+      "why": "峰值达基线 23 倍，但近 7 天归零，说明是脉冲式搜索；HN 上 Void 替代方案帖获 347 分，FauxPilot 仓库 1.4 万星，需求真实但不连续。所以对价格敏感或需要私有部署的开发者正在找 Copilot 的替代品，这暗示了针对特定技术栈的代码补全对比和轻量客户端的机会，通过实测导流到自建方案。",
       "intentSummary": "想找比 Copilot 更便宜、可私有部署或更贴合自己技术栈的代码补全工具。",
       "editorNote": {
         "audience": "对 Copilot 价格敏感或需要私有部署的开发者",
@@ -55612,7 +55086,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "美国区 90 天搜索热度从基线 4.3 升至近期 11.3，7 日增长 159.6%，峰值达基线 23 倍；HN 上已有用 Gemini 2.5 Pro 做发…",
+      "why": "美国区 90 天搜索热度从基线 4.3 升至近期 11.3，7 日增长 159.6%，峰值达基线 23 倍；HN 上已有用 Gemini 2.5 Pro 做发票解析的讨论，说明中小企业财务和记账 SaaS 在找自动化发票识别方案。所以需要能输出结构化 JSON 并直接对接 QuickBooks/Xero/金蝶的发票 OCR API，按张计费，满足高效准确录入的需求。",
       "intentSummary": "想用 Gemini 把发票/收据图片或 PDF 转成结构化数据，找现成方案或 API。",
       "editorNote": {
         "audience": "中小企业财务、记账 SaaS、自由职业者",
@@ -55870,7 +55344,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天搜索热度从基线 3.5 升至峰值 21（5.96 倍），近 7 天增长 224.5%；HN 上 Kiwi.com 航班搜索 MCP server…",
+      "why": "US 90 天搜索热度从基线 3.5 升至峰值 21（5.96 倍），近 7 天增长 224.5%；HN 上 Kiwi.com 航班搜索 MCP server 与 Buy My Agent 等 Show HN 接连出现，峰值 21、历史基线约 12，说明给 Claude/Cursor 接搜索工具的开发者正急着找现成方案：可自托管、多引擎切换、带缓存和调用日志的 MCP 搜索 server。",
       "intentSummary": "找可接入 Claude/Cursor 的搜索 MCP server，并了解部署与托管方式。",
       "editorNote": {
         "audience": "给 Claude/Cursor 等接工具的开发者与团队",
@@ -56121,7 +55595,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 搜索 7 日均值较基线涨 190.7%，峰值达基线 4.04 倍；SigNoz、Sim 等开源项目已积累数万星，生产团队需要观测 agent 成功率、延…",
+      "why": "US 搜索 7 日均值较基线涨 190.7%，峰值达基线 4.04 倍；SigNoz、Sim 等开源项目已积累数万星，生产团队需要观测 agent 成功率、延迟与成本，峰值 32、历史基线约 23，说明已把 agent 投入生产的团队在找能一行接入、记录调用链与失败原因的可观测性方案，而不是又一个 demo。",
       "intentSummary": "寻找能追踪 agent 调用链、工具调用、失败原因与成本的监控方案。",
       "editorNote": {
         "audience": "已把 agent 投入生产的开发团队",
@@ -56371,7 +55845,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "近7天热度较基线翻倍（+104%），峰值达基线4.36倍；Notion关停AI邮件客户端与Cloudflare开源agentic-inbox（★8563）同时…",
+      "why": "近7天热度较基线翻倍（+104%），峰值达基线4.36倍；Notion关停AI邮件客户端与Cloudflare开源agentic-inbox（★8563）同时出现，峰值 25、历史基线约 15，说明邮件量大的知识工作者、销售与自由职业者仍在找真正省时间的收件箱方案，所以先做 Gmail 侧边插件做分诊与回复草稿，验证留存再谈独立客户端。",
       "intentSummary": "找能自动分诊收件箱、生成上下文回复的AI邮件工具，或自托管开源方案。",
       "editorNote": {
         "audience": "邮件量大的知识工作者、销售与自由职业者",
@@ -56621,7 +56095,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "近7日热度较基线涨140.4%、峰值达基线6.17倍；HN 上多次出现「为 Claude 做 Reddit MCP」的 Show HN，GitHub 上 re…",
+      "why": "近7日热度较基线涨140.4%、峰值达基线6.17倍；HN 上多次出现「为 Claude 做 Reddit MCP」的 Show HN，GitHub 上相关项目也在积累，峰值 11、历史基线约 7，说明用 Claude/Cursor 做研究的开发者与 AI 应用团队在找开箱即用、已处理限流与鉴权的 Reddit 数据入口，所以托管版按调用量收费是明确需求。",
       "intentSummary": "想让 Claude/Cursor 直接读 Reddit 帖子和评论，用于调研与选题。",
       "editorNote": {
         "audience": "用 Claude/Cursor 等做研究的开发者与 AI 应用团队",
@@ -57147,263 +56621,6 @@
       ]
     },
     {
-      "slug": "deepseek-api-pricing",
-      "keyword": "deepseek api pricing",
-      "normalizedName": "DeepSeek API 定价",
-      "category": "business",
-      "region": "US",
-      "status": "gaining",
-      "confidence": "high",
-      "why": "DeepSeek 定价更新与 V4 Pro 折扣永久化引发 HN 621 分讨论，美国搜索 7 日涨 136.3%，峰值达基线 3.83 倍，独立开发者急需成…",
-      "intentSummary": "开发者想查 DeepSeek API 最新价格、缓存与峰谷计费规则，并对比其他模型成本。",
-      "editorNote": {
-        "audience": "调用 LLM API 的独立开发者",
-        "entryAngle": "做多模型 API 成本计算器：输入 token 量和调用模式，对比 DeepSeek/OpenAI/Claude 月成本并给出迁移建议",
-        "whyAccepted": "API 定价对比是开发者选型刚需，但单看定价偏资讯，需做成可操作的成本计算工具才有切口"
-      },
-      "firstSeenAt": "2026-10-31",
-      "lastSeenAt": "2026-10-31",
-      "updatedAt": "2026-10-31T03:15:20.200Z",
-      "series": {
-        "start": "2026-10-02",
-        "stepDays": 1,
-        "values": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          15,
-          14,
-          17,
-          18,
-          13,
-          12,
-          13,
-          12,
-          14,
-          19,
-          13,
-          16,
-          13,
-          7,
-          0
-        ]
-      },
-      "trendParts": {
-        "growth": 91,
-        "persistence": 93,
-        "breakout": 63,
-        "novelty": 100,
-        "reliability": 100
-      },
-      "oppParts": {
-        "demand": 82,
-        "wedge": 70,
-        "seo": 78,
-        "feasibility": 85,
-        "timing": 80
-      },
-      "sources": [
-        {
-          "label": "Google Trends · Explore（90 天，US）",
-          "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=deepseek%20api%20pricing",
-          "site": "trends.google.com",
-          "kind": "google_trends"
-        },
-        {
-          "label": "相关搜索：api deepseek",
-          "url": "https://trends.google.com/trends/explore?geo=US&q=api%20deepseek",
-          "site": "trends.google.com",
-          "kind": "google_trends"
-        },
-        {
-          "label": "DeepSeek API Pricing Update",
-          "url": "https://api-docs.deepseek.com/news/news260813/",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2026-08-13"
-        },
-        {
-          "label": "Announcement on DeepSeek V4 API New Pricing",
-          "url": "https://cdn.deepseek.com/emails/v4-new-pricing-en.PNG",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2026-08-14"
-        },
-        {
-          "label": "Show HN: Chat-DeepAI – DeepSeek pricing and getting-started guides (fan project)",
-          "url": "https://chat-deepai.com/",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2025-12-27"
-        },
-        {
-          "label": "DeepSeek makes the V4 Pro price discount permanent",
-          "url": "https://api-docs.deepseek.com/quick_start/pricing",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2026-05-22"
-        },
-        {
-          "label": "benderandrew069/deepseek-api-pricing-2026（★526）",
-          "url": "https://github.com/benderandrew069/deepseek-api-pricing-2026",
-          "site": "github.com",
-          "kind": "repo",
-          "publishedAt": "2026-10-27"
-        },
-        {
-          "label": "apimartoagvujnix/deepseek-v4-pro-api-pricing-guide（★66）",
-          "url": "https://github.com/apimartoagvujnix/deepseek-v4-pro-api-pricing-guide",
-          "site": "github.com",
-          "kind": "repo",
-          "publishedAt": "2026-10-02"
-        }
-      ],
-      "evidence": [
-        {
-          "claim": "DeepSeek V4 Pro 折扣永久化在 Hacker News 获 621 分讨论",
-          "claimType": "fact",
-          "date": "2026-05-22",
-          "detail": "HN 帖子「DeepSeek makes the V4 Pro price discount permanent」获 621 分，指向官方定价页。",
-          "sources": [
-            {
-              "label": "DeepSeek makes the V4 Pro price discount permanent",
-              "url": "https://api-docs.deepseek.com/quick_start/pricing",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2026-05-22"
-            }
-          ]
-        },
-        {
-          "claim": "DeepSeek API 定价更新在 Hacker News 获 130 分讨论",
-          "claimType": "fact",
-          "date": "2026-08-13",
-          "detail": "HN 帖子「DeepSeek API Pricing Update」获 130 分，链接至官方公告。",
-          "sources": [
-            {
-              "label": "DeepSeek API Pricing Update",
-              "url": "https://api-docs.deepseek.com/news/news260813/",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2026-08-13"
-            }
-          ]
-        },
-        {
-          "claim": "GitHub 出现多个 DeepSeek API 定价指南仓库，最高 526 星",
-          "claimType": "fact",
-          "date": "2026-10-27",
-          "detail": "benderandrew069/deepseek-api-pricing-2026 获 526 星，apimartoagvujnix/deepseek-v4-pro-api-pricing-guide 获 66 星。",
-          "sources": [
-            {
-              "label": "benderandrew069/deepseek-api-pricing-2026（★526）",
-              "url": "https://github.com/benderandrew069/deepseek-api-pricing-2026",
-              "site": "github.com",
-              "kind": "repo",
-              "publishedAt": "2026-10-27"
-            },
-            {
-              "label": "apimartoagvujnix/deepseek-v4-pro-api-pricing-guide（★66）",
-              "url": "https://github.com/apimartoagvujnix/deepseek-v4-pro-api-pricing-guide",
-              "site": "github.com",
-              "kind": "repo",
-              "publishedAt": "2026-10-02"
-            }
-          ]
-        }
-      ],
-      "intents": [
-        {
-          "intent": "learn",
-          "queries": [
-            "deepseek api pricing",
-            "deepseek v4 pro pricing",
-            "deepseek api cost per token"
-          ]
-        },
-        {
-          "intent": "compare",
-          "queries": [
-            "deepseek vs openai api pricing",
-            "deepseek vs claude api cost",
-            "deepseek api pricing comparison"
-          ]
-        },
-        {
-          "intent": "howto",
-          "queries": [
-            "how to calculate deepseek api cost",
-            "deepseek api cache hit pricing",
-            "deepseek api peak hours pricing"
-          ]
-        }
-      ],
-      "relatedQueries": [
-        "deepseek api pricing 2026",
-        "deepseek v4 pro api price",
-        "deepseek api cost calculator",
-        "deepseek vs openai api cost",
-        "deepseek api cache hit price",
-        "deepseek api peak hours pricing",
-        "deepseek api pricing guide",
-        "deepseek api free tier"
-      ],
-      "competitors": [
-        "OpenAI API Pricing",
-        "Claude API Pricing",
-        "OpenRouter"
-      ],
-      "opportunities": [
-        {
-          "type": "product",
-          "title": "多模型 API 成本计算器",
-          "why": "调用 LLM API 的独立开发者需要按 token 量和调用模式对比 DeepSeek/OpenAI/Claude 月成本并获迁移建议；HN 定价帖获 621 分说明关注度高，现有定价指南仓库最高 526 星但多为静态文档，缺交互计算。",
-          "effort": "中",
-          "evidence": "HN「DeepSeek makes the V4 Pro price discount permanent」获 621 分；GitHub 定价指南仓库 526 星。"
-        },
-        {
-          "type": "content",
-          "title": "DeepSeek API 定价与缓存/峰谷计费详解",
-          "why": "搜索者想弄懂缓存命中与峰谷时段如何影响账单，现有 GitHub 指南仓库 526 星证明内容有需求，但多偏汇总，缺逐项拆解。",
-          "effort": "低",
-          "evidence": "GitHub 仓库 deepseek-api-pricing-2026 获 526 星，简介明确覆盖模型、缓存命中与峰谷时段。"
-        },
-        {
-          "type": "opensource",
-          "title": "开源 API 成本对比 CLI 与迁移脚本",
-          "why": "开发者选型时需要可编程对比，HN 定价更新帖获 130 分，但现有工具多为网页或文档，缺命令行与迁移建议。",
-          "effort": "中",
-          "evidence": "HN「DeepSeek API Pricing Update」获 130 分；GitHub 出现多个定价指南仓库。"
-        }
-      ],
-      "actions": [
-        {
-          "verdict": "mvp",
-          "action": "先做多模型 API 成本计算器最小版，输入 token 量与调用模式，输出 DeepSeek/OpenAI/Claude 月成本对比和迁移建议。",
-          "reason": "搜索 7 日涨 136.3%、峰值达基线 3.83 倍，HN 定价帖获 621 分，需求明确且独立开发可行。",
-          "uncertainty": "定价规则可能随官方调整变化，需持续维护；搜索热度能否转化为工具使用尚待验证。"
-        },
-        {
-          "verdict": "content",
-          "action": "同步发布一篇拆解缓存命中与峰谷计费的定价指南，挂靠计算器引流。",
-          "reason": "GitHub 定价指南仓库最高 526 星，说明内容有搜索与社区需求，可低成本验证。",
-          "uncertainty": "内容竞争可能加剧，需靠交互工具形成差异。"
-        }
-      ]
-    },
-    {
       "slug": "deepseek-api-proxy",
       "keyword": "deepseek api proxy",
       "normalizedName": "DeepSeek API Proxy",
@@ -57411,7 +56628,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "US 搜索峰值达基线 23 倍，但近 7 天热度归零；HN 有「信用卡付不了 DeepSeek V4 自建代理」帖，GitHub 代理项目 3116 星，说明…",
+      "why": "US 搜索峰值达基线 23 倍，但近 7 天热度归零；HN 有「信用卡付不了 DeepSeek V4 自建代理」帖，GitHub 代理项目 3116 星，峰值 100、历史基线约 100，说明用 DeepSeek API 做产品的独立开发者与小团队在找能一键部署、多 key 轮询、限流退避和用量分账的代理网关，而不是自己维护脚本。",
       "intentSummary": "找能绕过支付/限流、兼容 OpenAI 接口的 DeepSeek 代理方案。",
       "editorNote": {
         "audience": "用 DeepSeek API 做产品的独立开发者与小团队",
@@ -57918,7 +57135,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "美国区 90 天热度峰值 20、达基线 3.97 倍，近 7 天较基线涨 44.5%，开源项目 inbox-zero 已获 1.28 万星，说明收件箱自动化需…",
+      "why": "美国区 90 天热度峰值 20、达基线 3.97 倍，近 7 天较基线涨 44.5%，开源项目 inbox-zero 已获 1.28 万星，说明收件箱自动化需求真实存在但通用助手已拥挤，所以中小企业与特定行业从业者在找贴合自身身份的方案：选一个垂直身份做模板生成、跟进提醒与报价单附件匹配，先用 50 个种子用户验证。",
       "intentSummary": "用户想找能自动写邮件、跟进提醒、快速清空收件箱的 AI 工具。",
       "editorNote": {
         "audience": "中小企业、特定行业从业者",
@@ -58182,7 +57399,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 近 30 天热度峰值 100、近期 24.4，HN 出现 Claude 自动分诊到 Linear 与只读 LLM 分诊提问，说明收件箱优先级处理正被重新…",
+      "why": "US 近 30 天热度峰值 100、近期 24.4，HN 出现 Claude 自动分诊到 Linear 与只读 LLM 分诊提问，峰值 100、历史基线约 86，说明收件箱优先级处理正被重新定义；每天收 100+ 封邮件的独立开发者、小团队创始人和自由职业者在找只处理「今天必须回」的工具，按关系、截止日期和回复速度打分并一键出草稿。",
       "intentSummary": "找能自动判断邮件优先级、生成回复并清理收件箱的 AI 工具。",
       "editorNote": {
         "audience": "每天收 100+ 封邮件的独立开发者、小团队创始人、自由职业者",
@@ -60555,7 +59772,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "近30天热度峰值达基线23倍，但近7天归零，说明是脉冲式关注；HN上自托管LLM与Compose编排Agent的帖子持续出现，Docker官方compose-…",
+      "why": "近30天热度峰值达基线23倍，但近7天归零，说明是脉冲式关注；HN上自托管LLM与Compose编排Agent的帖子持续出现，Docker官方compose相关动作也在推进，峰值 100、历史基线约 100，说明想本地跑模型的开发者在找能直接抄的 Compose 编排模板与一键起服务，而不是从零读文档。",
       "intentSummary": "想用Docker Compose在本地或服务器上跑起开源LLM与Agent编排。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -60807,7 +60024,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天峰值达基线 13.1 倍，近 7 天仍高于基线 3.2%；GitHub 上 Excel MCP server 已获 4270 星，说明用自然语言…",
+      "why": "US 90 天峰值达基线 13.1 倍，近 7 天仍高于基线 3.2%；GitHub 上 Excel MCP server 已获 4270 星，说明用自然语言直接生成公式正在从搜索热度变成可落地的工具形态，用户要的不是学函数，而是把「我想要什么」一句话变成能跑的表格逻辑，独立开发者可以切的是公式生成到单元格写入这一段。",
       "intentSummary": "用户想用自然语言描述需求，直接得到可用的 Excel/Sheets 公式。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -61317,7 +60534,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "近7日热度14.3、较基线涨249.5%，峰值达基线24.5倍；HN 上 LogicLoop 的 AI SQL Copilot 帖获 71 分，说明写 SQL…",
+      "why": "近7日热度14.3、较基线涨249.5%，峰值达基线24.5倍；HN 上 LogicLoop 的 AI SQL Copilot 帖获 71 分，说明写 SQL 这件事正被自然语言接管，需求集中在生成、优化、调试三步，而不是再做一个查询界面，一人公司可以切的是把业务口径翻译成 SQL 并当场验证结果这一段。",
       "intentSummary": "想找能自动生成、优化和调试 SQL 的 AI 助手，减少手写查询。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -61576,7 +60793,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "90 天内相对热度冲到基线 23 倍峰值，但近 7 天回落到 0，说明是单点事件驱动的关注；GitHub 主仓库 2.5 万星，AI Agent 与 MCP …",
+      "why": "90 天内相对热度冲到基线 23 倍峰值，但近 7 天回落到 0，说明是单点事件驱动的关注；GitHub 主仓库 2.5 万星，AI Agent 与 MCP 的集成是发布节点带来的脉冲，真正留下的是自托管工作流里跑 agent 的需求，找的是能接私有系统、可审计的自动化编排，而不是又一个托管 SaaS。",
       "intentSummary": "想用 Activepieces 搭 AI Agent 工作流，或找可自托管的开源自动化替代品。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -62823,7 +62040,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "美国 90 天热度从基线 10 冲到峰值 100（10 倍），近 7 天均值 54.7、增长 447%；教师用 AI 批作文引发伦理讨论（HN 56 分），说…",
+      "why": "美国 90 天热度从基线 10 冲到峰值 100（10 倍），近 7 天均值 54.7、增长 447%；教师用 AI 批作文引发伦理讨论（HN 56 分），说明批改需求真实存在但信任是瓶颈，学校与老师找的是可解释、可复核的评分辅助，而不是替老师下判断的黑箱，机会在评分依据与人工复核流程。",
       "intentSummary": "教师和学生想找能自动批改作文、给分并指出错误的 AI 工具。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -63080,7 +62297,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "90 天内相对热度峰值达基线 23 倍，但近 7 天归零，说明是短脉冲式关注；HN 上「给 AI 输出打评分标准」的讨论与 rubric-graded age…",
+      "why": "90 天内相对热度峰值达基线 23 倍，但近 7 天归零，说明是短脉冲式关注；HN 上「给 AI 输出打评分标准」的讨论与 rubric-graded agent 项目同时出现，说明需求已从批作业转向给 AI 产出定标准，找的是能把评分规则写成可执行 rubric、并稳定复现的评测工具，而不是一次性提示词。",
       "intentSummary": "想用评分标准（rubric）自动批改作业、评测模型输出或给 agent 打分。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -63312,7 +62529,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "美国区 90 天热度较基线升 26.5%，峰值达基线 2.45 倍；HN 上 Chrome 扩展、推理型 AI 导师等 Show HN 项目持续出现，说明学生…",
+      "why": "美国区 90 天热度较基线升 26.5%，峰值达基线 2.45 倍；HN 上 Chrome 扩展、推理型 AI 导师等 Show HN 项目持续出现，说明学生要的不是直接给答案，而是能讲清步骤的陪学工具，家长和学生在找可嵌入浏览器、按题目讲解的轻量助手，独立开发者可切的是解题过程可视化这一段。",
       "intentSummary": "学生和家长期望 AI 讲解作业步骤、检查答案并解释错题，而非直接抄答案。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -63579,7 +62796,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "美国区 7 日热度较基线涨 124.6%，峰值达基线 5.52 倍；HN 上拍照解题、化学解题等 Show HN 帖持续出现，GitHub 作业求解器获 18…",
+      "why": "美国区 7 日热度较基线涨 124.6%，峰值达基线 5.52 倍；HN 上拍照解题、化学解题等 Show HN 帖持续出现，GitHub 作业求解器获 18 星，说明拍照即得答案仍是学生最直接的入口，需求集中在多学科识别与分步推导，一人公司可切的是把单科解题做深、做成可订阅的拍照工具。",
       "intentSummary": "学生想拍照或输入题目，快速得到分步解答和讲解。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -64625,7 +63842,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 搜索 90 天峰值达基线 12.9 倍，近 7 天较基线涨 25.5%，Show HN 出现 Mcptube 等把 YouTube 视频转为 AI 可查…",
+      "why": "US 搜索 90 天峰值达基线 12.9 倍，近 7 天较基线涨 25.5%，Show HN 出现 Mcptube 等把 YouTube 视频转为 AI 可查的项目，说明视频内容正在被接进 agent 工作流，找的是把长视频转成可检索、可引用文本的管道，独立开发者可切的是转录、切片与结构化索引这一段。",
       "intentSummary": "开发者想找或搭建能通过 MCP 让 AI 读取 YouTube 字幕/视频内容的服务器。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -64877,7 +64094,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "US 搜索 7 天涨 235%，峰值达基线 6.44 倍；HN 出现开源 MCP 管理平台与 Agent 即 MCP Server 的讨论，说明多 MCP 接…",
+      "why": "US 搜索 7 天涨 235%，峰值达基线 6.44 倍；HN 出现开源 MCP 管理平台与 Agent 即 MCP Server 的讨论，说明多 MCP 接入后，团队真正缺的是统一注册、权限与调用编排的控制面，而不是再写一个 MCP Server。谁在找？正在把多个 Agent 接进生产、需要集中管理连接与凭据的开发者。",
       "intentSummary": "想找管理多个 MCP server 的工具、网关与权限方案。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -65136,7 +64353,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "Google Trends 显示该词峰值达基线 23 倍，但近 7 天热度归零，说明是脉冲式关注；Orloj 用 YAML+GitOps 定义 agent 基…",
+      "why": "Google Trends 显示该词峰值达基线 23 倍，但近 7 天热度归零，说明是脉冲式关注；Orloj 用 YAML+GitOps 定义 agent 基座，HN 也在讨论多 agent 协作网络与统一 harness。这说明开发者想要的是用声明式配置描述 agent 拓扑、可版本化可回滚的编排方式，而不是在代码里硬编码协作关系。",
       "intentSummary": "开发者想用 YAML 声明式定义多 agent 协作拓扑与基础设施，替代手写编排代码。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -65878,7 +65095,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "美国 90 天内相对热度从基线 9.7 升到近 7 天 44.6，增长 357.7%，峰值达基线 10.27 倍；同时出现 WhatsApp、Instagra…",
+      "why": "美国 90 天内相对热度从基线 9.7 升到近 7 天 44.6，增长 357.7%，峰值达基线 10.27 倍；同时出现 WhatsApp、Instagram 等渠道统一 API 工具，说明需求正从通用 CRM 转向能直接接管私信与对话的 AI 助理。谁在找？靠 DM 成交、没有 CRM 团队的小商家和独立销售。",
       "intentSummary": "想让 AI 助手自动处理客户对话、跟进和 CRM 记录，减少手工录入。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -66632,7 +65849,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天热度从基线 3.3 升到近 7 天 7（+111.8%），峰值 12 为基线 3.63 倍；HN 出现「Claude Code 做渗透测试」与「…",
+      "why": "US 90 天热度从基线 3.3 升到近 7 天 7（+111.8%），峰值 12 为基线 3.63 倍；HN 出现「Claude Code 做渗透测试」与「让 Claude 监控开发日志」的讨论，说明开发者正把 Claude Code 从写代码扩展到测试、安全验证与日志排障。谁在找？想把测试与排障自动化、又没有专职 QA 的小团队。",
       "intentSummary": "想让 Claude Code 承担测试、渗透测试与 API 校验，并找可复用的做法。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -66886,7 +66103,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "官方发布大规模代码迁移方案后，HN 出现讨论，GitHub 迁移工具包获 777 星，搜索峰值达基线 23 倍，说明开发者正把 Claude Code 用于语…",
+      "why": "官方发布大规模代码迁移方案后，HN 出现讨论，GitHub 迁移工具包获 777 星，搜索峰值达基线 23 倍，说明开发者正把 Claude Code 用于语言与框架迁移这类高重复、高验证成本的任务。谁在找？手里压着老代码库、想批量迁移却缺人力的团队，他们要的是可审计的迁移流程而非一次性脚本。",
       "intentSummary": "想用 Claude Code 完成代码库迁移，并找现成流程与工具。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -67137,7 +66354,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 搜索 7 日涨 96.4%，峰值达基线 4.23 倍；HN 上 Claude Code Router 获 160 分，GitHub 主仓库 3.8 万星…",
+      "why": "US 搜索 7 日涨 96.4%，峰值达基线 4.23 倍；HN 上 Claude Code Router 获 160 分，GitHub 主仓库 3.8 万星，说明开发者不满足于单一模型，想按任务、成本与限流把请求路由到不同模型。谁在找？同时用多个模型、需要统一入口与成本控制的独立开发者和一人公司。",
       "intentSummary": "开发者想用本地路由把 Claude Code 接到其他模型或 API，降低费用并统一管理。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -67633,7 +66850,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "Google Trends 显示该词 30 天内峰值达基线 23 倍，但近 7 天热度归零；HN 出现 Agentlore、Residue 等会话存档工具，说…",
+      "why": "Google Trends 显示该词 30 天内峰值达基线 23 倍，但近 7 天热度归零；HN 出现 Agentlore、Residue 等会话存档工具，说明关注是脉冲式的，但需求真实存在：把 AI 编码会话变成可搜索、可回溯的团队日志。谁在找？多人共用 Agent、需要复盘与交接的团队，他们要的是检索与留存，而不是再开一个聊天窗口。",
       "intentSummary": "用户想找能保存、检索、跨会话复用 AI 对话记录的工具或方案。",
       "firstSeenAt": "2026-10-31",
       "lastSeenAt": "2026-10-31",
@@ -68148,7 +67365,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "近7日热度14.3、峰值100，HN「Chat with your database using AI」获58分，Chat2DB 2.8万星，自然语言查库需求…",
+      "why": "近 7 日热度 14.3、峰值 100，HN「Chat with your database using AI」获 58 分，Chat2DB 2.8 万星，自然语言查库需求明确。付费人群是没有数据分析师的中小 SaaS 团队与内部工具开发者；切入口是连上 Postgres 后自动生成 schema 说明、自然语言查询并展示 SQL 与结果，重点做查询权限白名单和错误自纠，按连接数收费。",
       "intentSummary": "想用自然语言直接查询数据库，并看到生成的SQL和结果。",
       "editorNote": {
         "audience": "没有数据分析师的中小 SaaS 团队与内部工具开发者",
@@ -70853,7 +70070,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "近7天搜索热度增长111.2%，峰值达基线14.79倍；HN出现VoiceGremlin等测试工具，GitHub有Lampline（548星）自托管项目，显示…",
+      "why": "近7天搜索热度增长111.2%，峰值达基线14.79倍；HN出现VoiceGremlin等测试工具，GitHub有Lampline（548星）自托管项目，显示独立开发者和小团队创始人正积极寻找免费、可自托管的AI电话代理方案，以低成本实现预约、催收、回访等自动化通话，这说明了他们对开箱即用、按部署付费的行业模板和托管服务的明确需求。",
       "intentSummary": "寻找免费或开源的AI电话代理方案，用于自建、测试或替代付费服务。",
       "editorNote": {
         "audience": "独立开发者、小团队创始人",
@@ -71632,7 +70849,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "90 天内峰值达基线 23 倍，但近 7 天归零，说明需求是脉冲式；HN 已有 Mentionable 等工具验证「查 ChatGPT 是否推荐我」这一付费动…",
+      "why": "90天内峰值达基线23倍，但近7天归零，说明需求是脉冲式；HN已有Mentionable等工具验证「查ChatGPT是否推荐我」这一付费动机，小品牌创始人和内容创作者需要快速检查品牌在AI回答中的可见性，这说明了他们对输入品牌名和行业后自动生成买家提问、逐条核查提及并截图存档的轻量工具的需求，按次付费即可。",
       "intentSummary": "想知道自己的品牌在 ChatGPT 回答里是否被提及或推荐。",
       "editorNote": {
         "audience": "独立开发者、小品牌创始人、内容创作者",
@@ -72440,7 +71657,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "美国 90 天热度从基线 4.1 升至近期 27.3，7 天增长 567.6%，峰值达基线 24.47 倍；HN 上 Openlayer 评测工具获 94 分…",
+      "why": "美国90天热度从基线4.1升至近期27.3，7天增长567.6%，峰值达基线24.47倍；HN上Openlayer评测工具获94分，AI产品团队和独立开发者正面临prompt频繁变更带来的行为漂移问题，这说明了他们需要专做prompt回归测试的工具，能自动跑历史用例集、标出退化并输出diff报告，集成到CI中。",
       "intentSummary": "开发者想找能集成到 CI 的 AI 评测与回归测试方案。",
       "editorNote": {
         "audience": "AI 产品团队与独立开发者",
@@ -72704,7 +71921,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "90 天内峰值达基线 23 倍，但近 7 天归零；HN 上 Vanta 的 AI 质量评测成熟度模型讨论获 26 分，说明企业 AI 治理团队在找评测能力的分…",
+      "why": "90天内峰值达基线23倍，但近7天归零；HN上Vanta的AI质量评测成熟度模型讨论获26分，说明企业AI治理团队在找评测能力的分级标准，他们需要快速评估自身成熟度并获取改进方向，这说明了在线自评工具的需求：10分钟问卷生成雷达图与行业基准对比，附下一步行动清单，并引流到评测托管服务。",
       "intentSummary": "企业 AI 负责人想评估自身评测能力处于什么阶段、如何补齐。",
       "editorNote": {
         "audience": "企业 AI 平台负责人、AI 治理团队",
@@ -72930,7 +72147,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 搜索 7 日较基线升 46.7%，峰值达基线 12.9 倍；HN 上 Opik、Viteval、Dokimos 等评测框架接连出现，说明选型与回归需求在…",
+      "why": "US搜索7日较基线升46.7%，峰值达基线12.9倍；HN上Opik、Viteval、Dokimos等评测框架接连出现，说明选型与回归需求在上升，做LLM应用的独立开发者与小团队需要轻量、可托管的评测方案，这说明了他们对上传prompt集和数据集后自动跑回归对比、生成可分享评测报告页的服务的明确需求。",
       "intentSummary": "找能跑 LLM 评测、回归对比和基准测试的框架或工具。",
       "editorNote": {
         "audience": "做 LLM 应用的独立开发者与小团队",
@@ -73191,7 +72408,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "90 天峰值达基线 12.65 倍，HN 出现 Rogue、Replaybook 等开源评测框架，RagaAI-Catalyst 获 1.6 万星，说明 ag…",
+      "why": "90天峰值达基线12.65倍，HN出现Rogue、Replaybook等开源评测框架，RagaAI-Catalyst获1.6万星，说明agent开发者急需评估agent行为的方法，构建agent产品的独立开发者与小团队需要回放轨迹并量化任务成功率、步数和成本，这说明了他们对接入SDK记录每步工具调用、输出对比看板的工具的需求。",
       "intentSummary": "找能记录 agent 多步轨迹、按任务成功率和成本打分的评测框架。",
       "editorNote": {
         "audience": "构建 agent 产品的独立开发者与小团队",
@@ -73713,7 +72930,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "美国 90 天热度峰值达基线 6.34 倍、近 7 天较基线涨 267.5%，HN 出现自然语言测试框架与开源 AI 测试框架讨论，LLM 应用回归测试需求升…",
+      "why": "美国90天热度峰值达基线6.34倍、近7天较基线涨267.5%，HN出现自然语言测试框架与开源AI测试框架讨论，LLM应用回归测试需求上升，构建LLM应用的开发团队和AI产品经理需要确保prompt变更不引入退化，这说明了他们对存储基线输出、跑diff、标红退化的回归测试工具的需求，先做CLI再补CI集成。",
       "intentSummary": "开发者想找能测 LLM 应用与 AI agent 的测试/评测框架，并了解怎么落地。",
       "editorNote": {
         "audience": "构建 LLM 应用的开发团队、AI 产品经理",
@@ -74237,7 +73454,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 90 天热度峰值达基线 8.98 倍、近 7 天涨 16.8%，HN 连续出现 UGC 广告生成器 Show HN，GitHub 开源带货剪辑项目 11…",
+      "why": "US 90天热度峰值达基线8.98倍、近7天涨16.8%，HN连续出现UGC广告生成器Show HN，GitHub开源带货剪辑项目11，做TikTok/Reels投放的电商小卖家与独立营销人需要批量生产UGC风格广告视频，这说明了他们对单一品类（如美妆或3C配件）的模板化脚本、数字人口播和多版本A/B导出工具的需求。",
       "intentSummary": "想用 AI 把商品图或脚本快速做成可投放的 UGC 口播短视频。",
       "editorNote": {
         "audience": "做 TikTok/Reels 投放的电商小卖家与独立营销人",
@@ -75284,7 +74501,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 搜索 7 天涨 228.6%、峰值达基线 23 倍；HN 上出现「全局 AGENTS.md 是否合理」的讨论，说明开发者正为 AI 编码代理寻找可复用的…",
+      "why": "US 搜索 7 天涨 228.6%、峰值达基线 23 倍；HN 上出现「全局 AGENTS.md 是否合理」的讨论，说明开发者正为 AI 编码代理寻找可复用的配置模板。所以使用 Cursor/Claude Code 的独立开发者需要按技术栈和角色分类的 AGENTS.md 模板库，能一键复制并附 diff 说明，靠 SEO 和 GitHub 引流。",
       "intentSummary": "找可直接抄的 AGENTS.md 模板与写法示例，按技术栈或角色套用。",
       "editorNote": {
         "audience": "使用 Cursor/Claude Code 的独立开发者",
@@ -75542,7 +74759,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "7 天热度涨 214.6%，峰值达基线 9.79 倍；HN 出现跨工具管理 AGENTS.md 的 Show HN，GitHub 上相关配置仓库获星，说明开源…",
+      "why": "7 天热度涨 214.6%，峰值达基线 9.79 倍；HN 出现跨工具管理 AGENTS.md 的 Show HN，GitHub 上相关配置仓库获星，说明开源 agent 用户需要跨工具管理指令文件。所以 opencode 及同类开源 agent 的重度用户需要一份最佳实践指南和可复用配置仓库，覆盖多仓库、测试命令、代码风格约束，做成 GitHub 模板并配视频讲解。",
       "intentSummary": "想为 opencode 等开源编码 agent 编写可复用的 AGENTS.md 配置指南。",
       "editorNote": {
         "audience": "opencode 及同类开源 agent 的重度用户",
@@ -76049,7 +75266,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "美国近 30 天搜索较基线涨 164%，峰值达基线 3.57 倍；HN 上 OpenTelemetry 标准化讨论获 144 分，langfuse 仓库 3.…",
+      "why": "美国近 30 天搜索较基线涨 164%，峰值达基线 3.57 倍；HN 上 OpenTelemetry 标准化讨论获 144 分，langfuse 仓库 3.6 万星，说明 LLM 可观测性需求正从工具选型转向标准化。所以自建 LLM 应用的工程团队和 AI 产品创始人需要能按 prompt/模型/用户维度定位费用突增来源的单点工具，接 OpenTelemetry 做成本+延迟异常归因。",
       "intentSummary": "寻找监控 LLM 应用成本、延迟与质量的方法和工具。",
       "editorNote": {
         "audience": "自建 LLM 应用的工程团队、AI 产品创始人",
@@ -76298,7 +75515,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "搜索峰值达基线 23 倍，HN 上 Confident AI 发布帖获 117 分，RagaAI-Catalyst 仓库 1.6 万星，说明 RAG 评测需求…",
+      "why": "搜索峰值达基线 23 倍，HN 上 Confident AI 发布帖获 117 分，RagaAI-Catalyst 仓库 1.6 万星，说明 RAG 评测需求正随 RAG 产品落地而爆发。所以搭建 RAG 产品的 AI 工程师与小团队需要轻量评测框架，支持自定义指标、A/B 对比两套检索配置、生成可分享的评测报告页。",
       "intentSummary": "寻找能评测 RAG 检索与生成质量、支持自定义指标和对比实验的框架。",
       "editorNote": {
         "audience": "搭建 RAG 产品的 AI 工程师与小团队",
@@ -76548,7 +75765,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "US 90 天峰值达基线 23 倍，HN 出现 Agentfile、Reporails、Ruleherd 三个指令文件工具，开发者正为多 agent 指令文件…",
+      "why": "US 90 天峰值达基线 23 倍，HN 出现 Agentfile、Reporails、Ruleherd 三个指令文件工具，开发者正为多 agent 指令文件管理寻找统一方案。所以刚开始用编码 agent 的开发者需要一份对比 AGENTS.md、CLAUDE.md、.cursorrules 差异的指南和迁移脚本，承接搜索流量后导流到模板库。",
       "intentSummary": "想搞清 AGENTS.md、CLAUDE.md、.cursorrules 的区别与统一管理方式。",
       "editorNote": {
         "audience": "刚开始用编码 agent 的开发者",
@@ -77571,7 +76788,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "趋势峰值达基线23倍但近7天归零，说明是脉冲式搜索；HN 上「Apple Silicon、Docker 与 Ollama 三选二」等帖子反复出现，GPU 透传…",
+      "why": "趋势峰值达基线23倍但近7天归零，说明是脉冲式搜索；HN 上「Apple Silicon、Docker 与 Ollama 三选二」等帖子反复出现，GPU 透传配置是常见痛点。所以自部署模型的独立开发者和小团队后端需要一条命令检测驱动/CUDA/容器运行时并输出可直接粘贴的 compose 片段的诊断 CLI，配常见报错对照表。",
       "intentSummary": "想让 Ollama 在 Docker 容器里正确调用 GPU，跑通本地模型。",
       "editorNote": {
         "audience": "自部署模型的独立开发者、小团队后端",
@@ -79810,7 +79027,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "90 天峰值达基线 23 倍，但近 7 天归零；HN 上 AuraSpend、Docuglean 等收据/发票结构化提取项目持续出现，说明需求集中在用 Gem…",
+      "why": "90 天峰值达基线 23 倍，但近 7 天归零；HN 上 AuraSpend、Docuglean 等收据/发票结构化提取项目持续出现，说明需求集中在用 Gemini 做收据 OCR 并结构化输出。所以做记账/报销/费用管理的独立开发者与小型 SaaS 团队需要收据图片→JSON 的 API，内置字段校验与多币种金额解析，按调用量收费，先支持 20 种常见收据版式。",
       "intentSummary": "找用 Gemini 把收据图片转成结构化 JSON/记账数据的方案。",
       "editorNote": {
         "audience": "做记账/报销/费用管理的独立开发者与小型 SaaS 团队",
@@ -80075,7 +79292,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 搜索 7 天涨 193%，峰值达基线 9.5 倍；HN 讨论「AI agents 入侵可观测性」与 OpenTelemetry 接入文章同期出现，上线 …",
+      "why": "US 搜索 7 天涨 193%，峰值达基线 9.5 倍；HN 讨论「AI agents 入侵可观测性」与 OpenTelemetry 接入文章同期出现，上线 agent 的团队开始关心 trace 与监控。所以已上线 agent 的独立开发者与小团队需要 5 行代码接入的 agent trace 面板，先支持 OpenAI/Anthropic SDK，按 trace 条数收费。",
       "intentSummary": "找能快速接入、看清 agent 每一步调用与成本的追踪方案。",
       "editorNote": {
         "audience": "已上线 agent 的独立开发者与小团队",
@@ -80587,7 +79804,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 搜索 7 天涨 41.1%，峰值达基线 11.6 倍；HN 连续出现「hiring-manager 级反馈」和「评声音」的模拟面试项目，说明求职者为真实…",
+      "why": "US 搜索 7 天涨 41.1%，峰值达基线 11.6 倍；HN 连续出现「hiring-manager 级反馈」和「评声音」的模拟面试项目，说明求职者为真实面试表现焦虑，需要更贴近实战的反馈。所以准备技术面/行为面的求职者在找能模拟真实面试官、针对语音和内容给出评分的工具，这指向按岗位定制、基于真实面经的语音模拟面试需求。",
       "intentSummary": "求职者想用 AI 模拟面试，获得逐题评分和改写建议。",
       "editorNote": {
         "audience": "准备技术面/行为面的求职者",
@@ -80851,7 +80068,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 搜索 7 天均值 27.4，较基线 3.7 涨 633.6%，峰值达基线 26.7 倍；HN 出现开源 GEO 审计工具与 Claude 技能，说明品牌…",
+      "why": "US 搜索 7 天均值 27.4，较基线 3.7 涨 633.6%，峰值达基线 26.7 倍；HN 出现开源 GEO 审计工具与 Claude 技能，说明品牌开始关心在 AI 引擎中的可见性。所以 SEO 代理商和出海 SaaS 市场团队在找能模拟买家提问、检测内容是否被 LLM 引用的审计工具，这指向 GEO 体检与优化建议的需求。",
       "intentSummary": "想检查品牌在 ChatGPT 等 AI 回答中是否被引用，并获取改写建议。",
       "editorNote": {
         "audience": "SEO 代理商、出海 SaaS 市场团队",
@@ -81397,7 +80614,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "US 搜索 7 天涨 164.3%，峰值达基线 6.5 倍；HN 上 Gmail/IMAP、Cursor 发信等 MCP 邮件项目连续出现，开发者想把邮箱接进…",
+      "why": "US 搜索 7 天涨 164.3%，峰值达基线 6.5 倍；HN 上 Gmail/IMAP、Cursor 发信等 MCP 邮件项目连续出现，开发者想把邮箱接进 AI 工作流。所以用 Claude/Cursor 等接邮件数据的开发者在找稳定、安全的邮件 MCP 服务，这指向支持细粒度权限和审计日志的生产级 email MCP server 需求。",
       "intentSummary": "找能接 Gmail/IMAP 的 MCP 邮件服务器，让 Claude/Cursor 读写邮件。",
       "editorNote": {
         "audience": "用 Claude/Cursor 等接邮件数据的开发者、AI 工作流搭建者",
@@ -82372,7 +81589,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "Python 是 AI 开发主语言，AGENTS.md 约定刚兴起；HN 上「Codebase-md 自动生成 AGENTS.md」和「Cq 为 AI 编码代…",
+      "why": "Python 是 AI 开发主语言，AGENTS.md 约定刚兴起；HN 上「Codebase-md 自动生成 AGENTS.md」和「Cq 为 AI 编码代」等讨论出现，说明开发者需要规范 AI 编码代理的上下文。所以 Python AI 应用开发者和小团队技术负责人在找能自动生成并维护 agents.md 的工具，这指向约定文件生成与一致性检查的需求。",
       "intentSummary": "Python 开发者想知道 AGENTS.md 怎么写、怎么自动生成并保持与代码一致。",
       "editorNote": {
         "audience": "Python AI 应用开发者、小团队技术负责人",
@@ -83133,7 +82350,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 搜索 7 天涨 169.2%，峰值达基线 3.67 倍；HN 出现「Unlimited Free DeepSeek API」与免费网关帖，GitHub …",
+      "why": "US 搜索 7 天涨 169.2%，峰值达基线 3.67 倍；HN 出现「Unlimited Free DeepSeek API」与免费网关帖，GitHub 上也有相关项目，说明开发者对免费 API 额度高度敏感。所以预算敏感的独立开发者和小团队在找能聚合免费额度、自动切换模型的代理层，这指向一个 key 调用多家免费/低价模型并自动降级的需求。",
       "intentSummary": "找 DeepSeek API 免费额度、免费 key 与低成本接入方式",
       "editorNote": {
         "audience": "预算敏感的独立开发者和小团队",
@@ -84929,7 +84146,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "峰值达基线 23 倍但近 7 天回落 54.5%，说明热度由事件驱动；HN 上 Outerport 热切换讨论获 93 分，团队登记模型版本与许可证的需求真实…",
+      "why": "峰值达基线 23 倍但近 7 天回落 54.5%，说明热度由事件驱动；HN 上 Outerport 热切换讨论获 93 分，团队登记模型版本与许可证的需求真实。所以 ML 平台团队和 AI 应用开发团队在找能自动抓取模型元数据、输出许可证与版本变更 diff 的自托管登记服务，这指向模型治理与合规追踪的需求。",
       "intentSummary": "想找能统一登记模型版本、来源与许可证的工具或方案。",
       "editorNote": {
         "audience": "ML 平台团队、AI 应用开发团队",
@@ -85454,7 +84671,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "关键词 7 日热度较基线涨 133.3%、峰值达基线 4.67 倍；HN 讨论「追踪每行代码由哪个模型生成」与开源 token 成本追踪工具走热，说明团队开始…",
+      "why": "关键词 7 日热度较基线涨 133.3%、峰值达基线 4.67 倍；HN 讨论「追踪每行代码由哪个模型生成」与开源 token 成本追踪工具走热，说明团队开始关注模型调用溯源。所以 AI 应用开发者和 MLOps 工程师在找能记录每次调用模型版本、延迟、成本和输出质量的埋点工具，这指向版本对比与成本可视化的需求。",
       "intentSummary": "开发者想追踪生产环境里模型版本、调用成本与输出质量，做版本对比和成本归因。",
       "editorNote": {
         "audience": "AI 应用开发者、MLOps 工程师",
@@ -85704,7 +84921,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "美国区 90 天热度峰值达基线 12.78 倍、近 7 天较基线涨 164.7%，HN 出现 Gemini 3.1 Flash Image 进入 Vertex…",
+      "why": "美国区 90 天热度峰值达基线 12.78 倍、近 7 天较基线涨 164.7%，HN 出现 Gemini 3.1 Flash Image 进入 Vertex AI Catalog 的讨论，说明模型目录更新频繁。所以 AI 平台团队和内部开发者在找能聚合内部模型卡、评测结果和调用示例的目录页，这指向一键生成调用代码片段、降低模型选用门槛的需求。",
       "intentSummary": "想快速找到可用的 AI 模型并比较能力、价格与调用方式。",
       "editorNote": {
         "audience": "AI 平台团队、内部开发者",
@@ -88041,7 +87258,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "美国区 7 天热度 39.7、较基线涨 813%，峰值达基线 23 倍；HN 上 MCP 管理器类 Show HN 持续出现，说明多 MCP 集成后的配置管理…",
+      "why": "美国区 7 天热度 39.7、较基线涨 813%，峰值达基线 23 倍；HN 上 MCP 管理器类 Show HN 持续出现，说明多 MCP 集成后的配置管理已成为开发者的日常痛点，他们需要一个能统一管理版本、依赖和团队配置的工具，所以维护多个 MCP 集成的开发者和 AI 工具重度用户在找开箱即用的配置中心。",
       "intentSummary": "想找工具统一安装、配置、切换和共享多个 MCP server。",
       "editorNote": {
         "audience": "维护多个 MCP 集成的开发者、AI 工具重度用户",
@@ -89596,7 +88813,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "90 天内 US 搜索峰值达基线 8.39 倍，但近 7 天归零；HN 出现 Agent Passport 等 4 个 Show HN，GitHub atte…",
+      "why": "90 天内 US 搜索峰值达基线 8.39 倍，但近 7 天归零；HN 出现 Agent Passport 等 4 个 Show HN，GitHub atte 相关项目也在涌现，说明 agent 身份校验还处于早期探索阶段，但安全需求已经浮现，所以 agent 平台、企业安全与 AI 集成团队在找能签发和校验 agent 凭证、记录调用链的中间件方案。",
       "intentSummary": "开发者想给 AI agent 签发可验证身份、控制权限并审计调用链。",
       "editorNote": {
         "audience": "agent 平台、企业安全与 AI 集成团队",
@@ -90117,7 +89334,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "Google Trends 显示该词 30 天内从 0 升至峰值 100，近 7 天均值 14.3；Airweave 让 agent 搜索任意应用在 HN 获…",
+      "why": "Google Trends 显示该词 30 天内从 0 升至峰值 100，近 7 天均值 14.3；Airweave 让 agent 搜索任意应用在 HN 获关注，说明 agent 发现与注册正在成为协议层的新需求，所以接入 agent 协议的独立开发者和小团队在找能三行代码接入发现与注册的轻量 SDK，并愿意为托管服务付费。",
       "intentSummary": "开发者想找能让 AI agent 被发现、注册、搜索的 SDK 与协议接入方案。",
       "editorNote": {
         "audience": "接入 agent 协议的独立开发者、小团队",
@@ -90376,7 +89593,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 搜索 30 天内从基线升到峰值 100，近期 7 天均值 14.3；HN 上多个 Show HN 工具在追踪 AI 引擎引用，说明品牌方在问「AI 回答…",
+      "why": "US 搜索 30 天内从基线升到峰值 100，近期 7 天均值 14.3；HN 上多个 Show HN 工具在追踪 AI 引擎引用，说明品牌方在问「AI 回答里有没有提到我」，所以 SEO/内容营销团队、DTC 品牌和独立站站长在找能定期抓取 ChatGPT/Perplexity 回答并统计引用与提及的监测面板。",
       "intentSummary": "想知道 ChatGPT 等 AI 回答是否引用、提及自己的品牌或网站，并找到监测方法。",
       "editorNote": {
         "audience": "SEO/内容营销团队、DTC 品牌、独立站站长",
@@ -91410,7 +90627,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "近7天热度14.3，峰值100；HN 上 Klaus 获 160 分，GitHub 出现 AGENTS.md 模板与最佳实践仓库，说明编码 agent 配置约…",
+      "why": "近7天热度14.3，峰值100；HN 上 Klaus 获 160 分，GitHub 出现 AGENTS.md 模板与最佳实践仓库，说明编码 agent 配置约定正在形成，但手写和维护成本高，所以使用 Claude Code / Cursor 等编码 agent 的独立开发者与小团队在找能自动生成并校验 AGENTS.md 的工具，确保指令一致、命令完整。",
       "intentSummary": "想了解如何为编码 agent 编写和维护 AGENTS.md 规范。",
       "editorNote": {
         "audience": "使用 Claude Code / Cursor 等编码 agent 的独立开发者与小团队",
@@ -91667,7 +90884,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "搜索热度7天涨158%，峰值达基线5.5倍；HN出现多个MCP工具Show HN，GitHub相关awesome列表星标超5000，开发者急需枚举和对比MCP…",
+      "why": "搜索热度7天涨158%，峰值达基线5.5倍；HN出现多个MCP工具Show HN，GitHub相关awesome列表星标超5000，开发者急需枚举和对比MCP工具的能力与安全风险，所以挑选 MCP server 接入的开发者与小团队在找一个按能力分类、自动抓取 tools 列表与 schema、标注维护活跃度和安全风险的目录站。",
       "intentSummary": "开发者想查找、对比和接入MCP server的工具列表与能力清单。",
       "editorNote": {
         "audience": "挑选 MCP server 接入的开发者与小团队",
@@ -92208,7 +91425,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 搜索 30 天内峰值达 100、近期均值 14.3，相关搜索出现 agent instructions file；HN 已有指令文件 linter 与模…",
+      "why": "US 搜索 30 天内峰值达 100、近期均值 14.3，相关搜索出现 agent instructions file；HN 已有指令文件 linter 与模板项目，说明 Copilot 自定义指令文件正成为项目标配，但编写规范不统一，所以用 Copilot 的个人开发者与小团队在找问答式生成器，能采集技术栈与规范并输出可提交的 instructions 文件。",
       "intentSummary": "想找到 Copilot 指令文件的写法、示例与生成/校验工具。",
       "editorNote": {
         "audience": "用 Copilot 的个人开发者与小团队",
@@ -92471,7 +91688,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "美国区 90 天搜索峰值达基线 27.6 倍，近 7 天增长 294.3%；HN 上 Cloudflare、Smithery 等部署方案密集出现，说明开发者正…",
+      "why": "美国区 90 天搜索峰值达基线 27.6 倍，近 7 天增长 294.3%；HN 上 Cloudflare、Smithery 等部署方案密集出现，说明开发者正从本地实验转向把 MCP server 部署到线上，所以想把内部工具暴露给 AI 客户端的开发者与小团队在找一键部署平台，内置鉴权、日志和调用量统计。",
       "intentSummary": "开发者想把 MCP server 从本地跑通变成可被 AI 客户端访问的线上端点。",
       "editorNote": {
         "audience": "想把内部工具暴露给 AI 客户端的开发者与小团队",
@@ -92750,7 +91967,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 90 天内相对热度峰值 100，近 7 天均值 14.3；HN 上关于 MCP 网关控制面与鉴权配置的讨论持续出现，说明容器化接入 MCP 的工程需求在…",
+      "why": "US 90 天内相对热度峰值 100，近 7 天均值 14.3；HN 上关于 MCP 网关控制面与鉴权配置的讨论持续出现，说明容器化接入 MCP 的工程需求在真实增长。自建 MCP 工具链的独立开发者与小团队正在找能一键拉起多个 MCP server 并统一鉴权与日志的方案，所以做一个 docker-compose 模板加 CLI，先覆盖 filesystem、github、postgres 三个高频 server，就是明确的切入口。",
       "intentSummary": "想用 Docker 一键部署并统一鉴权、管理多个 MCP server。",
       "editorNote": {
         "audience": "自建 MCP 工具链的独立开发者与小团队",
@@ -93273,7 +92490,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "近30天热度从基线4.3冲至峰值100（23倍）后归零，HN出现Python/FastAPI注入防御中间件与Vigil工具调用护栏讨论，说明工程侧需求在冒头但…",
+      "why": "近30天热度从基线4.3冲至峰值100（23倍）后归零，HN出现Python/FastAPI注入防御中间件与Vigil工具调用护栏讨论，说明工程侧需求在冒头但尚未稳定。在 production 部署 LLM 应用的开发团队正在找可嵌入的注入检测中间件，要求支持规则加小模型双通道、输出风险分与拦截日志，所以先出 Python SDK 是抓住这波需求的最短路径。",
       "intentSummary": "开发者想找能直接嵌入LLM应用的注入检测与拦截中间件方案。",
       "editorNote": {
         "audience": "在 production 部署 LLM 应用的开发团队",
@@ -93785,7 +93002,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "搜索热度峰值达基线 23 倍后 7 天归零，属脉冲式关注；HN 上 agent trace 分类器与调用追踪项目陆续出现，说明调试需求真实但尚未形成稳定搜索习…",
+      "why": "搜索热度峰值达基线 23 倍后 7 天归零，属脉冲式关注；HN 上 agent trace 分类器与调用追踪项目陆续出现，说明调试需求真实但尚未形成稳定搜索习惯。做 Agent 产品的 AI 应用开发者与小团队技术负责人需要轻量 trace 面板，一行 SDK 接入就能展示每步工具调用、token 成本、失败重试，所以先支持 LangChain 和 OpenAI 两家，正好卡住这个空档。",
       "intentSummary": "想给 Agent 加可视化追踪面板，看清每步工具调用、成本与失败原因。",
       "editorNote": {
         "audience": "做 Agent 产品的 AI 应用开发者、小团队技术负责人",
@@ -94034,7 +93251,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "OpenAI SDK 官方可观测能力弱，HN 上「生产环境如何监控 AI agent」的讨论和 OpenTelemetry 原生追踪库出现，说明开发者在找请求…",
+      "why": "OpenAI SDK 官方可观测能力弱，HN 上「生产环境如何监控 AI agent」的讨论和 OpenTelemetry 原生追踪库出现，说明开发者在找请求级追踪方案。用 OpenAI SDK 做产品的独立开发者需要 drop-in 包装库，自动记录请求、响应、耗时并本地可视化，所以开源引流加云端托管收费，正好接住这批不想自建监控的人。",
       "intentSummary": "想给 OpenAI SDK 调用加请求/响应/耗时追踪和本地可视化。",
       "editorNote": {
         "audience": "用 OpenAI SDK 做产品的独立开发者",
@@ -94290,7 +93507,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "Claude Agent 用量增长，开发者需要监控 token 花费与死循环；相关搜索出现 ai agent observability，HN 有 Voker…",
+      "why": "Claude Agent 用量增长，开发者需要监控 token 花费与死循环；相关搜索出现 ai agent observability，HN 有 Voker 等分析工具讨论。基于 Claude 构建 Agent 的开发者与小团队正在找按会话统计 token 花费、检测死循环和工具调用失败的监控方案，所以先做 CLI 加本地面板，就是直接回应这个成本与稳定性焦虑。",
       "intentSummary": "开发者想监控 Claude Agent 的 token 成本、死循环和工具调用失败。",
       "editorNote": {
         "audience": "基于 Claude 构建 Agent 的开发者与小团队",
@@ -94546,7 +93763,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "Reddit 搜索 MCP 需求明确：reddit-mcp-buddy 获 868 星，reddit-research-mcp 获 259 星，HN 上 MC…",
+      "why": "Reddit 搜索 MCP 需求明确：reddit-mcp-buddy 获 868 星，reddit-research-mcp 获 259 星，HN 上 MCP 相关讨论持续。AI 应用开发者与做舆情、选品调研的小团队需要带语义重排的 Reddit 搜索 MCP，支持按时间、热度、子版块过滤，所以先发 npm 再挂托管版，正好满足这批人快速接入调研数据源的需求。",
       "intentSummary": "找能把 Reddit 搜索接入 AI 代理的 MCP 服务器或实现方案。",
       "editorNote": {
         "audience": "AI 应用开发者、做舆情/选品调研的小团队",
@@ -95074,7 +94291,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "Google Trends 显示该词峰值达基线 23 倍，但近 7 天归零；GitHub 上 resend-mcp 578 星、agent-kit 661 星…",
+      "why": "Google Trends 显示该词峰值达基线 23 倍，但近 7 天归零；GitHub 上 resend-mcp 578 星、agent-kit 661 星，说明发信 MCP 有真实项目热度但搜索习惯未稳。做 agent 自动化的独立开发者需要带发信额度、退订管理和发送日志的 MCP 发信网关，按封数计费，所以避开自建 SMTP 的坑就是他们最愿意付费的点。",
       "intentSummary": "开发者想找能让 AI 代理直接发邮件的 MCP 服务器或现成工具。",
       "editorNote": {
         "audience": "做 agent 自动化的独立开发者",
@@ -95351,7 +94568,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "美国区 90 天热度较基线涨 111.3%，峰值达基线 4.91 倍，HN 与 GitHub 上示例仓库持续出现，说明大量开发者在找可跑通的 MCP 服务端样…",
+      "why": "美国区 90 天热度较基线涨 111.3%，峰值达基线 4.91 倍，HN 与 GitHub 上示例仓库持续出现，说明大量开发者在找可跑通的 MCP 服务端样例。MCP 初学者与评估接入的团队需要按场景分类、标注依赖与坑的一键运行示例仓库合集，所以靠赞助和托管 demo 变现，正好服务这批想快速验证的人。",
       "intentSummary": "找能直接运行、依赖清楚的 MCP 服务端示例代码与教程。",
       "editorNote": {
         "audience": "MCP 初学者、评估接入的团队",
@@ -95624,7 +94841,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "峰值热度达基线23倍，但近7天归零，说明是脉冲式关注；GitHub 上两个 skills 配置示例仓库分别获 1 万和 6 千星，Show HN 上不断有人发…",
+      "why": "峰值热度达基线23倍，但近7天归零，说明是脉冲式关注；GitHub 上两个 skills 配置示例仓库分别获 1 万和 6 千星，Show HN 上不断有人发新 skill，说明大家缺的不是概念而是能直接抄的完整配置。所以已用 Claude Code 的独立开发者和小团队技术负责人，在找一个按任务类型分好、能看目录结构和 SKILL.md 全文、还能一键下载的示例库。",
       "intentSummary": "想看别人怎么写 SKILL.md、怎么组织目录、怎么触发，好照抄一份能跑的配置。",
       "editorNote": {
         "audience": "已用 Claude Code 的独立开发者、小团队技术负责人",
@@ -96172,7 +95389,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "搜索热度峰值达基线23倍，但近7天归零；HN出现Guardian Runtime、Tokencap等预算管控工具，GitHub上OpenSquilla获709…",
+      "why": "搜索热度峰值达基线23倍，但近7天归零；HN出现Guardian Runtime、Tokencap等预算管控工具，GitHub上OpenSquilla获709星，说明长任务 agent 的 token 花费已经失控到需要专门工具。所以跑长任务 agent 的开发者与框架作者，在找一个能给每个任务和子 agent 分配额度、超支自动降级模型或截断上下文、并带实时用量面板的预算 SDK。",
       "intentSummary": "开发者想控制AI agent的token消耗，避免超支，并寻找可落地的预算管理方案。",
       "editorNote": {
         "audience": "跑长任务 agent 的开发者、agent 框架作者",
@@ -96432,265 +95649,6 @@
           "action": "写一篇「AI agent token预算管理实战」教程，对比现有工具，引导到自建方案。",
           "reason": "搜索意图以howto和problem为主，内容可快速建立信任并获取早期用户。",
           "uncertainty": "内容竞争程度未知，需观察搜索词实际流量。"
-        }
-      ]
-    },
-    {
-      "slug": "openai-fine-tuning-price",
-      "keyword": "openai fine tuning price",
-      "normalizedName": "OpenAI 微调定价",
-      "category": "business",
-      "region": "US",
-      "status": "cooling",
-      "confidence": "low",
-      "why": "90 天内峰值达基线 23 倍，但近 7 天热度归零，说明查价需求集中在官方调价或新模型发布节点，日常搜索稀疏。",
-      "intentSummary": "想弄清 OpenAI 微调到底怎么收费、什么场景下比提示工程或 RAG 更划算。",
-      "editorNote": {
-        "audience": "评估是否微调的中小团队",
-        "entryAngle": "做 OpenAI 微调 vs 提示工程 vs RAG 的成本对照计算器，输出何时微调才划算的决策树",
-        "whyAccepted": "搜索意图明确是查价，但巨头官方页面已承接大部分，只剩比价与场景化估算的细分空间"
-      },
-      "firstSeenAt": "2026-10-31",
-      "lastSeenAt": "2026-10-31",
-      "updatedAt": "2026-10-31T07:37:04.074Z",
-      "series": {
-        "start": "2026-10-02",
-        "stepDays": 1,
-        "values": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          72,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ]
-      },
-      "trendParts": {
-        "growth": 16,
-        "persistence": 0,
-        "breakout": 100,
-        "novelty": 100,
-        "reliability": 100
-      },
-      "oppParts": {
-        "demand": 55,
-        "wedge": 62,
-        "seo": 58,
-        "feasibility": 78,
-        "timing": 60
-      },
-      "sources": [
-        {
-          "label": "Google Trends · Explore（90 天，US）",
-          "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=openai%20fine%20tuning%20price",
-          "site": "trends.google.com",
-          "kind": "google_trends"
-        },
-        {
-          "label": "相关搜索：llm fine tuning cost",
-          "url": "https://trends.google.com/trends/explore?geo=US&q=llm%20fine%20tuning%20cost",
-          "site": "trends.google.com",
-          "kind": "google_trends"
-        },
-        {
-          "label": "Launch HN: Augento (YC W25) – Fine-tune your agents with reinforcement learning",
-          "url": "https://news.ycombinator.com/item?id=43537505",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2025-03-31"
-        },
-        {
-          "label": "Launch HN: Vellum (YC W23) – Dev Platform for LLM Apps",
-          "url": "https://news.ycombinator.com/item?id=35042836",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2023-03-06"
-        },
-        {
-          "label": "Launch HN: Pyq (YC W23) – Simple APIs to Popular AI Models",
-          "url": "https://news.ycombinator.com/item?id=34971883",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2023-02-28"
-        },
-        {
-          "label": "Show HN: Pebble Finance – Personalize Your Investments Today",
-          "url": "https://pebble.finance/themes",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2023-07-27"
-        },
-        {
-          "label": "Walid-Ahmed/openai-finetune-price-prediction-llm（★5）",
-          "url": "https://github.com/Walid-Ahmed/openai-finetune-price-prediction-llm",
-          "site": "github.com",
-          "kind": "repo",
-          "publishedAt": "2025-10-04"
-        },
-        {
-          "label": "drabspirit/Spirit-Scraper（★2）",
-          "url": "https://github.com/drabspirit/Spirit-Scraper",
-          "site": "github.com",
-          "kind": "repo",
-          "publishedAt": "2023-12-20"
-        }
-      ],
-      "evidence": [
-        {
-          "claim": "该关键词在 90 天内相对热度峰值达基线 23 倍，但近 7 天回落至 0，呈事件驱动型脉冲。",
-          "claimType": "fact",
-          "date": "2026-10-02",
-          "detail": "Google Trends 美国区 90 天序列：基线 3.1，峰值 72，近 7 天为 0。",
-          "sources": [
-            {
-              "label": "Google Trends · Explore（90 天，US）",
-              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=openai%20fine%20tuning%20price",
-              "site": "trends.google.com",
-              "kind": "google_trends"
-            }
-          ]
-        },
-        {
-          "claim": "相关搜索出现「llm fine tuning cost」，说明用户把微调定价与整体 LLM 成本评估放在一起比较。",
-          "claimType": "fact",
-          "sources": [
-            {
-              "label": "相关搜索：llm fine tuning cost",
-              "url": "https://trends.google.com/trends/explore?geo=US&q=llm%20fine%20tuning%20cost",
-              "site": "trends.google.com",
-              "kind": "google_trends"
-            }
-          ]
-        },
-        {
-          "claim": "HN 上微调与 LLM 开发平台类 Launch 帖能拿到 100 分以上讨论，但都不是直接做定价对照的工具。",
-          "claimType": "inference",
-          "detail": "Augento 101 分、Vellum 136 分、Pyq 123 分。",
-          "sources": [
-            {
-              "label": "Launch HN: Augento (YC W25) – Fine-tune your agents with reinforcement learning",
-              "url": "https://news.ycombinator.com/item?id=43537505",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2025-03-31"
-            },
-            {
-              "label": "Launch HN: Vellum (YC W23) – Dev Platform for LLM Apps",
-              "url": "https://news.ycombinator.com/item?id=35042836",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2023-03-06"
-            },
-            {
-              "label": "Launch HN: Pyq (YC W23) – Simple APIs to Popular AI Models",
-              "url": "https://news.ycombinator.com/item?id=34971883",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2023-02-28"
-            }
-          ]
-        }
-      ],
-      "intents": [
-        {
-          "intent": "price",
-          "queries": [
-            "openai fine tuning price",
-            "openai fine tuning cost per token",
-            "how much does openai fine tuning cost",
-            "gpt fine tuning pricing"
-          ]
-        },
-        {
-          "intent": "compare",
-          "queries": [
-            "fine tuning vs prompt engineering cost",
-            "fine tuning vs rag cost comparison",
-            "when is fine tuning cheaper than prompting"
-          ]
-        },
-        {
-          "intent": "howto",
-          "queries": [
-            "how to estimate fine tuning cost",
-            "openai fine tuning pricing calculator",
-            "fine tuning cost estimator"
-          ]
-        }
-      ],
-      "relatedQueries": [
-        "openai fine tuning price",
-        "llm fine tuning cost",
-        "openai fine tuning cost calculator",
-        "fine tuning vs prompt engineering cost",
-        "gpt-4o fine tuning price",
-        "openai fine tuning pricing per 1k tokens",
-        "when to fine tune vs rag"
-      ],
-      "competitors": [
-        "OpenAI 官方定价页",
-        "Vellum",
-        "Augento"
-      ],
-      "opportunities": [
-        {
-          "type": "product",
-          "title": "微调 vs 提示工程 vs RAG 成本对照计算器",
-          "why": "搜索者敲的是价格词，但官方页面只给单价，不回答「我的场景该不该微调」；相关搜索已出现 llm fine tuning cost，说明比价需求真实存在。",
-          "effort": "低",
-          "evidence": "Google Trends 相关搜索含「llm fine tuning cost」；HN 上 Vellum 获 136 分、Pyq 获 123 分，说明 LLM 开发平台有讨论度，但无专门做成本对照的工具。"
-        },
-        {
-          "type": "content",
-          "title": "「何时微调才划算」决策树长文",
-          "why": "关键词呈脉冲式，峰值 23 倍基线，适合在调价或新模型发布节点用决策树内容承接搜索；官方页面不覆盖场景化估算。",
-          "effort": "低",
-          "evidence": "90 天序列峰值 72、基线 3.1，近 7 天归零，说明需求集中在事件节点；GitHub 上有零星微调定价预测项目但仅 5 星，内容供给薄弱。"
-        },
-        {
-          "type": "opensource",
-          "title": "开源微调成本估算脚本",
-          "why": "独立开发者需要可嵌入自己管线的估算工具，现有 GitHub 项目仅个位数星，没有形成标准工具。",
-          "effort": "中",
-          "evidence": "GitHub 上 openai-finetune-price-prediction-llm 仅 5 星，finetuning-openai 0 星，说明该细分缺少成熟开源实现。"
-        }
-      ],
-      "actions": [
-        {
-          "verdict": "mvp",
-          "action": "先做单页成本对照计算器，输入 token 量、训练轮次和场景类型，输出微调/提示工程/RAG 的月成本对比与决策建议。",
-          "reason": "搜索意图明确是查价，官方页面只给单价，场景化估算和比价是空白；独立开发可行性高。",
-          "uncertainty": "关键词近 7 天热度归零，日常流量可能很低，需靠事件节点和长尾内容获客。"
-        },
-        {
-          "verdict": "content",
-          "action": "围绕「fine tuning vs prompt engineering cost」写对比长文，嵌入计算器作为转化入口。",
-          "reason": "相关搜索已出现 llm fine tuning cost，比价意图明确；HN 上 LLM 开发平台讨论热度可借力。",
-          "uncertainty": "OpenAI 官方文档更新频繁，内容需持续维护价格数据。"
         }
       ]
     },
@@ -96961,7 +95919,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "峰值达基线23倍后近7日归零，solomd获1453星、blazorly-harness获137星，说明本地LLM编码有真实需求但热度脉冲式，痛点集中在延迟与…",
+      "why": "峰值达基线23倍后近7日归零，solomd获1453星、blazorly-harness获137星，说明本地LLM编码有真实需求但热度脉冲式，痛点集中在延迟与体验上。所以注重隐私或离线开发的个人开发者与小团队，在找一个能把本地补全延迟压下来的方案：缓存、增量索引、按文件类型路由到不同小模型，开源加托管双版本。",
       "intentSummary": "找能在本机跑模型、离线补全代码且配置简单的编辑器或代理方案。",
       "editorNote": {
         "audience": "注重隐私或离线开发的个人开发者与小团队",
@@ -97189,7 +96147,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "近7天热度较基线涨117%，峰值达基线3.91倍；HN 出现「600美元 Mac mini 跑 35B 模型」与 M6/M5 替代方案讨论，说明用户在找能跑多…",
+      "why": "近7天热度较基线涨117%，峰值达基线3.91倍；HN 出现「600美元 Mac mini 跑 35B 模型」与 M6/M5 替代方案讨论，说明用户在找能跑多大模型、花多少钱的确定答案。所以用 Mac mini 和 M 系列芯片做本地推理的个人开发者，在找一份统一内存跑本地模型的实测指南与配置生成器，能对比 Ollama、MLX、llama.cpp 三种后端的速度。",
       "intentSummary": "想知道 Mac mini 统一内存能跑多大模型、速度多少、怎么配置后端。",
       "editorNote": {
         "audience": "用 Mac mini/M 系列芯片做本地推理的个人开发者",
@@ -97669,7 +96627,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "90 天 US 热度峰值达基线 23 倍，但近 7 天跌至 0，说明是脉冲式搜索；Pandas-AI 仓库 2.4 万星验证需求真实，但通用场景已被大模型自带…",
+      "why": "90 天 US 热度峰值达基线 23 倍，但近 7 天跌至 0，说明是脉冲式搜索；Pandas-AI 仓库 2.4 万星验证需求真实，但通用场景已被大模型自带功能覆盖。所以处理敏感数据的分析师和中小企业运营，在找数据不出本机的 CSV 问答工具，用 WASM 跑小模型或自带 API Key，主打合规与离线，服务医疗财务这类不能上传数据的团队。",
       "intentSummary": "想让 AI 直接读取 CSV 并对话式提问、出图、得结论。",
       "editorNote": {
         "audience": "处理敏感数据的分析师、中小企业运营",
@@ -98446,7 +97404,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "90 天内峰值达基线 23 倍，但近 7 天热度归零；HN 出现「AI UGC 广告」新工具帖，GitHub 已有提示词库（最高 51 星），说明需求真实但供…",
+      "why": "90 天内峰值达基线 23 倍，但近 7 天热度归零；HN 出现「AI UGC 广告」新工具帖，GitHub 已有提示词库（最高 51 星），说明需求真实但供给零散、没人做成体系。TikTok 小店卖家和独立投放者，在找按美妆、家居、3C 等品类分好的 UGC 广告提示词库，配一键生成脚本与分镜、附高播放结构拆解，愿意按订阅付费。",
       "intentSummary": "找可直接套用的 TikTok UGC 广告提示词、钩子与脚本模板。",
       "editorNote": {
         "audience": "TikTok 小店卖家、独立投放者",
@@ -99450,259 +98408,6 @@
       ]
     },
     {
-      "slug": "ai-pricing-model-saas",
-      "keyword": "ai pricing model saas",
-      "normalizedName": "AI SaaS 定价模型",
-      "category": "business",
-      "region": "US",
-      "status": "cooling",
-      "confidence": "low",
-      "why": "搜索热度峰值达基线 23 倍，但近 7 天回落 83.6%，HN 上「订阅制还是按量付费」讨论获 119 分，说明创始人在成本结构变化下反复寻找定价答案。",
-      "intentSummary": "SaaS 创始人想弄清 AI 功能该按席位、按用量还是混合收费。",
-      "editorNote": {
-        "audience": "SaaS 创始人、独立开发者",
-        "entryAngle": "做一个定价模式选择器：输入产品类型、成本结构、目标客群，输出三种候选模式及各自的风险点，附真实产品案例链接",
-        "whyAccepted": "需求明确但偏泛，红海内容市场，需靠工具化或数据化差异化"
-      },
-      "firstSeenAt": "2026-10-31",
-      "lastSeenAt": "2026-10-31",
-      "updatedAt": "2026-10-31T07:37:04.074Z",
-      "series": {
-        "start": "2026-10-02",
-        "stepDays": 1,
-        "values": [
-          0,
-          0,
-          0,
-          100,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          5,
-          0,
-          0,
-          0,
-          0
-        ]
-      },
-      "trendParts": {
-        "growth": 20,
-        "persistence": 7,
-        "breakout": 100,
-        "novelty": 100,
-        "reliability": 100
-      },
-      "oppParts": {
-        "demand": 55,
-        "wedge": 70,
-        "seo": 60,
-        "feasibility": 80,
-        "timing": 65
-      },
-      "sources": [
-        {
-          "label": "Google Trends · Explore（90 天，US）",
-          "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20pricing%20model%20saas",
-          "site": "trends.google.com",
-          "kind": "google_trends"
-        },
-        {
-          "label": "相关搜索：pricing ai features",
-          "url": "https://trends.google.com/trends/explore?geo=US&q=pricing%20ai%20features",
-          "site": "trends.google.com",
-          "kind": "google_trends"
-        },
-        {
-          "label": "Pricing AI Products Differs from Traditional SaaS: The Complex Reality",
-          "url": "https://news.ycombinator.com/item?id=41341132",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2024-08-24"
-        },
-        {
-          "label": "AI and its effect on per-seat SaaS pricing models",
-          "url": "http://venturebeat.com/2017/03/18/ai-is-going-to-kill-seat-based-saas-models/",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2017-03-19"
-        },
-        {
-          "label": "Turnkey AI with RAG SaaS for Developers",
-          "url": "https://news.ycombinator.com/item?id=41825220",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2024-10-13"
-        },
-        {
-          "label": "Ask HN: SaaS Subscription or Usage-Based Pricing?",
-          "url": "https://news.ycombinator.com/item?id=40376857",
-          "site": "news.ycombinator.com",
-          "kind": "community",
-          "publishedAt": "2024-05-16"
-        },
-        {
-          "label": "ejiogbevoices/RevPlanner（★3）",
-          "url": "https://github.com/ejiogbevoices/RevPlanner",
-          "site": "github.com",
-          "kind": "repo",
-          "publishedAt": "2026-02-10"
-        },
-        {
-          "label": "king-of-the-grackles/saas-business-model-tool（★2）",
-          "url": "https://github.com/king-of-the-grackles/saas-business-model-tool",
-          "site": "github.com",
-          "kind": "repo",
-          "publishedAt": "2025-12-30"
-        }
-      ],
-      "evidence": [
-        {
-          "claim": "AI 产品定价与传统 SaaS 不同，成本结构更复杂",
-          "claimType": "fact",
-          "date": "2024-08-24",
-          "detail": "HN 讨论帖标题直接点出「Pricing AI Products Differs from Traditional SaaS: The Complex Reality」",
-          "sources": [
-            {
-              "label": "Pricing AI Products Differs from Traditional SaaS: The Complex Reality",
-              "url": "https://news.ycombinator.com/item?id=41341132",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2024-08-24"
-            }
-          ]
-        },
-        {
-          "claim": "创始人对订阅制与按量付费的选择存在真实困惑",
-          "claimType": "fact",
-          "date": "2024-05-16",
-          "detail": "Ask HN 帖子「SaaS Subscription or Usage-Based Pricing?」获 119 分",
-          "sources": [
-            {
-              "label": "Ask HN: SaaS Subscription or Usage-Based Pricing?",
-              "url": "https://news.ycombinator.com/item?id=40376857",
-              "site": "news.ycombinator.com",
-              "kind": "community",
-              "publishedAt": "2024-05-16"
-            }
-          ]
-        },
-        {
-          "claim": "已有开源工具尝试建模 LLM 推理成本与定价场景，但星标极少，说明供给仍零散",
-          "claimType": "inference",
-          "detail": "saas-business-model-tool 仅 2 星，RevPlanner 仅 3 星",
-          "sources": [
-            {
-              "label": "ejiogbevoices/RevPlanner（★3）",
-              "url": "https://github.com/ejiogbevoices/RevPlanner",
-              "site": "github.com",
-              "kind": "repo",
-              "publishedAt": "2026-02-10"
-            },
-            {
-              "label": "king-of-the-grackles/saas-business-model-tool（★2）",
-              "url": "https://github.com/king-of-the-grackles/saas-business-model-tool",
-              "site": "github.com",
-              "kind": "repo",
-              "publishedAt": "2025-12-30"
-            }
-          ]
-        }
-      ],
-      "intents": [
-        {
-          "intent": "learn",
-          "queries": [
-            "ai saas pricing models",
-            "how to price ai features",
-            "usage based pricing for ai products"
-          ]
-        },
-        {
-          "intent": "howto",
-          "queries": [
-            "how to calculate llm inference cost per user",
-            "how to transition from seat based to usage based pricing"
-          ]
-        },
-        {
-          "intent": "compare",
-          "queries": [
-            "subscription vs usage based pricing ai",
-            "per seat vs consumption pricing saas"
-          ]
-        }
-      ],
-      "relatedQueries": [
-        "ai pricing model saas",
-        "pricing ai features",
-        "usage based pricing ai",
-        "llm cost per user pricing",
-        "ai saas pricing strategy",
-        "hybrid pricing model ai",
-        "per seat vs usage based ai"
-      ],
-      "competitors": [
-        "RevPlanner",
-        "saas-business-model-tool",
-        "awesome-fpa-for-product-managers"
-      ],
-      "opportunities": [
-        {
-          "type": "product",
-          "title": "AI SaaS 定价模式选择器",
-          "why": "HN 上「订阅制还是按量付费」讨论获 119 分，创始人需要可操作的决策工具而非泛泛文章；现有开源工具星标仅 2-3，供给零散。",
-          "effort": "2-3 周",
-          "evidence": "Ask HN 帖子获 119 分；saas-business-model-tool 仅 2 星，RevPlanner 仅 3 星"
-        },
-        {
-          "type": "content",
-          "title": "AI 功能定价案例库与成本拆解",
-          "why": "搜索词「pricing ai features」有独立趋势信号，且 HN 讨论指出 AI 定价与传统 SaaS 成本结构不同，读者需要真实案例对照。",
-          "effort": "1-2 周",
-          "evidence": "相关搜索「pricing ai features」出现在 Trends；HN 帖子标题强调「The Complex Reality」"
-        },
-        {
-          "type": "opensource",
-          "title": "LLM 推理成本与定价场景模拟器",
-          "why": "现有开源项目 saas-business-model-tool 已尝试建模 LLM 推理成本，但仅 2 星，说明需求存在而实现粗糙，可做更完整的开源替代。",
-          "effort": "3-4 周",
-          "evidence": "saas-business-model-tool 描述为「Model LLM inference costs, test pricing scenarios」，星标 2"
-        }
-      ],
-      "actions": [
-        {
-          "verdict": "mvp",
-          "action": "先做定价模式选择器的轻量网页版，输入成本结构输出三种候选模式与风险点，附真实案例链接",
-          "reason": "需求有 HN 高分解讨论支撑，现有工具星标极少，独立开发可在数周内验证",
-          "uncertainty": "搜索热度近 7 天回落 83.6%，需确认是短期波动还是话题降温"
-        },
-        {
-          "verdict": "content",
-          "action": "整理 AI 功能定价案例库，按订阅/用量/混合分类，标注成本结构与适用客群",
-          "reason": "内容可先于工具建立搜索入口，且「pricing ai features」有独立趋势信号",
-          "uncertainty": "案例数据需逐个核实，公开可查的真实定价案例有限"
-        }
-      ]
-    },
-    {
       "slug": "ai-wrapper-startup-examples",
       "keyword": "ai wrapper startup examples",
       "normalizedName": "AI Wrapper 创业案例",
@@ -100657,7 +99362,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "美国区 90 天热度峰值达基线 9.28 倍，近 7 天涨 32.5%；HN 上 K-12 AI 学习产品 Bloomy 获 102 分，说明家长在为「讲步骤…",
+      "why": "美国区 90 天热度峰值达基线 9.28 倍，近 7 天涨 32.5%；HN 上 K-12 AI 学习产品 Bloomy 获 102 分，说明家长在为「讲步骤而不是给答案」的产品买单。所以初高中学生及家长，在找一个不直接给答案、只给下一步提示的辅导工具，学生点「还是不会」才继续展开，专攻初中几何证明题，按学期订阅。",
       "intentSummary": "学生和家长想拍照或语音提问，获得分步讲解而非直接答案。",
       "editorNote": {
         "audience": "初高中学生及家长",
@@ -101167,7 +99872,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "美国近 30 天搜索热度较基线高 10 个百分点，近 7 天增长 109%，峰值达基线 5.5 倍；HN 上出现面向 2-10 年级的 1 对 1 数学辅导产…",
+      "why": "美国近 30 天搜索热度较基线高 10 个百分点，近 7 天增长 109%，峰值达基线 5.5 倍；HN 上出现面向 2-10 年级的 1 对 1 数学辅导产品，说明家长要的是有体系、能长期跟的辅导而非一次性解题。所以备考学生和家长，在找锁定具体考试体系（如 AMC 8 或中考）、题库加苏格拉底式追问的刷题教练，愿意按考试季付费。",
       "intentSummary": "找能讲步骤、会追问的数学辅导工具，替代或补充人工家教。",
       "editorNote": {
         "audience": "备考学生、家长",
@@ -101417,7 +100122,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "美国 90 天搜索热度从基线 4.3 升到近 7 天 12.4（+185.9%），峰值达基线 23 倍；AI 产品创始人想给 agent 产品做返佣，现有联盟…",
+      "why": "美国 90 天搜索热度从基线 4.3 升到近 7 天 12.4（+185.9%），峰值达基线 23 倍；AI 产品创始人想给 agent 产品做返佣，现有联盟计划却多按一次性点击结算，无法追踪订阅续费与 API 调用量。所以，AI 产品创始人和增长负责人正在找按订阅续费分成、自动追踪试用转付费、支持 API 调用量返点的专用联盟平台。",
       "intentSummary": "想给 AI agent 产品搭返佣分销，或找现成联盟计划赚佣金。",
       "editorNote": {
         "audience": "AI 产品创始人、增长负责人",
@@ -102740,7 +101445,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "7 天内搜索热度从基线 1.1 升至 4.6，增长 320.6%，峰值达基线 10.12 倍；HN 上 Gambit、TrueForge 等开源 harnes…",
+      "why": "7 天内搜索热度从基线 1.1 升至 4.6，增长 320.6%，峰值达基线 10.12 倍；HN 上 Gambit、TrueForge 等开源 harness 项目密集出现，说明开发者想自建 agent 流水线又不想绑死商业 API。所以，独立开发者正在找能托管运行、任务队列、失败重试和可观测面板的开源 harness 托管版，按运行时长付费。",
       "intentSummary": "开发者寻找可自托管、不绑定商业 API 的 agent 运行框架与评测方案。",
       "editorNote": {
         "audience": "想自建 agent 流水线又不想绑死商业 API 的独立开发者",
@@ -103287,7 +101992,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 搜索 30 天内从基线抬到峰值 100，近 7 天仍维持 14.3；GitHub 上 B2B 线索发现 skill 与自动化 agent 仓库同步出现，…",
+      "why": "US 搜索 30 天内从基线抬到峰值 100，近 7 天仍维持 14.3；GitHub 上 B2B 线索发现 skill 与自动化 agent 仓库同步出现，说明独立销售和外贸 SOHO 需要自动从公开信息中挖掘潜在客户。所以，他们正在找输入 ICP 描述就能自动提取公司与人、输出带验证邮箱 CSV 的垂直行业线索发现 agent，按条计费。",
       "intentSummary": "想用 AI agent 自动找目标客户、决策人和可验证联系方式。",
       "editorNote": {
         "audience": "独立销售、外贸 SOHO、小型 B2B 团队",
@@ -103805,7 +102510,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "Google Trends 美国 90 天峰值 100、近期均值 14.3，HN 上 Notion 3.0 搜索工具滥用讨论获 183 分，开发者需要可控的 …",
+      "why": "Google Trends 美国 90 天峰值 100、近期均值 14.3，HN 上 Notion 3.0 搜索工具滥用讨论获 183 分，开发者需要可控的 agent 搜索工具来避免数据外泄和结果不可靠。所以，agent 开发者和自动化工作流搭建者正在找支持多后端切换、结果结构化、缓存和限流的开源搜索工具包，最好带 Python/TS 双 SDK。",
       "intentSummary": "寻找能给 AI Agent 接入网页搜索、且可控可审计的工具方案。",
       "editorNote": {
         "audience": "Agent 开发者、自动化工作流搭建者",
@@ -104045,7 +102750,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "AI 搜索改变流量入口，品牌方开始关心自己在 AI 回答中的曝光；HN 上多个 Show HN 项目（如 Geneo、Mentionedby.ai）和 Git…",
+      "why": "AI 搜索改变流量入口，品牌方开始关心自己在 AI 回答中的曝光；HN 上多个 Show HN 项目（如 Geneo、Mentionedby.ai）和 GitHub 工具涌现，说明品牌市场负责人和 SEO 顾问需要量化 AI 可见性。所以，他们正在找能定期跑行业问题、统计品牌出现率和情感、出周报订阅的 AI 回答品牌监测工具。",
       "intentSummary": "了解如何监测和提升品牌在 AI 搜索回答中的可见性。",
       "editorNote": {
         "audience": "品牌市场负责人、SEO 顾问、DTC 团队",
@@ -104556,7 +103261,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "Google Trends 显示峰值达基线 23 倍但近 7 天归零，awesome-n8n-templates 仓库 2.6 万星，需求真实但供给饱和，需垂…",
+      "why": "Google Trends 显示峰值达基线 23 倍但近 7 天归零，awesome-n8n-templates 仓库 2.6 万星，需求真实但供给饱和，需垂直化。做客服/售前自动化的中小商家与代理商正在找开箱即用的行业方案。所以，他们需要针对电商售后、SaaS 试用引导等单一垂直行业、含预训练知识库和话术模板的 n8n 聊天机器人包，并附带评测脚本。",
       "intentSummary": "寻找用 n8n 搭建 AI 聊天机器人工作流的教程、模板与方案。",
       "editorNote": {
         "audience": "做客服/售前自动化的中小商家与代理商",
@@ -104819,7 +103524,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "搜索热度峰值达基线 23 倍，但近 7 天回落 80%，说明需求真实却分散；HN 上「$5K 无融资的表格自动化」和「$0.15/周营销自动化」显示创作者愿为…",
+      "why": "搜索热度峰值达基线 23 倍，但近 7 天回落 80%，说明需求真实却分散；HN 上「$5K 无融资的表格自动化」和「$0.15/周营销自动化」显示创作者愿为自动化付费。所以，内容创作者、一人公司和内容代运营正在找能端到端输出可直接发布成品（如长文转多平台帖子+配图+排期）的窄场景流水线，而非零散草稿工具。",
       "intentSummary": "内容创作者想找能自动生成并发布多平台内容的端到端工具。",
       "editorNote": {
         "audience": "内容创作者、一人公司、内容代运营",
@@ -105604,7 +104309,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "官方桌面版改版支持并行 agent 后，社区出现多 agent 编排仓库（★4489、★3861）与合并队列工具，近 7 天热度 14.3、峰值 100，说明…",
+      "why": "官方桌面版改版支持并行 agent 后，社区出现多 agent 编排仓库（★4489、★3861）与合并队列工具，近 7 天热度 14.3、峰值 100，说明开发者需要管理多个 agent 协同改代码。所以，用 agent 批量改代码的开发者与小团队正在找能把大重构拆成子任务分发给多个 agent、自动处理 worktree 冲突并生成合并 PR 的并行任务队列工具。",
       "intentSummary": "想让多个 Claude Code agent 并行干活，并解决冲突与合并问题。",
       "editorNote": {
         "audience": "用 agent 批量改代码的开发者与小团队",
@@ -105875,7 +104580,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "90 天 US 搜索峰值达基线 23 倍，但近 7 天归零，说明需求由具体项目触发而非持续；HN 上结构化提取与确定性输出讨论（60 分）印证付费方在找可对账…",
+      "why": "90 天 US 搜索峰值达基线 23 倍，但近 7 天归零，说明需求由具体项目触发而非持续；HN 上结构化提取与确定性输出讨论（60 分）印证付费方在找可对账的发票解析方案，所以做应付账款自动化的小团队与财务外包公司正在找能批量处理多页与扫描件混合场景、输出可对账 CSV/JSON 的 PDF 发票解析 CLI 和托管 API。",
       "intentSummary": "用 Gemini 从 PDF/扫描发票中稳定提取结构化字段，输出可对账数据。",
       "editorNote": {
         "audience": "做应付账款自动化的小团队与财务外包公司",
@@ -107436,7 +106141,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "搜索热度峰值达基线 23 倍但近 7 天归零，说明需求脉冲式出现；GmailDraft 等 Show HN 与 NeatMail 仓库表明用户在找能读线程上下…",
+      "why": "搜索热度峰值达基线 23 倍但近 7 天归零，说明需求脉冲式出现；GmailDraft 等 Show HN 与 NeatMail 仓库表明用户在找能读线程上下文的回复草稿工具，所以销售、BD、独立顾问在找能读取线程上下文和用户历史语气、生成多版不同语气跟进邮件的垂直场景回复草稿，先做销售跟进场景的 Chrome 插件。",
       "intentSummary": "用户想找能自动读取邮件线程并生成可发送回复草稿的 AI 工具。",
       "editorNote": {
         "audience": "销售、BD、独立顾问",
@@ -107686,7 +106391,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "Docker 官方 compose-for-agents 仓库已有 1066 星，HN 上 AgentMesh 等编排方案出现，说明用 Compose 编排 …",
+      "why": "Docker 官方 compose-for-agents 仓库已有 1066 星，HN 上 AgentMesh 等编排方案出现，说明用 Compose 编排 AI agent 的需求在成型，所以做 agent 原型的独立开发者与小团队在找一套开箱即用的 compose 模板库，包含 agent、浏览器沙箱、pgvector 和观测，并附一键切换模型供应商的 env 方案，靠模板订阅和托管版变现。",
       "intentSummary": "想用 Docker Compose 快速搭建和编排 AI agent 服务栈。",
       "editorNote": {
         "audience": "做 agent 原型的独立开发者与小团队",
@@ -107935,7 +106640,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "近 7 天热度回升至 14.3，峰值 100；HN 上 ExcelFormulaGPT、SheetAlchemy 等 Show HN 反复出现，说明财务运营人…",
+      "why": "近 7 天热度回升至 14.3，峰值 100；HN 上 ExcelFormulaGPT、SheetAlchemy 等 Show HN 反复出现，说明财务运营人群对 AI 生成 Excel 公式有持续需求，所以财务、运营等重度 Excel 个人用户在找能处理多表关联与数组公式、粘贴表头即生成可解释公式并给出验证用例的工具，做 Excel 插件按次或订阅收费。",
       "intentSummary": "用户想把自然语言描述或表头直接变成可用的 Excel 公式。",
       "editorNote": {
         "audience": "财务、运营等重度 Excel 个人用户",
@@ -109504,7 +108209,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 搜索 7 天涨 516%、峰值达基线 23 倍；HN 出现 AI 合规文档 MCP server 与 SOC 2 审计工具，说明小团队开始为持续合规管理…",
+      "why": "US 搜索 7 天涨 516%、峰值达基线 23 倍；HN 出现 AI 合规文档 MCP server 与 SOC 2 审计工具，说明小团队开始为持续合规管理寻找工具，所以 50-500 人公司的 IT 管理员与合规负责人在找 AI 工具资产台账，能自动发现员工使用的 AI SaaS、绑定政策条款并生成季度合规报告，先做 SaaS 订阅版。",
       "intentSummary": "想找工具把 AI 使用政策落地成可执行、可审计的日常管理流程。",
       "editorNote": {
         "audience": "50-500 人公司的 IT 管理员与合规负责人",
@@ -110222,7 +108927,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "MCP server 数量爆发（Atlassian 官方仓库 1139 星、Unity MCP 531 星），但 90 天内热度峰值达基线 23 倍后归零，说…",
+      "why": "MCP server 数量爆发（Atlassian 官方仓库 1139 星、Unity MCP 531 星），但 90 天内热度峰值达基线 23 倍后归零，说明管理需求尚未被满足，所以同时用多个 MCP server 的开发者与小团队在找本地管理器，能一键安装、配置校验、权限审计、健康监控与日志，先做 CLI+桌面托盘，开源核心卖团队版。",
       "intentSummary": "找能统一安装、配置、监控多个 MCP server 的管理工具",
       "editorNote": {
         "audience": "同时用多个 MCP server 的开发者与小团队",
@@ -110733,7 +109438,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "搜索热度峰值达基线 23 倍，但近 7 天回落 83.6%；HN 出现「在 OpenRouter 上对比任意模型」的开源基准工具，说明开发者在找按自己任务实测…",
+      "why": "搜索热度峰值达基线 23 倍，但近 7 天回落 83.6%；HN 出现「在 OpenRouter 上对比任意模型」的开源基准工具，说明开发者在找按自己任务实测模型的方法，所以在 OpenRouter 上做模型路由的开发者、AI 应用团队需要上传真实 prompt 批量跑多模型、按成本/延迟/质量三维出表并给出路由建议的对比器。",
       "intentSummary": "想用自己任务集在 OpenRouter 上实测多个模型，按成本、延迟、质量选型。",
       "editorNote": {
         "audience": "在 OpenRouter 上做模型路由的开发者、AI 应用团队",
@@ -111734,7 +110439,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 90 天峰值 36、近 7 天 5.1，HN 上 ProofShot 获 161 分，GitHub 已有 494 星的 QA harness，说明用 C…",
+      "why": "US 90 天峰值 36、近 7 天 5.1，HN 上 ProofShot 获 161 分，GitHub 已有 494 星的 QA harness，说明用 Claude Code 做端到端测试的实践在积累，所以做 Web 产品的独立开发者与小团队 QA/前端在找能读取现有 Playwright 配置、自动补全缺失 e2e 用例并生成可复现失败截图报告的 CLI，按次或订阅收费。",
       "intentSummary": "想让 Claude Code 自动写、跑、修 Playwright 端到端测试并输出可复现报告。",
       "editorNote": {
         "audience": "做 Web 产品的独立开发者与小团队 QA/前端",
@@ -112242,7 +110947,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "美国区 90 天内热度峰值达基线 100 倍，近 7 天仍为 14.3；HN 与 GitHub 出现迁移技能与遗留系统分析工具，说明用户正为大型代码库迁移找可…",
+      "why": "美国区 90 天内热度峰值达基线 100 倍，近 7 天仍为 14.3；HN 与 GitHub 出现迁移技能与遗留系统分析工具，说明用户正为大型代码库迁移找可落地的编排方案，所以维护遗留系统的独立开发者与中小团队技术负责人需要能分片扫描、生成迁移计划并自动回归测试的可回滚工具。",
       "intentSummary": "寻找用 Claude Code 分片扫描、规划并执行代码库迁移的可操作方案。",
       "editorNote": {
         "audience": "维护遗留系统的独立开发者与中小团队技术负责人",
@@ -113802,7 +112507,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 搜索热度 7 天涨 121.3%，峰值达基线 4.22 倍；HN 与 GitHub 出现 AEO 工具讨论，内容创作者和 SEO 从业者为在 AI 回答…",
+      "why": "US 搜索热度 7 天涨 121.3%，峰值达基线 4.22 倍；HN 与 GitHub 出现 AEO 工具讨论，内容创作者和 SEO 从业者为在 AI 回答中提升可见度而寻找可操作的优化手段，所以需要能输入站点 URL 就输出 AI 回答引擎可见度评分与改写建议的体检工具。",
       "intentSummary": "搜索者想了解 AEO 是什么、怎么做，以及如何监测和提升品牌在 AI 回答引擎中的可见度。",
       "editorNote": {
         "audience": "内容创作者、SEO 从业者、中小品牌市场负责人",
@@ -114316,7 +113021,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 搜索 7 天涨 518.5%，峰值达基线 17.6 倍；HN 上 Sitefire、Sonde 等监测工具集中出现，营销团队为 AI 回答中的品牌曝光付…",
+      "why": "US 搜索 7 天涨 518.5%，峰值达基线 17.6 倍；HN 上 Sitefire、Sonde 等监测工具集中出现，营销团队为 AI 回答中的品牌曝光付费意愿明确，所以做 GEO/AI SEO 的营销团队、DTC 品牌和代理商需要定期监测品牌被提及频次、语境与竞品排序并输出周报的工具。",
       "intentSummary": "营销人员想知道品牌在 ChatGPT 等 AI 回答中被提及的情况及如何提升。",
       "editorNote": {
         "audience": "做 GEO/AI SEO 的营销团队、DTC 品牌、代理商",
@@ -114845,7 +113550,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 近 30 天热度峰值 100、近期 27.1，独立开发者搜「ollama docker compose」找本地 RAG 搭建方案，但现有仓库星标仅 0-…",
+      "why": "US 近 30 天热度峰值 100、近期 27.1，独立开发者搜「ollama docker compose」找本地 RAG 搭建方案，但现有仓库星标仅 0-，说明现成方案稀缺，所以做本地 RAG 原型的独立开发者需要一个十分钟跑通 Ollama + Chroma + 最小 ingestion 脚本的 compose 模板。",
       "intentSummary": "找用 Docker Compose 把 Ollama 和 Chroma 串成本地 RAG 的可运行配置。",
       "editorNote": {
         "audience": "做本地 RAG 原型的独立开发者",
@@ -115881,7 +114586,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 近 30 天热度峰值 100、近 7 天均值 14.3，HN 出现 Sitefire（YC W26）等 AI 可见性工具，SEO 顾问与出海品牌开始为「…",
+      "why": "US 近 30 天热度峰值 100、近 7 天均值 14.3，HN 出现 Sitefire（YC W26）等 AI 可见性工具，SEO 顾问与出海品牌开始为「AI 搜索中的品牌提及」投入，所以需要能分析哪些页面被 AI 引用、给出结构化内容与 schema 改造建议并追踪提及率变化的优化工具。",
       "intentSummary": "想知道 AI 搜索为何引用/忽略自己的品牌，并找到可执行的优化方法。",
       "editorNote": {
         "audience": "SEO 顾问、内容营销团队、出海品牌",
@@ -119851,7 +118556,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 近 30 天热度峰值达基线百倍、近 7 天均值 14.3，且 Golpo 解释视频在 HN 获 116 分，说明小团队对自动生成 demo 视频有真实需…",
+      "why": "US 近 30 天热度峰值达基线百倍、近 7 天均值 14.3，且 Golpo 解释视频在 HN 获 116 分，说明小团队对自动生成 demo 视频有真实需求，所以独立开发者与小 SaaS 创始人需要输入产品 URL 就能自动录屏并生成带旁白 60 秒 demo 的按条收费工具。",
       "intentSummary": "想用 AI 把产品页面或录屏自动变成带旁白的短演示视频。",
       "editorNote": {
         "audience": "独立开发者、小 SaaS 创始人",
@@ -120109,7 +118814,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "搜索峰值达基线 23 倍后近 7 日归零，属脉冲式关注；HN 与 GitHub 已出现 WebRTC 低延迟语音 Agent 项目，说明开发者在找可落地的接入…",
+      "why": "搜索峰值达基线 23 倍后近 7 日归零，属脉冲式关注；HN 与 GitHub 已出现 WebRTC 低延迟语音 Agent 项目，说明开发者在找可落地的接入方案，所以做实时语音应用的开发者需要一个包含 WebRTC + VAD + 流式 TTS 并附延迟拆解面板的开源模板。",
       "intentSummary": "开发者想找用 WebRTC 搭建低延迟语音 Agent 的开源方案与延迟调优方法。",
       "editorNote": {
         "audience": "做实时语音应用的开发者",
@@ -120363,7 +119068,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 搜索 30 天内从基线 1.5 升至近期 16.9，增长 1007.8%，峰值达基线 65.7 倍；HN 出现 Magentic-UI 等 HITL 系…",
+      "why": "US 搜索 30 天内从基线 1.5 升至近期 16.9，增长 1007.8%，峰值达基线 65.7 倍；HN 出现 Magentic-UI 等 HITL 系统，说明 agent 产品开发者需要人工介入机制，所以构建 agent 的独立开发者与小团队需要一个能在敏感步骤暂停、推送到 Slack/邮件审批后恢复的 HITL 中间件 SDK。",
       "intentSummary": "搜索者想了解如何在 agent 执行中插入人工审批、中断恢复与接管机制。",
       "editorNote": {
         "audience": "在构建 agent 产品的独立开发者与小团队",
@@ -121399,7 +120104,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 90 天热度峰值 100，近期 14.3，相关搜索出现 ai code review prompt；HN 多个 AI code reviewer 项目发…",
+      "why": "US 90 天热度峰值 100，近期 14.3，相关搜索出现 ai code review prompt；HN 多个 AI code reviewer 项目发布，说明用 Cursor/Claude Code 做 PR review 的独立开发者与小团队在找现成的 prompt 模板，需要按语言、框架、审查维度分类的模板库，每条附 diff 前后对比示例，支持一键复制成 .cursorrules 或 CLAUDE.md 片段。",
       "intentSummary": "找可直接套用的 AI 代码审查提示词模板，按语言和审查维度分类。",
       "editorNote": {
         "audience": "用 Cursor/Claude Code 做 PR review 的独立开发者与小团队",
@@ -122428,7 +121133,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "美国 90 天搜索热度从基线 5.3 升至近 7 天 12.9，增长 142%，峰值 20 为基线 3.77 倍；HN 出现多个在线图生视频工具发布，老照片动…",
+      "why": "美国 90 天搜索热度从基线 5.3 升至近 7 天 12.9，增长 142%，峰值 20 为基线 3.77 倍；HN 出现多个在线图生视频工具发布，老照片动起来是高频场景，说明电商卖家和家庭用户需要傻瓜式在线工具，想要修复+轻微动态+配乐的按张收费流程，而不是复杂编辑器。",
       "intentSummary": "用户想找免费、免登录的在线工具，把图片快速变成视频。",
       "editorNote": {
         "audience": "电商卖家、家庭用户",
@@ -122694,7 +121399,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "US 90 天热度从基线 3.4 升至近期 7.6，增长 120%，峰值 12 为基线 3.49 倍；HN 上 MemeGen.ai 获 56 分，说明照片转…",
+      "why": "US 90 天热度从基线 3.4 升至近期 7.6，增长 120%，峰值 12 为基线 3.49 倍；HN 上 MemeGen.ai 获 56 分，说明照片转视频需求真实存在，个人用户和纪念日/营销素材需求者在找一键生成方案，需要「照片+一句文案→15 秒动态贺卡」的移动端小工具，主打分享链路而非生成能力。",
       "intentSummary": "用户想把静态照片一键变成可分享的短视频，用于纪念、营销或娱乐。",
       "editorNote": {
         "audience": "个人用户、纪念日/营销素材需求者",
@@ -122948,7 +121653,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "美国 90 天内搜索热度从基线 2.6 升至 11.4，7 天增长 338%，峰值达基线 16 倍；HN 出现「Recursive – AI support …",
+      "why": "美国 90 天内搜索热度从基线 2.6 升至 11.4，7 天增长 338%，峰值达基线 16 倍；HN 出现「Recursive – AI support」相关讨论，说明无专职客服的小微商家在找能直接用的客服机器人，需要垂直行业预置知识库+预约改期的模板化方案，而不是通用平台。",
       "intentSummary": "小微商家想找能自动回答客户问题、处理预约改期的 AI 客服工具或方案。",
       "editorNote": {
         "audience": "无专职客服的小微商家",
@@ -123954,7 +122659,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "medium",
-      "why": "近 30 天美国搜索量从基线 0.7 升至近期 2.4，7 天增长 249%，峰值达基线 8.6 倍；HN 上「90 秒用 Gemini 免费建 AI App…",
+      "why": "近 30 天美国搜索量从基线 0.7 升至近期 2.4，7 天增长 249%，峰值达基线 8.6 倍；HN 上「90 秒用 Gemini 免费建 AI App」引发关注，说明学生、业余爱好者和初次尝试的独立开发者想零成本起步，需要免费额度+教程驱动的生成器，靠导出代码包和部署托管收费，用「30 分钟做出第一个可上架 App」的引导流程做转化。",
       "intentSummary": "想不花钱用 AI 把 App 想法变成可运行、可上架的产品。",
       "editorNote": {
         "audience": "学生、业余爱好者、初次尝试的独立开发者",
@@ -124734,7 +123439,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "Google Trends 显示该词峰值达基线 23 倍，HN 一篇并行化教程获 288 分，说明高级开发者正集中解决多 agent 并行改同一仓库的隔离与合…",
+      "why": "Google Trends 显示该词峰值达基线 23 倍，HN 一篇并行化教程获 288 分，说明高级开发者正集中解决多 agent 并行改同一仓库的隔离与合并问题，用 Claude Code 做批量任务的高级个人开发者与小团队，他们需要一个并行 subagent 运行器：用 git worktree 隔离每个 agent 的工作区，自动合并与冲突报告。",
       "intentSummary": "想用 subagents 并行跑多个编码任务，并解决工作区隔离与合并冲突。",
       "editorNote": {
         "audience": "用 Claude Code 做批量任务的高级个人开发者与小团队",
@@ -125246,7 +123951,7 @@
       "region": "US",
       "status": "gaining",
       "confidence": "low",
-      "why": "US 90 天热度峰值 100、近 7 天 14.3，开发者集中搜流式 tool_calls 增量拼接；HN 上 400 行 shell 编码代理获 92 分…",
+      "why": "US 90 天热度峰值 100、近 7 天 14.3，开发者集中搜流式 tool_calls 增量拼接；HN 上 400 行 shell 编码代理获 92 分，说明做实时 AI 应用的开发者在找流式工具调用的解析方案，需要一个流式工具调用解析库+调试面板，可视化 delta 中的 tool_calls 拼接过程，解决半截 JSON 解析痛点。",
       "intentSummary": "开发者想弄清流式响应中 tool_calls 的增量结构，并找到可用的解析与调试方案。",
       "editorNote": {
         "audience": "做实时 AI 应用的开发者",
@@ -126006,7 +124711,7 @@
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "VSCode 以「开源 AI 代码编辑器」重新定位（HN 103 分），Void、Melty 等开源 Cursor 替代品持续出现，但近 7 天热度归零，说明…",
+      "why": "VSCode 以「开源 AI 代码编辑器」重新定位（HN 103 分），Void、Melty 等开源 Cursor 替代品持续出现，但近 7 天热度归零，说明想自托管或二次开发的开发者与小团队在找可定制的编辑器生态，需要开源 AI 编辑器的插件市场或配置分发层，帮团队统一模型、提示词与权限。",
       "intentSummary": "找可自托管、可改代码的 Cursor 替代品，或给现有编辑器加 AI 能力。",
       "editorNote": {
         "audience": "想自托管或二次开发的开发者与小团队",
@@ -126262,14 +124967,15 @@
     }
   ],
   "policy": {
-    "version": 3,
-    "updatedAt": "2026-10-30T02:43:12.983Z",
+    "version": 4,
+    "updatedAt": "2026-11-03T10:00:46.929Z",
     "accept": [
       "有人在找一个具体工具或方案去做某件事——赛道拥挤不是拒的理由，拥挤说明需求真实",
       "有明确使用场景和可识别人群；付费方是个人用户也算，不必是企业岗位",
       "新兴协议、开源项目、能力名词，只要周围已出现接入、调试、托管、评测等具体工程需求",
       "独立开发者或两三人团队 3 个月内能做出第一版",
-      "不需要牌照、不需要自建算力、不需要地面销售团队"
+      "不需要牌照、不需要自建算力、不需要地面销售团队",
+      "一人公司自己的经营问题：给 AI 产品定价、控制 token 成本、获客与留存——搜的人就是做产品的人本人，这类词不指向某个工具，但直接决定他能不能活下来"
     ],
     "reject": [
       "模型 / 版本发布资讯（gpt-5、llama 4、gemini 3 这类）：搜的人只想知道新旧差异和跑分",
@@ -126277,9 +124983,11 @@
       "纯概念科普的泛词（ai、machine learning、prompt engineering）：没有具体场景",
       "单公司内部功能名、单条新闻事件、纯娱乐梗",
       "必须大额资本或资质才能做：自建算力、GPU 租赁、医疗诊断、法律意见",
-      "只剩巨头免费功能承接、且没有任何细分角度的方向"
+      "只剩巨头免费功能承接、且没有任何细分角度的方向",
+      "大厂 API / 模型的定价查询词（deepseek api pricing、anthropic api pricing、openai fine tuning price 这类）：搜的人在查价不在找方案，官方文档和 OpenRouter 这类聚合器已经把「查价」做完；判据看主语——主语是厂商价格就拒，主语是自家产品怎么定价、怎么把成本省下来就收"
     ],
     "notes": [
+      "v4 收敛：pricing 类词一度涌进 18 个，其中纯查价词读者看完只知道多少钱、做不出东西；而 ai saas pricing model、llm cost tracking 是一人公司真在纠结的问题。区别在主语：厂商的价格 vs 自家产品怎么定价和控成本。",
       "v3 补漏：v2 的排除项漏了「单个小产品名」，实测把 ayven、ferndesk、pancake 这类品牌词收进了榜——它们只有品牌自己的人在搜，读者拿不到任何可迁移的东西。补一条：产品名除非已成品类代名词，一律拒。",
       "v2 校准：v1 把「供给未饱和」当硬门槛，实测 212 个候选只通过 1%，ai resume builder、ai customer feedback 这类真实需求全被误杀。改为排除法——只拒「搜的人拿不到任何可动手的东西」，红海词按 40-60 分收录。"
     ],
@@ -129709,12 +128417,12 @@
         "at": "2026-10-31T04:56:17.248Z"
       },
       "ai pricing model saas": {
-        "verdict": "accept",
-        "score": 64,
-        "reason": "需求明确但偏泛，红海内容市场，需靠工具化或数据化差异化",
-        "audience": "SaaS 创始人、独立开发者",
-        "ideaAngle": "做一个定价模式选择器：输入产品类型、成本结构、目标客群，输出三种候选模式及各自的风险点，附真实产品案例链接",
-        "at": "2026-10-31T04:56:17.248Z"
+        "verdict": "reject",
+        "score": 30,
+        "audience": "",
+        "ideaAngle": "",
+        "reason": "大厂 API 定价查询词：搜的人在查价不在找方案，官方文档与聚合器已承接，读者拿不到可迁移的切口",
+        "at": "2026-11-03T10:00:46.929Z"
       },
       "ai cost per user pricing": {
         "verdict": "accept",
@@ -134165,12 +132873,12 @@
         "at": "2026-10-30T08:51:51.557Z"
       },
       "openai fine tuning price": {
-        "verdict": "accept",
-        "score": 55,
-        "reason": "搜索意图明确是查价，但巨头官方页面已承接大部分，只剩比价与场景化估算的细分空间",
-        "audience": "评估是否微调的中小团队",
-        "ideaAngle": "做 OpenAI 微调 vs 提示工程 vs RAG 的成本对照计算器，输出何时微调才划算的决策树",
-        "at": "2026-10-30T08:51:51.557Z"
+        "verdict": "reject",
+        "score": 30,
+        "audience": "",
+        "ideaAngle": "",
+        "reason": "大厂 API 定价查询词：搜的人在查价不在找方案，官方文档与聚合器已承接，读者拿不到可迁移的切口",
+        "at": "2026-11-03T10:00:46.929Z"
       },
       "ollama alternative with local ui": {
         "verdict": "accept",
@@ -135883,6 +134591,30 @@
         "audience": "重度使用 Claude Code 的独立开发者与小团队",
         "ideaAngle": "做一个 subagent 模板市场加本地调试器：可视化定义角色/工具/上下文，一键跑多代理任务并回放每步调用。",
         "at": "2026-10-30T07:15:59.809Z"
+      },
+      "ai saas pricing": {
+        "verdict": "reject",
+        "score": 30,
+        "audience": "",
+        "ideaAngle": "",
+        "reason": "大厂 API 定价查询词：搜的人在查价不在找方案，官方文档与聚合器已承接，读者拿不到可迁移的切口",
+        "at": "2026-11-03T10:00:46.929Z"
+      },
+      "anthropic api pricing": {
+        "verdict": "reject",
+        "score": 30,
+        "audience": "",
+        "ideaAngle": "",
+        "reason": "大厂 API 定价查询词：搜的人在查价不在找方案，官方文档与聚合器已承接，读者拿不到可迁移的切口",
+        "at": "2026-11-03T10:00:46.929Z"
+      },
+      "deepseek api pricing": {
+        "verdict": "reject",
+        "score": 30,
+        "audience": "",
+        "ideaAngle": "",
+        "reason": "大厂 API 定价查询词：搜的人在查价不在找方案，官方文档与聚合器已承接，读者拿不到可迁移的切口",
+        "at": "2026-11-03T10:00:46.929Z"
       }
     }
   }
