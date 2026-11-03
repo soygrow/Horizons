@@ -2,6 +2,7 @@
 import "../styles/globals.css";
 import NavBar from "../components/NavBar.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import Analytics from "../components/Analytics.astro";
 import { isIndexablePath, normalizePath, SITE } from "../config/seo";
 
 interface Props {
@@ -31,6 +32,8 @@ const themeInit = `(function(){try{var t=localStorage.getItem("theme")||"light";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* 埋点与站点验证尽量靠前：GA4 官方要求尽早加载，GSC 只认 <head> 里的 meta */}
+    <Analytics />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />

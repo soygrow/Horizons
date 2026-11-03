@@ -1,0 +1,46 @@
+---
+/** 流量与搜索表现：GA4 + Cloudflare Web Analytics + GSC 站点验证。
+ *
+ * 只由 Base.astro 引入一次，保证「每页只出现一次」（GA4 官方要求）。
+ * 三个 ID / token 都来自 src/config/analytics.ts，可在构建期用环境变量覆盖。
+ */
+import {
+  ANALYTICS_ENABLED,
+  CF_BEACON_TOKEN,
+  GA4_ID,
+  GSC_VERIFICATION,
+} from "../config/analytics";
+
+const ga4Loader = `https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`;
+
+// gtag 引导代码：window 上挂 dataLayer，函数名保持官方写法以便 GTM 扩展互通
+const ga4Init = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_ID}');`;
+
+// Cloudflare Web Analytics：官方代码段是 module 脚本（自带 defer 语义），这里只给 token
+const cfBeacon = JSON.stringify({ token: CF_BEACON_TOKEN });
+---
+
+{
+  /* Search Console 用 meta 标签验证时，必须在 <head> 里、且不依赖 JS */
+  GSC_VERIFICATION && <meta name="google-site-verification" content={GSC_VERIFICATION} />
+}
+
+{
+  ANALYTICS_ENABLED && (
+    <Fragment>
+      <script is:inline async src={ga4Loader} />
+      <script is:inline set:html={ga4Init} />
+    </Fragment>
+  )
+}
+
+{
+  ANALYTICS_ENABLED && CF_BEACON_TOKEN && (
+    <script
+      is:inline
+      type="module"
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon={cfBeacon}
+    />
+  )
+}
