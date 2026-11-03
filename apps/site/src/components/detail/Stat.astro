@@ -10,7 +10,7 @@ interface Props {
   tone?: string;
 }
 
-const { label, value, success, placeholder = "n/a", hint, tone: toneProp } = Astro.props;
+const { label, value, success, placeholder = "—", hint, tone: toneProp } = Astro.props;
 const pending = !value;
 const tone = pending ? "text-ink-muted" : (toneProp ?? (success ? "text-success" : "text-ink"));
 ---

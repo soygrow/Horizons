@@ -31,7 +31,7 @@ const rows = digest.modules.map((m) => ({
 }));
 
 const title = `每日情报 ${digest.date} · Horizons`;
-const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，覆盖模型与产品、开源工具、商业信号与可立即验证的动作，每条附原始链接与证据等级。`;
+const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，覆盖今日头条、能直接用的工具、钱与机会，以及可立即验证的动作，每条附原始链接与证据等级。`;
 ---
 
 <Base {title} {description}>
@@ -53,23 +53,22 @@ const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，�
         <p class="text-[11px] text-ink-muted tabular-nums">{formatDate(digest.date)}</p>
       </div>
 
-      <dl
-        class="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4"
-      >
-        {
-          [
-            { k: "候选条目", v: digest.stats.candidates },
-            { k: "合并后事件", v: digest.stats.merged },
-            { k: "证据已核验", v: digest.stats.verified },
-            { k: "本期采用", v: total },
-          ].map((s) => (
-            <div class="bg-surface px-3 py-2.5">
-              <dt class="text-[10px] text-ink-muted">{s.k}</dt>
-              <dd class="mt-0.5 text-base font-bold text-ink tabular-nums">{s.v}</dd>
-            </div>
-          ))
-        }
-      </dl>
+      <div class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-ink-muted">
+        <span>
+          从 <span class="font-semibold text-ink tabular-nums">{digest.stats.candidates}</span> 条候选里选出{" "}
+          <span class="font-semibold text-ink tabular-nums">{total}</span> 条
+        </span>
+        <span class="hidden h-3 w-px bg-border sm:block" />
+        <span>
+          其中{" "}
+          <span class="font-semibold text-emerald-600 tabular-nums dark:text-emerald-400">
+            {digest.stats.verified}
+          </span>{" "}
+          条有一手材料
+        </span>
+        <span class="hidden h-3 w-px bg-border sm:block" />
+        <span>{digest.modules.length} 个模块</span>
+      </div>
 
       <p class="mt-3 text-[11px] leading-relaxed text-ink-muted">
         标题保留原文，不做机器翻译，方便你直接核对。正文由模板按原始材料生成，只写材料能支持的事实。
@@ -89,7 +88,7 @@ const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，�
             <span class="text-[11px] text-ink-muted tabular-nums">{mod.items.length} 条</span>
           </div>
 
-          <ul class={mod.key === "rumor" ? "divide-y divide-dashed divide-border" : "divide-y divide-border"}>
+          <ul class="divide-y divide-border">
             {mod.items.map((item) => (
               <li id={item.id} class="flex gap-3 scroll-mt-24 py-5 sm:gap-4">
                 <div class="w-7 shrink-0 text-center">
@@ -183,7 +182,7 @@ const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，�
 
     <!-- 采集健康度 -->
     <section class="mt-12 rounded-xl border border-border bg-surface p-4">
-      <h2 class="text-sm font-semibold text-ink">本期数据源</h2>
+      <h2 class="text-sm font-semibold text-ink">来源与采集情况</h2>
       <ul class="mt-3 flex flex-wrap gap-1.5">
         {
           digest.sourceHealth.map((s) => (

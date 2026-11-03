@@ -4,13 +4,63 @@ import RepoSection from "../RepoSection.astro";
 
 interface Props {
   insight: Record<string, any> | undefined;
+  derivative?: { base?: string; occupancy?: string; space?: number; untapped?: string[]; hook?: string };
 }
 
-const { insight } = Astro.props;
+const { insight, derivative } = Astro.props;
 const ideas: any[] = insight?.buildIdeas ?? [];
+const space = typeof derivative?.space === "number" ? derivative.space : null;
+const untapped: string[] = (derivative?.untapped ?? []).filter(Boolean).slice(0, 3);
+
+/* 加工空间分档：低=它已是成品，照抄没意义；高=它是原材料，能做出别的东西 */
+const tone =
+  space === null
+    ? "border-border bg-surface-2/40"
+    : space <= 3
+      ? "border-rose-500/30 bg-rose-500/5"
+      : space <= 5
+        ? "border-amber-500/30 bg-amber-500/5"
+        : "border-emerald-500/30 bg-emerald-500/5";
+
+const verdict =
+  space === null
+    ? "尚未评估加工空间"
+    : space <= 3
+      ? "它本身已是完成度很高的成品，照抄只能做出一模一样的东西——要么换人群，要么做它的周边"
+      : space <= 5
+        ? "产品形态比较固定，加工价值在于换场景、换人群或做垂直版"
+        : "它是原材料，可以嵌进完全不同的产品里，与原项目不构成直接竞争";
 ---
 
 <RepoSection no="01" title="能用来做出什么产品" desc="面向个人 / 小团队，基于它的能力可落地的方向">
+  {
+    space !== null ? (
+      <div class={`mb-3 rounded-xl border p-4 ${tone}`}>
+        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span class="text-sm font-semibold text-ink">加工空间 {space}/10</span>
+          {derivative?.base ? <span class="text-[11px] text-ink-muted">形态：{derivative.base}</span> : null}
+          {derivative?.hook ? <span class="text-[11px] text-ink-muted">接入点：{derivative.hook}</span> : null}
+        </div>
+        <p class="mt-1.5 text-xs leading-relaxed text-ink-secondary">{verdict}</p>
+        {derivative?.occupancy ? (
+          <p class="mt-1 text-xs leading-relaxed text-ink-muted">
+            它自己已经占住了「{derivative.occupancy}」这个场景，下面这些方向是它<b class="text-ink-secondary">没做</b>的。
+          </p>
+        ) : null}
+        {
+          untapped.length ? (
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              {untapped.map((u) => (
+                <span class="rounded-full border border-border bg-surface px-2 py-0.5 text-[11px] text-ink-secondary">
+                  {u}
+                </span>
+              ))}
+            </div>
+          ) : null
+        }
+      </div>
+    ) : null
+  }
   {
     ideas.length ? (
       <div class="grid gap-3 sm:grid-cols-2">

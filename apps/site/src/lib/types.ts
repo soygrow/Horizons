@@ -4,6 +4,8 @@ export type PricingModel = "free" | "freemium" | "paid";
 
 export interface ToolRow {
   rank: number;
+  /** 分层：main = 主榜（占名次）；watch = 观察区（待验证，不占主榜名次） */
+  tier: "core" | "watch";
   id: string;
   domain: string;
   name: string;
@@ -49,6 +51,8 @@ export interface RepoRow {
   forks: number;
   score: number;
   grade: "S" | "A" | "B" | "C";
+  /** 加工空间 0-10：越低说明它自己已经是个成品，照抄意义越小 */
+  dv: number | null;
   g7: number | null;
   g30: number | null;
   spark: number[] | null;

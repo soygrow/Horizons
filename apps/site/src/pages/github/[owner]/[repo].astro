@@ -77,7 +77,7 @@ const toneClass = (tone?: string) =>
     <!-- 主体：左内容 + 右数据 -->
     <div class="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_336px]">
       <div class="space-y-5">
-        <RepoIdeasSection insight={ins} />
+        <RepoIdeasSection insight={ins} derivative={repo.derivative} />
         <RepoStepsSection insight={ins} />
         <RepoEffectsSection insight={ins} />
         <RepoRiskSection insight={ins} />

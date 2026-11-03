@@ -77,13 +77,7 @@ const fmtTime = (s?: string) => (s ? s.slice(0, 19).replace("T", " ") : "");
     />
     <Stat
       label={dict.metrics.domainWeight}
-      value={
-        m?.domainWeight !== undefined
-          ? m.domainWeightLabel && m.domainWeightLabel !== "权重"
-            ? `${formatCount(m.domainWeight)}（${m.domainWeightLabel}）`
-            : formatCount(m.domainWeight)
-          : undefined
-      }
+      value={m?.domainWeight !== undefined ? formatCount(m.domainWeight) : undefined}
       hint="未采集到该站的域名权重"
     />
     <Stat label={dict.metrics.registeredAt} value={m?.registeredAt} />

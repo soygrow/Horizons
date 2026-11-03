@@ -51,7 +51,7 @@ const { tool } = Astro.props;
   </div>
 
   <div class="text-center text-sm text-ink-secondary tabular-nums">
-    {tool.visits !== null ? formatCount(tool.visits) : "n/a"}
+    {tool.visits !== null ? formatCount(tool.visits) : "—"}
   </div>
 
   <div
@@ -61,18 +61,18 @@ const { tool } = Astro.props;
       tool.mom === null ? "text-ink-muted" : tool.mom >= 0 ? "text-accent" : "text-rose-400",
     ]}
   >
-    {tool.mom !== null ? `${tool.mom > 0 ? "+" : ""}${tool.mom}%` : "n/a"}
+    {tool.mom !== null ? `${tool.mom > 0 ? "+" : ""}${tool.mom}%` : "—"}
   </div>
 
   <div class="text-center text-sm text-ink-secondary tabular-nums">
-    {tool.organic !== null ? formatCount(tool.organic) : "n/a"}
+    {tool.organic !== null ? formatCount(tool.organic) : "—"}
   </div>
 
   <div
     title={tool.dr === null ? "未采集到域名权重" : undefined}
     class="text-center text-sm text-ink-secondary tabular-nums"
   >
-    {tool.dr !== null ? `${formatCount(tool.dr)} ${tool.drLabel ?? "DR"}` : "n/a"}
+    {tool.dr !== null ? formatCount(tool.dr) : "—"}
   </div>
 
   <div class="whitespace-nowrap text-center text-sm text-ink-secondary tabular-nums">

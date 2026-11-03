@@ -27,6 +27,8 @@ export async function getStaticPaths() {
 }
 
 const { model, row } = Astro.props as { model: Record<string, any>; row: any };
+/** 中文简介优先，没有则退回英文原文 */
+const modelDesc: string = model.descZh ?? model.desc ?? "";
 const price = model.price ?? {};
 const modalityLabel = modelModalityLabels[model.modality] ?? model.modality;
 /** 标签去重：模态、开源状态、协议已在前面单独展示，不再重复 */
@@ -121,8 +123,8 @@ const priceRows = [
 <Base
   title={`${model.name} — 价格、上下文与能力`}
   description={
-    model.desc
-      ? `${model.provider} ${model.name}：${model.desc}`
+    modelDesc
+      ? `${model.provider} ${model.name}：${modelDesc}`
       : `${model.provider} ${model.name} 的定价、上下文窗口、开源协议、能力分与性价比，以及与同类模型的价格对比。`
   }
 >
@@ -176,10 +178,12 @@ const priceRows = [
             </div>
           </div>
 
-          {model.desc && (
+          {modelDesc && (
             <div class="mt-4 max-w-3xl rounded-xl border border-border bg-surface-2/40 px-4 py-3">
               <div class="flex flex-wrap items-center gap-2">
-                <span class="text-[10px] font-medium tracking-wide text-ink-muted">官方简介</span>
+                <span class="text-[10px] font-medium tracking-wide text-ink-muted">
+                  {model.descZh ? "简介" : "官方简介"}
+                </span>
                 {sourceUrl && (
                   <a
                     href={sourceUrl}
@@ -191,7 +195,7 @@ const priceRows = [
                   </a>
                 )}
               </div>
-              <p class="mt-1.5 text-sm leading-relaxed text-ink-secondary">{model.desc}</p>
+              <p class="mt-1.5 text-sm leading-relaxed text-ink-secondary">{modelDesc}</p>
             </div>
           )}
 

@@ -17,6 +17,7 @@ export function getStaticPaths() {
 
 const page = Number(Astro.params.n);
 const pageRows = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+const coreCount = rows.filter((r) => r.tier === "core").length;
 
 const title = `AI工具榜 第 ${page} 页 · Horizons`;
 const description = "按可追溯信号排序的高密度榜单，实时追踪值得关注的 AI 工具。";
@@ -33,7 +34,7 @@ const description = "按可追溯信号排序的高密度榜单，实时追踪�
 
     <ToolFilterBar filters={toolFilters} />
 
-    <ToolList rows={pageRows} page={page} totalItems={rows.length} totalPages={tp} basePath="/tools" pageSize={PAGE_SIZE} />
+    <ToolList rows={pageRows} page={page} totalItems={rows.length} totalPages={tp} basePath="/tools" pageSize={PAGE_SIZE} coreCount={coreCount} />
   </div>
 
   <script>

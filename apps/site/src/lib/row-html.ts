@@ -137,14 +137,18 @@ export function sparklineSvg(points: number[] | null, width = 72, height = 26): 
 
 export function toolRowHtml(t: ToolRow): string {
   const momCls = t.mom === null ? "text-ink-muted" : t.mom >= 0 ? "text-accent" : "text-rose-400";
-  const momText = t.mom !== null ? `${t.mom > 0 ? "+" : ""}${t.mom}%` : "n/a";
+  const momText = t.mom !== null ? `${t.mom > 0 ? "+" : ""}${t.mom}%` : "—";
   const momTitle = t.mom === null ? ` title="上月无数据，无法计算环比"` : "";
   const drTitle = t.dr === null ? ` title="未采集到域名权重"` : "";
 
   return (
     `<a href="/tools/${esc(t.domain)}" target="_blank" rel="noopener noreferrer" ` +
     `class="group grid items-center gap-3 border-b border-border px-4 py-3 transition hover:bg-surface-2 sm:px-5 ${TOOL_GRID}">` +
-    `<span class="text-center text-sm font-semibold text-ink-muted tabular-nums">${RANK_TOKEN}</span>` +
+    `<span class="text-center text-sm font-semibold text-ink-muted tabular-nums">${
+      t.tier === "watch"
+        ? `<span class="whitespace-nowrap rounded border border-border px-1 py-0.5 text-[10px] font-normal text-ink-muted" title="月访问不足 1 万或环比下滑，进入观察区，不占主榜名次">待验证</span>`
+        : RANK_TOKEN
+    }</span>` +
     `<div class="flex min-w-0 items-center justify-start gap-2.5">` +
     iconHtml(t.domain, t.name) +
     `<div class="min-w-0">` +
@@ -162,10 +166,10 @@ export function toolRowHtml(t: ToolRow): string {
       )
       .join("") +
     `</div>` +
-    `<div class="text-center text-sm text-ink-secondary tabular-nums">${t.visits !== null ? formatCount(t.visits) : "n/a"}</div>` +
+    `<div class="text-center text-sm text-ink-secondary tabular-nums">${t.visits !== null ? formatCount(t.visits) : "—"}</div>` +
     `<div${momTitle} class="text-center text-sm tabular-nums ${momCls}">${momText}</div>` +
-    `<div class="text-center text-sm text-ink-secondary tabular-nums">${t.organic !== null ? formatCount(t.organic) : "n/a"}</div>` +
-    `<div${drTitle} class="text-center text-sm text-ink-secondary tabular-nums">${t.dr !== null ? `${formatCount(t.dr)} ${esc(t.drLabel ?? "DR")}` : "n/a"}</div>` +
+    `<div class="text-center text-sm text-ink-secondary tabular-nums">${t.organic !== null ? formatCount(t.organic) : "—"}</div>` +
+    `<div${drTitle} class="text-center text-sm text-ink-secondary tabular-nums">${t.dr !== null ? formatCount(t.dr) : "—"}</div>` +
     `<div class="whitespace-nowrap text-center text-sm text-ink-secondary tabular-nums">${formatDateShort(t.launchedAt)}</div>` +
     `</a>`
   );
@@ -203,6 +207,17 @@ export function repoRowHtml(r: RepoRow): string {
 
   const scoreBar = Math.min(100, Math.max(4, r.score));
 
+  /* 只在两端打标：已是成品（≤3）提醒照抄没意义，可塑性强（≥8）提示能做出别的东西。
+     中间段不打标，避免列表被标签淹没。 */
+  const dvTag =
+    r.dv === null
+      ? ""
+      : r.dv <= 3
+        ? `<span class="shrink-0 rounded-full border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 text-[10px] text-rose-400" title="它自己已经是完成度很高的成品，照抄只能做出一模一样的东西">已是成品</span>`
+        : r.dv >= 8
+          ? `<span class="shrink-0 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] text-emerald-500" title="它是原材料，可以嵌进完全不同的产品里">可塑性强</span>`
+          : "";
+
   return (
     `<a href="/github/${esc(r.owner)}/${esc(r.repo)}" target="_blank" rel="noopener noreferrer" ` +
     `class="group grid items-center gap-3 border-b border-border px-4 py-3 transition hover:bg-surface-2 sm:px-5 ${REPO_GRID}">` +
@@ -214,6 +229,7 @@ export function repoRowHtml(r: RepoRow): string {
     `<div class="min-w-0">` +
     `<div class="flex items-center gap-2">` +
     `<h3 class="truncate text-sm font-semibold text-ink group-hover:text-primary">${esc(r.fullName)}</h3>` +
+    dvTag +
     `<span class="shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] ${diffCls}">${esc(r.diff)}</span>` +
     `</div>` +
     `<p class="mt-0.5 line-clamp-2 text-xs leading-snug text-ink-secondary">${esc(r.intro)}</p>` +

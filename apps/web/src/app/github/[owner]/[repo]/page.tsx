@@ -228,6 +228,44 @@ export default async function RepoPage({ params }: { params: Promise<{ owner: st
         <div className="space-y-5">
           {/* 能做什么 */}
           <Section no="01" title="能用来做出什么产品" desc="面向个人 / 小团队，基于它的能力可落地的方向">
+            {typeof r.derivative?.space === "number" ? (
+              <div
+                className={`mb-3 rounded-xl border p-4 ${
+                  r.derivative.space <= 3
+                    ? "border-rose-500/30 bg-rose-500/5"
+                    : r.derivative.space <= 5
+                      ? "border-amber-500/30 bg-amber-500/5"
+                      : "border-emerald-500/30 bg-emerald-500/5"
+                }`}
+              >
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="text-sm font-semibold text-ink">加工空间 {r.derivative.space}/10</span>
+                  {r.derivative.base ? <span className="text-[11px] text-ink-muted">形态：{r.derivative.base}</span> : null}
+                  {r.derivative.hook ? <span className="text-[11px] text-ink-muted">接入点：{r.derivative.hook}</span> : null}
+                </div>
+                <p className="mt-1.5 text-xs leading-relaxed text-ink-secondary">
+                  {r.derivative.space <= 3
+                    ? "它本身已是完成度很高的成品，照抄只能做出一模一样的东西——要么换人群，要么做它的周边"
+                    : r.derivative.space <= 5
+                      ? "产品形态比较固定，加工价值在于换场景、换人群或做垂直版"
+                      : "它是原材料，可以嵌进完全不同的产品里，与原项目不构成直接竞争"}
+                </p>
+                {r.derivative.occupancy ? (
+                  <p className="mt-1 text-xs leading-relaxed text-ink-muted">
+                    它自己已经占住了「{r.derivative.occupancy}」这个场景，下面这些方向是它<b className="text-ink-secondary">没做</b>的。
+                  </p>
+                ) : null}
+                {r.derivative.untapped?.length ? (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {r.derivative.untapped.slice(0, 3).map((u) => (
+                      <span key={u} className="rounded-full border border-border bg-surface px-2 py-0.5 text-[11px] text-ink-secondary">
+                        {u}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
             {ins?.buildIdeas?.length ? (
               <div className="grid gap-3 sm:grid-cols-2">
                 {ins.buildIdeas.map((idea, i) => (
@@ -407,7 +445,9 @@ export default async function RepoPage({ params }: { params: Promise<{ owner: st
             </ul>
             <p className="mt-3 text-[10px] leading-relaxed text-ink-muted">
               横条长度＝该维度实际贡献的分值（占满分 100 的比例，权重越高最多能贡献越多），不是得分率。
-              得分衡量的是「一个没多少经费的人，用它做出一款小而美、能收点钱的产品」的可能性——「轻启动机会」权重最高，重型基础设施项目会被降权。
+              得分衡量的是「一个没多少经费的人，把它加工一下，做出一款跟它不一样、有人愿意付钱的产品」的可能性——「轻启动机会」权重最高，重型基础设施项目会被降权。
+              「加工空间」是这里最关键的一条：项目本身越完善、越像成品，你加工后做出来的东西就越容易跟它撞车，照抄也挡不住别人复制，所以这类项目会被降权；只有能嵌进完全不同的产品的原材料，才值得做。
+      「商业化潜力」只看许可能否商用、这个领域有没有人付钱、作者有没有对外门面——有官网只说明作者有对外门面，不等于能赚钱。
             </p>
           </div>
 
@@ -426,6 +466,9 @@ export default async function RepoPage({ params }: { params: Promise<{ owner: st
             <div className="mt-2">
               {trend.length >= 2 ? <TrafficTrendChart points={trend} variant="stars" /> : <p className="py-6 text-center text-xs text-ink-muted">趋势积累中</p>}
             </div>
+            <p className="mt-2 text-[10px] leading-relaxed text-ink-muted">
+              曲线含回填的估算点（按当前星标反推），只用于看形状；7 天 / 30 天增速只统计每日真实采样，采样满 7 天后才显示数值。
+            </p>
           </div>
 
           <div className="rounded-2xl border border-border bg-surface p-4">

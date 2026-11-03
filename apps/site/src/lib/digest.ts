@@ -1,7 +1,8 @@
 /** 每日情报：构建期读取 content/digest/*.json（由 scripts/fetch/daily 生成） */
 
+/** rumor 仅作内部判定，成稿里不会出现 */
 export type EvidenceLevel = "verified" | "pending" | "rumor";
-export type ModuleKey = "headline" | "model" | "oss" | "business" | "action" | "rumor";
+export type ModuleKey = "headline" | "tools" | "money" | "action";
 
 export interface DigestSource {
   type: "official" | "repo" | "community" | "media";
@@ -58,12 +59,10 @@ export function digestByDate(date: string): Digest | null {
 }
 
 export const MODULE_META: Record<ModuleKey, { no: string; name: string; desc: string }> = {
-  headline: { no: "01", name: "今日头条", desc: "当天影响面最大的几条" },
-  model: { no: "02", name: "模型与产品", desc: "能力边界与调用成本的变化" },
-  oss: { no: "03", name: "开源与工具", desc: "能直接下载、自部署的东西" },
-  business: { no: "04", name: "商业与赚钱信号", desc: "价格、融资与格局变化" },
-  action: { no: "05", name: "今天就能做", desc: "半小时内可验证的动作" },
-  rumor: { no: "06", name: "未证实观察区", desc: "只是信号，不进头条" },
+  headline: { no: "01", name: "今日头条", desc: "今天真正变了的事" },
+  tools: { no: "02", name: "能直接用的", desc: "开源项目、可自部署工具、免费额度" },
+  money: { no: "03", name: "钱与机会", desc: "定价、成本、融资与真实变现" },
+  action: { no: "04", name: "今天就能做", desc: "半小时内可验证的下一步" },
 };
 
 /** 采集侧的分类键是英文的，页面一律显示中文 */
@@ -71,7 +70,7 @@ export const CATEGORY_LABEL: Record<string, string> = {
   model_release: "模型发布",
   product_launch: "产品发布",
   open_source: "开源项目",
-  ai_agent: "Agent",
+  ai_agent: "智能体",
   ai_coding: "AI 编程",
   business: "商业",
   other: "其他",
@@ -96,7 +95,7 @@ export const EVIDENCE_META: Record<
     dot: "bg-amber-500",
   },
   rumor: {
-    label: "传闻",
+    label: "未证实",
     cls: "border-border bg-surface-2 text-ink-muted",
     dot: "bg-ink-muted",
   },

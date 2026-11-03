@@ -7,17 +7,26 @@
 interface HistoryPoint {
   date: string;
   stars: number;
+  synthetic?: boolean;
 }
 
-/** 近 N 天 Star 增量 %；历史不足返回 null */
+/**
+ * 近 N 天 Star 增量 %。
+ * 剔除 synthetic=true 的回填估算点：那些点按当前星标反推，
+ * 会让所有项目都呈现「匀速上涨」，是编造出来的增速。
+ */
 export function starGrowth(history: HistoryPoint[] | undefined, days: number): number | null {
-  const h = [...(history ?? [])].sort((a, b) => a.date.localeCompare(b.date));
+  const h = [...(history ?? [])]
+    .filter((p) => !p.synthetic)
+    .sort((a, b) => a.date.localeCompare(b.date));
   if (h.length < 2) return null;
   const last = h[h.length - 1];
   const target =
     h.find((p) => (Date.parse(last.date) - Date.parse(p.date)) / 86_400_000 >= days - 1) ?? h[0];
   const prev = target.stars;
   if (prev <= 0) return null;
+  const span = (Date.parse(last.date) - Date.parse(target.date)) / 86_400_000;
+  if (span < 7) return null;
   return Math.round(((last.stars - prev) / prev) * 1000) / 10;
 }
 

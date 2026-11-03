@@ -27,22 +27,21 @@ const archive = digests.slice(1, 9);
 
 const title = "每日情报 · Horizons";
 const description = latest
-  ? `${formatDate(latest.date)} 的 AI 情报：${latestCount} 条，覆盖今日头条、模型与产品、开源与工具、商业信号与可执行动作，每条附原始链接与证据等级。`
-  : "每天 7:30 更新一份 AI 情报：新模型、能落地的开源项目、价格与成本变化，以及今天就能动手的机会。10–15 条精编，每条都带原始链接与证据等级。";
+  ? `${formatDate(latest.date)} 的 AI 情报：${latestCount} 条，覆盖今日头条、能直接用的工具、钱与机会、今天就能做，每条附原始链接与证据等级。`
+  : "每天 7:30 更新一份 AI 情报：新模型、能直接用的开源项目、价格与成本变化，以及今天就能动手的机会。10–15 条精编，每条都带原始链接与证据等级。";
 
-const stats = latest
-  ? [
-      { value: String(latest.stats.candidates), unit: "条候选", hint: "抓到的原始条数" },
-      { value: String(latest.stats.merged), unit: "个事件", hint: "同一件事只算一件" },
-      { value: String(latest.stats.verified), unit: "条已核验", hint: "有一手材料" },
-      { value: String(latestCount), unit: "条采用", hint: "不凑条数" },
-    ]
-  : [
-      { value: "10–15", unit: "条 / 天", hint: "精编，不堆量" },
-      { value: "5", unit: "个固定模块", hint: "扫一眼就知道看哪" },
-      { value: "100%", unit: "附原始链接", hint: "每条都能回溯" },
-      { value: "07:30", unit: "每日更新", hint: "北京时间" },
-    ];
+/**
+ * 本期构成：画成一条比例条，比四个大数字好读。
+ * 也避免「111 条候选 / 111 个事件」这种两个数一样的尴尬——那天本来就没有合并。
+ */
+const MODULE_TONE = ["bg-primary", "bg-sky-500", "bg-violet-500", "bg-emerald-500"];
+const composition = latest
+  ? latest.modules.map((m, i) => ({
+      name: MODULE_META[m.key]?.name ?? m.key,
+      n: m.items.length,
+      tone: MODULE_TONE[i % MODULE_TONE.length],
+    }))
+  : [];
 
 const icons: Record<string, string> = {
   bolt: "M13 2.5 4.8 13.4h5.4l-.9 8.1 8.9-11.2h-5.3z",
@@ -60,49 +59,32 @@ const modules = [
     icon: "bolt",
     name: "今日头条",
     volume: "3–5 条",
-    desc: "一天里真正需要知道的事。每条讲清：发生了什么、为什么重要、证据够不够。",
+    desc: "今天真正变了的事：模型发布、产品更新、政策与事故。讲清发生了什么、影响谁、证据够不够。",
     audience: "只想要一手资讯的人",
   },
   {
     no: "02",
     icon: "cube",
-    name: "模型与产品",
-    volume: "3–5 条",
-    desc: "新模型、新版本、新功能。只写能力变化和适用边界，不搬运发布会话术。",
-    audience: "需要判断能力边界的开发者",
-  },
-  {
-    no: "03",
-    icon: "terminal",
-    name: "开源与工具",
-    volume: "2–4 条",
-    desc: "正在升温的仓库、可自部署的工具、免费额度变化。标注许可证与上手成本。",
+    name: "能直接用的",
+    volume: "2–5 条",
+    desc: "开源项目、可自部署的工具、免费额度。标注许可证、上手成本和最近一次提交。",
     audience: "想低成本做出东西的人",
   },
   {
-    no: "04",
+    no: "03",
     icon: "trend",
-    name: "商业与赚钱信号",
-    volume: "2–3 条",
-    desc: "API 降价、定价调整、融资收购、真实变现案例。关注钱从哪来，不追估值故事。",
+    name: "钱与机会",
+    volume: "1–3 条",
+    desc: "API 降价、定价调整、融资收购、真实变现案例。关注成本线和钱从哪来，不追估值故事。",
     audience: "想用 AI 赚钱的人",
   },
   {
-    no: "05",
+    no: "04",
     icon: "target",
     name: "今天就能做",
-    volume: "1–3 条",
-    desc: "把资讯变成动作：试什么、拿什么验证、大概要花多久。能测的写成可验证的下一步。",
+    volume: "1–2 条",
+    desc: "把资讯变成动作：试什么、拿什么验证、大概花多久。只写能测的下一步。",
     audience: "想立刻动手试的人",
-  },
-  {
-    no: "—",
-    icon: "eye",
-    name: "未证实观察区",
-    volume: "不定期",
-    desc: "未发布、泄露、预告统一放这里，明确标注缺口。不进头条，也不写成已发生。",
-    audience: "想看早期信号的人",
-    observed: true,
   },
 ];
 
@@ -111,19 +93,19 @@ const audiences = [
     role: "想创业的人",
     gain: "看到还没被占住的位置",
     detail: "哪些方向刚有工具可用了、哪类需求已被验证但没做好，都能在条目里找到线索。",
-    mods: ["开源与工具", "商业与赚钱信号"],
+    mods: ["能直接用的", "钱与机会"],
   },
   {
     role: "想用 AI 赚钱的人",
     gain: "知道成本线在哪、谁在赚钱",
     detail: "模型降价、免费额度、真实收费案例。算得清毛利，才敢报价。",
-    mods: ["商业与赚钱信号", "今天就能做"],
+    mods: ["钱与机会", "今天就能做"],
   },
   {
     role: "AI 从业者 / 开发者",
     gain: "判断能力边界，不追话术",
     detail: "新能力配的是官方基准还是第三方复现，写进条目里。避免把演示当成可交付。",
-    mods: ["模型与产品"],
+    mods: ["今日头条"],
   },
   {
     role: "只要一手资讯的人",
@@ -143,21 +125,20 @@ const evidence = [
   },
   {
     label: "待核实",
-    desc: "只有媒体转述或社区讨论，缺一手材料。会写明缺的是哪一块。",
+    desc: "目前只有媒体转述，缺一手材料。会写明缺的是哪一块，也标清引用前要确认什么。",
     rule: "标明缺口",
     cls: "border-amber-500/25 bg-amber-500/10 text-amber-600 dark:text-amber-400",
     dot: "bg-amber-500",
   },
-  {
-    label: "传闻",
-    desc: "未发布、泄露或预告。只进观察区，不写成已发生的事实。",
-    rule: "不进头条",
-    cls: "border-border bg-surface-2 text-ink-muted",
-    dot: "bg-ink-muted",
-  },
 ];
 
-const sources = ["Hacker News", "GitHub", "科技媒体 RSS", "Hugging Face", "X（人工补充）"];
+/** 四类来源，覆盖十余个公开站点；具体站点写在第二行，避免"只有五个源"的观感 */
+const sources = [
+  { name: "官方公告", detail: "OpenAI · DeepMind · Hugging Face" },
+  { name: "代码仓库", detail: "GitHub 活跃榜与新增榜" },
+  { name: "社区讨论", detail: "Hacker News" },
+  { name: "科技媒体", detail: "The Verge · Ars Technica · BBC · MIT 科技评论" },
+];
 
 
 
@@ -180,7 +161,7 @@ const steps = [
   {
     time: "07:30",
     name: "中文成稿",
-    desc: "按 5 个模块固定顺序出 10–15 条，附来源与首次发现时间。",
+    desc: "按 4 个模块固定顺序出 10–15 条，附来源与首次发现时间。",
   },
 ];
 
@@ -191,7 +172,7 @@ const faqs = [
   },
   {
     q: "会不会出现 AI 编造的内容？",
-    a: "摘要只使用输入材料能支持的事实，参数、金额、用户数这类数字没有来源就不写。缺证据的标「待核实」，传闻单独进观察区。",
+    a: "摘要只使用输入材料能支持的事实，参数、金额、用户数这类数字没有来源就不写。缺一手材料的标「待核实」；传闻、泄露、预告一律不收录。",
   },
   {
     q: "和 AI 工具榜、GitHub 榜、趋势词榜是什么关系？",
@@ -247,7 +228,7 @@ const faqs = [
           </h1>
 
           <p class="mt-5 max-w-xl text-sm leading-[1.85] text-ink-secondary sm:text-[15px]">
-            从 5 类公开数据源里筛出 10–15 条真正值得知道的事：新模型、能落地的开源项目、价格与成本变化，以及今天就能动手的机会。每条都带原始链接和证据等级。
+            从官方公告、代码仓库、社区讨论和科技媒体里，筛出 10–15 条真正值得知道的事：新模型、能直接用的开源项目、价格与成本变化，以及今天就能动手的机会。每条都带原始链接和证据等级。
           </p>
 
           <div class="mt-7 flex flex-wrap items-center gap-3">
@@ -273,7 +254,7 @@ const faqs = [
 
           <p class="mt-5 text-[11px] leading-relaxed text-ink-muted">
             {latest
-              ? `最新一期由采集脚本自动生成：${latest.stats.candidates} 条候选 → ${latest.stats.merged} 个事件 → 采用 ${latestCount} 条。`
+              ? `每天 05:00 开始采集，07:30 出刊。本期读完 ${latest.stats.candidates} 条候选，留下 ${latestCount} 条。`
               : "第一期正在生成，下面是这份日报的取舍标准与更新方式。"}
           </p>
         </div>
@@ -351,22 +332,41 @@ const faqs = [
         </div>
       </div>
 
-      <!-- 四个硬指标 -->
-      <div
-        class="mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:mt-14 sm:grid-cols-4"
-      >
-        {
-          stats.map((s) => (
-            <div class="bg-surface px-4 py-4 sm:px-5">
-              <p class="flex items-baseline gap-1 text-lg font-bold tracking-tight text-ink tabular-nums sm:text-xl">
-                {s.value}
-                <span class="text-[11px] font-medium text-ink-muted">{s.unit}</span>
+      <!-- 本期构成：一条比例条代替四个大数字 -->
+      {
+        latest && composition.length > 0 && (
+          <div class="mt-12 rounded-2xl border border-border bg-surface p-5 sm:mt-14">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <p class="text-sm font-semibold text-ink">
+                本期 {latestCount} 条
               </p>
-              <p class="mt-1 text-[11px] text-ink-muted">{s.hint}</p>
+              <p class="text-[11px] text-ink-muted tabular-nums">
+                {formatDate(latest.date)} · 从 {latest.stats.candidates} 条里选出
+              </p>
             </div>
-          ))
-        }
-      </div>
+
+            <div class="mt-3 flex h-2 gap-px overflow-hidden rounded-full bg-surface-2">
+              {composition.map((c) => (
+                <span
+                  class={c.tone}
+                  style={`width: ${(c.n / Math.max(1, latestCount)) * 100}%`}
+                  title={`${c.name} ${c.n} 条`}
+                />
+              ))}
+            </div>
+
+            <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-1.5">
+              {composition.map((c) => (
+                <li class="flex items-center gap-1.5 text-[11px] text-ink-secondary">
+                  <span class:list={["h-1.5 w-1.5 rounded-full", c.tone]} />
+                  {c.name}
+                  <span class="text-ink-muted tabular-nums">{c.n}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
     </div>
   </section>
 
@@ -606,9 +606,9 @@ const faqs = [
     <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div class="max-w-2xl">
-          <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">每天固定五个模块</h2>
+          <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">每天固定四个模块</h2>
           <p class="mt-2 text-sm leading-relaxed text-ink-secondary">
-            顺序永远不变，看到第几块就知道能看到什么。第六块是观察区，只放尚未证实的信息。
+            顺序永远不变，看到第几块就知道能看到什么。四块对应四个动作：知道、拿来用、算账、动手。
           </p>
         </div>
         <span
@@ -618,22 +618,12 @@ const faqs = [
         </span>
       </div>
 
-      <ul class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul class="mt-7 grid gap-4 sm:grid-cols-2">
         {
           modules.map((m) => (
-            <li
-              class:list={[
-                "flex flex-col rounded-2xl bg-surface p-5",
-                m.observed ? "border border-dashed border-border-strong" : "border border-border",
-              ]}
-            >
+            <li class="flex flex-col rounded-2xl border border-border bg-surface p-5">
               <div class="flex items-center gap-3">
-                <span
-                  class:list={[
-                    "flex h-9 w-9 items-center justify-center rounded-xl",
-                    m.observed ? "bg-surface-2 text-ink-muted" : "bg-primary-soft text-primary",
-                  ]}
-                >
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-soft text-primary">
                   <svg
                     class="h-[18px] w-[18px]"
                     viewBox="0 0 24 24"
@@ -671,13 +661,13 @@ const faqs = [
   <section class="border-y border-border/60 bg-surface/40">
     <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
       <div class="max-w-2xl">
-        <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">证据只有三种状态</h2>
+        <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">只发两种证据状态</h2>
         <p class="mt-2 text-sm leading-relaxed text-ink-secondary">
-          传闻不会被包装成事实。同一篇报道被十家转载，也只算一个来源。
+          传闻、泄露、预告一律不收录——宁可不发，也不拿「据说」凑一条。同一篇报道被十家转载，也只算一个来源。
         </p>
       </div>
 
-      <div class="mt-7 grid gap-4 md:grid-cols-3">
+      <div class="mt-7 grid gap-4 md:grid-cols-2">
         {
           evidence.map((e) => (
             <article class="rounded-2xl border border-border bg-surface p-5">
@@ -713,7 +703,7 @@ const faqs = [
     <div class="mt-7 grid gap-4 lg:grid-cols-[0.86fr_1.14fr]">
       <div class="rounded-2xl border border-border bg-surface p-5">
         <div class="flex items-center justify-between gap-2">
-          <h3 class="text-sm font-semibold text-ink">五类数据源</h3>
+          <h3 class="text-sm font-semibold text-ink">四类来源</h3>
           <span class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[10px] text-ink-muted">
             来源可核对
           </span>
@@ -721,20 +711,20 @@ const faqs = [
         <ul class="mt-4 space-y-2">
           {
             sources.map((s, i) => (
-              <li class="flex items-center gap-2.5 rounded-lg bg-surface-2 px-3 py-2">
-                <span class="font-mono text-[10px] text-ink-muted/70">{String(i + 1).padStart(2, "0")}</span>
-                <span class="text-[13px] text-ink-secondary">{s}</span>
-                {i === 4 && (
-                  <span class="ml-auto rounded border border-border bg-surface px-1.5 py-0.5 text-[10px] text-ink-muted">
-                    人工
-                  </span>
-                )}
+              <li class="flex items-start gap-2.5 rounded-lg bg-surface-2 px-3 py-2">
+                <span class="mt-0.5 font-mono text-[10px] text-ink-muted/70">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span class="min-w-0">
+                  <span class="block text-[13px] text-ink-secondary">{s.name}</span>
+                  <span class="mt-0.5 block text-[10px] leading-relaxed text-ink-muted">{s.detail}</span>
+                </span>
               </li>
             ))
           }
         </ul>
         <p class="mt-4 text-[11px] leading-relaxed text-ink-muted">
-          公开可访问不等于可以无限抓取：X 只做人工补充，其余按各自接口的速率限制运行，不绕验证、不碰需登录的内容。
+          公开可访问不等于可以无限抓取：所有来源按各自接口的速率限制运行，不绕验证、不碰需登录的内容。
         </p>
       </div>
 
@@ -806,37 +796,13 @@ const faqs = [
     {
       latest && (
         <div class="mt-4 rounded-2xl border border-border bg-surface p-5">
-          <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
             <h3 class="text-sm font-semibold text-ink">第 {issueNo} 期的筛选量级</h3>
             <span class="text-[11px] text-ink-muted tabular-nums">{formatDate(latest.date)}</span>
           </div>
-          <div class="mt-4 space-y-2.5">
-            {[
-              { label: "候选内容", value: latest.stats.candidates },
-              { label: "合并事件", value: latest.stats.merged },
-              { label: "证据已核验", value: latest.stats.verified },
-              { label: "进入日报", value: latestCount },
-            ].map((f, i, arr) => (
-              <div class="flex items-center gap-3">
-                <span class="w-20 shrink-0 text-[11px] text-ink-muted">{f.label}</span>
-                <div class="h-2.5 flex-1 overflow-hidden rounded-full bg-surface-2">
-                  <div
-                    class="h-full rounded-full"
-                    style={`width: ${Math.round((f.value / Math.max(1, arr[0].value)) * 100)}%; ${
-                      i === arr.length - 1
-                        ? "background-image: var(--brand-gradient);"
-                        : `background-color: var(--c-primary); opacity: ${0.85 - i * 0.22};`
-                    }`}
-                  />
-                </div>
-                <span class="w-9 shrink-0 text-right text-[11px] text-ink-secondary tabular-nums">
-                  {f.value}
-                </span>
-              </div>
-            ))}
-          </div>
-          <p class="mt-3 text-[11px] leading-relaxed text-ink-muted">
-            从候选压到十几条，靠的是证据核验和人工复盘；删掉的条目也留着原因，漏报了可以查。
+          <p class="mt-3 text-[13px] leading-relaxed text-ink-secondary">
+            本期从 <span class="font-semibold text-ink tabular-nums">{latest.stats.candidates}</span> 条候选里选出{" "}
+            <span class="font-semibold text-ink tabular-nums">{latestCount}</span> 条。删掉的每一条都记了原因——分数不足、当天已出现过、或未获证实——漏报了可以回溯。
           </p>
         </div>
       )

@@ -11,9 +11,27 @@ interface Props {
   totalPages: number;
   basePath?: string;
   pageSize?: number;
+  /** 主榜条数：用于在观察区开始处插入分区标题 */
+  coreCount?: number;
 }
 
-const { rows, page, totalItems, totalPages, basePath = "/tools", pageSize = 20 } = Astro.props;
+const {
+  rows,
+  page,
+  totalItems,
+  totalPages,
+  basePath = "/tools",
+  pageSize = 20,
+  coreCount,
+} = Astro.props;
+
+// 观察区在本页中的起始位置；若本页已整体进入观察区，标题落在页首
+const pageStart = (page - 1) * pageSize;
+let watchAt = -1;
+if (coreCount != null) {
+  const raw = coreCount - pageStart;
+  watchAt = raw <= 0 ? (rows[0]?.tier === "watch" ? 0 : -1) : raw;
+}
 ---
 
 <p class="mt-6 text-sm text-ink-muted" id="list-meta">
@@ -24,7 +42,21 @@ const { rows, page, totalItems, totalPages, basePath = "/tools", pageSize = 20 }
   <div class="min-w-[1080px]">
     <ToolListHead />
     <div id="list-rows">
-      {rows.map((t) => <Fragment set:html={fillRank(t.h, t.rank)} />)}
+      {
+        rows.map((t, i) => (
+          <>
+            {i === watchAt && (
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-border bg-surface-2/70 px-4 py-2.5 sm:px-5">
+                <span class="text-xs font-semibold text-ink">观察区</span>
+                <span class="text-xs text-ink-muted">
+                  月访问不足 1 万、环比下滑，或仅有 Product Hunt 热度，标「待验证」，不占主榜名次
+                </span>
+              </div>
+            )}
+            <Fragment set:html={fillRank(t.h, t.rank)} />
+          </>
+        ))
+      }
     </div>
     <div id="list-empty" class="hidden px-4 py-16 text-center">
       <p class="text-sm text-ink-muted">没有符合条件的工具</p>

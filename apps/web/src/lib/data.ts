@@ -2,6 +2,7 @@ import {
   compareByScore,
   compareByToolScore,
   computeProductScore,
+  isBlockedDomain,
 } from "@horizons/shared";
 import type { AITool, PricingModel, GitHubRepo, ProductScore } from "@horizons/shared";
 import toolsData from "@content/aitools.json";
@@ -14,24 +15,45 @@ const MIN_VISITS_CORE = 10_000; // 主榜：月访问 ≥1 万
 const MIN_VISITS_WATCH = 1_000; // 观察区：1 千 ~ 1 万，且未明显下滑
 const WATCH_PH_UPVOTES = 300; // 无流量数据时，至少 PH 热度达标才保留
 
+/** 主榜 Core 与观察区 Watch（docs/15 第三节） */
+export type ToolTier = "core" | "watch";
+
+/**
+ * 分层判定，null 表示不收录。
+ *
+ * 顺序：黑名单（A1/A2）→ A4 规模门槛 → 分层。
+ * 无月访问的站只能靠 PH 热度进观察区，不允许占主榜名次；
+ * 120 天新星窗口暂不校验（launchedAt 缺失率 23%，补齐后再启用）。
+ */
+export function tierOf(tool: AITool): ToolTier | null {
+  if (isBlockedDomain(tool.domain)) return null;
+  const v = getMonthlyVisits(tool);
+  if (v === undefined) {
+    return (tool.phUpvotes ?? 0) >= WATCH_PH_UPVOTES ? "watch" : null;
+  }
+  if (v >= MIN_VISITS_CORE) return "core";
+  if (v >= MIN_VISITS_WATCH) {
+    const g = getMoMGrowth(tool);
+    return typeof g === "number" && g < 0 ? "watch" : "core";
+  }
+  return null;
+}
+
 /**
  * 是否进入榜单展示。
  * 数据文件保留全部候选（便于后续复采与画像），但达不到门槛的站不上榜，
  * 避免「月访问 0」或「发布即死」的站混进主榜。
  */
 export function isListed(tool: AITool): boolean {
-  const v = getMonthlyVisits(tool);
-  if (v === undefined) return (tool.phUpvotes ?? 0) >= WATCH_PH_UPVOTES;
-  if (v >= MIN_VISITS_CORE) return true;
-  if (v >= MIN_VISITS_WATCH) {
-    const g = getMoMGrowth(tool);
-    return !(typeof g === "number" && g < 0);
-  }
-  return false;
+  return tierOf(tool) !== null;
 }
 
-/** 达到收录门槛、可展示的工具 */
+/** 达到收录门槛、可展示的工具（主榜 + 观察区） */
 export const listedTools = tools.filter(isListed);
+/** 主榜：参与综合得分排名、显示 #名次 */
+export const coreTools = listedTools.filter((t) => tierOf(t) === "core");
+/** 观察区：单独展示、标「待验证」、不占主榜名次 */
+export const watchTools = listedTools.filter((t) => tierOf(t) === "watch");
 const gh = githubData as unknown as { updatedAt: string; repos: GitHubRepo[] };
 export const githubRepos = gh.repos ?? [];
 /** GitHub 榜数据快照时间（页面上如实展示） */
@@ -59,9 +81,16 @@ export function getToolsSorted(): AITool[] {
   return [...listedTools].sort((a, b) => b.heatScore - a.heatScore);
 }
 
-/** 按综合得分降序（/tools 榜单默认顺序，只含达标工具） */
+/**
+ * 按综合得分降序（/tools 榜单默认顺序）。
+ * 主榜 Core 在前、观察区 Watch 在后，各自按得分排序，
+ * 保证 Watch 站不会插进主榜名次之间。
+ */
 export function getToolsByScore(): AITool[] {
-  return [...listedTools].sort(compareByToolScore);
+  return [
+    ...[...coreTools].sort(compareByToolScore),
+    ...[...watchTools].sort(compareByToolScore),
+  ];
 }
 
 /**
@@ -319,8 +348,15 @@ export function getGithubLanguages(): string[] {
 }
 
 /** 近 N 天 Star 增量 %；历史不足返回 null */
+/**
+ * 近 N 天 Star 增量 %。
+ * 只使用真实采样点：synthetic=true 是 backfillHistory 按当前星标反推的估算值，
+ * 包含它们会得出「所有项目都在匀速上涨」的假结论，因此一律剔除。
+ */
 export function computeStarGrowth(repo: GitHubRepo, days: number): number | null {
-  const h = [...(repo.history ?? [])].sort((a, b) => a.date.localeCompare(b.date));
+  const h = [...(repo.history ?? [])]
+    .filter((p) => !p.synthetic)
+    .sort((a, b) => a.date.localeCompare(b.date));
   if (h.length < 2) return null;
   const last = h[h.length - 1];
   const target =
@@ -328,6 +364,8 @@ export function computeStarGrowth(repo: GitHubRepo, days: number): number | null
     h[0];
   const prev = target.stars;
   if (prev <= 0) return null;
+  const span = (Date.parse(last.date) - Date.parse(target.date)) / 86_400_000;
+  if (span < 7) return null; // 采样跨度不足 7 天，增速没有意义
   return Math.round(((last.stars - prev) / prev) * 1000) / 10;
 }
 

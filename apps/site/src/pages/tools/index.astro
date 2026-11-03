@@ -7,6 +7,7 @@ import { toolRows, toolFilters, PAGE_SIZE, sortByScore, totalPages } from "../..
 const rows = sortByScore(toolRows);
 const tp = totalPages(rows.length);
 const pageRows = rows.slice(0, PAGE_SIZE);
+const coreCount = rows.filter((r) => r.tier === "core").length;
 
 const title = "AI工具榜 · Horizons";
 const description =
@@ -24,7 +25,7 @@ const description =
 
     <ToolFilterBar filters={toolFilters} />
 
-    <ToolList rows={pageRows} page={1} totalItems={rows.length} totalPages={tp} basePath="/tools" pageSize={PAGE_SIZE} />
+    <ToolList rows={pageRows} page={1} totalItems={rows.length} totalPages={tp} basePath="/tools" pageSize={PAGE_SIZE} coreCount={coreCount} />
   </div>
 
   <script>
