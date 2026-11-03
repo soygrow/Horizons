@@ -1,0 +1,9 @@
+User-agent: *
+# 全站允许抓取：索引控制交给页面级 noindex，这样爬虫才能读到 noindex 指令
+# （被 robots.txt 拦掉的页面，爬虫看不到 noindex，反而可能被别的链接带进索引）
+Allow: /
+
+# 纯数据接口，无正文价值
+Disallow: /data/
+
+Sitemap: https://horizons.tools/sitemap.xml

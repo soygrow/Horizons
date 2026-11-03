@@ -149,6 +149,11 @@ html_count=$(find "$DIST" -name '*.html' | wc -l | tr -d ' ')
 [ "$html_count" -ge 200 ] || die "HTML 页面只有 $html_count 个，明显少于预期（详情页未生成？）"
 ok "关键页面齐全（$(echo $CHANNELS | wc -w | tr -d ' ') 个频道），HTML 共 $html_count 个"
 
+# 与 CI 复用同一套断言：数据条数、sitemap 白名单、noindex 策略
+if ! node scripts/check/site-artifacts.mjs; then
+  die "产物断言失败（详见上方），未启动服务"
+fi
+
 # ---------- 启动本地服务 ----------
 log "启动本地服务（端口 $PORT）"
 stop_server

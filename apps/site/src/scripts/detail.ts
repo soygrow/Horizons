@@ -62,28 +62,40 @@ export function initToolDetail() {
     });
   });
 
-  // 截图放大
+  // 截图放大：点击缩略图查看原图
   document.querySelectorAll<HTMLButtonElement>("[data-lightbox]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const src = btn.dataset.lightbox || "";
+      if (!src) return;
+
+      const prevOverflow = document.body.style.overflow;
       const overlay = document.createElement("div");
       overlay.className =
-        "fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-black/80 p-6";
+        "fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-black/80 p-4 sm:p-8";
+      overlay.style.opacity = "0";
+      overlay.style.transition = "opacity 150ms ease-out";
+
       const img = document.createElement("img");
       img.src = src;
-      img.alt = "";
-      img.className = "max-h-full max-w-full rounded-lg object-contain";
+      img.alt = btn.getAttribute("aria-label") || "";
+      img.className = "max-h-full max-w-full rounded-lg object-contain shadow-2xl";
       overlay.appendChild(img);
-      const close = () => {
-        overlay.remove();
-        document.removeEventListener("keydown", onKey);
-      };
+
       const onKey = (e: KeyboardEvent) => {
         if (e.key === "Escape") close();
       };
+      const close = () => {
+        overlay.style.opacity = "0";
+        document.removeEventListener("keydown", onKey);
+        document.body.style.overflow = prevOverflow;
+        window.setTimeout(() => overlay.remove(), 150);
+      };
+
       overlay.addEventListener("click", close);
       document.addEventListener("keydown", onKey);
+      document.body.style.overflow = "hidden";
       document.body.appendChild(overlay);
+      requestAnimationFrame(() => (overlay.style.opacity = "1"));
     });
   });
 }

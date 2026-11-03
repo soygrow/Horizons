@@ -52,6 +52,11 @@ jobs:
       - name: 构建 Astro 静态站
         run: pnpm --filter @horizons/site run build
 
+      # 阻塞式断言：频道页缺失 / 数据塌成 0 条 / sitemap 与非白名单混入 / noindex 策略被改坏，
+      # 一律在发布前失败，不把半成品推到线上。
+      - name: 构建产物断言（阻塞）
+        run: node scripts/check/site-artifacts.mjs
+
       - name: 部署到 Cloudflare（horizons-site）
         run: pnpm --filter @horizons/site exec wrangler deploy
 
@@ -61,7 +66,7 @@ jobs:
         continue-on-error: true
         run: |
           fail=0
-          for path in / /tools /github /trends; do
+          for path in / /tools /github /trends /daily /models /opportunity /sitemap.xml /robots.txt; do
             code=$(curl -s -o /dev/null -w '%{http_code}' \
               --max-time 10 --retry 2 --retry-delay 2 --retry-all-errors \
               "https://horizons.tools$path" || true)

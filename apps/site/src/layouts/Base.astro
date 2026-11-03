@@ -2,6 +2,7 @@
 import "../styles/globals.css";
 import NavBar from "../components/NavBar.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import { isIndexablePath, normalizePath, SITE } from "../config/seo";
 
 interface Props {
   title?: string;
@@ -15,10 +16,11 @@ const {
   noindex = false,
 } = Astro.props;
 
-const SITE = "https://horizons.tools";
 // 站点 URL 统一无尾斜杠：/tools/ → /tools，根路径保持 /
-const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const pathname = normalizePath(Astro.url.pathname);
 const canonical = new URL(pathname, SITE).href;
+// 默认不索引：只有白名单频道进索引；页面可显式 noindex 覆盖
+const robots = noindex || !isIndexablePath(pathname) ? "noindex,follow" : "index,follow";
 
 // 首屏前同步主题，避免浅/深色闪烁（与现有站逻辑一致）
 const themeInit = `(function(){try{var t=localStorage.getItem("theme")||"light";if(t==="dark"){document.documentElement.classList.add("dark");}}catch(e){}})();`;
@@ -32,7 +34,7 @@ const themeInit = `(function(){try{var t=localStorage.getItem("theme")||"light";
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex,follow" />}
+    <meta name="robots" content={robots} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
