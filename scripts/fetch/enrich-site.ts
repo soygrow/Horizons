@@ -155,7 +155,7 @@ const SYSTEM_OPPORTUNITY = `你是面向个人开发者创业者的创业顾问�
 - monetizationBlueprint: {model,tiers[string],paymentDetected[string],pricingAdvice}
 - growthPlaybook: {coldStart,channels[string],copyable[string 值得借鉴，用「借鉴/参考/沿用/复用」等表述，禁止出现「抄」字],avoid[string 是坑别踩]}
 - buildBlueprint: {techStack[string],thirdParty[string 依赖的API/模型],mvpScope,devTime,monthlyCost}
-- ideaSparks: [{title,angle,why,source}×3~5]，angle 取「换场景/换人群/换商业模式/换语区/换收费」，每个给创业者一个可落地的变体点子；source 是「灵感来源」，说明这个点子是基于哪个数据点或竞品特征得来的（如「源自它的多语言页面打法」）。
+- ideaSparks: [{title,angle,why,source}×6]，angle 从「换场景/换人群/换商业模式/换语区/换收费/换技术路线」中取，6 条的角度必须互不重复，每个给创业者一个可落地的变体点子。若该产品确实凑不出第 6 个真正有差异的方向，宁可只给 5 条，也绝不能为凑数而重复角度或写空话——质量优先于数量。source 是「灵感来源」，说明这个点子是基于哪个数据点或竞品特征得来的（如「源自它的多语言页面打法」）。
 - performanceInsight: {overview:{what,pain,can,trait},wedge,model,moat,trafficTruth,growthEdge,newPlayerEntry,entryTag}
   · overview：顶部高光结论「产品画像四要素」，把产品讲清楚，不写反差口号、不写营销腔，各字段 20~50 字：
     - what「是什么」：一句话定义产品定位（做什么、给谁用、什么形态）；

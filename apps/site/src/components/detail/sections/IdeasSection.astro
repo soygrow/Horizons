@@ -15,6 +15,13 @@ const t = dict.opportunity;
 const { tool } = Astro.props;
 const sparks: any[] = tool.ideaSparks ?? [];
 const competitors: string[] = tool.observations?.competitors ?? [];
+// 条数按 6 条打底，但允许 5/4 条（允许 LLM 只给真有差异的方向）。
+// 4 条走 2×2；其余用 flex 自适应，最后一行卡片自动铺满，不留空格。
+const twoCol = sparks.length === 4;
+const gridCls = twoCol ? "grid gap-4 md:grid-cols-2" : "flex flex-wrap gap-4";
+const cardSpacing = twoCol
+  ? ""
+  : "grow basis-full md:basis-[calc(50%_-_0.5rem)] lg:basis-[calc(33.333%_-_0.667rem)]";
 ---
 
 <section id="ideas" class="flex scroll-mt-36 flex-col gap-10">
@@ -26,9 +33,14 @@ const competitors: string[] = tool.observations?.competitors ?? [];
 
   {
     sparks.length ? (
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div class={gridCls}>
         {sparks.map((s) => (
-          <div class="flex flex-col gap-2.5 rounded-xl border border-border bg-surface p-5 transition hover:border-primary/40">
+          <div
+            class:list={[
+              "flex flex-col gap-2.5 rounded-xl border border-border bg-surface p-5 transition hover:border-primary/40",
+              cardSpacing,
+            ]}
+          >
             <h4 class="text-sm font-semibold text-ink">{s.title}</h4>
             {s.angle ? <Badge>{s.angle}</Badge> : null}
             {s.why ? <p class="text-sm leading-relaxed text-ink-secondary">{s.why}</p> : null}

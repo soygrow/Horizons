@@ -896,9 +896,16 @@ export default async function ToolDetailPage({
             desc={dict.sections.ideas.desc}
           />
           {sparks?.length ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className={sparks.length === 4 ? "grid gap-4 md:grid-cols-2" : "flex flex-wrap gap-4"}>
               {sparks.map((s) => (
-                <div key={s.title} className="flex flex-col gap-2.5 rounded-xl border border-border bg-surface p-5 transition hover:border-primary/40">
+                <div
+                  key={s.title}
+                  className={`flex flex-col gap-2.5 rounded-xl border border-border bg-surface p-5 transition hover:border-primary/40 ${
+                    sparks.length === 4
+                      ? ""
+                      : "grow basis-full md:basis-[calc(50%_-_0.5rem)] lg:basis-[calc(33.333%_-_0.667rem)]"
+                  }`}
+                >
                   <h4 className="text-sm font-semibold text-ink">{s.title}</h4>
                   {s.angle ? <Badge>{s.angle}</Badge> : null}
                   {s.why ? <p className="text-sm leading-relaxed text-ink-secondary">{s.why}</p> : null}
