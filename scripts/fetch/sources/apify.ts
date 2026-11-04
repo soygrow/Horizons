@@ -91,7 +91,9 @@ export function hasApify(): boolean {
 
 function shareToVisits(visits: number, share: number | null | undefined): number | undefined {
   if (visits <= 0) return undefined;
-  if (share == null) return 0; // null 兜底为 0（低流量站该渠道趋近 0）
+  // 数据源没给该渠道份额（null）说明「未采集」，不是「访问量为 0」。
+  // 兜底成 0 会把 399K 访问的站显示成「直接访问量 0」，误导性极强。
+  if (share == null) return undefined;
   return Math.round(visits * share);
 }
 

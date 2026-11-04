@@ -139,7 +139,15 @@ export function toolRowHtml(t: ToolRow): string {
   const momCls = t.mom === null ? "text-ink-muted" : t.mom >= 0 ? "text-accent" : "text-rose-400";
   const momText = t.mom !== null ? `${t.mom > 0 ? "+" : ""}${t.mom}%` : "—";
   const momTitle = t.mom === null ? ` title="上月无数据，无法计算环比"` : "";
-  const drTitle = t.dr === null ? ` title="未采集到域名权重"` : "";
+  // 无 DR 时回退的是 SimilarWeb 全球排名（越小越强），加 # 前缀区分口径
+  const drIsRank = t.drLabel === "全球排名";
+  const drTitle =
+    t.dr === null
+      ? ` title="未采集到域名权重"`
+      : drIsRank
+        ? ` title="SimilarWeb 全球排名（非 Ahrefs DR）"`
+        : "";
+  const drText = t.dr === null ? "—" : `${drIsRank ? "#" : ""}${formatCount(t.dr)}`;
 
   return (
     `<a href="/tools/${esc(t.domain)}" target="_blank" rel="noopener noreferrer" ` +
@@ -169,7 +177,7 @@ export function toolRowHtml(t: ToolRow): string {
     `<div class="text-center text-sm text-ink-secondary tabular-nums">${t.visits !== null ? formatCount(t.visits) : "—"}</div>` +
     `<div${momTitle} class="text-center text-sm tabular-nums ${momCls}">${momText}</div>` +
     `<div class="text-center text-sm text-ink-secondary tabular-nums">${t.organic !== null ? formatCount(t.organic) : "—"}</div>` +
-    `<div${drTitle} class="text-center text-sm text-ink-secondary tabular-nums">${t.dr !== null ? formatCount(t.dr) : "—"}</div>` +
+    `<div${drTitle} class="text-center text-sm text-ink-secondary tabular-nums">${drText}</div>` +
     `<div class="whitespace-nowrap text-center text-sm text-ink-secondary tabular-nums">${formatDateShort(t.launchedAt)}</div>` +
     `</a>`
   );

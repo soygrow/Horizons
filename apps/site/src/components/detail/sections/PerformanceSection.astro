@@ -77,8 +77,12 @@ const fmtTime = (s?: string) => (s ? s.slice(0, 19).replace("T", " ") : "");
     />
     <Stat
       label={dict.metrics.domainWeight}
-      value={m?.domainWeight !== undefined ? formatCount(m.domainWeight) : undefined}
-      hint="未采集到该站的域名权重"
+      value={
+        m?.domainWeight !== undefined
+          ? `${m.domainWeightLabel === "全球排名" ? "#" : ""}${formatCount(m.domainWeight)}`
+          : undefined
+      }
+      hint={m?.domainWeightLabel === "全球排名" ? "SimilarWeb 全球排名（非 Ahrefs DR）" : "未采集到该站的域名权重"}
     />
     <Stat label={dict.metrics.registeredAt} value={m?.registeredAt} />
   </div>

@@ -69,10 +69,18 @@ const { tool } = Astro.props;
   </div>
 
   <div
-    title={tool.dr === null ? "未采集到域名权重" : undefined}
+    title={
+      tool.dr === null
+        ? "未采集到域名权重"
+        : tool.drLabel === "全球排名"
+          ? "SimilarWeb 全球排名（非 Ahrefs DR）"
+          : undefined
+    }
     class="text-center text-sm text-ink-secondary tabular-nums"
   >
-    {tool.dr !== null ? formatCount(tool.dr) : "—"}
+    {tool.dr !== null
+      ? `${tool.drLabel === "全球排名" ? "#" : ""}${formatCount(tool.dr)}`
+      : "—"}
   </div>
 
   <div class="whitespace-nowrap text-center text-sm text-ink-secondary tabular-nums">

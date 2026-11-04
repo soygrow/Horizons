@@ -126,15 +126,24 @@ export function computeToolScore(tool: AITool): ToolScore {
     });
   }
 
-  /* 5. 域名权重 10：DR 直接取值 */
+  /* 5. 域名权重 10：DR 直接取值；回退的全球排名按对数反比换算，方向不能反 */
   if (dr !== undefined) {
-    raw.push({
-      key: "dr",
-      label: "域名权重",
-      weight: 10,
-      value: round1(clamp(dr)),
-      note: `${dr} ${tool.metrics?.domainWeightLabel ?? "DR"}`,
-    });
+    const label = tool.metrics?.domainWeightLabel;
+    const isRank = label === "全球排名";
+    // 全球排名越小越强：第 1 名 100 分，每放大 10 倍扣 20 分。
+    // 排名 10 万以外换算为负，按「缺失维度不罚底」原则不计入。
+    const normalized = isRank ? 100 - 20 * Math.log10(Math.max(dr, 1)) : dr;
+    if (normalized > 0) {
+      raw.push({
+        key: "dr",
+        label: isRank ? "全球排名" : "域名权重",
+        weight: 10,
+        value: round1(clamp(normalized)),
+        note: isRank
+          ? `SimilarWeb 全球排名第 ${dr.toLocaleString("en-US")}`
+          : `${dr} ${label ?? "DR"}`,
+      });
+    }
   }
 
   /* 6. 机会分 10：大模型主观判断，权重封顶 10% */

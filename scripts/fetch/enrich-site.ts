@@ -194,7 +194,10 @@ async function main(): Promise<void> {
   const dry = process.argv.includes("--dry");
   /** 只补 AI 解读（aiInsight + 四模块 + 流量解密），跳过基础标签与创业洞察，省 token */
   const insightOnly = process.argv.includes("--insight-only");
-  const analysisOnly = process.argv.includes("--analysis-only") || insightOnly;
+  /** 只补创业洞察（performanceInsight / opportunity 等），跳过基础标签与解读 */
+  const oppOnly = process.argv.includes("--opp-only");
+  const analysisOnly =
+    process.argv.includes("--analysis-only") || insightOnly || oppOnly;
   console.log(`[enrich-site] 目标：${domain}${dry ? "（dry-run）" : ""}`);
 
   const tools = loadTools();
@@ -481,24 +484,26 @@ async function main(): Promise<void> {
   console.log(`[enrich-site] LLM#1 基础：${tool.description}`);
   }
 
-  // 调用 2：AI 解读 + 观察（完全替换，不保留旧值）
-  const insight = await chatJSON<{
-    aiInsight?: AiInsight;
-    observations?: Observations;
-    moduleInsights?: ModuleInsight;
-    trafficDecrypt?: TrafficDecrypt;
-  }>(SYSTEM_INSIGHT, buildInput(tool, inputData), 6000);
-  if (insight.aiInsight) {
-    tool.aiInsight = {
-      ...insight.aiInsight,
-      analyzedAt: new Date().toISOString().slice(0, 7),
-    };
+  // 调用 2：AI 解读 + 观察（完全替换，不保留旧值；--opp-only 时跳过）
+  if (!oppOnly) {
+    const insight = await chatJSON<{
+      aiInsight?: AiInsight;
+      observations?: Observations;
+      moduleInsights?: ModuleInsight;
+      trafficDecrypt?: TrafficDecrypt;
+    }>(SYSTEM_INSIGHT, buildInput(tool, inputData), 6000);
+    if (insight.aiInsight) {
+      tool.aiInsight = {
+        ...insight.aiInsight,
+        analyzedAt: new Date().toISOString().slice(0, 7),
+      };
+    }
+    if (insight.moduleInsights) tool.moduleInsights = insight.moduleInsights;
+    if (insight.observations) tool.observations = insight.observations;
+    if (insight.trafficDecrypt) tool.trafficDecrypt = insight.trafficDecrypt;
+    await sleep(300);
+    console.log("[enrich-site] LLM#2 解读完成");
   }
-  if (insight.moduleInsights) tool.moduleInsights = insight.moduleInsights;
-  if (insight.observations) tool.observations = insight.observations;
-  if (insight.trafficDecrypt) tool.trafficDecrypt = insight.trafficDecrypt;
-  await sleep(300);
-  console.log("[enrich-site] LLM#2 解读完成");
 
   // 调用 3：创业洞察（--insight-only 时跳过，只补解读）
   if (!insightOnly) {

@@ -213,13 +213,16 @@ export function auditSite(html: string, headers: Record<string, string>, baseUrl
   return { pageStructure, siteAudit, paymentDetected };
 }
 
-/**
- * RDAP 查询域名注册时间（免费、准确）。
- * 相比 DataForSEO whois 对 .ai 等 ccTLD 的覆盖（可能返回 TLD 早期时间），RDAP 直接返回权威注册信息。
- */
-export async function fetchRegistrationDate(domain: string): Promise<string | undefined> {
+/** 从 RDAP 响应里取 registration 事件日期 */
+function pickRegisteredAt(data: unknown): string | undefined {
+  const events = (data as { events?: { eventAction?: string; eventDate?: string }[] })?.events;
+  const reg = events?.find((e) => e.eventAction === "registration");
+  return reg?.eventDate ? reg.eventDate.slice(0, 10) : undefined;
+}
+
+async function fetchRdapJson(url: string): Promise<unknown | undefined> {
   try {
-    const res = await fetch(`https://rdap.org/domain/${domain}`, {
+    const res = await fetch(url, {
       headers: {
         Accept: "application/rdap+json, application/json",
         "User-Agent": config.userAgent,
@@ -228,15 +231,30 @@ export async function fetchRegistrationDate(domain: string): Promise<string | un
       signal: AbortSignal.timeout(15_000),
     });
     if (!res.ok) return undefined;
-    const data = (await res.json()) as {
-      events?: { eventAction?: string; eventDate?: string }[];
-    };
-    const reg = data.events?.find((e) => e.eventAction === "registration");
-    if (reg?.eventDate) return reg.eventDate.slice(0, 10);
-    return undefined;
+    return (await res.json()) as unknown;
   } catch {
     return undefined;
   }
+}
+
+/**
+ * RDAP 查询域名注册时间（免费、准确）。
+ * 相比 DataForSEO whois 对 .ai 等 ccTLD 的覆盖（可能返回 TLD 早期时间），RDAP 直接返回权威注册信息。
+ * 注意：rdap.org 聚合层对 .com/.net 常返回 200 但空体，需回退到 Verisign 官方 RDAP。
+ */
+export async function fetchRegistrationDate(domain: string): Promise<string | undefined> {
+  const aggregated = pickRegisteredAt(await fetchRdapJson(`https://rdap.org/domain/${domain}`));
+  if (aggregated) return aggregated;
+
+  // .com / .net 走 Verisign 权威库（rdap.org 对这两类 TLD 覆盖不稳定）
+  const tld = domain.endsWith(".com") ? "com" : domain.endsWith(".net") ? "net" : undefined;
+  if (tld) {
+    const official = pickRegisteredAt(
+      await fetchRdapJson(`https://rdap.verisign.com/${tld}/v1/domain/${domain}`),
+    );
+    if (official) return official;
+  }
+  return undefined;
 }
 
 /** 收款信号：额外抓取定价页检测支付平台跳转（首页可能未嵌入支付 SDK） */
