@@ -31,7 +31,7 @@ const CHANNELS = [
 const MIN_COUNTS = { tools: 50, github: 300, trends: 50, models: 50 };
 
 /** 允许被索引的频道（与 apps/site/src/config/seo.ts 的 INDEXABLE_PATHS 一致） */
-const INDEXABLE = ["/", "/tools", "/github", "/trends"];
+const INDEXABLE = ["/", "/tools", "/github", "/trends", "/privacy", "/terms"];
 
 const errors = [];
 const notes = [];

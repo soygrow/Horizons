@@ -737,7 +737,16 @@ export interface GitHubInsight {
 
 /** 综合得分构成项（用于详情页说明「分是怎么来的」） */
 export interface ScorePart {
-  key: "light" | "commercial" | "effort" | "dev" | "growth" | "heat" | "active" | "demand";
+  key:
+    | "light"
+    | "commercial"
+    | "effort"
+    | "dev"
+    | "growth"
+    | "heat"
+    | "active"
+    | "demand"
+    | "derivative";
   label: string; // 中文名，如「热度」
   weight: number; // 权重（满分 100 中的占比）
   value: number; // 该项归一值 0-100

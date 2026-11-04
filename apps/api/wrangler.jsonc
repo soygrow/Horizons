@@ -10,6 +10,11 @@
       "zone_name": "horizons.tools"
     }
   ],
+  // 非敏感配置；密钥用 `wrangler secret put` 写（PADDLE_API_KEY / PADDLE_WEBHOOK_SECRET /
+  // PADDLE_PRICE_MONTH / PADDLE_PRICE_YEAR）。切正式环境把 PADDLE_ENV 改成 production。
+  "vars": {
+    "PADDLE_ENV": "sandbox"
+  },
   "d1_databases": [
     {
       "binding": "DB",

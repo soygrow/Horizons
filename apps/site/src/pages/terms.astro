@@ -1,0 +1,180 @@
+---
+/**
+ * 服务条款。正文以 docs/00-2-服务条款.md 为准，措辞不改变原意。
+ * 布局：左侧章节标题 + 右侧正文的两栏文档式排版（md 以上），窄屏自动堆叠。
+ * 改计费逻辑或退款规则时两处同步修改。
+ */
+import Base from "../layouts/Base.astro";
+
+const updated = "2026 年 10 月 8 日";
+const contact = "308541325@qq.com";
+
+const sections: Array<{
+  id: string;
+  title: string;
+  paragraphs: string[];
+  items?: string[];
+  after?: string[];
+}> = [
+  {
+    id: "service",
+    title: "服务说明",
+    paragraphs: [
+      "本网站提供 AI 工具站相关的数据浏览服务，包括流量估算、关键词、技术栈与变现方式等信息。这些数据来自第三方估算服务与公开网页信息的整理，仅供参考。",
+    ],
+  },
+  {
+    id: "disclaimer",
+    title: "数据免责声明",
+    paragraphs: [],
+    items: [
+      "流量、关键词等数据为第三方估算值，可能与真实情况存在偏差。我们已尽力整理与核对，但不对其准确性、完整性或时效性作任何明示或暗示的保证。",
+      "本网站的全部内容仅供学习与研究参考，不构成任何投资、创业或商业决策建议。基于本网站信息作出的任何决策及其结果，由你自行判断和承担。",
+      "榜单中收录的网站与我们不存在从属或合作关系，收录不代表推荐或背书；相关商标、名称与内容归其各自所有者。如果你是站点所有者且不希望被收录，请邮件联系我们，我们会及时处理。",
+    ],
+  },
+  {
+    id: "account",
+    title: "账户",
+    paragraphs: [
+      "注册时请提供准确、完整的信息，并妥善保管你的账户凭据；你的账户下发生的活动由你自行负责。",
+    ],
+  },
+  {
+    id: "billing",
+    title: "订阅与退款",
+    paragraphs: [
+      "订阅属于数据查看服务，支付成功后即时生效，因此不支持退款。如果付费后有任何不满意，请邮件联系我们，我们会尽力协助解决。",
+    ],
+  },
+  {
+    id: "fair-use",
+    title: "合理使用",
+    paragraphs: ["使用本网站时，请勿从事以下行为："],
+    items: [
+      "批量抓取、复制或转售本网站的数据与内容。",
+      "干扰或破坏本网站的正常运行。",
+      "尝试未经授权访问我们的服务器或网络。",
+      "其他违反适用法律法规的行为。",
+    ],
+    after: ["若发生上述行为，我们保留暂停或终止相关账户访问权限的权利。"],
+  },
+  {
+    id: "liability",
+    title: "责任限制",
+    paragraphs: [
+      "本网站按「现状」提供，我们不保证服务不中断、无错误。在适用法律允许的最大范围内，我们不对因使用或无法使用本网站而产生的任何间接、附带、特殊或后果性损失承担责任。",
+    ],
+  },
+  {
+    id: "changes",
+    title: "条款变更",
+    paragraphs: [
+      "我们可能不时更新本条款，更新后会发布在本页面并调整顶部日期。继续使用本网站即视为接受更新后的条款。",
+    ],
+  },
+  {
+    id: "contact",
+    title: "联系我们",
+    paragraphs: ["如对本条款有任何疑问，欢迎邮件联系管理员。"],
+  },
+];
+---
+
+<Base
+  title="服务条款 · Horizons"
+  description="地平线（horizons.tools）服务条款：服务说明、数据免责、账户、订阅与退款、合理使用与责任限制。"
+>
+  <article class="relative">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_-8%,rgba(8,102,250,0.09),transparent)]"
+    >
+    </div>
+
+    <div class="relative mx-auto max-w-5xl px-4 pb-24 pt-14 sm:px-6 sm:pt-16">
+      <header class="border-b border-border pb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">服务条款</h1>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-secondary sm:text-base">
+          使用本网站前请阅读的条款与免责声明
+        </p>
+        <p
+          class="mt-5 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs text-ink-muted"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-success" aria-hidden="true"></span>
+          最后更新 {updated}
+        </p>
+      </header>
+
+      <section class="grid gap-3 border-b border-border py-10 md:grid-cols-[190px_1fr] md:gap-10">
+        <h2 class="text-sm font-semibold text-ink md:text-base">引言</h2>
+        <div class="space-y-3">
+          <p class="text-sm leading-relaxed text-ink-secondary sm:text-[15px] sm:leading-7">
+            欢迎使用地平线（horizons.tools，下称「本网站」）。我曾是一名写了多年代码的程序猿，AI
+            时代让技术走到了更多人的视野里，有了 AI，普通人能做很多以前不敢想象的事情——只要你敢想敢做，要有错了再来的精神。出于对
+            AI 这个领域的热情，收集并整理公开可获取的网站数据，供学习与研究参考。
+          </p>
+          <p class="text-sm leading-relaxed text-ink-secondary sm:text-[15px] sm:leading-7">
+            希望你能从这里获得想要的东西。只要你开始尝试，开始执行（很重要），慢慢就会发现，你离成功越来越近。
+          </p>
+          <p class="text-sm leading-relaxed text-ink-secondary sm:text-[15px] sm:leading-7">
+            访问或使用本网站，即表示你同意受本条款约束；注册或登录同时表示你同意我们的《<a
+              href="/privacy"
+              class="text-primary underline-offset-4 hover:underline">隐私政策</a
+            >》。如不同意，请停止使用本网站。
+          </p>
+        </div>
+      </section>
+
+      {
+        sections.map((s, i) => (
+          <section
+            id={s.id}
+            class="grid gap-3 border-b border-border py-10 last:border-0 md:grid-cols-[190px_1fr] md:gap-10"
+          >
+            <div>
+              <span class="font-mono text-[11px] tracking-widest text-ink-muted">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h2 class="mt-1 text-sm font-semibold text-ink md:text-base">{s.title}</h2>
+            </div>
+
+            <div class="space-y-3">
+              {s.paragraphs.map((p) => (
+                <p class="text-sm leading-relaxed text-ink-secondary sm:text-[15px] sm:leading-7">{p}</p>
+              ))}
+
+              {s.items && (
+                <ul class="space-y-3">
+                  {s.items.map((it) => (
+                    <li class="flex gap-3">
+                      <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/70" aria-hidden="true" />
+                      <span class="text-sm leading-relaxed text-ink-secondary sm:text-[15px] sm:leading-7">
+                        {it}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {s.after?.map((p) => (
+                <p class="text-sm leading-relaxed text-ink-secondary sm:text-[15px] sm:leading-7">{p}</p>
+              ))}
+
+              {s.id === "contact" && (
+                <a
+                  href={`mailto:${contact}`}
+                  class="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-ink transition hover:border-primary/40 hover:text-primary"
+                >
+                  <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M3 5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H3zm0 1.5h14a.5.5 0 01.32.12L10 11.2 2.68 6.62A.5.5 0 013 6.5z" />
+                  </svg>
+                  {contact}
+                </a>
+              )}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </article>
+</Base>

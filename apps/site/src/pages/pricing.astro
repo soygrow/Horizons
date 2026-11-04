@@ -1,28 +1,35 @@
 ---
 /**
- * 定价页：单档 Pro（月付 / 年付两种付费方式），权益全部随版本交付。
- * 支付通道未接入前，页面只做价格与权益说明，CTA 指向账户页。
+ * 定价页：单档 Pro（月付 / 年付，自动续费，随时可取消）。
+ * 结算走 Paddle（Merchant of Record），CTA 指向账户页，由账户页发起下单。
+ * 定价口径：美元为主价，人民币为支付宝通道价（支付宝要求 CNY 定价商品）。
  */
 import Base from "../layouts/Base.astro";
 
 const plans = [
   {
     name: "Pro 月付",
-    price: "19",
+    price: "$20",
     unit: "/ 月",
-    note: "按月计费，随时取消",
-    cta: "登录后开通",
+    oncePrice: "$23",
+    onceUnit: "30 天",
+    alt: "中国用户 ¥149 / 月（一次性 ¥169）",
+    original: "",
+    note: "自动续费，随时可取消",
     featured: false,
     badge: "",
   },
   {
     name: "Pro 年付",
-    price: "99",
+    price: "$160",
     unit: "/ 年",
-    note: "折合 ¥8.25 / 月，到期不自动扣款",
-    cta: "登录后开通",
+    oncePrice: "$180",
+    onceUnit: "365 天",
+    alt: "中国用户 ¥1,099 / 年（一次性 ¥1,299）",
+    original: "$240",
+    note: "早期用户价，折合 $13.3 / 月",
     featured: true,
-    badge: "省 57%",
+    badge: "省 33%",
   },
 ];
 
@@ -54,29 +61,37 @@ const explainers = [
 const faqs = [
   {
     q: "现在可以直接付款吗？",
-    a: "还不能。支付通道正在接入（支付宝与微信），页面先上线价格与权益。你可以先登录账户，通道开通时第一时间收到通知，并按下单时的价格锁定。",
+    a: "可以。登录后在账户页选方案与付款方式，会跳转到 Paddle 的结算页完成付款，付款成功后 Pro 权益自动开通，不需要人工确认。",
+  },
+  {
+    q: "自动续费和一次性买断有什么区别？",
+    a: "自动续费单价更低（月付 $20、年付 $160），按周期自动扣款，随时可在账户页取消，取消后当期权益保留到期日；一次性多付一点（$23 / $180），买 30 天或 365 天，不产生订阅、不会自动扣款，到期后回到免费版。两种方式权益完全一样。",
   },
   {
     q: "现在看到的榜单数据和 Pro 有区别吗？",
     a: "没有区别。当前所有榜单数据都免费、完整开放。Pro 的差异体现在更新频率、筛选维度、导出与 API 能力上，这些会随版本分批上线。",
   },
   {
-    q: "会自动续费吗？",
-    a: "月付默认自动续费，可随时在账户页取消，取消后当期权益到期为止。年付不自动扣款，到期前会发邮件提醒，需要你手动续费。我们不使用静默扣款。",
+    q: "会自动续费吗？怎么取消？",
+    a: "取决于你选哪种：选自动续费则按周期扣款，直到你在账户页一键取消（取消后当期权益保留到期日，之后不再扣款，也可以随时恢复）；选一次性则完全不产生订阅，到期自动回到免费版，不会有任何扣款。",
+  },
+  {
+    q: "支持哪些支付方式？国内可以用支付宝吗？",
+    a: "信用卡/借记卡、PayPal、Apple Pay、Google Pay 全球可用；中国用户在结算页可选择支付宝（人民币价格），欧洲有 iDEAL、Bancontact、BLIK，巴西有 Pix，印度有 UPI，韩国有 KakaoPay 等本地方式。具体以结算页展示为准。",
   },
   {
     q: "权益还没有全部上线，现在买会不会亏？",
-    a: "不会。首批订阅用户按当前价格（月付 ¥19 / 年付 ¥99）锁定，后续权益补齐、价格上涨都不影响你。权益上线前如有调整，按实际交付情况顺延使用期。",
+    a: "不会。当前是早期用户价（月付 $20 / 年付 $160，年付原价 $240），后续涨价不影响已订阅用户，续费也按你下单时的价格。权益上线前如有调整，按实际交付情况顺延使用期。",
   },
   {
     q: "可以开发票吗？团队采购怎么算？",
-    a: "可以，个人与企业抬头均可。三人以上的团队采购、学生与非营利折扣，请邮件说明使用场景，我们按实际情况报价。",
+    a: "付款成功后 Paddle 会发送带 invoice 的收据邮件，可直接下载用于报销。三人以上的团队采购、学生与非营利折扣，请邮件说明使用场景，我们按实际情况报价。",
   },
 ];
 
 const title = "定价 · Horizons";
 const description =
-  "Horizons Pro：一个订阅解锁 AI 工具榜、GitHub 榜、AI 模型榜与 AI 趋势词榜的全部数据、筛选维度与 API 能力。月付 ¥19，年付 ¥99。";
+  "Horizons Pro：解锁 AI 工具榜、GitHub 榜、AI 模型榜与 AI 趋势词榜的全部数据、筛选维度与 API 能力。自动续费月付 $20 / 年付 $160，或一次性 $23 / $180 买断，不自动扣款。";
 ---
 
 <Base title={title} description={description}>
@@ -98,10 +113,10 @@ const description =
 
       <!-- 当前阶段提示 -->
       <div
-        class="mx-auto mt-9 flex max-w-3xl items-start gap-3 rounded-xl border border-warning/30 bg-warning-soft px-4 py-3"
+        class="mx-auto mt-9 flex max-w-3xl items-start gap-3 rounded-xl border border-border bg-surface-2 px-4 py-3"
       >
         <svg
-          class="mt-0.5 h-4 w-4 shrink-0 text-warning"
+          class="mt-0.5 h-4 w-4 shrink-0 text-primary"
           viewBox="0 0 20 20"
           fill="currentColor"
           aria-hidden="true"
@@ -112,7 +127,9 @@ const description =
             clip-rule="evenodd"></path>
         </svg>
         <p class="text-xs leading-relaxed text-ink-secondary">
-          支付通道正在接入（支付宝 + 微信）。现在可以先登录账户，开通时按当前价格锁定，权益全部上线前不涨价。
+          两种买法任选：<strong class="font-medium text-ink">自动续费</strong>按月/年扣款，随时可取消，单价最低；
+          <strong class="font-medium text-ink">一次性</strong>多付一点，买多久用多久，不会自动扣款。
+          结算由 Paddle 完成（Merchant of Record），支持信用卡、PayPal、Apple Pay、Google Pay，中国用户可用支付宝。
         </p>
       </div>
 
@@ -139,24 +156,39 @@ const description =
                 )}
               </div>
 
-              <div class="mt-4 flex items-baseline gap-1">
-                <span class="text-lg font-medium text-ink">¥</span>
+              <div class="mt-4 flex items-baseline gap-2">
                 <span class="text-5xl font-bold tracking-tight text-ink tabular-nums">{p.price}</span>
                 <span class="text-sm text-ink-muted">{p.unit}</span>
+                {p.original ? (
+                  <span class="text-sm text-ink-muted line-through">{p.original}</span>
+                ) : null}
               </div>
+              <p class="mt-1 text-xs text-ink-muted">{p.alt}</p>
               <p class="mt-2 text-xs text-ink-muted">{p.note}</p>
 
-              <a
-                href="/account"
-                class:list={[
-                  "mt-5 block rounded-lg px-4 py-2.5 text-center text-sm font-medium transition",
-                  p.featured
-                    ? "bg-primary text-white hover:bg-primary-hover"
-                    : "border border-border text-ink-secondary hover:border-primary/40 hover:text-ink",
-                ]}
-              >
-                {p.cta}
-              </a>
+              <div class="mt-5 space-y-2">
+                <a
+                  href="/account"
+                  class:list={[
+                    "block rounded-lg px-4 py-2.5 text-center text-sm font-medium transition",
+                    p.featured
+                      ? "bg-primary text-white hover:bg-primary-hover"
+                      : "border-2 border-primary text-ink hover:bg-primary-soft",
+                  ]}
+                >
+                  自动续费 · {p.price}{p.unit}
+                </a>
+                <a
+                  href="/account"
+                  class="block rounded-lg border border-border px-4 py-2.5 text-center text-sm font-medium text-ink-secondary transition hover:border-primary/40 hover:text-ink"
+                >
+                  一次性 · {p.oncePrice} / {p.onceUnit}
+                </a>
+              </div>
+
+              <p class="mt-2 text-center text-[11px] text-ink-muted">
+                一次性不自动扣款，到期不续费
+              </p>
 
               <ul class="mt-6 space-y-2.5 border-t border-border pt-5">
                 {benefits.map((b) => (
@@ -183,7 +215,7 @@ const description =
       </div>
 
       <p class="mt-4 text-center text-xs text-ink-muted">
-        价格含税，人民币计价。海外支付按当天汇率折算美元。
+        价格以美元标注，中国用户按人民币结算。税费由 Paddle 按账单地址计算，最终金额以结算页为准。
       </p>
 
       <!-- 权益说明 -->

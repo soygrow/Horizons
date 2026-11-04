@@ -9,24 +9,20 @@ const columns = [
       { label: "AI趋势词榜", href: "/trends" },
       { label: "机会榜", href: "/opportunity" },
       { label: "定价", href: "/pricing" },
-      { label: "提交产品", href: "/#submit" },
-      { label: "Changelog", href: "#" },
     ],
   },
   {
-    title: "公司",
+    title: "法律",
     links: [
-      { label: "关于我们", href: "#" },
-      { label: "联系我们", href: "#" },
-      { label: "加入我们", href: "#" },
+      { label: "隐私政策", href: "/privacy" },
+      { label: "服务条款", href: "/terms" },
     ],
   },
   {
-    title: "支持",
+    title: "关于",
     links: [
-      { label: "常见问题", href: "/#faq" },
-      { label: "数据来源", href: "/#sources" },
-      { label: "反馈与勘误", href: "#" },
+      { label: "关于我们", href: "/about" },
+      { label: "联系我们", href: "mailto:308541325@qq.com" },
     ],
   },
 ];
@@ -36,7 +32,7 @@ const year = new Date().getFullYear();
 
 <footer class="border-t border-border bg-surface/40">
   <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-    <div class="grid gap-10 md:grid-cols-4">
+    <div class="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
       <div class="md:col-span-1">
         <a href="/" class="inline-flex items-center gap-2" aria-label="Horizons.tools 首页">
           <img src="/brand/mark.png" alt="" width="239" height="112" class="h-7 w-auto" />
@@ -66,7 +62,7 @@ const year = new Date().getFullYear();
     <div class="mt-10 border-t border-border pt-6">
       <p class="text-xs leading-relaxed text-ink-muted">
         <span class="mr-2 inline-flex items-center rounded-full border border-border px-2 py-0.5 text-[11px] font-medium text-ink-secondary">Beta</span>
-        站点仍在持续迭代，榜单条数、字段与页面结构可能调整；数据每日更新，以当期页面为准。
+        站点仍在持续迭代，榜单条数、字段与页面结构可能调整。
       </p>
       <p class="mt-2 text-xs leading-relaxed text-ink-muted">
         © {year} Horizons · 数据来自公开官方接口与人工整理，热度为可追溯指标，不代表真实访问量。仅供研究参考。

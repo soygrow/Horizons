@@ -1,0 +1,183 @@
+---
+/**
+ * 账户页：登录态、Pro 权益（pro_until）、Paddle 结算入口、历史订单。
+ *
+ * 页面本身是静态产物（Astro output: static），数据由同域 /api 在浏览器里拉取，
+ * 与「我在做」等交互一致——首屏只渲染骨架，避免为了一次付费把整站改成 SSR。
+ */
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="账户 · Horizons"
+  description="管理你的 Horizons 账户：Google 登录、Pro 权益到期时间与历史订单。"
+>
+  <section class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <h1 class="text-2xl font-bold tracking-tight text-ink">账户</h1>
+
+    <!-- 加载态 -->
+    <p id="acct-loading" class="mt-8 text-sm text-ink-muted">加载中…</p>
+
+    <!-- 未登录 -->
+    <div id="acct-guest" class="mt-10 hidden text-center">
+      <h2 class="text-xl font-semibold tracking-tight text-ink">尚未登录</h2>
+      <p class="mt-2 text-sm text-ink-secondary">登录后即可开通 Pro、查看到期时间与历史订单。</p>
+      <a
+        href="/api/auth/google?next=%2Faccount"
+        class="mt-6 inline-block rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white transition hover:bg-primary-hover"
+      >
+        用 Google 登录
+      </a>
+      <p class="mt-4 text-xs text-ink-muted">
+        还没有账号？登录即可自动创建，不需要单独注册。
+      </p>
+    </div>
+
+    <!-- 已登录 -->
+    <div id="acct-main" class="hidden">
+      <!-- 资料 -->
+      <div class="mt-6 flex items-center gap-4 rounded-2xl border border-border bg-surface p-6">
+        <span
+          id="acct-avatar"
+          class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white"
+        ></span>
+        <div class="min-w-0">
+          <p id="acct-name" class="truncate text-lg font-semibold text-ink"></p>
+          <p id="acct-email" class="truncate text-sm text-ink-secondary"></p>
+        </div>
+      </div>
+
+      <!-- 权益状态 -->
+      <section class="mt-6 rounded-2xl border border-border bg-surface p-6">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 class="text-base font-semibold text-ink">Pro 权益</h2>
+            <p id="acct-plan" class="mt-2 text-sm text-ink-secondary">—</p>
+          </div>
+          <span
+            id="acct-plan-badge"
+            class="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-muted"
+          >
+            免费
+          </span>
+        </div>
+
+        <p id="acct-notice" class="mt-4 hidden rounded-lg border border-warning/30 bg-warning-soft px-3 py-2 text-xs leading-relaxed text-ink-secondary"></p>
+
+        <!-- 未订阅：选方案 -->
+        <div id="acct-plans" class="mt-5 grid gap-3 sm:grid-cols-2" style="display: none">
+          <div class="rounded-xl border border-border p-4">
+            <p class="text-sm font-semibold text-ink">
+              月付 · <span data-price="month">$20</span><span class="text-xs font-normal text-ink-muted"> / 月</span>
+            </p>
+            <div class="mt-3 space-y-2">
+              <button
+                type="button"
+                data-plan="month"
+                data-autorenew="1"
+                class="w-full rounded-lg bg-primary px-3 py-2 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                自动续费 · <span data-price="month">$20</span> / 月
+              </button>
+              <button
+                type="button"
+                data-plan="month"
+                data-autorenew="0"
+                class="w-full rounded-lg border border-border px-3 py-2 text-xs font-medium text-ink-secondary transition hover:border-primary/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                一次性 · <span data-price="once-month">$23</span> · 30 天
+              </button>
+            </div>
+            <p class="mt-2 text-[11px] leading-relaxed text-ink-muted">
+              一次性不自动扣款，到期自行决定是否续买
+            </p>
+          </div>
+
+          <div class="rounded-xl border-2 border-primary p-4">
+            <p class="text-sm font-semibold text-ink">
+              年付 · <span data-price="year">$160</span><span class="text-xs font-normal text-ink-muted"> / 年</span>
+              <span class="ml-1 text-xs font-normal text-ink-muted line-through" data-price="year-original">$240</span>
+            </p>
+            <div class="mt-3 space-y-2">
+              <button
+                type="button"
+                data-plan="year"
+                data-autorenew="1"
+                class="w-full rounded-lg bg-primary px-3 py-2 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                自动续费 · <span data-price="year">$160</span> / 年
+              </button>
+              <button
+                type="button"
+                data-plan="year"
+                data-autorenew="0"
+                class="w-full rounded-lg border border-border px-3 py-2 text-xs font-medium text-ink-secondary transition hover:border-primary/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                一次性 · <span data-price="once-year">$180</span> · 365 天
+              </button>
+            </div>
+            <p class="mt-2 text-[11px] leading-relaxed text-ink-muted">
+              早期用户价，折合约 $13.3 / 月
+            </p>
+          </div>
+        </div>
+
+        <!-- 已订阅：管理自动续费 -->
+        <div id="acct-sub" class="mt-5 rounded-xl border border-border bg-surface-2 px-4 py-3" style="display: none">
+          <p id="acct-sub-line" class="text-sm font-medium text-ink">—</p>
+          <p id="acct-sub-next" class="mt-1 text-xs leading-relaxed text-ink-muted"></p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button
+              id="acct-cancel"
+              type="button"
+              class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-warning/50 hover:text-ink disabled:opacity-50"
+            >
+              取消自动续费
+            </button>
+            <button
+              id="acct-resume"
+              type="button"
+              class="hidden rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:opacity-50"
+            >
+              恢复自动续费
+            </button>
+          </div>
+        </div>
+
+        <p class="mt-3 text-xs leading-relaxed text-ink-muted">
+          结算由 Paddle 完成（Merchant of Record）：支持信用卡/借记卡、PayPal、Apple Pay、Google
+          Pay，中国用户可用支付宝（人民币价格），欧洲/巴西/印度等地区另有本地支付方式。税费按账单地址在结算页计算。
+        </p>
+      </section>
+
+      <!-- 订单 -->
+      <section class="mt-6">
+        <h2 class="text-base font-semibold text-ink">历史订单</h2>
+        <div
+          id="acct-orders"
+          class="mt-3 overflow-hidden rounded-xl border border-border bg-surface"
+        >
+          <p class="px-5 py-6 text-sm text-ink-muted">暂无订单</p>
+        </div>
+      </section>
+
+      <div class="mt-8 flex items-center gap-3">
+        <button
+          id="acct-logout"
+          type="button"
+          class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-ink-secondary transition hover:border-primary/40 hover:text-ink"
+        >
+          退出登录
+        </button>
+        <a href="/pricing" class="text-sm text-ink-muted transition hover:text-ink-secondary">
+          查看权益说明
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { initAccount } from "../scripts/account";
+  initAccount();
+</script>
