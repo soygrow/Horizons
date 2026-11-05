@@ -476,11 +476,17 @@ export function initAccount() {
           checkoutUrl: string | null;
           clientToken?: string | null;
           paddleEnv?: PaddleEnv;
+          proUntil?: number | null;
         }>("/api/billing/checkout", { plan, autoRenew });
 
         if (res.status === 409) {
           setBusy(false);
-          showNotice("你已有一个生效中的订阅，无需重复下单。");
+          const until = res.data?.proUntil;
+          showNotice(
+            typeof until === "number"
+              ? `你当前已是 Pro，有效期至 ${formatDateTime(until).slice(0, 10)}，到期后可再次购买。`
+              : "你已有一个生效中的订阅，无需重复下单。",
+          );
           void refresh();
           return;
         }

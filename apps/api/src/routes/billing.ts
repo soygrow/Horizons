@@ -390,15 +390,22 @@ billing.post("/checkout", async (c) => {
   }
 
   try {
-    // 已有生效订阅的人不要再买：一次性会和订阅叠加，权益口径会乱
-    const existing = await c.env.DB.prepare(
-      "SELECT id, status FROM subscriptions WHERE user_id = ?",
+    // 已有生效权益的人不要再买：一次性天数与订阅周期完全重叠，多买的那笔不会叠加
+    // （pro_until 由 webhook 写入，统一用它判断，避免只看 subscriptions 表漏掉一次性购买）
+    const owner = await c.env.DB.prepare(
+      `SELECT u.pro_until,
+              EXISTS(
+                SELECT 1 FROM subscriptions s
+                 WHERE s.user_id = u.id AND s.status IN ('active', 'trialing')
+              ) AS active_sub
+         FROM users u WHERE u.id = ?`,
     )
       .bind(session.id)
-      .first<{ id: string; status: string }>();
+      .first<{ pro_until: number | null; active_sub: number }>();
 
-    if (existing && (existing.status === "active" || existing.status === "trialing")) {
-      return c.json({ error: "already_subscribed" }, 409);
+    const proUntil = owner?.pro_until ?? null;
+    if ((typeof proUntil === "number" && proUntil > Date.now()) || owner?.active_sub) {
+      return c.json({ error: "already_pro", proUntil }, 409);
     }
 
     const customerId = await ensureCustomer(c.env, {
