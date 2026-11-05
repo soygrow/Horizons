@@ -3257,7 +3257,7 @@
           "url": "https://api-docs.deepseek.com/quick_start/pricing"
         }
       ],
-      "descZh": "DeepSeek V4.1 Flash 于 2026 年 10 月 17 日的快照版本，通过 deepseek-flash API 提供，属稀疏 MoE 模型。"
+      "descZh": "DeepSeek V4.1 Flash 于 2026-10-17 的快照版本，通过 deepseek-flash API 提供，属稀疏 MoE 模型。"
     },
     {
       "slug": "deepseek-v4-1-flash",

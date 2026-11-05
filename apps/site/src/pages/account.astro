@@ -35,16 +35,31 @@ import Base from "../layouts/Base.astro";
 
     <!-- 已登录 -->
     <div id="acct-main" class="hidden">
-      <!-- 资料 -->
+      <!-- 资料：用户名右侧是套餐标签，最右侧是退出登录 -->
       <div class="mt-6 flex items-center gap-4 rounded-2xl border border-border bg-surface p-6">
         <span
           id="acct-avatar"
           class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white"
         ></span>
-        <div class="min-w-0">
-          <p id="acct-name" class="truncate text-lg font-semibold text-ink"></p>
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <p id="acct-name" class="truncate text-lg font-semibold text-ink"></p>
+            <span
+              id="acct-plan-badge"
+              class="shrink-0 rounded-full bg-surface-2 px-2 py-0.5 text-[11px] font-semibold text-ink-muted"
+            >
+              免费用户
+            </span>
+          </div>
           <p id="acct-email" class="truncate text-sm text-ink-secondary"></p>
         </div>
+        <button
+          id="acct-logout"
+          type="button"
+          class="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-primary/40 hover:text-ink sm:px-4 sm:py-2 sm:text-sm"
+        >
+          退出登录
+        </button>
       </div>
 
       <!-- 权益状态 -->
@@ -54,12 +69,12 @@ import Base from "../layouts/Base.astro";
             <h2 class="text-base font-semibold text-ink">Pro 权益</h2>
             <p id="acct-plan" class="mt-2 text-sm text-ink-secondary">—</p>
           </div>
-          <span
-            id="acct-plan-badge"
-            class="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-muted"
+          <a
+            href="/pricing"
+            class="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-primary/40 hover:text-ink"
           >
-            免费
-          </span>
+            查看权益说明
+          </a>
         </div>
 
         <p id="acct-notice" class="mt-4 hidden rounded-lg border border-warning/30 bg-warning-soft px-3 py-2 text-xs leading-relaxed text-ink-secondary"></p>
@@ -160,19 +175,6 @@ import Base from "../layouts/Base.astro";
           <p class="px-5 py-6 text-sm text-ink-muted">暂无订单</p>
         </div>
       </section>
-
-      <div class="mt-8 flex items-center gap-3">
-        <button
-          id="acct-logout"
-          type="button"
-          class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-ink-secondary transition hover:border-primary/40 hover:text-ink"
-        >
-          退出登录
-        </button>
-        <a href="/pricing" class="text-sm text-ink-muted transition hover:text-ink-secondary">
-          查看权益说明
-        </a>
-      </div>
     </div>
   </section>
 </Base>

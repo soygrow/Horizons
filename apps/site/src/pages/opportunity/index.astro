@@ -16,6 +16,7 @@ import {
   opportunityIndex,
   opportunityPolicy,
 } from "../../lib/dataset";
+import { formatDate } from "../../lib/format";
 
 const { policy } = opportunityIndex;
 const rows = latestOpportunityRows;
@@ -266,7 +267,7 @@ const actionPoints = [
             什么样的机会<br class="hidden lg:block" />能进这张榜
           </h2>
           <p class="mt-3 text-xs leading-6 text-ink-secondary">{policy.intro}</p>
-          <p class="mt-4 font-mono text-[11px] text-ink-muted">v{policy.version} · {policy.updatedAt}</p>
+          <p class="mt-4 font-mono text-[11px] text-ink-muted">v{policy.version} · {formatDate(policy.updatedAt)}</p>
         </div>
 
         <div class="min-w-0 space-y-6">

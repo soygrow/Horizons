@@ -63,7 +63,10 @@ function timeAgo(ms: number): string {
   if (hour < 24) return `${hour} 小时前`;
   const day = Math.floor(hour / 24);
   if (day < 30) return `${day} 天前`;
-  return new Date(ms).toLocaleDateString("zh-CN", { month: "numeric", day: "numeric" });
+  // 超过 30 天显示绝对日期，统一 YYYY-MM-DD
+  const d = new Date(ms);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
 function avatarHtml(url: string | null, name: string | null, size = "h-9 w-9"): string {

@@ -8,7 +8,7 @@ import TrendConfidenceBadge from "../../components/detail/TrendConfidenceBadge.a
 import ClaimTypeBadge from "../../components/detail/ClaimTypeBadge.astro";
 import TrendInterestChart from "../../components/detail/TrendInterestChart.astro";
 import TrendSidebar from "../../components/detail/TrendSidebar.astro";
-import { formatDateShort } from "../../lib/format";
+import { formatDate, formatDateShort } from "../../lib/format";
 import {
   daysSince,
   formatGrowth,
@@ -137,7 +137,7 @@ const confidenceNote =
         tone={growthTone(m.growth30)}
       />
       <Stat label="历史基线" value={m.baseline === null ? "—" : String(m.baseline)} hint="最近 7 点之前的均值，用于判断是否真的高于历史水平" />
-      <Stat label="爆发峰值" value={String(m.peak)} hint={`出现在 ${m.peakDate ?? "—"}`} />
+      <Stat label="爆发峰值" value={String(m.peak)} hint={`出现在 ${formatDate(m.peakDate)}`} />
       <Stat label="高于基线" value={`${m.aboveBaseline}/${m.window}`} hint="近 14 个采样点中高于历史基线的点数，用于判断持续性" />
       <Stat label="采样点" value={`${m.samples}`} hint={`步长 ${trend.series.stepDays} 天，覆盖约 ${m.spanDays} 天`} />
       <Stat label="首次发现" value={formatDateShort(trend.firstSeenAt)} hint="第一次采集成功的时间，不随后续更新覆盖" />
@@ -157,8 +157,8 @@ const confidenceNote =
             <TrendInterestChart points={points} baseline={m.baseline} peakDate={m.peakDate} />
             <div class="mt-4 grid gap-2 border-t border-border pt-4 text-xs leading-relaxed text-ink-muted sm:grid-cols-2">
               <p>
-                采样：{trend.series.start} 起，每 {trend.series.stepDays} 天 1 个点，共 {m.samples} 个点。 基线
-                {m.baseline ?? "—"}，峰值 {m.peak}（{m.peakDate ?? "—"}）。
+                采样：{formatDate(trend.series.start)} 起，每 {trend.series.stepDays} 天 1 个点，共 {m.samples} 个点。 基线
+                {m.baseline ?? "—"}，峰值 {m.peak}（{formatDate(m.peakDate)}）。
               </p>
               <p>
                 近 {m.window} 点中有 {m.aboveBaseline} 点高于基线，近 7 天均值 {m.recent7 ?? "—"}。

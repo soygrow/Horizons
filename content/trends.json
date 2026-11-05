@@ -30016,7 +30016,7 @@
       ],
       "evidence": [
         {
-          "claim": "GitHub 宣布 Copilot 代码审查从 2026 年 6 月 1 日起消耗 GitHub Actions 分钟，HN 讨论获 312 分。",
+          "claim": "GitHub 宣布 Copilot 代码审查从 2026-06-01 起消耗 GitHub Actions 分钟，HN 讨论获 312 分。",
           "claimType": "fact",
           "date": "2026-04-28",
           "detail": "HN 帖子标题与 GitHub 官方 changelog 一致，讨论热度 312 分。",

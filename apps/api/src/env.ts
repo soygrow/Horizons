@@ -49,4 +49,14 @@ export interface Env {
   PADDLE_PRICE_YEAR_ONCE_USD?: string;
   PADDLE_PRICE_MONTH_ONCE_CNY?: string;
   PADDLE_PRICE_YEAR_ONCE_CNY?: string;
+
+  /**
+   * 后台管理账号（只有站主本人，不对外注册）。
+   * 两个都通过 `wrangler secret put` 写入，不要放进 wrangler.jsonc 的 vars：
+   * - ADMIN_USERNAME：用户名
+   * - ADMIN_PASSWORD_HASH：PBKDF2-SHA256 哈希（`pbkdf2$sha256$迭代次数$salt$hash`），
+   *   用 `node apps/api/scripts/admin-password.mjs` 生成，明文密码不入库、不入仓库。
+   */
+  ADMIN_USERNAME?: string;
+  ADMIN_PASSWORD_HASH?: string;
 }

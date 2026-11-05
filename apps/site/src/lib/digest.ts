@@ -1,5 +1,7 @@
 /** 每日情报：构建期读取 content/digest/*.json（由 scripts/fetch/daily 生成） */
 
+import { formatDate as formatYMD } from "./format";
+
 /** rumor 仅作内部判定，成稿里不会出现 */
 export type EvidenceLevel = "verified" | "pending" | "rumor";
 export type ModuleKey = "headline" | "tools" | "money" | "action";
@@ -101,11 +103,9 @@ export const EVIDENCE_META: Record<
   },
 };
 
-/** 2026-10-30 → 2026-10-30 周五 */
+/** 日期统一 YYYY-MM-DD（与 lib/format 同口径，不再拼接星期） */
 export function formatDate(date: string): string {
-  const d = new Date(`${date}T00:00:00+08:00`);
-  const weekday = new Intl.DateTimeFormat("zh-CN", { weekday: "short", timeZone: "Asia/Shanghai" });
-  return `${date} ${weekday.format(d)}`;
+  return formatYMD(date);
 }
 
 /** ISO → 05:12（北京时间） */

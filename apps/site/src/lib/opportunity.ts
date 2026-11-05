@@ -524,9 +524,9 @@ function isoWeekMonday(year: number, week: number): Date {
 }
 
 const md = (d: Date) =>
-  `${String(d.getUTCMonth() + 1).padStart(2, "0")}.${String(d.getUTCDate()).padStart(2, "0")}`;
+  `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 
-/** 2026-W44 → { label: "2026 年第 44 周", range: "10.26 – 11.01" } */
+/** 2026-W44 → { label: "2026 年第 44 周", range: "2026-10-26 – 2026-11-01" } */
 export function describeBatch(batch: string): { label: string; range: string } {
   const m = BATCH_PATTERN.exec(batch);
   if (!m) return { label: batch, range: "" };

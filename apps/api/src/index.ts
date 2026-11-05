@@ -5,12 +5,15 @@ import { user } from "./routes/user";
 import { ph } from "./routes/ph";
 import { opportunity } from "./routes/opportunity";
 import { billing } from "./routes/billing";
+import { admin } from "./routes/admin";
 
 const app = new Hono<{ Bindings: Env }>();
 
 app.route("/api/auth", auth);
 app.route("/api/billing", billing);
 app.route("/api/ph", ph);
+// 后台管理独立挂载，必须排在 `/api` 通配挂载之前
+app.route("/api/admin", admin);
 // 顺序无关：/doing/counts 与 /:slug/doing 不会互相吞掉（前者无 :slug 段）
 app.route("/api/opportunity", opportunity);
 app.route("/api", user);

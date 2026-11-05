@@ -153,12 +153,11 @@ function formatAmount(cents: number, currency: string): string {
   }
 }
 
+/** 统一 YYYY-MM-DD，与 lib/format 同口径 */
 function formatDate(ms: number): string {
-  return new Date(ms).toLocaleDateString("zh-CN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
+  const d = new Date(ms);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
 async function getJson<T>(url: string): Promise<T | null> {
@@ -361,11 +360,12 @@ export function initAccount() {
       }
     }
 
+    // 标签跟着用户名走，放在资料卡里，套餐状态一眼可见
     if (els.planBadge) {
-      els.planBadge.textContent = isPro ? "Pro" : "免费";
+      els.planBadge.textContent = isPro ? "Pro 用户" : "免费用户";
       els.planBadge.className = isPro
-        ? "rounded-full bg-primary-soft px-2.5 py-1 text-xs font-semibold text-primary"
-        : "rounded-full bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-muted";
+        ? "shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-[11px] font-semibold text-primary"
+        : "shrink-0 rounded-full bg-surface-2 px-2 py-0.5 text-[11px] font-semibold text-ink-muted";
     }
 
     renderSubscription(billing, isPro);

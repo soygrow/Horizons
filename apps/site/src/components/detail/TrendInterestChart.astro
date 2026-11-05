@@ -1,4 +1,6 @@
 ---
+import { formatDate } from "../../lib/format";
+
 /** 搜索热度折线（0–100 归一化相对热度）+ 历史基线 */
 interface Props {
   points: { date: string; value: number }[];
@@ -99,11 +101,11 @@ const labelStep = Math.max(1, Math.ceil(points.length / 6));
         <text
           x={x(i)}
           y={H - 8}
-          text-anchor="middle"
+          text-anchor={i === points.length - 1 ? "end" : i === 0 ? "start" : "middle"}
           class="fill-current text-ink-muted"
           font-size="10"
         >
-          {p.date.slice(5)}
+          {formatDate(p.date)}
         </text>
       ) : null,
     )
@@ -111,5 +113,5 @@ const labelStep = Math.max(1, Math.ceil(points.length / 6));
 </svg>
 
 <p class="mt-1 text-xs text-ink-muted">
-  峰值 {points[peakIndex]?.value ?? "—"}{peakDate ? `（${peakDate}）` : ""}
+  峰值 {points[peakIndex]?.value ?? "—"}{peakDate ? `（${formatDate(peakDate)}）` : ""}
 </p>

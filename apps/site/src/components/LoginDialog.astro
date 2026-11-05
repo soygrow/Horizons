@@ -1,0 +1,208 @@
+---
+/**
+ * 登录弹窗：Google OAuth 的入口外观（点「登录」弹出，而不是直接跳走）。
+ *
+ * 用原生 <dialog> + showModal()：焦点锁定、ESC 关闭、顶层遮罩都由浏览器负责，
+ * 不用手写 focus trap；JS 未生效时按钮本身还是 <a href>，会退回 /account 页面的登录入口。
+ * 全站只在 NavBar 渲染一次，页面里任何 [data-login-open] 元素都能唤出它。
+ */
+interface Props {
+  /** 登录成功后的回跳路径；不传则由后端默认落到 /account */
+  next?: string;
+}
+
+const { next } = Astro.props;
+const loginHref = next ? `/api/auth/google?next=${encodeURIComponent(next)}` : "/api/auth/google";
+---
+
+<dialog
+  id="login-dialog"
+  aria-labelledby="login-dialog-title"
+  class="login-dialog w-[calc(100vw-2rem)] max-w-[440px]"
+>
+  <div
+    class="relative max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-[22px] border border-border bg-surface shadow-[0_40px_90px_-40px_rgba(12,31,80,0.5)]"
+  >
+    <!-- 顶部渐细条：与导航栏底边、logo 穹顶同一条品牌渐变 -->
+    <div class="h-1 w-full" style="background-image: var(--brand-gradient);"></div>
+
+    <!-- 品牌光晕：只在顶部铺一层，深色主题下也给卡片一点「发光」的空间感 -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-x-0 top-0 h-40"
+      style="background-image: radial-gradient(58% 100% at 50% 0%, var(--c-primary-soft), transparent 72%);">
+    </div>
+
+    <!-- z-10 不能省：下面的内容区是 relative，DOM 在后面会盖住这个未设层级的绝对定位按钮，
+         视觉上看得见、点上去却被内容区吃掉（表现为「点 X 没反应」） -->
+    <button
+      type="button"
+      data-login-close
+      aria-label="关闭"
+      class="absolute right-3.5 top-5 z-10 flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted transition hover:bg-surface-2 hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+    >
+      <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M5 5l10 10M15 5L5 15" stroke-linecap="round" aria-hidden="true"></path>
+      </svg>
+    </button>
+
+    <div class="relative px-7 pb-6 pt-7 text-center sm:px-9">
+      <!-- 与导航栏、页脚同一张 mark.png：弹窗里的 logo 必须和站内 logo 完全一致 -->
+      <img
+        src="/brand/mark.png"
+        alt=""
+        width="239"
+        height="112"
+        class="mx-auto h-12 w-auto"
+      />
+
+      <p class="mt-6 text-[11px] font-semibold tracking-[0.18em] text-ink-muted">
+        HORIZONS.TOOLS
+      </p>
+
+      <h2
+        id="login-dialog-title"
+        class="mt-2 text-[23px] font-bold leading-tight tracking-tight text-ink"
+      >
+        欢迎登录
+        <span
+          class="bg-clip-text text-transparent"
+          style="background-image: var(--brand-gradient);">Horizons</span
+        >
+      </h2>
+
+      <p class="mx-auto mt-2.5 max-w-[19rem] text-[13px] leading-6 text-ink-secondary">
+        用 Google 账号一键登录，首次登录自动建号，不需要单独注册。
+      </p>
+
+      <a
+        href={loginHref}
+        class="group mt-6 flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-border-strong bg-surface px-4 text-[15px] font-semibold text-ink transition duration-200 hover:-translate-y-px hover:border-primary/45 hover:bg-primary-soft hover:shadow-[0_14px_30px_-18px_rgba(8,102,250,0.75)] focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/25 active:translate-y-0"
+      >
+        <svg class="h-[18px] w-[18px] shrink-0" viewBox="0 0 48 48" aria-hidden="true">
+          <path
+            fill="#EA4335"
+            d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+          ></path>
+          <path
+            fill="#4285F4"
+            d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+          ></path>
+          <path
+            fill="#FBBC05"
+            d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+          ></path>
+          <path
+            fill="#34A853"
+            d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+          ></path>
+        </svg>
+        使用 Google 登录
+      </a>
+
+      <div class="mt-6 h-px w-full bg-border"></div>
+
+      <p class="mt-4 flex items-start justify-center gap-1.5 text-[11.5px] leading-5 text-ink-muted">
+        <svg
+          class="mt-[3px] h-3.5 w-3.5 shrink-0 text-accent"
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          aria-hidden="true"
+        >
+          <path d="M10 2.5l6 2.2v5.1c0 3.5-2.4 6.4-6 7.7-3.6-1.3-6-4.2-6-7.7V4.7l6-2.2z"></path>
+          <path d="M7.6 9.9l1.7 1.7 3.2-3.4" stroke-linecap="round"></path>
+        </svg>
+        <span class="text-left">只读取邮箱、姓名与头像，不会发布任何内容。</span>
+      </p>
+
+      <button
+        type="button"
+        data-login-close
+        class="mt-5 text-[12.5px] text-ink-muted underline-offset-4 transition hover:text-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+      >
+        先随便看看
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* 原生 dialog 的默认 padding/border/背景全部去掉，视觉交给内层卡片；
+   * Tailwind preflight 把 margin 清零了，居中要显式写回 inset:0 + margin:auto */
+  #login-dialog {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: visible;
+  }
+
+  #login-dialog::backdrop {
+    background: rgba(12, 31, 80, 0.45);
+    backdrop-filter: blur(6px);
+  }
+
+  #login-dialog[open] > div {
+    animation: login-dialog-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  @keyframes login-dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.985);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #login-dialog[open] > div {
+      animation: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var dlg = document.getElementById("login-dialog");
+    // 老浏览器没有 showModal：不劫持点击，链接照旧跳到 /account
+    if (!dlg || typeof dlg.showModal !== "function") return;
+
+    var lastFocus = null;
+
+    function open() {
+      if (dlg.open) return;
+      lastFocus = document.activeElement;
+      dlg.showModal();
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    function close() {
+      if (dlg.open) dlg.close();
+    }
+
+    // 事件委托：页面上任何 data-login-open 都能唤出弹窗，页面自己不用写逻辑
+    document.addEventListener("click", function (e) {
+      var opener = e.target.closest("[data-login-open]");
+      if (opener && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey) {
+        e.preventDefault();
+        open();
+        return;
+      }
+      if (e.target.closest("[data-login-close]")) close();
+    });
+
+    // 点遮罩关闭：只有点在 dialog 自身（而不是内层卡片）时才成立
+    dlg.addEventListener("click", function (e) {
+      if (e.target === dlg) close();
+    });
+
+    dlg.addEventListener("close", function () {
+      document.documentElement.style.overflow = "";
+      if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+      lastFocus = null;
+    });
+  })();
+</script>
