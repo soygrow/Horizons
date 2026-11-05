@@ -255,6 +255,18 @@ interface RawCustomer {
   email?: string;
 }
 
+/**
+ * Paddle 的 customer 以邮箱作唯一键。创建撞车时错误体里带着已存在客户的 id，
+ * 形如 "customer email conflicts with customer of id ctm_xxx"，直接捞出来复用。
+ * 这比再查一次列表更可靠——列表接口按 email 过滤偶尔返回空。
+ */
+function customerIdFromConflict(detail: unknown): string | null {
+  const text =
+    typeof detail === "string" ? detail : (JSON.stringify(detail) ?? "");
+  const m = /ctm_[a-z0-9]+/i.exec(text);
+  return m ? m[0] : null;
+}
+
 /** 查重（Paddle 按邮箱唯一），没有就建一个，用于结算页预填邮箱与发票投递 */
 export async function ensureCustomer(
   env: Env,
@@ -276,14 +288,19 @@ export async function ensureCustomer(
     });
     return created?.id ?? null;
   } catch (e) {
+    if (!(e instanceof PaddleError)) throw e;
+
     // 并发下单会撞唯一约束：再查一次即可
-    if (e instanceof PaddleError) {
-      const retry = await paddleRequest<RawCustomer[]>(
-        env,
-        `/customers?email=${encodeURIComponent(email)}`,
-      );
-      if (Array.isArray(retry) && retry[0]?.id) return retry[0].id;
-    }
+    const retry = await paddleRequest<RawCustomer[]>(
+      env,
+      `/customers?email=${encodeURIComponent(email)}`,
+    );
+    if (Array.isArray(retry) && retry[0]?.id) return retry[0].id;
+
+    // 列表没查到时用错误体里的 id 兜底，避免「客户明明存在却下不了单」
+    const existingId = customerIdFromConflict(e.detail);
+    if (existingId) return existingId;
+
     throw e;
   }
 }
