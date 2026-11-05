@@ -69,7 +69,14 @@ export interface SiteMetrics {
   domainWeight?: number;        // 域名权重（DFS rank / DR 替代）
   domainWeightLabel?: string;   // 展示名：DR / 权重
   weightCategoryRank?: string;  // 类目内排名
-  registeredAt?: string;        // 注册时间（WHOIS）
+  registeredAt?: string;        // 域名注册时间（WHOIS/RDAP）
+  /**
+   * 注册时间不可信的标记。
+   * 已知场景：.ai 注册表 2017-12 由 Island Networks 迁移到 Donuts/Identity Digital，
+   * 迁移时把存量域名的 Creation Date 统一重置为迁移日（2017-12-15/16），
+   * 同一天出现大量不同域名即为该原因，此值不能当真实注册时间或产品年龄。
+   */
+  registeredAtSuspect?: boolean;
 }
 
 /** 02 流量：趋势点（双系列） */

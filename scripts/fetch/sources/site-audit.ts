@@ -2,6 +2,8 @@
  * 自建站点审计（免费、合规）：只抓官网首页一次，用正则解析页面结构 + 技术栈 + 收款信号。
  * 产出 V5 的 siteAudit / pageStructure / paymentDetected / outboundDomains。
  */
+import { createConnection } from "node:net";
+
 import type { PageStructure, SiteAudit } from "@horizons/shared";
 import { config } from "../config";
 import { detectTechStack } from "./techstack";
@@ -237,22 +239,93 @@ async function fetchRdapJson(url: string): Promise<unknown | undefined> {
   }
 }
 
+/** 直连 whois（43 端口）查询文本，用于 RDAP 缺失的 TLD（如 .ai 无公开 RDAP 域名） */
+function whoisQuery(host: string, domain: string, timeout = 12_000): Promise<string> {
+  return new Promise((resolve) => {
+    let data = "";
+    let settled = false;
+    const done = (v: string) => {
+      if (settled) return;
+      settled = true;
+      try {
+        sock.destroy();
+      } catch {
+        // 连接可能已断开
+      }
+      resolve(v);
+    };
+    const sock = createConnection({ host, port: 43 });
+    sock.setTimeout(timeout, () => done(""));
+    sock.on("connect", () => sock.write(`${domain}\r\n`));
+    sock.on("data", (c) => {
+      data += c.toString();
+    });
+    sock.on("end", () => done(data));
+    sock.on("error", () => done(""));
+  });
+}
+
+/** IANA RDAP bootstrap：TLD → 权威 RDAP 服务地址，覆盖 .ai/.io/.so 等 ccTLD 与新 gTLD */
+let rdapBootstrap: Record<string, string[]> | null = null;
+
+async function getRdapBases(tld: string): Promise<string[]> {
+  if (!rdapBootstrap) {
+    const data = (await fetchRdapJson("https://data.iana.org/rdap/dns.json")) as
+      | { services?: [string[], string[]][] }
+      | undefined;
+    const map: Record<string, string[]> = {};
+    for (const [tlds, urls] of data?.services ?? []) {
+      for (const t of tlds) map[t.toLowerCase()] = urls;
+    }
+    rdapBootstrap = map;
+  }
+  return rdapBootstrap[tld] ?? [];
+}
+
 /**
- * RDAP 查询域名注册时间（免费、准确）。
- * 相比 DataForSEO whois 对 .ai 等 ccTLD 的覆盖（可能返回 TLD 早期时间），RDAP 直接返回权威注册信息。
- * 注意：rdap.org 聚合层对 .com/.net 常返回 200 但空体，需回退到 Verisign 官方 RDAP。
+ * 查询域名注册时间（免费、权威）。按通道依次回退：
+ * 1. rdap.org 聚合层（覆盖最广）
+ * 2. Verisign 权威库（.com/.net，聚合层对这两类常返回空体）
+ * 3. IANA bootstrap 找到的权威 RDAP
+ * 4. Identity Digital 统一入口（.io/.co/.tech 等）
+ * 5. whois 43 端口（.ai 无公开 RDAP 域名）
+ *
+ * 注意：.ai 注册局 2017-12 迁移会重置 Creation Date，
+ * 落在 2017-12-14 ~ 17 的结果需要打 registeredAtSuspect 标记。
  */
 export async function fetchRegistrationDate(domain: string): Promise<string | undefined> {
   const aggregated = pickRegisteredAt(await fetchRdapJson(`https://rdap.org/domain/${domain}`));
   if (aggregated) return aggregated;
 
   // .com / .net 走 Verisign 权威库（rdap.org 对这两类 TLD 覆盖不稳定）
-  const tld = domain.endsWith(".com") ? "com" : domain.endsWith(".net") ? "net" : undefined;
-  if (tld) {
+  const verisignTld = domain.endsWith(".com") ? "com" : domain.endsWith(".net") ? "net" : undefined;
+  if (verisignTld) {
     const official = pickRegisteredAt(
-      await fetchRdapJson(`https://rdap.verisign.com/${tld}/v1/domain/${domain}`),
+      await fetchRdapJson(`https://rdap.verisign.com/${verisignTld}/v1/domain/${domain}`),
     );
     if (official) return official;
+  }
+
+  // 其余 TLD：按 IANA bootstrap 找权威 RDAP 服务
+  const tld = domain.split(".").pop()?.toLowerCase() ?? "";
+  for (const base of await getRdapBases(tld)) {
+    const hit = pickRegisteredAt(
+      await fetchRdapJson(`${base.replace(/\/+$/, "")}/domain/${domain}`),
+    );
+    if (hit) return hit;
+  }
+
+  // Identity Digital 运营的 TLD（.io/.co/.tech 等）统一入口，实测 .io 稳定可用
+  const idDigital = pickRegisteredAt(
+    await fetchRdapJson(`https://rdap.identitydigital.services/rdap/domain/${domain}`),
+  );
+  if (idDigital) return idDigital;
+
+  // .ai 没有可解析的 RDAP 域名（rdap.nic.ai 无 A 记录），走 whois 端口
+  if (tld === "ai") {
+    const text = await whoisQuery("whois.nic.ai", domain);
+    const m = /^Creation Date:\s*(\S+)/im.exec(text);
+    if (m?.[1]) return m[1].slice(0, 10);
   }
   return undefined;
 }

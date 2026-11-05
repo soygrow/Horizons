@@ -164,7 +164,7 @@ const SYSTEM_OPPORTUNITY = `你是面向个人开发者创业者的创业顾问�
     - trait「特点」：差异化卖点或壁垒信号（如聚合多模型、免费额度、多语言）。
   · wedge：切入点（解决什么），产品形态帮谁解决什么；
   · model：商业模式与卖点（怎么赚钱），靠什么打动用户、怎么收钱；
-  · moat：业务数据匹配度（护城河），结合 DR/域名权重 与 站龄（注册时间）判断是真技术还是早期红利；
+  · moat：业务数据匹配度（护城河），结合 DR/域名权重 与 域名注册时间判断是真技术还是早期红利；注意 registeredAt 是「域名首次注册」时间，老域名常被新产品收购（1999 年注册的域名可能对应 2024 年才上线的产品），不能直接当作产品年龄或团队资历，除非另有迹象支持；
   · trafficTruth：流量结构真相（用户从哪来），对比自然搜索与直接访问定性来源；
   · growthEdge：增长势能与软肋（生死局），结合访问量与增长率看爆发点与天花板；
   · newPlayerEntry：新玩家切入点（行动指南），方向必须与 opportunity.verdict 同档：
@@ -307,11 +307,20 @@ async function main(): Promise<void> {
       metrics = {
         // DFS 给的是「搜索流量」，无搜索流量 ≠ 真的 0 访问，按缺失处理更准确
         monthlyVisits: total > 0 ? total : undefined,
-        organicVisits: organic,
+        organicVisits: organic > 0 ? organic : undefined,
         momGrowth,
         domainWeight: keepDR ? prevWeight : dfsWeight,
         domainWeightLabel: keepDR ? "DR" : dfsWeight !== undefined ? "权重" : undefined,
         registeredAt, // 优先 RDAP
+        // .ai 注册表 2017-12 迁移时把存量域名 Creation Date 统一重置为迁移日，
+        // 这批日期不是真实注册时间，打标避免被当成产品年龄。
+        registeredAtSuspect:
+          !!registeredAt &&
+          /\.ai$/i.test(domain) &&
+          registeredAt >= "2017-12-14" &&
+          registeredAt <= "2017-12-17"
+            ? true
+            : undefined,
       };
       // 趋势优先级：vortex（总访问量，本站已有 ≥2 个月）> DFS 搜索流量历史。
       // DFS 在无搜索流量时会给全 0 月份，也不能用来覆盖真实趋势。

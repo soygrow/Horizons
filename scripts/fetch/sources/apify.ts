@@ -118,13 +118,29 @@ export function extractTrafficMetrics(item: SimilarwebRawItem): TrafficMetrics {
   // 按用户规则一律视为无数据（页面显示 n/a），避免把无基数写成 0%
   const change = item.monthlyVisitsChange;
 
+  const shares = {
+    organic: shareOf("organic"),
+    direct: shareOf("direct"),
+    referrals: shareOf("referrals"),
+    social: shareOf("social_organic"),
+  };
+  // 该 Actor 只给「份额最大渠道」的真实值，其余渠道返回 0 或 null。
+  // 份额总和明显不足 100% 时说明数据不完整，此时的 0 不能当作「真 0 访问」——
+  // 否则会出现「15.6M 直接访问 + 自然搜索占比 0%」这种自相矛盾的展示。
+  const shareSum = Object.values(shares).reduce<number>((a, s) => a + (s ?? 0), 0);
+  const incomplete = visits > 0 && shareSum < 0.95;
+  const toVisits = (share: number | null | undefined) => {
+    const v = shareToVisits(visits, share);
+    return v === 0 && incomplete ? undefined : v;
+  };
+
   return {
     monthlyVisits: visits > 0 ? visits : undefined,
     monthlyVisitsGrowth: change === 0 ? undefined : normalizeGrowth(change),
-    organicSearchVisits: shareToVisits(visits, shareOf("organic")),
-    directVisits: shareToVisits(visits, shareOf("direct")),
-    referralVisits: shareToVisits(visits, shareOf("referrals")),
-    socialVisits: shareToVisits(visits, shareOf("social_organic")),
+    organicSearchVisits: toVisits(shares.organic),
+    directVisits: toVisits(shares.direct),
+    referralVisits: toVisits(shares.referrals),
+    socialVisits: toVisits(shares.social),
     monthlyPageviews: item.pagesPerVisit != null && visits > 0 ? Math.round(visits * item.pagesPerVisit) : undefined,
     avgVisitDurationSec: item.avgVisitDurationSeconds ?? undefined,
     snapshotMonth: item.snapshotMonth,

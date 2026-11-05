@@ -216,6 +216,14 @@ export default async function ToolDetailPage({
   const m = tool.metrics;
   // 环比：上月基数为 0 / 无上月快照时为 undefined，页面按「—」呈现
   const mom = getMoMGrowth(tool);
+  /**
+   * .ai 域名注册时间可信度：注册表 2017-12 迁移到 Donuts/Identity Digital 时
+   * 把存量域名 Creation Date 统一重置为迁移日（2017-12-15/16），非真实注册时间。
+   */
+  const regRaw: string | undefined = m?.registeredAt;
+  const regSuspect =
+    m?.registeredAtSuspect === true ||
+    (!!regRaw && /\.ai$/i.test(tool.domain ?? "") && regRaw >= "2017-12-14" && regRaw <= "2017-12-17");
   const b = tool.backlinks;
   const audit = tool.siteAudit;
   const ps = tool.pageStructure;
@@ -390,8 +398,8 @@ export default async function ToolDetailPage({
             <Stat
               label={dict.metrics.organicShare}
               value={
-                m?.organicVisits !== undefined && m?.monthlyVisits
-                  ? `${Math.round((m.organicVisits / m.monthlyVisits) * 1000) / 10}%`
+                tm?.organicSearchVisits !== undefined && tm?.monthlyVisits
+                  ? `${Math.round((tm.organicSearchVisits / tm.monthlyVisits) * 1000) / 10}%`
                   : undefined
               }
               placeholder="n/a"
@@ -413,8 +421,19 @@ export default async function ToolDetailPage({
               placeholder="n/a"
               hint="未采集到该站的域名权重"
             />
-            <Stat label={dict.metrics.registeredAt} value={m?.registeredAt} placeholder="n/a" />
+            <Stat
+              label={dict.metrics.registeredAt}
+              value={m?.registeredAt ? `${m.registeredAt}${regSuspect ? " *" : ""}` : undefined}
+              placeholder="n/a"
+            />
           </div>
+
+          {regSuspect && (
+            <p className="text-xs leading-relaxed text-ink-muted">
+              * 该 .ai 域名在 2017 年 12 月注册局（Island Networks → Donuts/Identity
+              Digital）数据库迁移时被统一重置了 Creation Date，显示的并非真实注册时间。
+            </p>
+          )}
 
           {/* 数据下方：结构化分析 */}
           <div className="flex flex-col gap-4">

@@ -68,7 +68,7 @@ export const zh = {
     avgVisitDuration: "平均访问时长",
     organicShare: "自然搜索占比",
     domainWeight: "域名权重",
-    registeredAt: "注册时间",
+    registeredAt: "域名注册",
     snapshot: "数据快照：{period}",
     lastSync: "最后同步：{time}",
     pending: "待接入",

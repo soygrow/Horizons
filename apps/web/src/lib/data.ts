@@ -199,9 +199,14 @@ export function getDomainWeight(tool: AITool): { value?: number; label?: string 
   return { value: tool.metrics?.domainWeight, label: tool.metrics?.domainWeightLabel };
 }
 
-/** 注册 / 上线时间：launchedAt 优先，回退 WHOIS registeredAt */
+/**
+ * 注册 / 上线时间：launchedAt 优先，回退域名注册时间。
+ * 注册时间不可信（如 .ai 2017-12 注册局迁移日）时不回退，避免把迁移日当成上线时间。
+ */
 export function getLaunchedAt(tool: AITool): string | undefined {
-  return tool.launchedAt ?? tool.metrics?.registeredAt;
+  if (tool.launchedAt) return tool.launchedAt;
+  if (tool.metrics?.registeredAtSuspect) return undefined;
+  return tool.metrics?.registeredAt;
 }
 
 /** 分类中文名（当前仅中文页面使用，英文页面后续补齐） */
@@ -246,12 +251,18 @@ export function categoryLabel(cat: string): string {
   return categoryLabels[cat] ?? cat;
 }
 
-/** 自然搜索占比 %：metrics.organicShare 优先，否则由自然搜索量 / 月访问量推算 */
+/**
+ * 自然搜索占比 %。
+ * 只能用同源的全渠道数据（SimilarWeb 的 organic / total）计算：
+ * DFS 的 metrics.organicVisits / monthlyVisits 是「搜索渠道内部」的构成（organic + paid = total），
+ * 付费搜索为 0 时比值恒等于 100%，与直接访问/引荐/社媒无关，不能当作全渠道占比。
+ */
 export function getOrganicShare(tool: AITool): number | undefined {
-  if (tool.metrics?.organicShare !== undefined) return tool.metrics?.organicShare;
-  const o = getOrganicVisits(tool);
-  const v = getMonthlyVisits(tool);
-  if (o !== undefined && v && v > 0) return (o / v) * 100;
+  if (tool.metrics?.organicShare !== undefined) return tool.metrics.organicShare;
+  const tm = tool.trafficMetrics;
+  if (tm?.organicSearchVisits !== undefined && tm?.monthlyVisits) {
+    return (tm.organicSearchVisits / tm.monthlyVisits) * 100;
+  }
   return undefined;
 }
 

@@ -127,7 +127,12 @@ export async function cachedCall<T>(o: CallOptions, fn: () => Promise<T>): Promi
     const hit = readCache(o);
     if (hit) {
       const ageDays = (Date.now() - Date.parse(hit.at)) / 86_400_000;
-      if (Number.isFinite(ageDays) && ageDays <= ttl) {
+      // 空结果（ok=false）只有在调用方明确要求缓存空值时才直接返回：
+      // 付费源 cacheNull 默认 true（避免反复为「查不到」付钱）；
+      // 免费源设为 false，此时空缓存视为未命中，必须重新请求，
+      // 否则一次网络抖动会被固化成 30 天的「无数据」。
+      const usable = hit.ok || o.cacheNull !== false;
+      if (usable && Number.isFinite(ageDays) && ageDays <= ttl) {
         appendLedger({
           at: new Date().toISOString(),
           provider: o.provider,

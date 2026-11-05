@@ -45,12 +45,10 @@
     ],
     "metrics": {
       "monthlyVisits": 5503,
-      "organicVisits": 1600,
-      "momGrowth": 6083.1,
+      "momGrowth": 60.8,
       "registeredAt": "2025-12-08",
       "domainWeight": 0,
       "domainWeightLabel": "DR",
-      "organicShare": 29.1,
       "directVisits": 1844
     },
     "dataSnapshot": {
@@ -75,12 +73,12 @@
       },
       {
         "date": "2026-07",
-        "total": 0,
+        "total": 9245,
         "organic": 0
       },
       {
         "date": "2026-08",
-        "total": 89,
+        "total": 999,
         "organic": 0
       },
       {
@@ -790,24 +788,14 @@
     },
     "trafficMetrics": {
       "monthlyVisits": 5503,
-      "monthlyVisitsGrowth": 6083.1,
-      "organicSearchVisits": 1600,
+      "monthlyVisitsGrowth": 60.8,
       "directVisits": 1844,
-      "referralVisits": 680,
-      "socialVisits": 360,
-      "monthlyPageviews": 6080,
+      "monthlyPageviews": 6053,
       "snapshotMonth": "2026-09",
-      "actor": "vortex_data/similarweb-scraper"
+      "actor": "lergassy/similarweb-traffic-scraper"
     },
     "channelShares": {
-      "direct": 33.5,
-      "organicSearch": 29.1,
-      "paidSearch": 2.1,
-      "referral": 12.4,
-      "organicSocial": 6.5,
-      "displayAds": 6.1,
-      "email": 4.6,
-      "aiAssistants": 1.5
+      "direct": 33.5
     },
     "performanceInsight": {
       "wedge": "一站式 AI 创作平台：把视频、图像、音乐、配音等十余种模型收进同一个工作台，帮内容创作者免去在多个工具间来回切换、拼接素材的麻烦。",
@@ -1224,8 +1212,6 @@
     },
     "metrics": {
       "monthlyVisits": 142790,
-      "organicVisits": 37698,
-      "organicShare": 26.4,
       "directVisits": 67670,
       "momGrowth": -9.5,
       "registeredAt": "2023-03-01",
@@ -1250,18 +1236,18 @@
       },
       {
         "date": "2026-07",
-        "total": 187422,
-        "organic": 49481
+        "total": 215198,
+        "organic": 0
       },
       {
         "date": "2026-08",
-        "total": 157843,
-        "organic": 41672
+        "total": 167211,
+        "organic": 0
       },
       {
         "date": "2026-09",
         "total": 142790,
-        "organic": 37698
+        "organic": 0
       }
     ],
     "keywords": [
@@ -1814,24 +1800,14 @@
     "trafficMetrics": {
       "monthlyVisits": 142790,
       "monthlyVisitsGrowth": -9.5,
-      "organicSearchVisits": 37698,
       "directVisits": 67670,
-      "referralVisits": 4400,
-      "socialVisits": 23594,
-      "monthlyPageviews": 495208,
-      "avgVisitDurationSec": 114.75815556669727,
+      "monthlyPageviews": 495481,
+      "avgVisitDurationSec": 114,
       "snapshotMonth": "2026-09",
-      "actor": "vortex_data/similarweb-scraper"
+      "actor": "lergassy/similarweb-traffic-scraper"
     },
     "channelShares": {
-      "direct": 47.4,
-      "organicSearch": 26.4,
-      "paidSearch": 1.4,
-      "referral": 3.1,
-      "organicSocial": 16.5,
-      "displayAds": 0,
-      "email": 3.2,
-      "aiAssistants": 2
+      "direct": 47.4
     },
     "ranks": {
       "global": 242998,
@@ -2255,7 +2231,6 @@
     },
     "metrics": {
       "monthlyVisits": 9661714,
-      "organicVisits": 0,
       "directVisits": 4741950,
       "momGrowth": 1133.5,
       "registeredAt": "2024-05-07",
@@ -2552,10 +2527,7 @@
     "trafficMetrics": {
       "monthlyVisits": 9661714,
       "monthlyVisitsGrowth": 1133.5,
-      "organicSearchVisits": 0,
       "directVisits": 4741950,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 49371359,
       "avgVisitDurationSec": 274,
       "snapshotMonth": "2026-09",
@@ -3414,8 +3386,6 @@
       "monthlyVisits": 41584,
       "monthlyVisitsGrowth": 1.4,
       "organicSearchVisits": 18875,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 73188,
       "avgVisitDurationSec": 30,
       "snapshotMonth": "2026-09",
@@ -4693,7 +4663,6 @@
     },
     "metrics": {
       "monthlyVisits": 5155,
-      "organicVisits": 0,
       "momGrowth": -39.4,
       "registeredAt": "2025-07-12",
       "directVisits": 1618,
@@ -5083,10 +5052,7 @@
     "trafficMetrics": {
       "monthlyVisits": 5155,
       "monthlyVisitsGrowth": -39.4,
-      "organicSearchVisits": 0,
       "directVisits": 1618,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 7320,
       "avgVisitDurationSec": 8,
       "snapshotMonth": "2026-09",
@@ -5441,7 +5407,6 @@
     },
     "metrics": {
       "monthlyVisits": 1106,
-      "organicVisits": 0,
       "momGrowth": -34.2,
       "registeredAt": "2025-03-05",
       "directVisits": 446,
@@ -5765,10 +5730,7 @@
     "trafficMetrics": {
       "monthlyVisits": 1106,
       "monthlyVisitsGrowth": -34.2,
-      "organicSearchVisits": 0,
       "directVisits": 446,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 2511,
       "avgVisitDurationSec": 62,
       "snapshotMonth": "2026-09",
@@ -6108,8 +6070,7 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "monthlyVisits": 0,
-      "organicVisits": 0
+      "registeredAt": "2026-10-15"
     },
     "keywords": [],
     "geoDistribution": [],
@@ -6871,8 +6832,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "monthlyVisits": 0,
-      "organicVisits": 0,
       "registeredAt": "2026-09-25"
     },
     "keywords": [],
@@ -7364,8 +7323,9 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
-      "registeredAt": "2025-11-07"
+      "registeredAt": "2025-11-07",
+      "domainWeight": 16,
+      "domainWeightLabel": "DR"
     },
     "keywords": [],
     "geoDistribution": [],
@@ -7958,7 +7918,6 @@
     },
     "metrics": {
       "monthlyVisits": 216976,
-      "organicVisits": 0,
       "directVisits": 113879,
       "momGrowth": 0,
       "registeredAt": "2000-08-10",
@@ -8579,10 +8538,7 @@
     "trafficMetrics": {
       "monthlyVisits": 216976,
       "monthlyVisitsGrowth": 0,
-      "organicSearchVisits": 0,
       "directVisits": 113879,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 880923,
       "avgVisitDurationSec": 242,
       "snapshotMonth": "2026-09",
@@ -9620,8 +9576,6 @@
       "monthlyVisits": 365687,
       "monthlyVisitsGrowth": 43.2,
       "organicSearchVisits": 124158,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 756972,
       "avgVisitDurationSec": 50,
       "snapshotMonth": "2026-09",
@@ -10014,7 +9968,6 @@
     },
     "metrics": {
       "monthlyVisits": 216436,
-      "organicVisits": 0,
       "directVisits": 88363,
       "momGrowth": 1.5,
       "registeredAt": "2003-09-25",
@@ -10363,10 +10316,7 @@
     "trafficMetrics": {
       "monthlyVisits": 216436,
       "monthlyVisitsGrowth": 1.5,
-      "organicSearchVisits": 0,
       "directVisits": 88363,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 679609,
       "avgVisitDurationSec": 247,
       "snapshotMonth": "2026-09",
@@ -10750,7 +10700,9 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0
+      "domainWeight": 27,
+      "domainWeightLabel": "DR",
+      "registeredAt": "2013-09-10"
     },
     "trend": [
       {
@@ -11345,7 +11297,6 @@
     },
     "metrics": {
       "monthlyVisits": 433219,
-      "organicVisits": 0,
       "directVisits": 184734,
       "momGrowth": 64,
       "domainWeight": 91293,
@@ -11867,10 +11818,7 @@
     "trafficMetrics": {
       "monthlyVisits": 433219,
       "monthlyVisitsGrowth": 64,
-      "organicSearchVisits": 0,
       "directVisits": 184734,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 2018801,
       "avgVisitDurationSec": 137,
       "snapshotMonth": "2026-09",
@@ -12286,7 +12234,6 @@
     },
     "metrics": {
       "monthlyVisits": 55012,
-      "organicVisits": 0,
       "directVisits": 33331,
       "momGrowth": 8.1,
       "registeredAt": "2011-09-08",
@@ -12666,10 +12613,7 @@
     "trafficMetrics": {
       "monthlyVisits": 55012,
       "monthlyVisitsGrowth": 8.1,
-      "organicSearchVisits": 0,
       "directVisits": 33331,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 133129,
       "avgVisitDurationSec": 48,
       "snapshotMonth": "2026-09",
@@ -13062,7 +13006,6 @@
     },
     "metrics": {
       "monthlyVisits": 61617,
-      "organicVisits": 0,
       "directVisits": 30480,
       "momGrowth": 14.1,
       "registeredAt": "2025-06-03",
@@ -13640,10 +13583,7 @@
     "trafficMetrics": {
       "monthlyVisits": 61617,
       "monthlyVisitsGrowth": 14.1,
-      "organicSearchVisits": 0,
       "directVisits": 30480,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 131860,
       "avgVisitDurationSec": 46,
       "snapshotMonth": "2026-09",
@@ -14538,8 +14478,6 @@
       "monthlyVisits": 247297,
       "monthlyVisitsGrowth": 7.3,
       "organicSearchVisits": 187821,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 410513,
       "avgVisitDurationSec": 38,
       "snapshotMonth": "2026-09",
@@ -15465,7 +15403,8 @@
     "metrics": {
       "monthlyVisits": 2,
       "organicVisits": 2,
-      "momGrowth": 0
+      "momGrowth": 0,
+      "registeredAt": "2026-09-02"
     },
     "trend": [
       {
@@ -16825,41 +16764,44 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "monthlyVisits": 11338,
-      "organicVisits": 11338,
-      "momGrowth": -6.8,
-      "registeredAt": "2023-07-03"
+      "monthlyVisits": 83672,
+      "organicVisits": 43735,
+      "momGrowth": -5.9,
+      "registeredAt": "2023-07-03",
+      "organicShare": 52.3,
+      "domainWeight": 62,
+      "domainWeightLabel": "DR"
     },
     "trend": [
       {
-        "date": "2026-05-01",
-        "total": 8899,
-        "organic": 8899
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
       },
       {
-        "date": "2026-06-01",
-        "total": 9203,
-        "organic": 9203
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
       },
       {
-        "date": "2026-07-01",
-        "total": 9521,
-        "organic": 9521
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
       },
       {
-        "date": "2026-08-01",
-        "total": 11989,
-        "organic": 11989
+        "date": "2026-07",
+        "total": 91642,
+        "organic": 47901
       },
       {
-        "date": "2026-09-01",
-        "total": 12163,
-        "organic": 12163
+        "date": "2026-08",
+        "total": 90528,
+        "organic": 47319
       },
       {
-        "date": "2026-10-01",
-        "total": 11338,
-        "organic": 11338
+        "date": "2026-09",
+        "total": 83672,
+        "organic": 43735
       }
     ],
     "keywords": [
@@ -17405,7 +17347,45 @@
       "syncedAt": "2026-10-28 11:13:06"
     },
     "screenshotDesktopUrl": "/screenshots/getinboxzero.com.png",
-    "screenshotMobileUrl": "/screenshots/getinboxzero.com-mobile.png"
+    "screenshotMobileUrl": "/screenshots/getinboxzero.com-mobile.png",
+    "trafficMetrics": {
+      "monthlyVisits": 83672,
+      "monthlyVisitsGrowth": -5.9,
+      "organicSearchVisits": 43735,
+      "monthlyPageviews": 221731,
+      "avgVisitDurationSec": 54,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "channelShares": {
+      "organicSearch": 52.3
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 54.1
+      },
+      {
+        "country": "India",
+        "share": 4.6
+      },
+      {
+        "country": "United Kingdom",
+        "share": 3.5
+      },
+      {
+        "country": "Canada",
+        "share": 2.6
+      },
+      {
+        "country": "Germany",
+        "share": 2.6
+      }
+    ],
+    "ranks": {
+      "global": 397370,
+      "country": 164580
+    }
   },
   {
     "id": "tool-ph-genpage-ai",
@@ -17767,7 +17747,6 @@
     },
     "metrics": {
       "monthlyVisits": 21648,
-      "organicVisits": 0,
       "momGrowth": 1.6,
       "registeredAt": "2024-02-12",
       "directVisits": 9050,
@@ -18347,10 +18326,7 @@
     "trafficMetrics": {
       "monthlyVisits": 21648,
       "monthlyVisitsGrowth": 1.6,
-      "organicSearchVisits": 0,
       "directVisits": 9050,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 30957,
       "avgVisitDurationSec": 14,
       "snapshotMonth": "2026-09",
@@ -18742,7 +18718,8 @@
       "organicShare": 40.3,
       "momGrowth": -3.1,
       "domainWeight": 228234,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2021-01-21"
     },
     "trend": [
       {
@@ -19340,8 +19317,6 @@
       "monthlyVisits": 137257,
       "monthlyVisitsGrowth": -3.1,
       "organicSearchVisits": 55371,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 575107,
       "avgVisitDurationSec": 102,
       "snapshotMonth": "2026-09",
@@ -19727,7 +19702,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-05-12",
       "monthlyVisits": 2095,
       "directVisits": 814,
@@ -20061,10 +20035,7 @@
     "trafficMetrics": {
       "monthlyVisits": 2095,
       "monthlyVisitsGrowth": -71.8,
-      "organicSearchVisits": 0,
       "directVisits": 814,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 7689,
       "avgVisitDurationSec": 540,
       "snapshotMonth": "2026-09",
@@ -21321,8 +21292,6 @@
       "monthlyVisits": 7039,
       "monthlyVisitsGrowth": 60.6,
       "organicSearchVisits": 2414,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 11333,
       "avgVisitDurationSec": 53,
       "snapshotMonth": "2026-09",
@@ -21735,7 +21704,6 @@
     },
     "metrics": {
       "monthlyVisits": 4462,
-      "organicVisits": 0,
       "momGrowth": -62.3,
       "registeredAt": "2025-08-01",
       "directVisits": 1503,
@@ -21977,10 +21945,7 @@
     "trafficMetrics": {
       "monthlyVisits": 4462,
       "monthlyVisitsGrowth": -62.3,
-      "organicSearchVisits": 0,
       "directVisits": 1503,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 10307,
       "avgVisitDurationSec": 23,
       "snapshotMonth": "2026-09",
@@ -22395,7 +22360,6 @@
     },
     "metrics": {
       "monthlyVisits": 2265188,
-      "organicVisits": 0,
       "directVisits": 968153,
       "momGrowth": 5.7,
       "registeredAt": "2023-04-02",
@@ -23031,10 +22995,7 @@
     "trafficMetrics": {
       "monthlyVisits": 2265188,
       "monthlyVisitsGrowth": 5.7,
-      "organicSearchVisits": 0,
       "directVisits": 968153,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 10578428,
       "avgVisitDurationSec": 233,
       "snapshotMonth": "2026-09",
@@ -23431,7 +23392,6 @@
     },
     "metrics": {
       "monthlyVisits": 426583,
-      "organicVisits": 0,
       "directVisits": 220569,
       "momGrowth": -8.1,
       "registeredAt": "2025-08-14",
@@ -24032,10 +23992,7 @@
     "trafficMetrics": {
       "monthlyVisits": 426583,
       "monthlyVisitsGrowth": -8.1,
-      "organicSearchVisits": 0,
       "directVisits": 220569,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 2252358,
       "avgVisitDurationSec": 189,
       "snapshotMonth": "2026-09",
@@ -24436,7 +24393,6 @@
     },
     "metrics": {
       "monthlyVisits": 33557,
-      "organicVisits": 0,
       "directVisits": 14293,
       "momGrowth": 46.1,
       "registeredAt": "2004-12-16",
@@ -24920,10 +24876,7 @@
     "trafficMetrics": {
       "monthlyVisits": 33557,
       "monthlyVisitsGrowth": 46.1,
-      "organicSearchVisits": 0,
       "directVisits": 14293,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 56376,
       "avgVisitDurationSec": 20,
       "snapshotMonth": "2026-09",
@@ -25305,7 +25258,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2018-12-11",
       "monthlyVisits": 80,
       "directVisits": 25
@@ -25565,10 +25517,7 @@
     "screenshotMobileUrl": "/screenshots/hemory.com-mobile.png",
     "trafficMetrics": {
       "monthlyVisits": 80,
-      "organicSearchVisits": 0,
       "directVisits": 25,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 80,
       "snapshotMonth": "2026-09",
       "actor": "lergassy/similarweb-traffic-scraper"
@@ -25977,7 +25926,6 @@
     },
     "metrics": {
       "monthlyVisits": 13317328,
-      "organicVisits": 0,
       "directVisits": 7392382,
       "momGrowth": -20.5,
       "registeredAt": "2022-12-07",
@@ -26282,10 +26230,7 @@
     "trafficMetrics": {
       "monthlyVisits": 13317328,
       "monthlyVisitsGrowth": -20.5,
-      "organicSearchVisits": 0,
       "directVisits": 7392382,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 64056348,
       "avgVisitDurationSec": 267,
       "snapshotMonth": "2026-09",
@@ -27280,41 +27225,43 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "monthlyVisits": 22337,
-      "organicVisits": 22337,
-      "momGrowth": 3.5,
-      "registeredAt": "1999-12-13"
+      "monthlyVisits": 220581,
+      "momGrowth": 4.1,
+      "registeredAt": "1999-12-13",
+      "directVisits": 114922,
+      "domainWeight": 26,
+      "domainWeightLabel": "DR"
     },
     "trend": [
       {
-        "date": "2026-05-01",
+        "date": "2026-04",
         "total": 0,
         "organic": 0
       },
       {
-        "date": "2026-06-01",
+        "date": "2026-05",
         "total": 0,
         "organic": 0
       },
       {
-        "date": "2026-07-01",
-        "total": 5,
-        "organic": 5
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
       },
       {
-        "date": "2026-08-01",
-        "total": 22063,
-        "organic": 22063
+        "date": "2026-07",
+        "total": 44660,
+        "organic": 0
       },
       {
-        "date": "2026-09-01",
-        "total": 21577,
-        "organic": 21577
+        "date": "2026-08",
+        "total": 79214,
+        "organic": 0
       },
       {
-        "date": "2026-10-01",
-        "total": 22337,
-        "organic": 22337
+        "date": "2026-09",
+        "total": 220581,
+        "organic": 0
       }
     ],
     "keywords": [
@@ -27361,7 +27308,45 @@
       "syncedAt": "2026-10-28 11:25:17"
     },
     "screenshotDesktopUrl": "/screenshots/gauth.com.png",
-    "screenshotMobileUrl": "/screenshots/gauth.com-mobile.png"
+    "screenshotMobileUrl": "/screenshots/gauth.com-mobile.png",
+    "trafficMetrics": {
+      "monthlyVisits": 220581,
+      "monthlyVisitsGrowth": 4.1,
+      "directVisits": 114922,
+      "monthlyPageviews": 562482,
+      "avgVisitDurationSec": 159,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "channelShares": {
+      "direct": 52.1
+    },
+    "geoDistribution": [
+      {
+        "country": "United States",
+        "share": 54.7
+      },
+      {
+        "country": "India",
+        "share": 7.7
+      },
+      {
+        "country": "United Kingdom",
+        "share": 7.6
+      },
+      {
+        "country": "Indonesia",
+        "share": 6.2
+      },
+      {
+        "country": "Vietnam",
+        "share": 4.8
+      }
+    ],
+    "ranks": {
+      "global": 193667,
+      "country": 71370
+    }
   },
   {
     "id": "tool-ph-kodlo-ai",
@@ -28332,7 +28317,6 @@
     },
     "metrics": {
       "monthlyVisits": 58787,
-      "organicVisits": 0,
       "directVisits": 16730,
       "momGrowth": -26.5,
       "registeredAt": "2026-05-10",
@@ -28577,10 +28561,7 @@
     "trafficMetrics": {
       "monthlyVisits": 58787,
       "monthlyVisitsGrowth": -26.5,
-      "organicSearchVisits": 0,
       "directVisits": 16730,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 87005,
       "avgVisitDurationSec": 75,
       "snapshotMonth": "2026-09",
@@ -29790,7 +29771,6 @@
     },
     "metrics": {
       "monthlyVisits": 14778,
-      "organicVisits": 0,
       "momGrowth": 1.4,
       "registeredAt": "2025-03-27",
       "directVisits": 7731,
@@ -30346,10 +30326,7 @@
     "trafficMetrics": {
       "monthlyVisits": 14778,
       "monthlyVisitsGrowth": 1.4,
-      "organicSearchVisits": 0,
       "directVisits": 7731,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 58964,
       "avgVisitDurationSec": 73,
       "snapshotMonth": "2026-09",
@@ -31486,7 +31463,6 @@
     },
     "metrics": {
       "monthlyVisits": 13248,
-      "organicVisits": 0,
       "momGrowth": -29.2,
       "registeredAt": "2018-09-22",
       "directVisits": 5272,
@@ -31871,10 +31847,7 @@
     "trafficMetrics": {
       "monthlyVisits": 13248,
       "monthlyVisitsGrowth": -29.2,
-      "organicSearchVisits": 0,
       "directVisits": 5272,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 36300,
       "avgVisitDurationSec": 78,
       "snapshotMonth": "2026-09",
@@ -32243,7 +32216,8 @@
     "metrics": {
       "monthlyVisits": 2,
       "organicVisits": 2,
-      "momGrowth": 0
+      "momGrowth": 0,
+      "registeredAt": "2025-10-15"
     },
     "trend": [
       {
@@ -32719,8 +32693,9 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
-      "registeredAt": "2026-09-23"
+      "registeredAt": "2026-09-23",
+      "domainWeight": 2.9,
+      "domainWeightLabel": "DR"
     },
     "keywords": [],
     "relatedKeywords": [],
@@ -33219,7 +33194,6 @@
     },
     "metrics": {
       "monthlyVisits": 5348,
-      "organicVisits": 0,
       "directVisits": 1897,
       "registeredAt": "2026-08-18",
       "domainWeight": 4397382,
@@ -33728,10 +33702,7 @@
     "screenshotMobileUrl": "/screenshots/openbot.run-mobile.png",
     "trafficMetrics": {
       "monthlyVisits": 5348,
-      "organicSearchVisits": 0,
       "directVisits": 1897,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 6097,
       "avgVisitDurationSec": 107,
       "snapshotMonth": "2026-09",
@@ -34088,9 +34059,9 @@
     },
     "metrics": {
       "monthlyVisits": 360,
-      "organicVisits": 0,
       "momGrowth": 17.6,
-      "directVisits": 141
+      "directVisits": 141,
+      "registeredAt": "2025-01-15"
     },
     "trend": [
       {
@@ -34189,10 +34160,7 @@
     "trafficMetrics": {
       "monthlyVisits": 360,
       "monthlyVisitsGrowth": 17.6,
-      "organicSearchVisits": 0,
       "directVisits": 141,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 720,
       "avgVisitDurationSec": 65,
       "snapshotMonth": "2026-09",
@@ -34854,7 +34822,8 @@
     "metrics": {
       "monthlyVisits": 135,
       "organicVisits": 135,
-      "momGrowth": 175.5
+      "momGrowth": 175.5,
+      "registeredAt": "2026-09-21"
     },
     "trend": [
       {
@@ -35739,7 +35708,6 @@
     },
     "metrics": {
       "monthlyVisits": 1818,
-      "organicVisits": 0,
       "directVisits": 1491,
       "momGrowth": -84.2,
       "registeredAt": "2024-11-05",
@@ -35799,10 +35767,7 @@
     "trafficMetrics": {
       "monthlyVisits": 1818,
       "monthlyVisitsGrowth": -84.2,
-      "organicSearchVisits": 0,
       "directVisits": 1491,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 21852,
       "avgVisitDurationSec": 975,
       "snapshotMonth": "2026-09",
@@ -36919,7 +36884,6 @@
     },
     "metrics": {
       "monthlyVisits": 631463,
-      "organicVisits": 0,
       "directVisits": 427377,
       "momGrowth": -13.5,
       "registeredAt": "2021-07-22",
@@ -37445,10 +37409,7 @@
     "trafficMetrics": {
       "monthlyVisits": 631463,
       "monthlyVisitsGrowth": -13.5,
-      "organicSearchVisits": 0,
       "directVisits": 427377,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 1982794,
       "avgVisitDurationSec": 258,
       "snapshotMonth": "2026-09",
@@ -37834,7 +37795,6 @@
     },
     "metrics": {
       "monthlyVisits": 13529,
-      "organicVisits": 0,
       "momGrowth": 53.5,
       "registeredAt": "2025-07-27",
       "directVisits": 5500,
@@ -38320,10 +38280,7 @@
     "trafficMetrics": {
       "monthlyVisits": 13529,
       "monthlyVisitsGrowth": 53.5,
-      "organicSearchVisits": 0,
       "directVisits": 5500,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 30305,
       "avgVisitDurationSec": 22,
       "snapshotMonth": "2026-09",
@@ -38715,7 +38672,8 @@
       "momGrowth": -19.5,
       "registeredAt": "2017-12-16",
       "domainWeight": 130793,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "trend": [
       {
@@ -39160,8 +39118,6 @@
       "monthlyVisits": 338809,
       "monthlyVisitsGrowth": -19.5,
       "organicSearchVisits": 129283,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 952053,
       "avgVisitDurationSec": 61,
       "snapshotMonth": "2026-09",
@@ -39931,8 +39887,6 @@
       "monthlyVisits": 220237,
       "monthlyVisitsGrowth": -24.1,
       "organicSearchVisits": 109747,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 658509,
       "avgVisitDurationSec": 60,
       "snapshotMonth": "2026-09",
@@ -40335,11 +40289,11 @@
     },
     "metrics": {
       "monthlyVisits": 21446,
-      "organicVisits": 0,
       "momGrowth": 31.2,
       "directVisits": 8417,
       "domainWeight": 1355477,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2026-04-06"
     },
     "trend": [
       {
@@ -40915,10 +40869,7 @@
     "trafficMetrics": {
       "monthlyVisits": 21446,
       "monthlyVisitsGrowth": 31.2,
-      "organicSearchVisits": 0,
       "directVisits": 8417,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 30882,
       "avgVisitDurationSec": 9,
       "snapshotMonth": "2026-09",
@@ -41947,8 +41898,6 @@
       "monthlyVisits": 104920,
       "monthlyVisitsGrowth": 9.8,
       "organicSearchVisits": 71227,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 378761,
       "avgVisitDurationSec": 63,
       "snapshotMonth": "2026-09",
@@ -42316,7 +42265,6 @@
     },
     "metrics": {
       "monthlyVisits": 262,
-      "organicVisits": 0,
       "directVisits": 89,
       "momGrowth": -6.8,
       "registeredAt": "2008-12-02"
@@ -42401,10 +42349,7 @@
     "trafficMetrics": {
       "monthlyVisits": 262,
       "monthlyVisitsGrowth": -6.8,
-      "organicSearchVisits": 0,
       "directVisits": 89,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 275,
       "snapshotMonth": "2026-09",
       "actor": "lergassy/similarweb-traffic-scraper"
@@ -43075,7 +43020,6 @@
     },
     "metrics": {
       "monthlyVisits": 57691,
-      "organicVisits": 0,
       "directVisits": 46881,
       "momGrowth": 5.7,
       "registeredAt": "2024-10-13",
@@ -43701,10 +43645,7 @@
     "trafficMetrics": {
       "monthlyVisits": 57691,
       "monthlyVisitsGrowth": 5.7,
-      "organicSearchVisits": 0,
       "directVisits": 46881,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 197880,
       "avgVisitDurationSec": 153,
       "snapshotMonth": "2026-09",
@@ -44070,7 +44011,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-07-20"
     },
     "keywords": [],
@@ -44691,7 +44631,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2024-10-02"
     },
     "keywords": [
@@ -45076,7 +45015,6 @@
     },
     "metrics": {
       "monthlyVisits": 4093,
-      "organicVisits": 0,
       "momGrowth": 56.6,
       "registeredAt": "2024-12-20",
       "directVisits": 1321,
@@ -45362,10 +45300,7 @@
     "trafficMetrics": {
       "monthlyVisits": 4093,
       "monthlyVisitsGrowth": 56.6,
-      "organicSearchVisits": 0,
       "directVisits": 1321,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 8145,
       "avgVisitDurationSec": 56,
       "snapshotMonth": "2026-09",
@@ -45427,10 +45362,7 @@
     "trafficMetrics": {
       "monthlyVisits": 112840796,
       "monthlyVisitsGrowth": 0.2,
-      "organicSearchVisits": 0,
       "directVisits": 34505136,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 235837264,
       "avgVisitDurationSec": 150,
       "snapshotMonth": "2026-09",
@@ -45438,7 +45370,6 @@
     },
     "metrics": {
       "monthlyVisits": 112840796,
-      "organicVisits": 0,
       "directVisits": 34505136,
       "momGrowth": 0.2,
       "registeredAt": "1995-05-24",
@@ -45978,6 +45909,18 @@
         "$20"
       ],
       "analytics": []
+    },
+    "observations": {
+      "competitors": [
+        "anthropic.com",
+        "perplexity.ai",
+        "cursor.com",
+        "openai.com",
+        "character.ai",
+        "chatgpt.com",
+        "janitorai.com",
+        "copilot.microsoft.com"
+      ]
     }
   },
   {
@@ -46333,12 +46276,12 @@
     },
     "metrics": {
       "monthlyVisits": 34415895,
-      "organicVisits": 0,
       "directVisits": 15557671,
       "momGrowth": 12.8,
       "registeredAt": "2017-12-16",
       "domainWeight": 1552,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "trend": [
       {
@@ -46469,10 +46412,7 @@
     "trafficMetrics": {
       "monthlyVisits": 34415895,
       "monthlyVisitsGrowth": 12.8,
-      "organicSearchVisits": 0,
       "directVisits": 15557671,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 116325725,
       "avgVisitDurationSec": 314,
       "snapshotMonth": "2026-09",
@@ -49092,7 +49032,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2025-05-20"
     },
     "keywords": [],
@@ -49475,7 +49414,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-08-21"
     },
     "keywords": [],
@@ -54347,7 +54285,6 @@
     },
     "metrics": {
       "monthlyVisits": 28265507,
-      "organicVisits": 0,
       "directVisits": 12009364,
       "momGrowth": -67.3,
       "registeredAt": "2023-04-11",
@@ -54483,10 +54420,7 @@
     "trafficMetrics": {
       "monthlyVisits": 28265507,
       "monthlyVisitsGrowth": -67.3,
-      "organicSearchVisits": 0,
       "directVisits": 12009364,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 226124056,
       "avgVisitDurationSec": 425,
       "snapshotMonth": "2026-09",
@@ -55746,8 +55680,6 @@
       "monthlyVisits": 93714,
       "monthlyVisitsGrowth": -28.6,
       "organicSearchVisits": 52299,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 187428,
       "avgVisitDurationSec": 28,
       "snapshotMonth": "2026-09",
@@ -56127,7 +56059,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-06-09",
       "monthlyVisits": 1150,
       "directVisits": 408,
@@ -56328,10 +56259,7 @@
     "trafficMetrics": {
       "monthlyVisits": 1150,
       "monthlyVisitsGrowth": 1.2,
-      "organicSearchVisits": 0,
       "directVisits": 408,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 1737,
       "avgVisitDurationSec": 26,
       "snapshotMonth": "2026-09",
@@ -58536,7 +58464,6 @@
     },
     "metrics": {
       "monthlyVisits": 1670189,
-      "organicVisits": 0,
       "directVisits": 883787,
       "momGrowth": -5.3,
       "registeredAt": "2019-08-19",
@@ -59054,10 +58981,7 @@
     "trafficMetrics": {
       "monthlyVisits": 1670189,
       "monthlyVisitsGrowth": -5.3,
-      "organicSearchVisits": 0,
       "directVisits": 883787,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 4041857,
       "avgVisitDurationSec": 217,
       "snapshotMonth": "2026-09",
@@ -59448,7 +59372,6 @@
     },
     "metrics": {
       "monthlyVisits": 6036766,
-      "organicVisits": 0,
       "directVisits": 4485432,
       "momGrowth": 12.3,
       "registeredAt": "1999-11-24",
@@ -60010,10 +59933,7 @@
     "trafficMetrics": {
       "monthlyVisits": 6036766,
       "monthlyVisitsGrowth": 12.3,
-      "organicSearchVisits": 0,
       "directVisits": 4485432,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 72924133,
       "avgVisitDurationSec": 635,
       "snapshotMonth": "2026-09",
@@ -60392,12 +60312,12 @@
     },
     "metrics": {
       "monthlyVisits": 18957869,
-      "organicVisits": 0,
       "directVisits": 12900109,
       "momGrowth": -8.8,
       "registeredAt": "2017-12-15",
       "domainWeight": 2924,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "trend": [
       {
@@ -60556,10 +60476,7 @@
     "trafficMetrics": {
       "monthlyVisits": 18957869,
       "monthlyVisitsGrowth": -8.8,
-      "organicSearchVisits": 0,
       "directVisits": 12900109,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 80381365,
       "avgVisitDurationSec": 405,
       "snapshotMonth": "2026-09",
@@ -60977,7 +60894,6 @@
     },
     "metrics": {
       "monthlyVisits": 200437,
-      "organicVisits": 0,
       "directVisits": 89640,
       "momGrowth": -17.2,
       "registeredAt": "2025-09-26",
@@ -61583,10 +61499,7 @@
     "trafficMetrics": {
       "monthlyVisits": 200437,
       "monthlyVisitsGrowth": -17.2,
-      "organicSearchVisits": 0,
       "directVisits": 89640,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 454992,
       "avgVisitDurationSec": 50,
       "snapshotMonth": "2026-09",
@@ -61971,7 +61884,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-05-06"
     },
     "keywords": [],
@@ -63026,7 +62938,6 @@
     },
     "metrics": {
       "monthlyVisits": 91705178,
-      "organicVisits": 0,
       "directVisits": 65689428,
       "momGrowth": -3.7,
       "registeredAt": "2022-07-08",
@@ -63162,10 +63073,7 @@
     "trafficMetrics": {
       "monthlyVisits": 91705178,
       "monthlyVisitsGrowth": -3.7,
-      "organicSearchVisits": 0,
       "directVisits": 65689428,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 338392107,
       "avgVisitDurationSec": 259,
       "snapshotMonth": "2026-09",
@@ -65705,7 +65613,6 @@
     },
     "metrics": {
       "monthlyVisits": 6984878,
-      "organicVisits": 0,
       "directVisits": 4097427,
       "momGrowth": 0.4,
       "registeredAt": "2019-05-15",
@@ -65841,10 +65748,7 @@
     "trafficMetrics": {
       "monthlyVisits": 6984878,
       "monthlyVisitsGrowth": 0.4,
-      "organicSearchVisits": 0,
       "directVisits": 4097427,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 27939512,
       "avgVisitDurationSec": 256,
       "snapshotMonth": "2026-09",
@@ -66214,7 +66118,8 @@
     "metrics": {
       "monthlyVisits": 23,
       "organicVisits": 23,
-      "momGrowth": -14.8
+      "momGrowth": -14.8,
+      "registeredAt": "2026-05-10"
     },
     "trend": [
       {
@@ -66952,12 +66857,12 @@
     },
     "metrics": {
       "monthlyVisits": 998181,
-      "organicVisits": 0,
       "directVisits": 517625,
       "momGrowth": 27.1,
       "registeredAt": "2017-12-16",
       "domainWeight": 46016,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "trend": [
       {
@@ -67534,10 +67439,7 @@
     "trafficMetrics": {
       "monthlyVisits": 998181,
       "monthlyVisitsGrowth": 27.1,
-      "organicSearchVisits": 0,
       "directVisits": 517625,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 4741360,
       "avgVisitDurationSec": 298,
       "snapshotMonth": "2026-09",
@@ -68523,8 +68425,6 @@
       "monthlyVisits": 4225,
       "monthlyVisitsGrowth": 25.6,
       "organicSearchVisits": 1380,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 4352,
       "snapshotMonth": "2026-09",
       "actor": "lergassy/similarweb-traffic-scraper"
@@ -68536,7 +68436,8 @@
       "momGrowth": 25.6,
       "registeredAt": "2017-12-16",
       "domainWeight": 4851881,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "channelShares": {
       "organicSearch": 32.7
@@ -69362,12 +69263,12 @@
     },
     "metrics": {
       "monthlyVisits": 909787,
-      "organicVisits": 0,
       "directVisits": 469186,
       "momGrowth": -2.3,
       "registeredAt": "2017-12-16",
       "domainWeight": 53986,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "trend": [
       {
@@ -69936,10 +69837,7 @@
     "trafficMetrics": {
       "monthlyVisits": 909787,
       "monthlyVisitsGrowth": -2.3,
-      "organicSearchVisits": 0,
       "directVisits": 469186,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 3293429,
       "avgVisitDurationSec": 223,
       "snapshotMonth": "2026-09",
@@ -70341,7 +70239,8 @@
       "organicShare": 53.6,
       "momGrowth": 18.8,
       "domainWeight": 357760,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2018-03-13"
     },
     "trend": [
       {
@@ -70763,8 +70662,6 @@
       "monthlyVisits": 121045,
       "monthlyVisitsGrowth": 18.8,
       "organicSearchVisits": 64900,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 200935,
       "avgVisitDurationSec": 24,
       "snapshotMonth": "2026-09",
@@ -71873,12 +71770,12 @@
     },
     "metrics": {
       "monthlyVisits": 13937566,
-      "organicVisits": 0,
       "directVisits": 7250433,
       "momGrowth": 265.7,
       "registeredAt": "2017-12-15",
       "domainWeight": 3640,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "trend": [
       {
@@ -72108,10 +72005,7 @@
     "trafficMetrics": {
       "monthlyVisits": 13937566,
       "monthlyVisitsGrowth": 265.7,
-      "organicSearchVisits": 0,
       "directVisits": 7250433,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 59513407,
       "avgVisitDurationSec": 301,
       "snapshotMonth": "2026-09",
@@ -72512,11 +72406,11 @@
     },
     "metrics": {
       "monthlyVisits": 390701,
-      "organicVisits": 0,
       "directVisits": 265273,
       "momGrowth": 7.4,
       "domainWeight": 110628,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2014-07-09"
     },
     "trend": [
       {
@@ -73129,10 +73023,7 @@
     "trafficMetrics": {
       "monthlyVisits": 390701,
       "monthlyVisitsGrowth": 7.4,
-      "organicSearchVisits": 0,
       "directVisits": 265273,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 1613595,
       "avgVisitDurationSec": 233,
       "snapshotMonth": "2026-09",
@@ -73505,7 +73396,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-08-28"
     },
     "keywords": [],
@@ -74036,7 +73926,6 @@
     },
     "metrics": {
       "monthlyVisits": 134662,
-      "organicVisits": 0,
       "directVisits": 64210,
       "momGrowth": -3.5,
       "registeredAt": "2023-09-28",
@@ -74568,10 +74457,7 @@
     "trafficMetrics": {
       "monthlyVisits": 134662,
       "monthlyVisitsGrowth": -3.5,
-      "organicSearchVisits": 0,
       "directVisits": 64210,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 348775,
       "avgVisitDurationSec": 75,
       "snapshotMonth": "2026-09",
@@ -74963,7 +74849,6 @@
     },
     "metrics": {
       "monthlyVisits": 357399386,
-      "organicVisits": 0,
       "directVisits": 280059588,
       "momGrowth": 1,
       "registeredAt": "2000-08-13",
@@ -75254,10 +75139,7 @@
     "trafficMetrics": {
       "monthlyVisits": 357399386,
       "monthlyVisitsGrowth": 1,
-      "organicSearchVisits": 0,
       "directVisits": 280059588,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 1233027882,
       "avgVisitDurationSec": 327,
       "snapshotMonth": "2026-09",
@@ -76165,7 +76047,6 @@
     },
     "metrics": {
       "monthlyVisits": 275262,
-      "organicVisits": 0,
       "directVisits": 137028,
       "momGrowth": -19.7,
       "registeredAt": "2022-02-10",
@@ -76770,10 +76651,7 @@
     "trafficMetrics": {
       "monthlyVisits": 275262,
       "monthlyVisitsGrowth": -19.7,
-      "organicSearchVisits": 0,
       "directVisits": 137028,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 1695614,
       "avgVisitDurationSec": 105,
       "snapshotMonth": "2026-09",
@@ -77987,11 +77865,11 @@
     },
     "metrics": {
       "monthlyVisits": 33625646,
-      "organicVisits": 0,
       "directVisits": 14489997,
       "momGrowth": -7.6,
       "domainWeight": 1128,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2021-12-15"
     },
     "trend": [
       {
@@ -78627,10 +78505,7 @@
     "trafficMetrics": {
       "monthlyVisits": 33625646,
       "monthlyVisitsGrowth": -7.6,
-      "organicSearchVisits": 0,
       "directVisits": 14489997,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 196037516,
       "avgVisitDurationSec": 291,
       "snapshotMonth": "2026-09",
@@ -79435,8 +79310,6 @@
       "monthlyVisits": 90334,
       "monthlyVisitsGrowth": 36.5,
       "organicSearchVisits": 37403,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 260162,
       "avgVisitDurationSec": 45,
       "snapshotMonth": "2026-09",
@@ -80546,7 +80419,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-09-02"
     },
     "keywords": [],
@@ -82004,7 +81876,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-07-08"
     },
     "keywords": [
@@ -84245,7 +84116,8 @@
     "metrics": {
       "monthlyVisits": 142,
       "organicVisits": 142,
-      "momGrowth": 610
+      "momGrowth": 610,
+      "registeredAt": "2017-10-09"
     },
     "trend": [
       {
@@ -85017,7 +84889,6 @@
       "entryTag": "别碰"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-03-24"
     },
     "keywords": [
@@ -85666,7 +85537,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2025-06-10"
     },
     "keywords": [],
@@ -86132,7 +86002,6 @@
     },
     "metrics": {
       "monthlyVisits": 972138,
-      "organicVisits": 0,
       "directVisits": 450424,
       "momGrowth": -3.1,
       "registeredAt": "2024-08-18",
@@ -86630,10 +86499,7 @@
     "trafficMetrics": {
       "monthlyVisits": 972138,
       "monthlyVisitsGrowth": -3.1,
-      "organicSearchVisits": 0,
       "directVisits": 450424,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 4345457,
       "avgVisitDurationSec": 270,
       "snapshotMonth": "2026-09",
@@ -87884,7 +87750,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "monthlyVisits": 30,
       "directVisits": 12
     },
@@ -88003,10 +87868,7 @@
     "screenshotMobileUrl": "/screenshots/opaline.so-mobile.png",
     "trafficMetrics": {
       "monthlyVisits": 30,
-      "organicSearchVisits": 0,
       "directVisits": 12,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 30,
       "snapshotMonth": "2026-09",
       "actor": "lergassy/similarweb-traffic-scraper"
@@ -88859,7 +88721,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-09-30"
     },
     "keywords": [],
@@ -90376,7 +90237,6 @@
     },
     "metrics": {
       "monthlyVisits": 143864,
-      "organicVisits": 0,
       "directVisits": 51792,
       "momGrowth": -14.6,
       "registeredAt": "2025-01-27",
@@ -90930,10 +90790,7 @@
     "trafficMetrics": {
       "monthlyVisits": 143864,
       "monthlyVisitsGrowth": -14.6,
-      "organicSearchVisits": 0,
       "directVisits": 51792,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 299237,
       "avgVisitDurationSec": 44,
       "snapshotMonth": "2026-09",
@@ -91326,7 +91183,7 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0
+      "registeredAt": "2026-10-05"
     },
     "keywords": [],
     "relatedKeywords": [],
@@ -92588,7 +92445,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-04-06"
     },
     "keywords": [],
@@ -94494,10 +94350,7 @@
     "trafficMetrics": {
       "monthlyVisits": 34849,
       "monthlyVisitsGrowth": 36.6,
-      "organicSearchVisits": 0,
       "directVisits": 19415,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 225473,
       "avgVisitDurationSec": 376,
       "snapshotMonth": "2026-09",
@@ -94505,11 +94358,11 @@
     },
     "metrics": {
       "monthlyVisits": 34849,
-      "organicVisits": 0,
       "directVisits": 19415,
       "momGrowth": 36.6,
       "domainWeight": 638271,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2011-05-03"
     },
     "channelShares": {
       "direct": 55.7
@@ -94918,7 +94771,8 @@
     "metrics": {
       "monthlyVisits": 583,
       "organicVisits": 583,
-      "momGrowth": -1.9
+      "momGrowth": -1.9,
+      "registeredAt": "2024-04-30"
     },
     "trend": [
       {
@@ -96521,11 +96375,11 @@
     },
     "metrics": {
       "monthlyVisits": 6346864,
-      "organicVisits": 0,
       "directVisits": 2900161,
       "momGrowth": 62.4,
       "domainWeight": 6619,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2021-08-03"
     },
     "trend": [
       {
@@ -96656,10 +96510,7 @@
     "trafficMetrics": {
       "monthlyVisits": 6346864,
       "monthlyVisitsGrowth": 62.4,
-      "organicSearchVisits": 0,
       "directVisits": 2900161,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 53059783,
       "avgVisitDurationSec": 360,
       "snapshotMonth": "2026-09",
@@ -97034,7 +96885,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-10-03"
     },
     "keywords": [],
@@ -97572,7 +97422,8 @@
       "momGrowth": -14.1,
       "registeredAt": "2017-12-16",
       "domainWeight": 522435,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "trend": [
       {
@@ -97908,8 +97759,6 @@
       "monthlyVisits": 67699,
       "monthlyVisitsGrowth": -14.1,
       "organicSearchVisits": 35300,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 137429,
       "avgVisitDurationSec": 37,
       "snapshotMonth": "2026-09",
@@ -98270,7 +98119,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-09-29"
     },
     "keywords": [],
@@ -98697,41 +98545,44 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "monthlyVisits": 2183,
-      "organicVisits": 2183,
-      "momGrowth": 9.4,
-      "registeredAt": "2023-03-23"
+      "monthlyVisits": 61275,
+      "organicVisits": 34763,
+      "momGrowth": -9.2,
+      "registeredAt": "2023-03-23",
+      "organicShare": 56.7,
+      "domainWeight": 61,
+      "domainWeightLabel": "DR"
     },
     "trend": [
       {
-        "date": "2026-05-01",
-        "total": 2049,
-        "organic": 2049
+        "date": "2026-04",
+        "total": 0,
+        "organic": 0
       },
       {
-        "date": "2026-06-01",
-        "total": 2325,
-        "organic": 2325
+        "date": "2026-05",
+        "total": 0,
+        "organic": 0
       },
       {
-        "date": "2026-07-01",
-        "total": 2348,
-        "organic": 2348
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0
       },
       {
-        "date": "2026-08-01",
-        "total": 1879,
-        "organic": 1879
+        "date": "2026-07",
+        "total": 83722,
+        "organic": 47498
       },
       {
-        "date": "2026-09-01",
-        "total": 1996,
-        "organic": 1996
+        "date": "2026-08",
+        "total": 66947,
+        "organic": 37981
       },
       {
-        "date": "2026-10-01",
-        "total": 2183,
-        "organic": 2183
+        "date": "2026-09",
+        "total": 61275,
+        "organic": 34763
       }
     ],
     "keywords": [
@@ -99296,7 +99147,45 @@
       "syncedAt": "2026-10-29 01:53:44"
     },
     "screenshotDesktopUrl": "/screenshots/postnitro.ai.png",
-    "screenshotMobileUrl": "/screenshots/postnitro.ai-mobile.png"
+    "screenshotMobileUrl": "/screenshots/postnitro.ai-mobile.png",
+    "trafficMetrics": {
+      "monthlyVisits": 61275,
+      "monthlyVisitsGrowth": -9.2,
+      "organicSearchVisits": 34763,
+      "monthlyPageviews": 110908,
+      "avgVisitDurationSec": 28,
+      "snapshotMonth": "2026-09",
+      "actor": "lergassy/similarweb-traffic-scraper"
+    },
+    "channelShares": {
+      "organicSearch": 56.7
+    },
+    "geoDistribution": [
+      {
+        "country": "Italy",
+        "share": 9.8
+      },
+      {
+        "country": "India",
+        "share": 9.7
+      },
+      {
+        "country": "United States",
+        "share": 9
+      },
+      {
+        "country": "Brazil",
+        "share": 5.9
+      },
+      {
+        "country": "Spain",
+        "share": 4.1
+      }
+    ],
+    "ranks": {
+      "global": 589683,
+      "country": 774867
+    }
   },
   {
     "id": "tool-ph-firecrawl-dev",
@@ -99667,7 +99556,6 @@
     },
     "metrics": {
       "monthlyVisits": 1863890,
-      "organicVisits": 0,
       "directVisits": 827854,
       "momGrowth": 0.5,
       "registeredAt": "2024-04-08",
@@ -100267,10 +100155,7 @@
     "trafficMetrics": {
       "monthlyVisits": 1863890,
       "monthlyVisitsGrowth": 0.5,
-      "organicSearchVisits": 0,
       "directVisits": 827854,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 7940171,
       "avgVisitDurationSec": 129,
       "snapshotMonth": "2026-09",
@@ -100653,11 +100538,11 @@
     },
     "metrics": {
       "monthlyVisits": 11093970,
-      "organicVisits": 0,
       "directVisits": 8112665,
       "momGrowth": -2.9,
       "domainWeight": 4866,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-12-02"
     },
     "trend": [
       {
@@ -100788,10 +100673,7 @@
     "trafficMetrics": {
       "monthlyVisits": 11093970,
       "monthlyVisitsGrowth": -2.9,
-      "organicSearchVisits": 0,
       "directVisits": 8112665,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 54138574,
       "avgVisitDurationSec": 547,
       "snapshotMonth": "2026-09",
@@ -101905,7 +101787,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-06-24"
     },
     "keywords": [],
@@ -102421,7 +102302,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2006-06-10"
     },
     "trend": [
@@ -103897,7 +103777,7 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0
+      "registeredAt": "2017-06-04"
     },
     "keywords": [],
     "relatedKeywords": [],
@@ -104469,7 +104349,6 @@
     },
     "metrics": {
       "monthlyVisits": 1409931,
-      "organicVisits": 0,
       "directVisits": 398111,
       "momGrowth": 17.6,
       "registeredAt": "2021-10-04",
@@ -104635,10 +104514,7 @@
     "trafficMetrics": {
       "monthlyVisits": 1409931,
       "monthlyVisitsGrowth": 17.6,
-      "organicSearchVisits": 0,
       "directVisits": 398111,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 2918557,
       "avgVisitDurationSec": 20,
       "snapshotMonth": "2026-09",
@@ -105014,7 +104890,7 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0
+      "registeredAt": "2026-10-08"
     },
     "keywords": [],
     "relatedKeywords": [],
@@ -105688,7 +105564,6 @@
     },
     "metrics": {
       "monthlyVisits": 9349566,
-      "organicVisits": 0,
       "momGrowth": -3.5,
       "registeredAt": "2003-07-22",
       "domainWeight": 4313,
@@ -105823,9 +105698,7 @@
     "trafficMetrics": {
       "monthlyVisits": 9349566,
       "monthlyVisitsGrowth": -3.5,
-      "organicSearchVisits": 0,
       "referralVisits": 3643002,
-      "socialVisits": 0,
       "monthlyPageviews": 60117709,
       "avgVisitDurationSec": 316,
       "snapshotMonth": "2026-09",
@@ -106783,7 +106656,8 @@
     "metrics": {
       "monthlyVisits": 382,
       "organicVisits": 382,
-      "momGrowth": 25.2
+      "momGrowth": 25.2,
+      "registeredAt": "2018-04-13"
     },
     "trend": [
       {
@@ -107485,7 +107359,8 @@
     "metrics": {
       "monthlyVisits": 4,
       "organicVisits": 4,
-      "momGrowth": -42.9
+      "momGrowth": -42.9,
+      "registeredAt": "2025-11-24"
     },
     "trend": [
       {
@@ -108126,7 +108001,6 @@
     },
     "metrics": {
       "monthlyVisits": 43703114,
-      "organicVisits": 0,
       "directVisits": 24895129,
       "momGrowth": -1.6,
       "registeredAt": "2005-11-09",
@@ -108708,10 +108582,7 @@
     "trafficMetrics": {
       "monthlyVisits": 43703114,
       "monthlyVisitsGrowth": -1.6,
-      "organicSearchVisits": 0,
       "directVisits": 24895129,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 136353716,
       "avgVisitDurationSec": 194,
       "snapshotMonth": "2026-09",
@@ -110378,7 +110249,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-08-08"
     },
     "keywords": [],
@@ -111223,11 +111093,11 @@
     },
     "metrics": {
       "monthlyVisits": 8423761,
-      "organicVisits": 0,
       "directVisits": 3673181,
       "momGrowth": 5,
       "domainWeight": 5071,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-12-11"
     },
     "trend": [
       {
@@ -111358,10 +111228,7 @@
     "trafficMetrics": {
       "monthlyVisits": 8423761,
       "monthlyVisitsGrowth": 5,
-      "organicSearchVisits": 0,
       "directVisits": 3673181,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 53996308,
       "avgVisitDurationSec": 335,
       "snapshotMonth": "2026-09",
@@ -112661,7 +112528,6 @@
       "entryTag": "谨慎·切细分"
     },
     "metrics": {
-      "organicVisits": 0,
       "registeredAt": "2026-09-21"
     },
     "keywords": [],
@@ -113405,10 +113271,7 @@
     "trafficMetrics": {
       "monthlyVisits": 63472795,
       "monthlyVisitsGrowth": 5.9,
-      "organicSearchVisits": 0,
       "directVisits": 42285640,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 456369396,
       "avgVisitDurationSec": 321,
       "snapshotMonth": "2026-09",
@@ -113416,11 +113279,11 @@
     },
     "metrics": {
       "monthlyVisits": 63472795,
-      "organicVisits": 0,
       "directVisits": 42285640,
       "momGrowth": 5.9,
       "domainWeight": 452,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2009-02-17"
     },
     "channelShares": {
       "direct": 66.6
@@ -114721,8 +114584,6 @@
       "monthlyVisits": 58939,
       "monthlyVisitsGrowth": 71.7,
       "organicSearchVisits": 21258,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 129076,
       "avgVisitDurationSec": 25,
       "snapshotMonth": "2026-09",
@@ -114734,7 +114595,8 @@
       "organicShare": 36.1,
       "momGrowth": 71.7,
       "domainWeight": 561586,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2024-07-05"
     },
     "channelShares": {
       "organicSearch": 36.1
@@ -115262,6 +115124,9 @@
       "analytics": [
         "Google Analytics"
       ]
+    },
+    "metrics": {
+      "registeredAt": "2026-10-03"
     }
   },
   {
@@ -115636,7 +115501,10 @@
       "syncedAt": "2026-10-29 02:20:53"
     },
     "screenshotDesktopUrl": "/screenshots/noteworthy.wtf.png",
-    "screenshotMobileUrl": "/screenshots/noteworthy.wtf-mobile.png"
+    "screenshotMobileUrl": "/screenshots/noteworthy.wtf-mobile.png",
+    "metrics": {
+      "registeredAt": "2026-08-10"
+    }
   },
   {
     "id": "tool-ph-plane-so",
@@ -116459,10 +116327,7 @@
     "trafficMetrics": {
       "monthlyVisits": 563572,
       "monthlyVisitsGrowth": 10.3,
-      "organicSearchVisits": 0,
       "directVisits": 367930,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 2288102,
       "avgVisitDurationSec": 178,
       "snapshotMonth": "2026-09",
@@ -116470,7 +116335,6 @@
     },
     "metrics": {
       "monthlyVisits": 563572,
-      "organicVisits": 0,
       "directVisits": 367930,
       "momGrowth": 10.3,
       "domainWeight": 79946,
@@ -117378,10 +117242,7 @@
     "trafficMetrics": {
       "monthlyVisits": 36890,
       "monthlyVisitsGrowth": 28.4,
-      "organicSearchVisits": 0,
       "directVisits": 14503,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 52753,
       "avgVisitDurationSec": 134,
       "snapshotMonth": "2026-09",
@@ -117389,11 +117250,11 @@
     },
     "metrics": {
       "monthlyVisits": 36890,
-      "organicVisits": 0,
       "directVisits": 14503,
       "momGrowth": 28.4,
       "domainWeight": 203707,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-04-19"
     },
     "channelShares": {
       "direct": 39.3
@@ -118415,18 +118276,15 @@
     "screenshotMobileUrl": "/screenshots/datastory.tech-mobile.png",
     "trafficMetrics": {
       "monthlyVisits": 294,
-      "organicSearchVisits": 0,
       "directVisits": 113,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 320,
       "snapshotMonth": "2026-09",
       "actor": "lergassy/similarweb-traffic-scraper"
     },
     "metrics": {
       "monthlyVisits": 294,
-      "organicVisits": 0,
-      "directVisits": 113
+      "directVisits": 113,
+      "registeredAt": "2021-04-02"
     },
     "channelShares": {
       "direct": 38.3
@@ -118820,10 +118678,7 @@
     "trafficMetrics": {
       "monthlyVisits": 145096,
       "monthlyVisitsGrowth": -17,
-      "organicSearchVisits": 0,
       "directVisits": 48679,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 309054,
       "avgVisitDurationSec": 27,
       "snapshotMonth": "2026-09",
@@ -118831,11 +118686,11 @@
     },
     "metrics": {
       "monthlyVisits": 145096,
-      "organicVisits": 0,
       "directVisits": 48679,
       "momGrowth": -17,
       "domainWeight": 283559,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2020-06-25"
     },
     "techStack": [
       "Cloudflare",
@@ -120158,10 +120013,7 @@
     "trafficMetrics": {
       "monthlyVisits": 23390,
       "monthlyVisitsGrowth": -30.7,
-      "organicSearchVisits": 0,
       "directVisits": 12620,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 123031,
       "avgVisitDurationSec": 126,
       "snapshotMonth": "2026-09",
@@ -120169,11 +120021,11 @@
     },
     "metrics": {
       "monthlyVisits": 23390,
-      "organicVisits": 0,
       "directVisits": 12620,
       "momGrowth": -30.7,
       "domainWeight": 802597,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2026-03-02"
     },
     "channelShares": {
       "direct": 54
@@ -121097,10 +120949,7 @@
     "trafficMetrics": {
       "monthlyVisits": 160295,
       "monthlyVisitsGrowth": -12,
-      "organicSearchVisits": 0,
       "directVisits": 89256,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 371884,
       "avgVisitDurationSec": 60,
       "snapshotMonth": "2026-09",
@@ -121108,11 +120957,11 @@
     },
     "metrics": {
       "monthlyVisits": 160295,
-      "organicVisits": 0,
       "directVisits": 89256,
       "momGrowth": -12,
       "domainWeight": 259079,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2024-01-06"
     },
     "channelShares": {
       "direct": 55.7
@@ -121578,10 +121427,7 @@
     "trafficMetrics": {
       "monthlyVisits": 11881327,
       "monthlyVisitsGrowth": 1.5,
-      "organicSearchVisits": 0,
       "directVisits": 4967203,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 53822411,
       "avgVisitDurationSec": 370,
       "snapshotMonth": "2026-09",
@@ -121589,11 +121435,11 @@
     },
     "metrics": {
       "monthlyVisits": 11881327,
-      "organicVisits": 0,
       "directVisits": 4967203,
       "momGrowth": 1.5,
       "domainWeight": 4135,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2022-06-05"
     },
     "channelShares": {
       "direct": 41.8
@@ -121986,6 +121832,9 @@
       "structuredData": [],
       "outboundDomains": [],
       "analytics": []
+    },
+    "metrics": {
+      "registeredAt": "2026-09-29"
     }
   },
   {
@@ -122025,10 +121874,7 @@
     },
     "trafficMetrics": {
       "monthlyVisits": 54020,
-      "organicSearchVisits": 0,
       "directVisits": 23740,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 72927,
       "avgVisitDurationSec": 86,
       "snapshotMonth": "2026-09",
@@ -122036,7 +121882,6 @@
     },
     "metrics": {
       "monthlyVisits": 54020,
-      "organicVisits": 0,
       "directVisits": 23740,
       "domainWeight": 726901,
       "domainWeightLabel": "全球排名"
@@ -122690,6 +122535,9 @@
         "$9"
       ],
       "analytics": []
+    },
+    "metrics": {
+      "registeredAt": "2026-10-05"
     }
   },
   {
@@ -123129,6 +122977,9 @@
         "$16"
       ],
       "analytics": []
+    },
+    "metrics": {
+      "registeredAt": "2026-10-07"
     }
   },
   {
@@ -123245,10 +123096,7 @@
     "trafficMetrics": {
       "monthlyVisits": 6439,
       "monthlyVisitsGrowth": 1.9,
-      "organicSearchVisits": 0,
       "directVisits": 2513,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 9208,
       "avgVisitDurationSec": 3,
       "snapshotMonth": "2026-09",
@@ -123256,11 +123104,11 @@
     },
     "metrics": {
       "monthlyVisits": 6439,
-      "organicVisits": 0,
       "directVisits": 2513,
       "momGrowth": 1.9,
       "domainWeight": 3139346,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2021-02-26"
     },
     "channelShares": {
       "direct": 39
@@ -123903,18 +123751,18 @@
       },
       {
         "date": "2026-07",
-        "total": 0,
+        "total": 8284,
         "organic": 0
       },
       {
         "date": "2026-08",
-        "total": 0,
+        "total": 8284,
         "organic": 0
       },
       {
         "date": "2026-09",
         "total": 3256,
-        "organic": 821
+        "organic": 0
       }
     ],
     "aiInsight": {
@@ -124130,8 +123978,6 @@
     },
     "metrics": {
       "monthlyVisits": 3256,
-      "organicVisits": 821,
-      "organicShare": 25.2,
       "directVisits": 962,
       "registeredAt": "2025-11-30",
       "domainWeight": 3.6,
@@ -124331,24 +124177,14 @@
     },
     "trafficMetrics": {
       "monthlyVisits": 3256,
-      "organicSearchVisits": 821,
       "directVisits": 962,
-      "referralVisits": 402,
-      "socialVisits": 223,
-      "monthlyPageviews": 5402,
-      "avgVisitDurationSec": 21.5,
+      "monthlyPageviews": 5405,
+      "avgVisitDurationSec": 21,
       "snapshotMonth": "2026-09",
-      "actor": "vortex_data/similarweb-scraper"
+      "actor": "lergassy/similarweb-traffic-scraper"
     },
     "channelShares": {
-      "direct": 29.6,
-      "organicSearch": 25.2,
-      "paidSearch": 2.5,
-      "referral": 12.3,
-      "organicSocial": 6.8,
-      "displayAds": 9.4,
-      "email": 5.5,
-      "aiAssistants": 1.6
+      "direct": 29.6
     },
     "ranks": {
       "global": 5090061,
@@ -124715,7 +124551,6 @@
     },
     "metrics": {
       "monthlyVisits": 4235,
-      "organicVisits": 0,
       "directVisits": 1486,
       "registeredAt": "2026-08-20",
       "domainWeight": 0,
@@ -124919,10 +124754,7 @@
     },
     "trafficMetrics": {
       "monthlyVisits": 4235,
-      "organicSearchVisits": 0,
       "directVisits": 1486,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 12112,
       "avgVisitDurationSec": 17,
       "snapshotMonth": "2026-09",
@@ -125441,7 +125273,9 @@
       "syncedAt": "2026-11-04 10:43:41"
     },
     "metrics": {
-      "registeredAt": "2026-08-10"
+      "registeredAt": "2026-08-10",
+      "domainWeight": 37,
+      "domainWeightLabel": "DR"
     },
     "opportunity": {
       "score": 62,
@@ -125606,9 +125440,7 @@
     "trafficMetrics": {
       "monthlyVisits": 31098,
       "monthlyVisitsGrowth": 1.9,
-      "organicSearchVisits": 0,
       "referralVisits": 12641,
-      "socialVisits": 0,
       "monthlyPageviews": 67483,
       "avgVisitDurationSec": 111,
       "snapshotMonth": "2026-09",
@@ -125616,10 +125448,10 @@
     },
     "metrics": {
       "monthlyVisits": 31098,
-      "organicVisits": 0,
       "momGrowth": 1.9,
       "domainWeight": 893446,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2022-11-03"
     },
     "channelShares": {
       "referral": 40.6
@@ -126455,8 +126287,6 @@
       "monthlyVisits": 166567,
       "monthlyVisitsGrowth": 2.9,
       "organicSearchVisits": 103246,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 414752,
       "avgVisitDurationSec": 48,
       "snapshotMonth": "2026-09",
@@ -127188,10 +127018,7 @@
     "trafficMetrics": {
       "monthlyVisits": 5339,
       "monthlyVisitsGrowth": 5.1,
-      "organicSearchVisits": 0,
       "directVisits": 2324,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 12013,
       "avgVisitDurationSec": 31,
       "snapshotMonth": "2026-09",
@@ -127199,11 +127026,11 @@
     },
     "metrics": {
       "monthlyVisits": 5339,
-      "organicVisits": 0,
       "directVisits": 2324,
       "momGrowth": 5.1,
       "domainWeight": 3043689,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2025-07-25"
     },
     "channelShares": {
       "direct": 43.5
@@ -127822,10 +127649,7 @@
     "trafficMetrics": {
       "monthlyVisits": 3632,
       "monthlyVisitsGrowth": -74.8,
-      "organicSearchVisits": 0,
       "directVisits": 1550,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 5630,
       "avgVisitDurationSec": 9,
       "snapshotMonth": "2026-09",
@@ -127833,12 +127657,12 @@
     },
     "metrics": {
       "monthlyVisits": 3632,
-      "organicVisits": 0,
       "directVisits": 1550,
       "momGrowth": -74.8,
       "registeredAt": "2017-12-16",
       "domainWeight": 4728890,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "channelShares": {
       "direct": 42.7
@@ -129096,6 +128920,11 @@
       "growthEdge": "Product Hunt 309 upvotes、50 comments 显示冷启动爆发力，但缺搜索排名与外链，天花板受限于社区热度，难形成持续自然增长。",
       "newPlayerEntry": "别正面照搬其通用 agent 定位，切电商商品视频、小语种市场或移动端原生体验等垂直场景，用 25 美元 AOV 对齐定价做差异化截胡。",
       "entryTag": "谨慎·切细分"
+    },
+    "metrics": {
+      "domainWeight": 16,
+      "domainWeightLabel": "DR",
+      "registeredAt": "2026-03-05"
     }
   },
   {
@@ -129128,10 +128957,7 @@
     "trafficMetrics": {
       "monthlyVisits": 20832,
       "monthlyVisitsGrowth": -51.4,
-      "organicSearchVisits": 0,
       "directVisits": 8845,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 35206,
       "avgVisitDurationSec": 15,
       "snapshotMonth": "2026-09",
@@ -129139,7 +128965,6 @@
     },
     "metrics": {
       "monthlyVisits": 20832,
-      "organicVisits": 0,
       "directVisits": 8845,
       "momGrowth": -51.4,
       "registeredAt": "2018-05-08",
@@ -129661,10 +129486,7 @@
     "phUrl": "https://www.producthunt.com/posts/lexmount.com",
     "trafficMetrics": {
       "monthlyVisits": 22295,
-      "organicSearchVisits": 0,
       "directVisits": 9015,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 72013,
       "avgVisitDurationSec": 164,
       "snapshotMonth": "2026-09",
@@ -129672,7 +129494,6 @@
     },
     "metrics": {
       "monthlyVisits": 22295,
-      "organicVisits": 0,
       "directVisits": 9015,
       "registeredAt": "2025-07-12",
       "domainWeight": 984227,
@@ -130110,10 +129931,7 @@
     "trafficMetrics": {
       "monthlyVisits": 18281,
       "monthlyVisitsGrowth": -31.6,
-      "organicSearchVisits": 0,
       "directVisits": 7444,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 31992,
       "avgVisitDurationSec": 9,
       "snapshotMonth": "2026-09",
@@ -130121,7 +129939,6 @@
     },
     "metrics": {
       "monthlyVisits": 18281,
-      "organicVisits": 0,
       "directVisits": 7444,
       "momGrowth": -31.6,
       "registeredAt": "2022-05-24",
@@ -130717,10 +130534,7 @@
     "trafficMetrics": {
       "monthlyVisits": 9666018,
       "monthlyVisitsGrowth": 0.2,
-      "organicSearchVisits": 0,
       "directVisits": 5990428,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 44173702,
       "avgVisitDurationSec": 157,
       "snapshotMonth": "2026-09",
@@ -130728,7 +130542,6 @@
     },
     "metrics": {
       "monthlyVisits": 9666018,
-      "organicVisits": 0,
       "directVisits": 5990428,
       "momGrowth": 0.2,
       "registeredAt": "2003-11-30",
@@ -131240,6 +131053,18 @@
         "1password.social"
       ],
       "analytics": []
+    },
+    "observations": {
+      "competitors": [
+        "lastpass.com",
+        "bitwarden.com",
+        "dashlane.com",
+        "roboform.com",
+        "nordpass.com",
+        "keepersecurity.com",
+        "proton.me",
+        "psono.com"
+      ]
     }
   },
   {
@@ -131514,6 +131339,9 @@
         "www.linkedin.com"
       ],
       "analytics": []
+    },
+    "metrics": {
+      "registeredAt": "2023-09-05"
     }
   },
   {
@@ -131546,17 +131374,13 @@
     "trafficMetrics": {
       "monthlyVisits": 1311,
       "monthlyVisitsGrowth": 6.2,
-      "organicSearchVisits": 0,
       "directVisits": 545,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 1350,
       "snapshotMonth": "2026-09",
       "actor": "lergassy/similarweb-traffic-scraper"
     },
     "metrics": {
       "monthlyVisits": 1311,
-      "organicVisits": 0,
       "directVisits": 545,
       "momGrowth": 6.2,
       "registeredAt": "2025-11-06",
@@ -131925,10 +131749,7 @@
     "trafficMetrics": {
       "monthlyVisits": 17543,
       "monthlyVisitsGrowth": -52.1,
-      "organicSearchVisits": 0,
       "directVisits": 8896,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 108240,
       "avgVisitDurationSec": 147,
       "snapshotMonth": "2026-09",
@@ -131936,7 +131757,6 @@
     },
     "metrics": {
       "monthlyVisits": 17543,
-      "organicVisits": 0,
       "directVisits": 8896,
       "momGrowth": -52.1,
       "registeredAt": "2023-10-18",
@@ -132563,10 +132383,7 @@
     "trafficMetrics": {
       "monthlyVisits": 5321,
       "monthlyVisitsGrowth": 9.1,
-      "organicSearchVisits": 0,
       "directVisits": 1783,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 9578,
       "avgVisitDurationSec": 15,
       "snapshotMonth": "2026-09",
@@ -132574,11 +132391,11 @@
     },
     "metrics": {
       "monthlyVisits": 5321,
-      "organicVisits": 0,
       "directVisits": 1783,
       "momGrowth": 9.1,
       "domainWeight": 3482082,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2026-04-29"
     },
     "channelShares": {
       "direct": 33.5
@@ -133232,10 +133049,7 @@
     "trafficMetrics": {
       "monthlyVisits": 2892,
       "monthlyVisitsGrowth": -37.1,
-      "organicSearchVisits": 0,
       "directVisits": 1144,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 4454,
       "avgVisitDurationSec": 122,
       "snapshotMonth": "2026-09",
@@ -133243,7 +133057,6 @@
     },
     "metrics": {
       "monthlyVisits": 2892,
-      "organicVisits": 0,
       "directVisits": 1144,
       "momGrowth": -37.1,
       "registeredAt": "2025-04-20",
@@ -134028,10 +133841,7 @@
     "trafficMetrics": {
       "monthlyVisits": 198140,
       "monthlyVisitsGrowth": 6,
-      "organicSearchVisits": 0,
       "directVisits": 135471,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 473555,
       "avgVisitDurationSec": 76,
       "snapshotMonth": "2026-09",
@@ -134039,7 +133849,6 @@
     },
     "metrics": {
       "monthlyVisits": 198140,
-      "organicVisits": 0,
       "directVisits": 135471,
       "momGrowth": 6,
       "registeredAt": "2003-11-17",
@@ -134532,17 +134341,13 @@
     "trafficMetrics": {
       "monthlyVisits": 2073,
       "monthlyVisitsGrowth": 2.4,
-      "organicSearchVisits": 0,
       "directVisits": 1501,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 2716,
       "snapshotMonth": "2026-09",
       "actor": "lergassy/similarweb-traffic-scraper"
     },
     "metrics": {
       "monthlyVisits": 2073,
-      "organicVisits": 0,
       "directVisits": 1501,
       "momGrowth": 2.4,
       "registeredAt": "2026-06-01",
@@ -135187,10 +134992,7 @@
     "trafficMetrics": {
       "monthlyVisits": 204778,
       "monthlyVisitsGrowth": 3.4,
-      "organicSearchVisits": 0,
       "directVisits": 150974,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 702389,
       "avgVisitDurationSec": 167,
       "snapshotMonth": "2026-09",
@@ -135198,7 +135000,6 @@
     },
     "metrics": {
       "monthlyVisits": 204778,
-      "organicVisits": 0,
       "directVisits": 150974,
       "momGrowth": 3.4,
       "registeredAt": "2022-12-01",
@@ -136052,8 +135853,6 @@
       "monthlyVisits": 123553,
       "monthlyVisitsGrowth": -21.4,
       "organicSearchVisits": 59547,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 265639,
       "avgVisitDurationSec": 45,
       "snapshotMonth": "2026-09",
@@ -136066,7 +135865,8 @@
       "momGrowth": -21.4,
       "registeredAt": "2017-12-16",
       "domainWeight": 321166,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "channelShares": {
       "organicSearch": 48.2
@@ -136869,10 +136669,7 @@
     "trafficMetrics": {
       "monthlyVisits": 13690,
       "monthlyVisitsGrowth": -47.4,
-      "organicSearchVisits": 0,
       "directVisits": 5528,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 25327,
       "avgVisitDurationSec": 9,
       "snapshotMonth": "2026-09",
@@ -136880,7 +136677,6 @@
     },
     "metrics": {
       "monthlyVisits": 13690,
-      "organicVisits": 0,
       "directVisits": 5528,
       "momGrowth": -47.4,
       "registeredAt": "1999-10-30",
@@ -137632,10 +137428,7 @@
     "trafficMetrics": {
       "monthlyVisits": 3213548,
       "monthlyVisitsGrowth": 19.9,
-      "organicSearchVisits": 0,
       "directVisits": 1814334,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 16324824,
       "avgVisitDurationSec": 288,
       "snapshotMonth": "2026-09",
@@ -137643,7 +137436,6 @@
     },
     "metrics": {
       "monthlyVisits": 3213548,
-      "organicVisits": 0,
       "directVisits": 1814334,
       "momGrowth": 19.9,
       "registeredAt": "2020-11-13",
@@ -138511,10 +138303,7 @@
     "trafficMetrics": {
       "monthlyVisits": 271726,
       "monthlyVisitsGrowth": -24.1,
-      "organicSearchVisits": 0,
       "directVisits": 125169,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 627687,
       "avgVisitDurationSec": 83,
       "snapshotMonth": "2026-09",
@@ -138522,7 +138311,6 @@
     },
     "metrics": {
       "monthlyVisits": 271726,
-      "organicVisits": 0,
       "directVisits": 125169,
       "momGrowth": -24.1,
       "registeredAt": "2018-07-18",
@@ -139011,10 +138799,7 @@
     "trafficMetrics": {
       "monthlyVisits": 20556,
       "monthlyVisitsGrowth": -16.1,
-      "organicSearchVisits": 0,
       "directVisits": 8316,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 34945,
       "avgVisitDurationSec": 11,
       "snapshotMonth": "2026-09",
@@ -139022,11 +138807,11 @@
     },
     "metrics": {
       "monthlyVisits": 20556,
-      "organicVisits": 0,
       "directVisits": 8316,
       "momGrowth": -16.1,
       "domainWeight": 1332141,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2021-07-13"
     },
     "channelShares": {
       "direct": 40.5
@@ -139643,17 +139428,13 @@
     "trafficMetrics": {
       "monthlyVisits": 2348,
       "monthlyVisitsGrowth": 1.3,
-      "organicSearchVisits": 0,
       "directVisits": 906,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 2395,
       "snapshotMonth": "2026-09",
       "actor": "lergassy/similarweb-traffic-scraper"
     },
     "metrics": {
       "monthlyVisits": 2348,
-      "organicVisits": 0,
       "directVisits": 906,
       "momGrowth": 1.3,
       "registeredAt": "2026-03-02",
@@ -140100,10 +139881,7 @@
     "trafficMetrics": {
       "monthlyVisits": 275614,
       "monthlyVisitsGrowth": 1.7,
-      "organicSearchVisits": 0,
       "directVisits": 154455,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 851647,
       "avgVisitDurationSec": 87,
       "snapshotMonth": "2026-09",
@@ -140111,11 +139889,11 @@
     },
     "metrics": {
       "monthlyVisits": 275614,
-      "organicVisits": 0,
       "directVisits": 154455,
       "momGrowth": 1.7,
       "domainWeight": 163372,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2024-10-25"
     },
     "channelShares": {
       "direct": 56
@@ -140516,7 +140294,10 @@
     "screenshotMobileUrl": "/screenshots/brains.ceo-mobile.png",
     "techStack": [
       "Express"
-    ]
+    ],
+    "metrics": {
+      "registeredAt": "2026-10-15"
+    }
   },
   {
     "id": "tool-ph-mosaico-ai",
@@ -140546,7 +140327,10 @@
     "sourceUrl": "https://www.producthunt.com/r/HCUP7PCWQZZI3G?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
     "phUrl": "https://www.producthunt.com/posts/mosaico.ai",
     "screenshotDesktopUrl": "/screenshots/mosaico.ai.png",
-    "screenshotMobileUrl": "/screenshots/mosaico.ai-mobile.png"
+    "screenshotMobileUrl": "/screenshots/mosaico.ai-mobile.png",
+    "metrics": {
+      "registeredAt": "2025-11-29"
+    }
   },
   {
     "id": "tool-ph-revix-ai",
@@ -140579,8 +140363,6 @@
       "monthlyVisits": 4970,
       "monthlyVisitsGrowth": -27.5,
       "organicSearchVisits": 1889,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 9841,
       "avgVisitDurationSec": 22,
       "snapshotMonth": "2026-09",
@@ -140592,7 +140374,8 @@
       "organicShare": 38,
       "momGrowth": -27.5,
       "domainWeight": 3429288,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2024-07-23"
     },
     "channelShares": {
       "organicSearch": 38
@@ -141170,10 +140953,7 @@
     "trafficMetrics": {
       "monthlyVisits": 30442,
       "monthlyVisitsGrowth": 12.1,
-      "organicSearchVisits": 0,
       "directVisits": 13677,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 52969,
       "avgVisitDurationSec": 56,
       "snapshotMonth": "2026-09",
@@ -141181,7 +140961,6 @@
     },
     "metrics": {
       "monthlyVisits": 30442,
-      "organicVisits": 0,
       "directVisits": 13677,
       "momGrowth": 12.1,
       "domainWeight": 1071639,
@@ -141563,21 +141342,18 @@
     "trafficMetrics": {
       "monthlyVisits": 3346,
       "monthlyVisitsGrowth": 34.2,
-      "organicSearchVisits": 0,
       "directVisits": 1023,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 4183,
       "snapshotMonth": "2026-09",
       "actor": "lergassy/similarweb-traffic-scraper"
     },
     "metrics": {
       "monthlyVisits": 3346,
-      "organicVisits": 0,
       "directVisits": 1023,
       "momGrowth": 34.2,
       "domainWeight": 5583746,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2026-05-12"
     },
     "channelShares": {
       "direct": 30.6
@@ -141945,6 +141721,9 @@
           "url": "https://github.com/Kandid-ai/AgentSDR"
         }
       ]
+    },
+    "metrics": {
+      "registeredAt": "2025-05-16"
     }
   },
   {
@@ -141993,7 +141772,10 @@
         "plan": "方案 3",
         "price": "$19.89"
       }
-    ]
+    ],
+    "metrics": {
+      "registeredAt": "2026-10-22"
+    }
   },
   {
     "id": "tool-ph-ifttt-ai",
@@ -142023,7 +141805,10 @@
     "sourceUrl": "https://www.producthunt.com/r/3M5JCBHRSW7U5G?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
     "phUrl": "https://www.producthunt.com/posts/ifttt.ai",
     "screenshotDesktopUrl": "/screenshots/ifttt.ai.png",
-    "screenshotMobileUrl": "/screenshots/ifttt.ai-mobile.png"
+    "screenshotMobileUrl": "/screenshots/ifttt.ai-mobile.png",
+    "metrics": {
+      "registeredAt": "2021-07-24"
+    }
   },
   {
     "id": "tool-ph-withhuman-ai",
@@ -142087,7 +141872,10 @@
         "plan": "方案 2",
         "price": "$20"
       }
-    ]
+    ],
+    "metrics": {
+      "registeredAt": "2026-07-13"
+    }
   },
   {
     "id": "tool-ph-openradview-com",
@@ -142164,8 +141952,6 @@
       "monthlyVisits": 2252233,
       "monthlyVisitsGrowth": 18.6,
       "organicSearchVisits": 1059216,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 21553870,
       "avgVisitDurationSec": 339,
       "snapshotMonth": "2026-09",
@@ -142177,7 +141963,8 @@
       "organicShare": 47,
       "momGrowth": 18.6,
       "domainWeight": 15003,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2024-01-10"
     },
     "channelShares": {
       "organicSearch": 47
@@ -142982,7 +142769,10 @@
     "sourceUrl": "https://www.producthunt.com/r/6CKPE3FQLUWQNP?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+Horizons+%28ID%3A+311686%29",
     "phUrl": "https://www.producthunt.com/posts/runnova.ai",
     "screenshotDesktopUrl": "/screenshots/runnova.ai.png",
-    "screenshotMobileUrl": "/screenshots/runnova.ai-mobile.png"
+    "screenshotMobileUrl": "/screenshots/runnova.ai-mobile.png",
+    "metrics": {
+      "registeredAt": "2026-07-13"
+    }
   },
   {
     "id": "tool-ph-foleyapp-com",
@@ -143063,8 +142853,6 @@
     "phUrl": "https://www.producthunt.com/posts/mouse.dev",
     "trafficMetrics": {
       "monthlyVisits": 22498,
-      "organicSearchVisits": 0,
-      "referralVisits": 0,
       "socialVisits": 7985,
       "monthlyPageviews": 29697,
       "avgVisitDurationSec": 63,
@@ -143073,9 +142861,9 @@
     },
     "metrics": {
       "monthlyVisits": 22498,
-      "organicVisits": 0,
       "domainWeight": 1358479,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2026-04-27"
     },
     "channelShares": {
       "organicSocial": 35.5
@@ -143562,6 +143350,9 @@
           "url": "https://www.linkedin.com/company/3am-si/"
         }
       ]
+    },
+    "metrics": {
+      "registeredAt": "2026-10-03"
     }
   },
   {
@@ -143595,10 +143386,7 @@
     "trafficMetrics": {
       "monthlyVisits": 65273,
       "monthlyVisitsGrowth": -25.1,
-      "organicSearchVisits": 0,
       "directVisits": 50667,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 130546,
       "avgVisitDurationSec": 35,
       "snapshotMonth": "2026-09",
@@ -143606,11 +143394,11 @@
     },
     "metrics": {
       "monthlyVisits": 65273,
-      "organicVisits": 0,
       "directVisits": 50667,
       "momGrowth": -25.1,
       "domainWeight": 540371,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2026-01-10"
     },
     "channelShares": {
       "direct": 77.6
@@ -144015,7 +143803,10 @@
         "plan": "方案 1",
         "price": "$16"
       }
-    ]
+    ],
+    "metrics": {
+      "registeredAt": "2025-06-02"
+    }
   },
   {
     "id": "tool-ph-intrascope-app",
@@ -144047,10 +143838,7 @@
     "trafficMetrics": {
       "monthlyVisits": 4195,
       "monthlyVisitsGrowth": 2.1,
-      "organicSearchVisits": 0,
       "directVisits": 1644,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 8726,
       "avgVisitDurationSec": 29,
       "snapshotMonth": "2026-09",
@@ -144058,11 +143846,11 @@
     },
     "metrics": {
       "monthlyVisits": 4195,
-      "organicVisits": 0,
       "directVisits": 1644,
       "momGrowth": 2.1,
       "domainWeight": 3791172,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2025-09-25"
     },
     "channelShares": {
       "direct": 39.2
@@ -144829,6 +144617,9 @@
           "url": "https://www.youtube.com/@gatewai.studio"
         }
       ]
+    },
+    "metrics": {
+      "registeredAt": "2026-10-05"
     }
   },
   {
@@ -144877,6 +144668,9 @@
           "url": "https://instagram.com/heytomo.app"
         }
       ]
+    },
+    "metrics": {
+      "registeredAt": "2026-03-02"
     }
   },
   {
@@ -144991,19 +144785,16 @@
     "trafficMetrics": {
       "monthlyVisits": 984,
       "monthlyVisitsGrowth": -84.1,
-      "organicSearchVisits": 0,
       "directVisits": 342,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 994,
       "snapshotMonth": "2026-09",
       "actor": "lergassy/similarweb-traffic-scraper"
     },
     "metrics": {
       "monthlyVisits": 984,
-      "organicVisits": 0,
       "directVisits": 342,
-      "momGrowth": -84.1
+      "momGrowth": -84.1,
+      "registeredAt": "2026-05-07"
     },
     "channelShares": {
       "direct": 34.8
@@ -145093,6 +144884,9 @@
           "url": "https://www.linkedin.com/company/prescott-data"
         }
       ]
+    },
+    "metrics": {
+      "registeredAt": "2022-10-07"
     }
   },
   {
@@ -145126,7 +144920,10 @@
     "screenshotMobileUrl": "/screenshots/monish.cc-mobile.png",
     "techStack": [
       "Cloudflare"
-    ]
+    ],
+    "metrics": {
+      "registeredAt": "2026-10-12"
+    }
   },
   {
     "id": "tool-ph-ilha-app",
@@ -145177,7 +144974,10 @@
         "plan": "方案 3",
         "price": "$200"
       }
-    ]
+    ],
+    "metrics": {
+      "registeredAt": "2026-10-17"
+    }
   },
   {
     "id": "tool-ph-deepcell-net",
@@ -145484,7 +145284,9 @@
       "syncedAt": "2026-11-04 10:50:17"
     },
     "metrics": {
-      "registeredAt": "2026-02-17"
+      "registeredAt": "2026-02-17",
+      "domainWeight": 9,
+      "domainWeightLabel": "DR"
     },
     "opportunity": {
       "score": 58,
@@ -145662,7 +145464,10 @@
         "plan": "方案 3",
         "price": "$780"
       }
-    ]
+    ],
+    "metrics": {
+      "registeredAt": "2025-10-03"
+    }
   },
   {
     "id": "tool-ph-openparrot-app",
@@ -145723,7 +145528,10 @@
         "plan": "方案 1",
         "price": "$79"
       }
-    ]
+    ],
+    "metrics": {
+      "registeredAt": "2026-09-23"
+    }
   },
   {
     "id": "tool-ph-ballmac-com",
@@ -145885,7 +145693,10 @@
         "plan": "方案 3",
         "price": "$149"
       }
-    ]
+    ],
+    "metrics": {
+      "registeredAt": "2026-08-30"
+    }
   },
   {
     "id": "tool-ph-luneresearch-com",
@@ -145917,10 +145728,7 @@
     "trafficMetrics": {
       "monthlyVisits": 8811,
       "monthlyVisitsGrowth": 3.3,
-      "organicSearchVisits": 0,
       "directVisits": 2993,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 13745,
       "avgVisitDurationSec": 45,
       "snapshotMonth": "2026-09",
@@ -145928,7 +145736,6 @@
     },
     "metrics": {
       "monthlyVisits": 8811,
-      "organicVisits": 0,
       "directVisits": 2993,
       "momGrowth": 3.3,
       "registeredAt": "2025-07-04",
@@ -146274,6 +146081,9 @@
     "contact": {
       "email": "hello@agibot.sh",
       "socials": []
+    },
+    "metrics": {
+      "registeredAt": "2026-10-08"
     }
   },
   {
@@ -146305,10 +146115,7 @@
     "trafficMetrics": {
       "monthlyVisits": 4454375,
       "monthlyVisitsGrowth": 9.2,
-      "organicSearchVisits": 0,
       "directVisits": 2092024,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 20356494,
       "avgVisitDurationSec": 261,
       "snapshotMonth": "2026-09",
@@ -146316,11 +146123,11 @@
     },
     "metrics": {
       "monthlyVisits": 4454375,
-      "organicVisits": 0,
       "directVisits": 2092024,
       "momGrowth": 9.2,
       "domainWeight": 11386,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2022-06-10"
     },
     "channelShares": {
       "direct": 47
@@ -146661,8 +146468,6 @@
       "monthlyVisits": 26768,
       "monthlyVisitsGrowth": -29.6,
       "organicSearchVisits": 12675,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 40955,
       "avgVisitDurationSec": 5,
       "snapshotMonth": "2026-09",
@@ -146674,7 +146479,8 @@
       "organicShare": 47.4,
       "momGrowth": -29.6,
       "domainWeight": 1134998,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2018-06-04"
     },
     "channelShares": {
       "organicSearch": 47.4
@@ -147001,10 +146807,7 @@
     "trafficMetrics": {
       "monthlyVisits": 8064,
       "monthlyVisitsGrowth": -37.7,
-      "organicSearchVisits": 0,
       "directVisits": 3274,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 10322,
       "avgVisitDurationSec": 2,
       "snapshotMonth": "2026-09",
@@ -147012,11 +146815,11 @@
     },
     "metrics": {
       "monthlyVisits": 8064,
-      "organicVisits": 0,
       "directVisits": 3274,
       "momGrowth": -37.7,
       "domainWeight": 2763790,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-07-19"
     },
     "channelShares": {
       "direct": 40.6
@@ -147375,10 +147178,7 @@
     "trafficMetrics": {
       "monthlyVisits": 1012660998,
       "monthlyVisitsGrowth": 6.6,
-      "organicSearchVisits": 0,
       "directVisits": 736292647,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 4222796362,
       "avgVisitDurationSec": 357,
       "snapshotMonth": "2026-09",
@@ -147386,11 +147186,11 @@
     },
     "metrics": {
       "monthlyVisits": 1012660998,
-      "organicVisits": 0,
       "directVisits": 736292647,
       "momGrowth": 6.6,
       "domainWeight": 38,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2018-08-04"
     },
     "channelShares": {
       "direct": 72.7
@@ -148168,10 +147968,7 @@
     "trafficMetrics": {
       "monthlyVisits": 2326094,
       "monthlyVisitsGrowth": -19.9,
-      "organicSearchVisits": 0,
       "directVisits": 1661831,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 61594969,
       "avgVisitDurationSec": 885,
       "snapshotMonth": "2026-09",
@@ -148179,11 +147976,11 @@
     },
     "metrics": {
       "monthlyVisits": 2326094,
-      "organicVisits": 0,
       "directVisits": 1661831,
       "momGrowth": -19.9,
       "domainWeight": 10108,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2026-01-05"
     },
     "channelShares": {
       "direct": 71.4
@@ -148656,10 +148453,7 @@
     "trafficMetrics": {
       "monthlyVisits": 2048828,
       "monthlyVisitsGrowth": -3.4,
-      "organicSearchVisits": 0,
       "directVisits": 1005001,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 8174824,
       "avgVisitDurationSec": 311,
       "snapshotMonth": "2026-09",
@@ -148667,7 +148461,6 @@
     },
     "metrics": {
       "monthlyVisits": 2048828,
-      "organicVisits": 0,
       "directVisits": 1005001,
       "momGrowth": -3.4,
       "registeredAt": "2023-02-09",
@@ -149061,10 +148854,7 @@
     "trafficMetrics": {
       "monthlyVisits": 149628,
       "monthlyVisitsGrowth": -19.3,
-      "organicSearchVisits": 0,
       "directVisits": 70635,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 306737,
       "avgVisitDurationSec": 70,
       "snapshotMonth": "2026-09",
@@ -149072,11 +148862,11 @@
     },
     "metrics": {
       "monthlyVisits": 149628,
-      "organicVisits": 0,
       "directVisits": 70635,
       "momGrowth": -19.3,
       "domainWeight": 312419,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-10-11"
     },
     "channelShares": {
       "direct": 47.2
@@ -149456,10 +149246,7 @@
     "trafficMetrics": {
       "monthlyVisits": 75452317,
       "monthlyVisitsGrowth": 3.8,
-      "organicSearchVisits": 0,
       "directVisits": 47737474,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 464031750,
       "avgVisitDurationSec": 523,
       "snapshotMonth": "2026-09",
@@ -149467,7 +149254,6 @@
     },
     "metrics": {
       "monthlyVisits": 75452317,
-      "organicVisits": 0,
       "directVisits": 47737474,
       "momGrowth": 3.8,
       "registeredAt": "2001-06-21",
@@ -149810,8 +149596,6 @@
       "monthlyVisits": 27101386,
       "monthlyVisitsGrowth": 0.9,
       "organicSearchVisits": 13482398,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 87537477,
       "avgVisitDurationSec": 204,
       "snapshotMonth": "2026-09",
@@ -149823,7 +149607,8 @@
       "organicShare": 49.7,
       "momGrowth": 0.9,
       "domainWeight": 1927,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-06-24"
     },
     "channelShares": {
       "organicSearch": 49.7
@@ -150169,8 +149954,6 @@
       "monthlyVisits": 2233618,
       "monthlyVisitsGrowth": -8.2,
       "organicSearchVisits": 1057071,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 6857207,
       "avgVisitDurationSec": 144,
       "snapshotMonth": "2026-09",
@@ -150182,7 +149965,8 @@
       "organicShare": 47.3,
       "momGrowth": -8.2,
       "domainWeight": 25140,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2020-02-11"
     },
     "channelShares": {
       "organicSearch": 47.3
@@ -150547,10 +150331,7 @@
     "trafficMetrics": {
       "monthlyVisits": 1281863,
       "monthlyVisitsGrowth": 2,
-      "organicSearchVisits": 0,
       "directVisits": 730795,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 4806986,
       "avgVisitDurationSec": 204,
       "snapshotMonth": "2026-09",
@@ -150558,7 +150339,6 @@
     },
     "metrics": {
       "monthlyVisits": 1281863,
-      "organicVisits": 0,
       "directVisits": 730795,
       "momGrowth": 2,
       "registeredAt": "2019-03-25",
@@ -151329,10 +151109,7 @@
     "trafficMetrics": {
       "monthlyVisits": 815780,
       "monthlyVisitsGrowth": -0.5,
-      "organicSearchVisits": 0,
       "directVisits": 344068,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 4421528,
       "avgVisitDurationSec": 232,
       "snapshotMonth": "2026-09",
@@ -151340,10 +151117,11 @@
     },
     "metrics": {
       "monthlyVisits": 815780,
-      "organicVisits": 0,
       "directVisits": 344068,
       "momGrowth": -0.5,
-      "registeredAt": "2022-04-08"
+      "registeredAt": "2022-04-08",
+      "domainWeight": 75,
+      "domainWeightLabel": "DR"
     },
     "channelShares": {
       "direct": 42.2
@@ -152139,8 +151917,6 @@
       "monthlyVisits": 564806,
       "monthlyVisitsGrowth": -7,
       "organicSearchVisits": 398507,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 1400719,
       "avgVisitDurationSec": 67,
       "snapshotMonth": "2026-09",
@@ -153011,10 +152787,7 @@
     "trafficMetrics": {
       "monthlyVisits": 26612,
       "monthlyVisitsGrowth": -1.3,
-      "organicSearchVisits": 0,
       "directVisits": 18290,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 158608,
       "avgVisitDurationSec": 219,
       "snapshotMonth": "2026-09",
@@ -153022,7 +152795,6 @@
     },
     "metrics": {
       "monthlyVisits": 26612,
-      "organicVisits": 0,
       "directVisits": 18290,
       "momGrowth": -1.3,
       "registeredAt": "2025-06-26",
@@ -153373,10 +153145,7 @@
     "trafficMetrics": {
       "monthlyVisits": 6869578,
       "monthlyVisitsGrowth": 3.8,
-      "organicSearchVisits": 0,
       "directVisits": 4989217,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 36202676,
       "avgVisitDurationSec": 283,
       "snapshotMonth": "2026-09",
@@ -153384,7 +153153,6 @@
     },
     "metrics": {
       "monthlyVisits": 6869578,
-      "organicVisits": 0,
       "directVisits": 4989217,
       "momGrowth": 3.8,
       "domainWeight": 7295,
@@ -153455,7 +153223,19 @@
     "screenshotMobileUrl": "/screenshots/bigmodel.cn-mobile.png",
     "techStack": [
       "Nginx"
-    ]
+    ],
+    "observations": {
+      "competitors": [
+        "zhipuai.cn",
+        "chatglm.cn",
+        "siliconflow.cn",
+        "mistral.ai",
+        "minimax.io",
+        "deepseek.com",
+        "anthropic.com",
+        "ollama.com"
+      ]
+    }
   },
   {
     "id": "tool-sw-dacon-io",
@@ -153478,10 +153258,7 @@
     "trafficMetrics": {
       "monthlyVisits": 147331,
       "monthlyVisitsGrowth": -23.2,
-      "organicSearchVisits": 0,
       "directVisits": 102627,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 990064,
       "avgVisitDurationSec": 527,
       "snapshotMonth": "2026-09",
@@ -153489,11 +153266,11 @@
     },
     "metrics": {
       "monthlyVisits": 147331,
-      "organicVisits": 0,
       "directVisits": 102627,
       "momGrowth": -23.2,
       "domainWeight": 219188,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2018-07-17"
     },
     "channelShares": {
       "direct": 69.7
@@ -153833,10 +153610,7 @@
     "trafficMetrics": {
       "monthlyVisits": 104829,
       "monthlyVisitsGrowth": 48.8,
-      "organicSearchVisits": 0,
       "directVisits": 47191,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 228527,
       "avgVisitDurationSec": 38,
       "snapshotMonth": "2026-09",
@@ -153844,7 +153618,6 @@
     },
     "metrics": {
       "monthlyVisits": 104829,
-      "organicVisits": 0,
       "directVisits": 47191,
       "momGrowth": 48.8,
       "registeredAt": "2025-11-05",
@@ -154223,10 +153996,7 @@
     "trafficMetrics": {
       "monthlyVisits": 81546,
       "monthlyVisitsGrowth": -23.7,
-      "organicSearchVisits": 0,
       "directVisits": 54497,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 511293,
       "avgVisitDurationSec": 373,
       "snapshotMonth": "2026-09",
@@ -154234,7 +154004,6 @@
     },
     "metrics": {
       "monthlyVisits": 81546,
-      "organicVisits": 0,
       "directVisits": 54497,
       "momGrowth": -23.7,
       "registeredAt": "2019-11-19",
@@ -154651,10 +154420,7 @@
     "trafficMetrics": {
       "monthlyVisits": 26411,
       "monthlyVisitsGrowth": -57.2,
-      "organicSearchVisits": 0,
       "directVisits": 12789,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 85836,
       "avgVisitDurationSec": 50,
       "snapshotMonth": "2026-09",
@@ -154662,7 +154428,6 @@
     },
     "metrics": {
       "monthlyVisits": 26411,
-      "organicVisits": 0,
       "directVisits": 12789,
       "momGrowth": -57.2,
       "registeredAt": "2025-02-28",
@@ -155004,10 +154769,7 @@
     "trafficMetrics": {
       "monthlyVisits": 13937,
       "monthlyVisitsGrowth": 6.6,
-      "organicSearchVisits": 0,
       "directVisits": 5599,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 21463,
       "avgVisitDurationSec": 7,
       "snapshotMonth": "2026-09",
@@ -155015,7 +154777,6 @@
     },
     "metrics": {
       "monthlyVisits": 13937,
-      "organicVisits": 0,
       "directVisits": 5599,
       "momGrowth": 6.6,
       "registeredAt": "2023-04-07",
@@ -155362,10 +155123,7 @@
     "trafficMetrics": {
       "monthlyVisits": 4284664,
       "monthlyVisitsGrowth": 5.6,
-      "organicSearchVisits": 0,
       "directVisits": 2215047,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 15639024,
       "avgVisitDurationSec": 153,
       "snapshotMonth": "2026-09",
@@ -155373,12 +155131,12 @@
     },
     "metrics": {
       "monthlyVisits": 4284664,
-      "organicVisits": 0,
       "directVisits": 2215047,
       "momGrowth": 5.6,
       "registeredAt": "2017-12-16",
       "domainWeight": 12922,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "channelShares": {
       "direct": 51.7
@@ -156235,10 +155993,7 @@
     "trafficMetrics": {
       "monthlyVisits": 355397,
       "monthlyVisitsGrowth": -7.5,
-      "organicSearchVisits": 0,
       "directVisits": 239734,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 714348,
       "avgVisitDurationSec": 24,
       "snapshotMonth": "2026-09",
@@ -156246,12 +156001,12 @@
     },
     "metrics": {
       "monthlyVisits": 355397,
-      "organicVisits": 0,
       "directVisits": 239734,
       "momGrowth": -7.5,
       "registeredAt": "2017-12-16",
       "domainWeight": 141182,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "channelShares": {
       "direct": 67.5
@@ -156766,8 +156521,6 @@
       "monthlyVisits": 212159,
       "monthlyVisitsGrowth": -9.4,
       "organicSearchVisits": 148008,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 335211,
       "avgVisitDurationSec": 13,
       "snapshotMonth": "2026-09",
@@ -157151,10 +156904,7 @@
     "trafficMetrics": {
       "monthlyVisits": 68386,
       "monthlyVisitsGrowth": 7.7,
-      "organicSearchVisits": 0,
       "directVisits": 29036,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 131985,
       "avgVisitDurationSec": 21,
       "snapshotMonth": "2026-09",
@@ -157162,7 +156912,6 @@
     },
     "metrics": {
       "monthlyVisits": 68386,
-      "organicVisits": 0,
       "directVisits": 29036,
       "momGrowth": 7.7,
       "registeredAt": "2021-12-07",
@@ -157828,8 +157577,6 @@
       "monthlyVisits": 17621,
       "monthlyVisitsGrowth": -11.8,
       "organicSearchVisits": 9596,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 48105,
       "avgVisitDurationSec": 30,
       "snapshotMonth": "2026-09",
@@ -158528,10 +158275,7 @@
     "trafficMetrics": {
       "monthlyVisits": 21097464,
       "monthlyVisitsGrowth": 6.5,
-      "organicSearchVisits": 0,
       "directVisits": 10073195,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 188822303,
       "avgVisitDurationSec": 463,
       "snapshotMonth": "2026-09",
@@ -158539,7 +158283,6 @@
     },
     "metrics": {
       "monthlyVisits": 21097464,
-      "organicVisits": 0,
       "directVisits": 10073195,
       "momGrowth": 6.5,
       "registeredAt": "2020-08-11",
@@ -158886,10 +158629,7 @@
     "trafficMetrics": {
       "monthlyVisits": 279253,
       "monthlyVisitsGrowth": -6.7,
-      "organicSearchVisits": 0,
       "directVisits": 76092,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 927120,
       "avgVisitDurationSec": 56,
       "snapshotMonth": "2026-09",
@@ -158897,7 +158637,6 @@
     },
     "metrics": {
       "monthlyVisits": 279253,
-      "organicVisits": 0,
       "directVisits": 76092,
       "momGrowth": -6.7,
       "registeredAt": "2023-12-18",
@@ -159476,10 +159215,7 @@
     "trafficMetrics": {
       "monthlyVisits": 70430,
       "monthlyVisitsGrowth": -17.6,
-      "organicSearchVisits": 0,
       "directVisits": 46572,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 507096,
       "avgVisitDurationSec": 226,
       "snapshotMonth": "2026-09",
@@ -159487,12 +159223,12 @@
     },
     "metrics": {
       "monthlyVisits": 70430,
-      "organicVisits": 0,
       "directVisits": 46572,
       "momGrowth": -17.6,
       "registeredAt": "2017-12-16",
       "domainWeight": 341146,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAtSuspect": true
     },
     "channelShares": {
       "direct": 66.1
@@ -160236,10 +159972,7 @@
     "trafficMetrics": {
       "monthlyVisits": 1423854,
       "monthlyVisitsGrowth": 9.4,
-      "organicSearchVisits": 0,
       "directVisits": 486263,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 4114938,
       "avgVisitDurationSec": 134,
       "snapshotMonth": "2026-09",
@@ -160247,11 +159980,11 @@
     },
     "metrics": {
       "monthlyVisits": 1423854,
-      "organicVisits": 0,
       "directVisits": 486263,
       "momGrowth": 9.4,
       "domainWeight": 40354,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2019-08-14"
     },
     "channelShares": {
       "direct": 34.2
@@ -161038,10 +160771,7 @@
     "trafficMetrics": {
       "monthlyVisits": 998335,
       "monthlyVisitsGrowth": -6.7,
-      "organicSearchVisits": 0,
       "directVisits": 468756,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 4602324,
       "avgVisitDurationSec": 153,
       "snapshotMonth": "2026-09",
@@ -161049,7 +160779,6 @@
     },
     "metrics": {
       "monthlyVisits": 998335,
-      "organicVisits": 0,
       "directVisits": 468756,
       "momGrowth": -6.7,
       "registeredAt": "2023-04-13",
@@ -161823,10 +161552,7 @@
     "trafficMetrics": {
       "monthlyVisits": 584067,
       "monthlyVisitsGrowth": -7.5,
-      "organicSearchVisits": 0,
       "directVisits": 311678,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 2967060,
       "avgVisitDurationSec": 224,
       "snapshotMonth": "2026-09",
@@ -161834,7 +161560,6 @@
     },
     "metrics": {
       "monthlyVisits": 584067,
-      "organicVisits": 0,
       "directVisits": 311678,
       "momGrowth": -7.5,
       "registeredAt": "2014-06-12",
@@ -162641,8 +162366,6 @@
       "monthlyVisits": 189761,
       "monthlyVisitsGrowth": -7.3,
       "organicSearchVisits": 114930,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 402293,
       "avgVisitDurationSec": 56,
       "snapshotMonth": "2026-09",
@@ -162654,7 +162377,8 @@
       "organicShare": 60.6,
       "momGrowth": -7.3,
       "domainWeight": 232390,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-12-13"
     },
     "channelShares": {
       "organicSearch": 60.6
@@ -163349,8 +163073,6 @@
       "monthlyVisits": 132766,
       "monthlyVisitsGrowth": 9.3,
       "organicSearchVisits": 81783,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 256238,
       "avgVisitDurationSec": 38,
       "snapshotMonth": "2026-09",
@@ -164001,8 +163723,6 @@
       "monthlyVisits": 114020,
       "monthlyVisitsGrowth": 16.7,
       "organicSearchVisits": 46505,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 247423,
       "avgVisitDurationSec": 34,
       "snapshotMonth": "2026-09",
@@ -164807,10 +164527,7 @@
     "trafficMetrics": {
       "monthlyVisits": 76737,
       "monthlyVisitsGrowth": -8.4,
-      "organicSearchVisits": 0,
       "directVisits": 36398,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 181099,
       "avgVisitDurationSec": 30,
       "snapshotMonth": "2026-09",
@@ -164818,11 +164535,11 @@
     },
     "metrics": {
       "monthlyVisits": 76737,
-      "organicVisits": 0,
       "directVisits": 36398,
       "momGrowth": -8.4,
       "domainWeight": 443764,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2022-08-02"
     },
     "channelShares": {
       "direct": 47.4
@@ -165616,10 +165333,7 @@
     "trafficMetrics": {
       "monthlyVisits": 32792,
       "monthlyVisitsGrowth": -6.8,
-      "organicSearchVisits": 0,
       "directVisits": 16123,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 78045,
       "avgVisitDurationSec": 26,
       "snapshotMonth": "2026-09",
@@ -165627,7 +165341,6 @@
     },
     "metrics": {
       "monthlyVisits": 32792,
-      "organicVisits": 0,
       "directVisits": 16123,
       "momGrowth": -6.8,
       "registeredAt": "2004-08-14",
@@ -166211,8 +165924,6 @@
       "monthlyVisits": 24229,
       "monthlyVisitsGrowth": 3.9,
       "organicSearchVisits": 10902,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 52092,
       "avgVisitDurationSec": 29,
       "snapshotMonth": "2026-09",
@@ -166224,7 +165935,8 @@
       "organicShare": 45,
       "momGrowth": 3.9,
       "domainWeight": 1073657,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-09-17"
     },
     "channelShares": {
       "organicSearch": 45
@@ -167012,10 +166724,7 @@
     "trafficMetrics": {
       "monthlyVisits": 886426,
       "monthlyVisitsGrowth": -8.7,
-      "organicSearchVisits": 0,
       "directVisits": 601389,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 2481993,
       "avgVisitDurationSec": 113,
       "snapshotMonth": "2026-09",
@@ -167023,7 +166732,6 @@
     },
     "metrics": {
       "monthlyVisits": 886426,
-      "organicVisits": 0,
       "directVisits": 601389,
       "momGrowth": -8.7,
       "registeredAt": "1998-11-25",
@@ -167363,9 +167071,6 @@
     "trafficMetrics": {
       "monthlyVisits": 849186,
       "monthlyVisitsGrowth": -6.1,
-      "organicSearchVisits": 0,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 1910669,
       "avgVisitDurationSec": 88,
       "snapshotMonth": "2026-09",
@@ -167373,10 +167078,10 @@
     },
     "metrics": {
       "monthlyVisits": 849186,
-      "organicVisits": 0,
       "momGrowth": -6.1,
       "domainWeight": 66391,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2021-11-13"
     },
     "channelShares": {
       "paidSearch": 38.2
@@ -167718,8 +167423,6 @@
       "monthlyVisits": 514588,
       "monthlyVisitsGrowth": -7.3,
       "organicSearchVisits": 388488,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 1003447,
       "avgVisitDurationSec": 47,
       "snapshotMonth": "2026-09",
@@ -167731,7 +167434,8 @@
       "organicShare": 75.5,
       "momGrowth": -7.3,
       "domainWeight": 108129,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-02-24"
     },
     "channelShares": {
       "organicSearch": 75.5
@@ -168591,8 +168295,6 @@
       "monthlyVisits": 71032,
       "monthlyVisitsGrowth": -29.8,
       "organicSearchVisits": 39018,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 206703,
       "avgVisitDurationSec": 65,
       "snapshotMonth": "2026-09",
@@ -169218,10 +168920,7 @@
     "trafficMetrics": {
       "monthlyVisits": 21194,
       "monthlyVisitsGrowth": -50.1,
-      "organicSearchVisits": 0,
       "directVisits": 7476,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 39845,
       "avgVisitDurationSec": 28,
       "snapshotMonth": "2026-09",
@@ -169229,11 +168928,11 @@
     },
     "metrics": {
       "monthlyVisits": 21194,
-      "organicVisits": 0,
       "directVisits": 7476,
       "momGrowth": -50.1,
       "domainWeight": 1246530,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2018-07-07"
     },
     "channelShares": {
       "direct": 35.3
@@ -170002,10 +169701,7 @@
     "trafficMetrics": {
       "monthlyVisits": 21267929,
       "monthlyVisitsGrowth": -3.4,
-      "organicSearchVisits": 0,
       "directVisits": 12422427,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 166315205,
       "avgVisitDurationSec": 351,
       "snapshotMonth": "2026-09",
@@ -170013,11 +169709,11 @@
     },
     "metrics": {
       "monthlyVisits": 21267929,
-      "organicVisits": 0,
       "directVisits": 12422427,
       "momGrowth": -3.4,
       "domainWeight": 1703,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-04-17"
     },
     "channelShares": {
       "direct": 58.4
@@ -170782,10 +170478,7 @@
     "trafficMetrics": {
       "monthlyVisits": 986630,
       "monthlyVisitsGrowth": -5.7,
-      "organicSearchVisits": 0,
       "directVisits": 622194,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 6215769,
       "avgVisitDurationSec": 364,
       "snapshotMonth": "2026-09",
@@ -170793,7 +170486,6 @@
     },
     "metrics": {
       "monthlyVisits": 986630,
-      "organicVisits": 0,
       "directVisits": 622194,
       "momGrowth": -5.7,
       "registeredAt": "1998-05-26",
@@ -171594,10 +171286,7 @@
     "trafficMetrics": {
       "monthlyVisits": 622402,
       "monthlyVisitsGrowth": -12.8,
-      "organicSearchVisits": 0,
       "directVisits": 302766,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 1780070,
       "avgVisitDurationSec": 140,
       "snapshotMonth": "2026-09",
@@ -171605,11 +171294,11 @@
     },
     "metrics": {
       "monthlyVisits": 622402,
-      "organicVisits": 0,
       "directVisits": 302766,
       "momGrowth": -12.8,
       "domainWeight": 81851,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2020-03-11"
     },
     "channelShares": {
       "direct": 48.6
@@ -172300,10 +171989,7 @@
     "trafficMetrics": {
       "monthlyVisits": 537734,
       "monthlyVisitsGrowth": 9.5,
-      "organicSearchVisits": 0,
       "directVisits": 455343,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 3102725,
       "avgVisitDurationSec": 332,
       "snapshotMonth": "2026-09",
@@ -172311,7 +171997,6 @@
     },
     "metrics": {
       "monthlyVisits": 537734,
-      "organicVisits": 0,
       "directVisits": 455343,
       "momGrowth": 9.5,
       "domainWeight": 78138,
@@ -173043,10 +172728,7 @@
     "trafficMetrics": {
       "monthlyVisits": 502318,
       "monthlyVisitsGrowth": -8.1,
-      "organicSearchVisits": 0,
       "directVisits": 282316,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 2094666,
       "avgVisitDurationSec": 153,
       "snapshotMonth": "2026-09",
@@ -173054,7 +172736,6 @@
     },
     "metrics": {
       "monthlyVisits": 502318,
-      "organicVisits": 0,
       "directVisits": 282316,
       "momGrowth": -8.1,
       "registeredAt": "2017-12-08",
@@ -173849,10 +173530,7 @@
     "trafficMetrics": {
       "monthlyVisits": 6000,
       "monthlyVisitsGrowth": 4.4,
-      "organicSearchVisits": 0,
       "directVisits": 2335,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 12900,
       "avgVisitDurationSec": 90,
       "snapshotMonth": "2026-09",
@@ -173860,11 +173538,11 @@
     },
     "metrics": {
       "monthlyVisits": 6000,
-      "organicVisits": 0,
       "directVisits": 2335,
       "momGrowth": 4.4,
       "domainWeight": 2918462,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2020-08-29"
     },
     "channelShares": {
       "direct": 38.9
@@ -174478,10 +174156,7 @@
     "trafficMetrics": {
       "monthlyVisits": 5251,
       "monthlyVisitsGrowth": 1,
-      "organicSearchVisits": 0,
       "directVisits": 2066,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 6774,
       "avgVisitDurationSec": 9,
       "snapshotMonth": "2026-09",
@@ -174489,7 +174164,6 @@
     },
     "metrics": {
       "monthlyVisits": 5251,
-      "organicVisits": 0,
       "directVisits": 2066,
       "momGrowth": 1,
       "domainWeight": 3721651,
@@ -174809,10 +174483,7 @@
     "trafficMetrics": {
       "monthlyVisits": 5131,
       "monthlyVisitsGrowth": -10,
-      "organicSearchVisits": 0,
       "directVisits": 1958,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 10878,
       "avgVisitDurationSec": 19,
       "snapshotMonth": "2026-09",
@@ -174820,11 +174491,11 @@
     },
     "metrics": {
       "monthlyVisits": 5131,
-      "organicVisits": 0,
       "directVisits": 1958,
       "momGrowth": -10,
       "domainWeight": 3260587,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-04-01"
     },
     "channelShares": {
       "direct": 38.2
@@ -175562,10 +175233,7 @@
     "trafficMetrics": {
       "monthlyVisits": 29019,
       "monthlyVisitsGrowth": -0.8,
-      "organicSearchVisits": 0,
       "directVisits": 11688,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 49332,
       "avgVisitDurationSec": 16,
       "snapshotMonth": "2026-09",
@@ -175573,11 +175241,11 @@
     },
     "metrics": {
       "monthlyVisits": 29019,
-      "organicVisits": 0,
       "directVisits": 11688,
       "momGrowth": -0.8,
       "domainWeight": 1031647,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2020-07-20"
     },
     "channelShares": {
       "direct": 40.3
@@ -176127,8 +175795,6 @@
       "monthlyVisits": 148913,
       "monthlyVisitsGrowth": -2.4,
       "organicSearchVisits": 53889,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 548000,
       "avgVisitDurationSec": 121,
       "snapshotMonth": "2026-09",
@@ -176140,7 +175806,8 @@
       "organicShare": 36.2,
       "momGrowth": -2.4,
       "domainWeight": 233274,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-09-06"
     },
     "channelShares": {
       "organicSearch": 36.2
@@ -176959,8 +176626,6 @@
       "monthlyVisits": 109210,
       "monthlyVisitsGrowth": -17.5,
       "organicSearchVisits": 48211,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 226065,
       "avgVisitDurationSec": 24,
       "snapshotMonth": "2026-09",
@@ -176972,7 +176637,8 @@
       "organicShare": 44.1,
       "momGrowth": -17.5,
       "domainWeight": 356894,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-12-08"
     },
     "channelShares": {
       "organicSearch": 44.1
@@ -177316,8 +176982,6 @@
       "monthlyVisits": 72692,
       "monthlyVisitsGrowth": -17,
       "organicSearchVisits": 29545,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 169372,
       "avgVisitDurationSec": 20,
       "snapshotMonth": "2026-09",
@@ -178166,8 +177830,6 @@
       "monthlyVisits": 42189,
       "monthlyVisitsGrowth": -7.5,
       "organicSearchVisits": 35727,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 67502,
       "avgVisitDurationSec": 17,
       "snapshotMonth": "2026-09",
@@ -178518,10 +178180,7 @@
     "trafficMetrics": {
       "monthlyVisits": 32971,
       "monthlyVisitsGrowth": -11,
-      "organicSearchVisits": 0,
       "directVisits": 13562,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 54732,
       "avgVisitDurationSec": 12,
       "snapshotMonth": "2026-09",
@@ -178529,11 +178188,11 @@
     },
     "metrics": {
       "monthlyVisits": 32971,
-      "organicVisits": 0,
       "directVisits": 13562,
       "momGrowth": -11,
       "domainWeight": 955253,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2025-01-04"
     },
     "channelShares": {
       "direct": 41.1
@@ -179086,10 +178745,7 @@
     "trafficMetrics": {
       "monthlyVisits": 29267,
       "monthlyVisitsGrowth": -40.9,
-      "organicSearchVisits": 0,
       "directVisits": 17788,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 42730,
       "avgVisitDurationSec": 6,
       "snapshotMonth": "2026-09",
@@ -179097,7 +178753,6 @@
     },
     "metrics": {
       "monthlyVisits": 29267,
-      "organicVisits": 0,
       "directVisits": 17788,
       "momGrowth": -40.9,
       "registeredAt": "2023-02-20",
@@ -179437,10 +179092,7 @@
     "trafficMetrics": {
       "monthlyVisits": 26946,
       "monthlyVisitsGrowth": -2.6,
-      "organicSearchVisits": 0,
       "directVisits": 19202,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 70599,
       "avgVisitDurationSec": 43,
       "snapshotMonth": "2026-09",
@@ -179448,11 +179100,11 @@
     },
     "metrics": {
       "monthlyVisits": 26946,
-      "organicVisits": 0,
       "directVisits": 19202,
       "momGrowth": -2.6,
       "domainWeight": 949779,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2020-11-19"
     },
     "channelShares": {
       "direct": 71.3
@@ -180217,10 +179869,7 @@
     "trafficMetrics": {
       "monthlyVisits": 23335,
       "monthlyVisitsGrowth": 6.8,
-      "organicSearchVisits": 0,
       "directVisits": 9329,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 41303,
       "avgVisitDurationSec": 10,
       "snapshotMonth": "2026-09",
@@ -180228,11 +179877,11 @@
     },
     "metrics": {
       "monthlyVisits": 23335,
-      "organicVisits": 0,
       "directVisits": 9329,
       "momGrowth": 6.8,
       "domainWeight": 1194644,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2025-10-30"
     },
     "channelShares": {
       "direct": 40
@@ -180904,10 +180553,7 @@
     "trafficMetrics": {
       "monthlyVisits": 4445,
       "monthlyVisitsGrowth": -9.5,
-      "organicSearchVisits": 0,
       "directVisits": 1606,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 8401,
       "avgVisitDurationSec": 53,
       "snapshotMonth": "2026-09",
@@ -180915,7 +180561,6 @@
     },
     "metrics": {
       "monthlyVisits": 4445,
-      "organicVisits": 0,
       "directVisits": 1606,
       "momGrowth": -9.5,
       "registeredAt": "2006-05-17",
@@ -181719,8 +181364,6 @@
       "monthlyVisits": 2511,
       "monthlyVisitsGrowth": 66.3,
       "organicSearchVisits": 807,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 14463,
       "avgVisitDurationSec": 567,
       "snapshotMonth": "2026-09",
@@ -181732,7 +181375,8 @@
       "organicShare": 32.1,
       "momGrowth": 66.3,
       "domainWeight": 3990168,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2018-10-24"
     },
     "channelShares": {
       "organicSearch": 32.1
@@ -182295,10 +181939,7 @@
     "trafficMetrics": {
       "monthlyVisits": 82192,
       "monthlyVisitsGrowth": 5.7,
-      "organicSearchVisits": 0,
       "directVisits": 36661,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 174247,
       "avgVisitDurationSec": 27,
       "snapshotMonth": "2026-09",
@@ -182306,11 +181947,11 @@
     },
     "metrics": {
       "monthlyVisits": 82192,
-      "organicVisits": 0,
       "directVisits": 36661,
       "momGrowth": 5.7,
       "domainWeight": 439066,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2020-04-14"
     },
     "channelShares": {
       "direct": 44.6
@@ -183115,10 +182756,7 @@
     "trafficMetrics": {
       "monthlyVisits": 16207,
       "monthlyVisitsGrowth": -18.9,
-      "organicSearchVisits": 0,
       "directVisits": 6605,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 29173,
       "avgVisitDurationSec": 12,
       "snapshotMonth": "2026-09",
@@ -183126,11 +182764,11 @@
     },
     "metrics": {
       "monthlyVisits": 16207,
-      "organicVisits": 0,
       "directVisits": 6605,
       "momGrowth": -18.9,
       "domainWeight": 1539069,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-06-01"
     },
     "channelShares": {
       "direct": 40.8
@@ -183501,10 +183139,7 @@
     "trafficMetrics": {
       "monthlyVisits": 11517,
       "monthlyVisitsGrowth": -32.5,
-      "organicSearchVisits": 0,
       "directVisits": 4581,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 19233,
       "avgVisitDurationSec": 13,
       "snapshotMonth": "2026-09",
@@ -183512,11 +183147,11 @@
     },
     "metrics": {
       "monthlyVisits": 11517,
-      "organicVisits": 0,
       "directVisits": 4581,
       "momGrowth": -32.5,
       "domainWeight": 1989085,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2023-08-04"
     },
     "channelShares": {
       "direct": 39.8
@@ -184083,10 +183718,7 @@
     "trafficMetrics": {
       "monthlyVisits": 3625201,
       "monthlyVisitsGrowth": -13.6,
-      "organicSearchVisits": 0,
       "directVisits": 1476428,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 20627394,
       "avgVisitDurationSec": 205,
       "snapshotMonth": "2026-09",
@@ -184094,7 +183726,6 @@
     },
     "metrics": {
       "monthlyVisits": 3625201,
-      "organicVisits": 0,
       "directVisits": 1476428,
       "momGrowth": -13.6,
       "registeredAt": "2007-07-22",
@@ -184578,8 +184209,6 @@
       "monthlyVisits": 552364,
       "monthlyVisitsGrowth": -19.5,
       "organicSearchVisits": 243493,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 1314626,
       "avgVisitDurationSec": 39,
       "snapshotMonth": "2026-09",
@@ -185384,8 +185013,6 @@
       "monthlyVisits": 399541,
       "monthlyVisitsGrowth": 19.7,
       "organicSearchVisits": 307627,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 914949,
       "avgVisitDurationSec": 46,
       "snapshotMonth": "2026-09",
@@ -185893,10 +185520,7 @@
     "trafficMetrics": {
       "monthlyVisits": 279848,
       "monthlyVisitsGrowth": -12.6,
-      "organicSearchVisits": 0,
       "directVisits": 158175,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 554099,
       "avgVisitDurationSec": 61,
       "snapshotMonth": "2026-09",
@@ -185904,11 +185528,12 @@
     },
     "metrics": {
       "monthlyVisits": 279848,
-      "organicVisits": 0,
       "directVisits": 158175,
       "momGrowth": -12.6,
       "domainWeight": 176299,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2017-12-16",
+      "registeredAtSuspect": true
     },
     "channelShares": {
       "direct": 56.5
@@ -186716,8 +186341,6 @@
       "monthlyVisits": 141986,
       "monthlyVisitsGrowth": -25.1,
       "organicSearchVisits": 45159,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 448676,
       "avgVisitDurationSec": 89,
       "snapshotMonth": "2026-09",
@@ -187300,8 +186923,6 @@
       "monthlyVisits": 105246,
       "monthlyVisitsGrowth": 10.7,
       "organicSearchVisits": 54794,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 293636,
       "avgVisitDurationSec": 74,
       "snapshotMonth": "2026-09",
@@ -187654,8 +187275,6 @@
       "monthlyVisits": 55392,
       "monthlyVisitsGrowth": 12.5,
       "organicSearchVisits": 30875,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 201073,
       "avgVisitDurationSec": 127,
       "snapshotMonth": "2026-09",
@@ -187667,7 +187286,8 @@
       "organicShare": 55.7,
       "momGrowth": 12.5,
       "domainWeight": 489907,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2025-04-13"
     },
     "channelShares": {
       "organicSearch": 55.7
@@ -188162,10 +187782,7 @@
     "trafficMetrics": {
       "monthlyVisits": 10750,
       "monthlyVisitsGrowth": 67.3,
-      "organicSearchVisits": 0,
       "directVisits": 4167,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 20210,
       "avgVisitDurationSec": 519,
       "snapshotMonth": "2026-09",
@@ -188173,11 +187790,11 @@
     },
     "metrics": {
       "monthlyVisits": 10750,
-      "organicVisits": 0,
       "directVisits": 4167,
       "momGrowth": 67.3,
       "domainWeight": 1998332,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2019-10-17"
     },
     "channelShares": {
       "direct": 38.8
@@ -188958,10 +188575,7 @@
     "trafficMetrics": {
       "monthlyVisits": 5184,
       "monthlyVisitsGrowth": -24.1,
-      "organicSearchVisits": 0,
       "directVisits": 2042,
-      "referralVisits": 0,
-      "socialVisits": 0,
       "monthlyPageviews": 6998,
       "avgVisitDurationSec": 17,
       "snapshotMonth": "2026-09",
@@ -188969,11 +188583,11 @@
     },
     "metrics": {
       "monthlyVisits": 5184,
-      "organicVisits": 0,
       "directVisits": 2042,
       "momGrowth": -24.1,
       "domainWeight": 4222442,
-      "domainWeightLabel": "全球排名"
+      "domainWeightLabel": "全球排名",
+      "registeredAt": "2018-01-10"
     },
     "channelShares": {
       "direct": 39.4

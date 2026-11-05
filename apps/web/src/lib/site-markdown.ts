@@ -43,7 +43,10 @@ export function buildSiteMarkdown(tool: AITool): string {
   if (m?.organicVisits !== undefined) L.push(`- 自然搜索量: ${m.organicVisits}`);
   if (tool.searchTraffic?.paid !== undefined) L.push(`- 付费搜索流量: ${tool.searchTraffic.paid}`);
   if (m?.domainWeight !== undefined) L.push(`- 域名权重${m.domainWeightLabel ? `（${m.domainWeightLabel}）` : ""}: ${m.domainWeight}`);
-  if (m?.registeredAt) L.push(`- 注册时间: ${m.registeredAt}`);
+  if (m?.registeredAt)
+    L.push(
+      `- 域名注册: ${m.registeredAt}${m.registeredAtSuspect ? "（注册局迁移日，非真实注册时间）" : ""}`,
+    );
   if (ai?.confidence) L.push(`- AI 置信度: ${ai.confidence}%`);
   if (tool.dataSnapshot?.period)
     L.push(
