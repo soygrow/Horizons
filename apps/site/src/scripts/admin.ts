@@ -71,6 +71,37 @@ interface PaymentItem {
   name: string | null;
 }
 
+interface PaywallButtonStat {
+  key: string;
+  label: string;
+  count: number;
+  people: number;
+  lastAt: number | null;
+}
+
+interface PaywallStats {
+  days: number;
+  totals: {
+    clicks: number;
+    users: number;
+    paidUsers: number;
+    lastAt: number | null;
+  };
+  buttons: PaywallButtonStat[];
+  daily: Array<{ date: string; count: number }>;
+}
+
+interface PaywallPerson {
+  userId: string;
+  email: string | null;
+  name: string | null;
+  paid: boolean;
+  total: number;
+  firstAt: number;
+  lastAt: number;
+  clicks: Record<string, number>;
+}
+
 const CSRF_HEADERS = {
   "content-type": "application/json",
   "x-requested-with": "horizons-admin",
@@ -195,6 +226,15 @@ const state = {
     status: "",
     loaded: false,
     data: null as Page<PaymentItem> | null,
+  },
+  paywall: {
+    days: 30,
+    stats: null as PaywallStats | null,
+    people: {
+      page: 1,
+      q: "",
+      data: null as Page<PaywallPerson> | null,
+    },
   },
 };
 
@@ -465,8 +505,9 @@ function renderPager<T>(
   el: HTMLElement,
   data: Page<T>,
   onChange: (page: number) => void,
+  unit = "条",
 ): void {
-  el.innerHTML = `<span>共 ${data.total} 条 · 第 ${data.page} / ${data.pages} 页</span>
+  el.innerHTML = `<span>共 ${data.total} ${unit} · 第 ${data.page} / ${data.pages} 页</span>
     <div class="flex gap-1.5">
       <button type="button" data-page="${data.page - 1}" ${data.page <= 1 ? "disabled" : ""} class="rounded-lg border border-border px-2.5 py-1 text-xs text-ink-secondary transition hover:border-border-strong hover:text-ink disabled:cursor-not-allowed disabled:opacity-40">上一页</button>
       <button type="button" data-page="${data.page + 1}" ${data.page >= data.pages ? "disabled" : ""} class="rounded-lg border border-border px-2.5 py-1 text-xs text-ink-secondary transition hover:border-border-strong hover:text-ink disabled:cursor-not-allowed disabled:opacity-40">下一页</button>
@@ -588,6 +629,121 @@ async function loadPayments(): Promise<void> {
   }
 }
 
+/* ---------------------------- 付费按钮点击统计 ---------------------------- */
+
+/**
+ * 人员表的固定列。key 必须与 apps/api/src/lib/paywall.ts 的白名单一致，
+ * 也对应 admin.astro 里的四个表头；新增按钮时三处一起改。
+ */
+const PAYWALL_COLUMNS = [
+  { key: "pricing.month.auto", label: "月付 · 自动续费" },
+  { key: "pricing.month.once", label: "月付 · 一次性" },
+  { key: "pricing.year.auto", label: "年付 · 自动续费" },
+  { key: "pricing.year.once", label: "年付 · 一次性" },
+] as const;
+
+function loadPaywall(): void {
+  void loadPaywallStats();
+  void loadPaywallPeople();
+}
+
+function paywallButtonRow(stat: PaywallButtonStat, max: number): string {
+  const width = max > 0 ? Math.round((stat.count / max) * 100) : 0;
+  return `<tr class="transition hover:bg-surface-2/50">
+    <td class="px-4 py-2.5">
+      <div class="text-[13px] text-ink">${esc(stat.label)}</div>
+      <div class="mt-0.5 font-mono text-[10px] text-ink-muted">${esc(stat.key)}</div>
+    </td>
+    <td class="px-4 py-2.5">
+      <div class="flex items-center gap-2">
+        <div class="h-1.5 w-24 overflow-hidden rounded-full bg-surface-2">
+          <div class="h-full rounded-full bg-primary" style="width:${width}%"></div>
+        </div>
+        <span class="text-xs font-medium tabular-nums text-ink">${stat.count}</span>
+      </div>
+    </td>
+    <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${stat.people}</td>
+    <td class="px-4 py-2.5 text-xs text-ink-secondary">${esc(fmtDateTime(stat.lastAt))}</td>
+  </tr>`;
+}
+
+function paywallPersonRow(person: PaywallPerson): string {
+  // 只有登录用户会入库，所以这里一定有账号：邮箱 > 昵称 > id 兜底
+  const who = person.email ?? person.name ?? person.userId.slice(0, 8);
+  const sub = person.name && person.email ? person.name : person.userId.slice(0, 16);
+  const identity = person.paid ? badge("已付费", "ok") : badge("未付费", "free");
+
+  const cells = PAYWALL_COLUMNS.map((col) => {
+    const n = person.clicks[col.key] ?? 0;
+    return `<td class="px-4 py-2.5 text-right text-xs tabular-nums ${n ? "font-medium text-ink" : "text-ink-muted"}">${n || "—"}</td>`;
+  }).join("");
+
+  return `<tr class="transition hover:bg-surface-2/50">
+    <td class="px-4 py-2.5">
+      <div class="max-w-[220px] truncate text-sm text-ink" title="${esc(who)}">${esc(who)}</div>
+      <div class="mt-0.5 max-w-[220px] truncate text-[11px] text-ink-muted" title="${esc(sub)}">${esc(sub)}</div>
+    </td>
+    <td class="px-4 py-2.5"><div class="flex flex-wrap gap-1">${identity}</div></td>
+    ${cells}
+    <td class="px-4 py-2.5 text-right text-xs font-semibold tabular-nums text-ink">${person.total}</td>
+    <td class="px-4 py-2.5 text-xs text-ink-secondary">${esc(fmtDateTime(person.lastAt))}</td>
+  </tr>`;
+}
+
+async function loadPaywallStats(): Promise<void> {
+  const button = $("paywall-refresh") as HTMLButtonElement;
+  button.disabled = true;
+  try {
+    const data = await api<PaywallStats>(`/paywall-clicks?days=${state.paywall.days}`);
+    state.paywall.stats = data;
+
+    $("paywall-kpi-clicks").textContent = String(data.totals.clicks);
+    $("paywall-kpi-people").textContent = String(data.totals.users);
+    $("paywall-kpi-paid").innerHTML = `${data.totals.paidUsers}<span class="text-xs font-normal text-ink-muted"> / ${data.totals.users} 人</span>`;
+    $("paywall-kpi-last").textContent = data.totals.lastAt ? fmtDateTime(data.totals.lastAt) : "暂无";
+
+    const max = Math.max(0, ...data.buttons.map((b) => b.count));
+    $("paywall-buttons-body").innerHTML = data.buttons.length
+      ? data.buttons.map((b) => paywallButtonRow(b, max)).join("")
+      : `<tr><td colspan="4" class="px-4 py-10 text-center text-xs text-ink-muted">这段时间还没有人点过付费按钮</td></tr>`;
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function loadPaywallPeople(): Promise<void> {
+  const query = new URLSearchParams({
+    page: String(state.paywall.people.page),
+    pageSize: "20",
+    days: String(state.paywall.days),
+  });
+  if (state.paywall.people.q) query.set("q", state.paywall.people.q);
+
+  try {
+    const data = await api<Page<PaywallPerson>>(`/paywall-people?${query.toString()}`);
+    state.paywall.people.data = data;
+    $("paywall-people-total").textContent = `${data.total} 人点过付费按钮`;
+
+    $("paywall-people-body").innerHTML = data.items.length
+      ? data.items.map(paywallPersonRow).join("")
+      : `<tr><td colspan="8" class="px-4 py-10 text-center text-xs text-ink-muted">还没有点击记录</td></tr>`;
+
+    renderPager(
+      $("paywall-people-pager"),
+      data,
+      (page) => {
+        state.paywall.people.page = page;
+        void loadPaywallPeople();
+      },
+      "人",
+    );
+  } catch (error) {
+    handleApiError(error);
+  }
+}
+
 /* --------------------------------- 交互 --------------------------------- */
 
 document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((btn) => {
@@ -603,7 +759,10 @@ document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((btn) =
     $("tab-fields").hidden = tab !== "fields";
 
     if (tab === "users") void loadUsers();
-    if (tab === "payments") void loadPayments();
+    if (tab === "payments") {
+      void loadPayments();
+      loadPaywall();
+    }
     if (tab === "fields" && !fieldHealth) void loadFieldHealth();
   });
 });
@@ -641,6 +800,22 @@ $("payments-search").addEventListener("input", onPaymentsSearch);
   state.payments.page = 1;
   void loadPayments();
 });
+
+$("paywall-refresh").addEventListener("click", () => loadPaywall());
+
+($("paywall-days") as HTMLSelectElement).addEventListener("change", (event) => {
+  state.paywall.days = Number((event.target as HTMLSelectElement).value) || 0;
+  state.paywall.people.page = 1;
+  loadPaywall();
+});
+
+const onPaywallSearch = debounce(() => {
+  state.paywall.people.q = ($("paywall-people-search") as HTMLInputElement).value.trim();
+  state.paywall.people.page = 1;
+  void loadPaywallPeople();
+});
+
+$("paywall-people-search").addEventListener("input", onPaywallSearch);
 
 /* ------------------------------ 数据字段健康度 ------------------------------ */
 

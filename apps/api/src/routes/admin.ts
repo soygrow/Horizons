@@ -16,6 +16,7 @@ import { Hono, type Context } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import type { Env } from "../env";
 import { base64UrlDecode, randomBytesBase64 } from "../lib/crypto";
+import { PAYWALL_BUTTONS, paywallButtonLabel } from "../lib/paywall";
 
 export const admin = new Hono<{ Bindings: Env }>();
 
@@ -694,6 +695,229 @@ admin.get("/payments", async (c) => {
       autoRenew: Boolean(r.subscription_id),
       email: r.email,
       name: r.name,
+    })),
+  });
+});
+
+/* --------------------------- 付费按钮点击统计 ---------------------------- */
+
+/**
+ * 只统计已登录用户的点击：匿名点击在 /api/track/paywall 就被丢弃，
+ * 所以人级归因没有歧义 —— 一行 user_id 就是一个人。
+ */
+
+/** 北京时间的日界（+8h），SQL 里用整除换算成天序号 */
+const TZ_OFFSET_MS = 8 * 3_600_000;
+const MAX_SEARCH_USERS = 200;
+
+interface PaywallButtonRow {
+  key: string;
+  label: string;
+  count: number;
+  people: number;
+  lastAt: number | null;
+}
+
+function parseButtonKeys(raw: string | null): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const key of (raw ?? "").split(",")) {
+    if (key) out[key] = (out[key] ?? 0) + 1;
+  }
+  return out;
+}
+
+admin.get("/paywall-clicks", async (c) => {
+  const env = c.env;
+  // days=0 表示全部时间
+  const days = clampInt(c.req.query("days"), 30, 0, 3_650);
+  const since = days > 0 ? Date.now() - days * DAY_MS : 0;
+
+  const [totalRes, paidRes, buttonRes, dailyRes] = await env.DB.batch([
+    env.DB.prepare(
+      `SELECT COUNT(*) AS clicks,
+              COUNT(DISTINCT user_id) AS users,
+              MAX(created_at) AS last
+         FROM paywall_clicks
+        WHERE created_at >= ?`,
+    ).bind(since),
+    // 点击过的人里有多少已经付过费：转化率比点击数本身更有用
+    env.DB.prepare(
+      `SELECT COUNT(DISTINCT c.user_id) AS c
+         FROM paywall_clicks c
+         JOIN orders o ON o.user_id = c.user_id AND o.status = 'paid'
+        WHERE c.created_at >= ?`,
+    ).bind(since),
+    env.DB.prepare(
+      `SELECT button_key, COUNT(*) AS c, COUNT(DISTINCT user_id) AS p, MAX(created_at) AS last
+         FROM paywall_clicks
+        WHERE created_at >= ?
+        GROUP BY button_key
+        ORDER BY c DESC`,
+    ).bind(since),
+    env.DB.prepare(
+      `SELECT (created_at + ?) / ? AS bucket, COUNT(*) AS c
+         FROM paywall_clicks
+        WHERE created_at >= ?
+        GROUP BY bucket
+        ORDER BY bucket`,
+    ).bind(TZ_OFFSET_MS, DAY_MS, since),
+  ]);
+
+  const totals = (totalRes?.results?.[0] ?? {}) as {
+    clicks?: number;
+    users?: number;
+    last?: number | null;
+  };
+  const paidUsers = ((paidRes?.results?.[0] ?? { c: 0 }) as { c: number }).c;
+  const rows = (buttonRes?.results ?? []) as {
+    button_key: string;
+    c: number;
+    p: number;
+    last: number;
+  }[];
+
+  // 白名单里的按钮即使 0 次也要出现，否则前端不知道有哪些按钮
+  const counts = new Map(rows.map((r) => [r.button_key, r]));
+  // 显式标注：下面要 push 白名单外的历史 key，不能让它收紧成字面量联合类型
+  const buttons: PaywallButtonRow[] = PAYWALL_BUTTONS.map((def) => {
+    const hit = counts.get(def.key);
+    return {
+      key: def.key,
+      label: def.label,
+      count: hit?.c ?? 0,
+      people: hit?.p ?? 0,
+      lastAt: hit?.last ?? null,
+    };
+  });
+
+  // 历史遗留（按钮被下线）的 key 也带上，避免老数据凭空消失
+  for (const row of rows) {
+    if (!buttons.some((b) => b.key === row.button_key)) {
+      buttons.push({
+        key: row.button_key,
+        label: paywallButtonLabel(row.button_key),
+        count: row.c,
+        people: row.p,
+        lastAt: row.last,
+      });
+    }
+  }
+
+  const daily = ((dailyRes?.results ?? []) as { bucket: number; c: number }[]).map((r) => ({
+    date: new Date(r.bucket * DAY_MS).toISOString().slice(0, 10),
+    count: r.c,
+  }));
+
+  return c.json({
+    days,
+    totals: {
+      clicks: totals.clicks ?? 0,
+      users: totals.users ?? 0,
+      paidUsers,
+      lastAt: totals.last ?? null,
+    },
+    buttons,
+    daily,
+  });
+});
+
+admin.get("/paywall-people", async (c) => {
+  const env = c.env;
+  const days = clampInt(c.req.query("days"), 30, 0, 3_650);
+  const since = days > 0 ? Date.now() - days * DAY_MS : 0;
+  const page = clampInt(c.req.query("page"), 1, 1, 10_000);
+  const pageSize = clampInt(c.req.query("pageSize"), 20, 1, MAX_PAGE_SIZE);
+  const offset = (page - 1) * pageSize;
+  const q = (c.req.query("q") ?? "").trim().slice(0, 100);
+
+  // 搜索只认账号：先命中用户表，命不中就直接返回空
+  const where: string[] = [];
+  const binds: unknown[] = [];
+  if (since > 0) {
+    where.push("created_at >= ?");
+    binds.push(since);
+  }
+  if (q) {
+    const res = await env.DB.prepare(
+      `SELECT id FROM users
+        WHERE email LIKE ? OR COALESCE(name, '') LIKE ?
+        ORDER BY created_at DESC
+        LIMIT ?`,
+    )
+      .bind(`%${q}%`, `%${q}%`, MAX_SEARCH_USERS)
+      .all<{ id: string }>();
+    const matchedIds = (res.results ?? []).map((r) => r.id);
+    if (!matchedIds.length) {
+      return c.json({ page, pageSize, total: 0, pages: 1, items: [] });
+    }
+    where.push(`user_id IN (${matchedIds.map(() => "?").join(",")})`);
+    binds.push(...matchedIds);
+  }
+  const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+  const [countRes, listRes] = await env.DB.batch([
+    env.DB.prepare(
+      `SELECT COUNT(*) AS c FROM (
+         SELECT 1 FROM paywall_clicks ${whereSql} GROUP BY user_id
+       )`,
+    ).bind(...binds),
+    env.DB.prepare(
+      `SELECT user_id AS uid,
+              COUNT(*) AS total,
+              MIN(created_at) AS first_at,
+              MAX(created_at) AS last_at,
+              group_concat(button_key) AS keys
+         FROM paywall_clicks
+         ${whereSql}
+        GROUP BY user_id
+        ORDER BY last_at DESC
+        LIMIT ? OFFSET ?`,
+    ).bind(...binds, pageSize, offset),
+  ]);
+
+  const total = ((countRes?.results?.[0] ?? { c: 0 }) as { c: number }).c;
+  const rows = (listRes?.results ?? []) as {
+    uid: string;
+    total: number;
+    first_at: number;
+    last_at: number;
+    keys: string | null;
+  }[];
+
+  // 补齐这一页的邮箱/姓名，以及是否已经付过费（转化情况比点击本身更有用）
+  const uids = rows.map((r) => r.uid);
+  const identity = new Map<string, { email: string | null; name: string | null }>();
+  const paidIds = new Set<string>();
+  if (uids.length) {
+    const placeholders = uids.map(() => "?").join(",");
+    const [userRes, paidRes] = await env.DB.batch([
+      env.DB.prepare(`SELECT id, email, name FROM users WHERE id IN (${placeholders})`).bind(...uids),
+      env.DB.prepare(
+        `SELECT DISTINCT user_id FROM orders WHERE status = 'paid' AND user_id IN (${placeholders})`,
+      ).bind(...uids),
+    ]);
+    for (const row of (userRes?.results ?? []) as { id: string; email: string; name: string | null }[]) {
+      identity.set(row.id, { email: row.email, name: row.name });
+    }
+    for (const row of (paidRes?.results ?? []) as { user_id: string }[]) {
+      paidIds.add(row.user_id);
+    }
+  }
+
+  return c.json({
+    page,
+    pageSize,
+    total,
+    pages: Math.max(1, Math.ceil(total / pageSize)),
+    items: rows.map((r) => ({
+      userId: r.uid,
+      email: identity.get(r.uid)?.email ?? null,
+      name: identity.get(r.uid)?.name ?? null,
+      paid: paidIds.has(r.uid),
+      total: r.total,
+      firstAt: r.first_at,
+      lastAt: r.last_at,
+      clicks: parseButtonKeys(r.keys),
     })),
   });
 });

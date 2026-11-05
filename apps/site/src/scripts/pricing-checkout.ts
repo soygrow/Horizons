@@ -9,6 +9,7 @@
  */
 
 import { getPaddle, loadPaddleJs, type PaddleEnv } from "../lib/paddle-overlay";
+import { trackPaywallClick } from "../lib/paywall-track";
 
 const PENDING_TXN_KEY = "hzn_pending_txn";
 
@@ -31,6 +32,12 @@ function setNotice(text: string | null) {
   }
   el.textContent = text;
   el.classList.remove("hidden");
+}
+
+function formatDay(ms: number): string {
+  const d = new Date(ms);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
 export function initPricingCheckout() {
@@ -65,13 +72,26 @@ export function initPricingCheckout() {
           body: JSON.stringify({ plan, autoRenew }),
         });
 
+        // 只有登录后的点击才计数：401 说明这次点击只是去登录，不算一次购买意图
+        if (res.status !== 401) {
+          trackPaywallClick(`pricing.${plan}.${autoRenew ? "auto" : "once"}`);
+        }
+
         if (res.status === 401) {
           window.location.href = `/api/auth/google?next=${encodeURIComponent("/pricing")}`;
           return;
         }
 
         if (res.status === 409) {
-          setNotice("你已有一个生效中的订阅，无需重复购买，可以直接使用 Pro 权益。");
+          const info = (await res.json().catch(() => null)) as {
+            proUntil?: number | null;
+          } | null;
+          const until = info?.proUntil;
+          setNotice(
+            typeof until === "number"
+              ? `你当前已是 Pro，有效期至 ${formatDay(until)}，到期后可再次购买。`
+              : "你已有一个生效中的订阅，无需重复购买，可以直接使用 Pro 权益。",
+          );
           return;
         }
 

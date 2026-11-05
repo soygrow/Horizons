@@ -231,7 +231,107 @@ const meta = {
         </section>
 
         <!-- 付费记录 -->
-        <section id="tab-payments" hidden>
+        <section id="tab-payments" hidden class="space-y-4">
+          <!-- 付费按钮点击 -->
+          <div class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+              <div class="min-w-0">
+                <h2 class="text-sm font-semibold">付费按钮点击</h2>
+                <p class="mt-1 text-xs text-ink-muted">
+                  只统计登录后的点击；匿名点击会先跳登录，不计入
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <select
+                  id="paywall-days"
+                  class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
+                >
+                  <option value="7">近 7 天</option>
+                  <option value="30" selected>近 30 天</option>
+                  <option value="90">近 90 天</option>
+                  <option value="0">全部</option>
+                </select>
+                <button
+                  id="paywall-refresh"
+                  type="button"
+                  class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  刷新
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-px bg-border sm:grid-cols-4">
+              <div class="bg-surface p-4">
+                <div class="text-[11px] text-ink-muted">总点击次数</div>
+                <div id="paywall-kpi-clicks" class="mt-1 text-2xl font-semibold tabular-nums">—</div>
+              </div>
+              <div class="bg-surface p-4">
+                <div class="text-[11px] text-ink-muted">点击人数</div>
+                <div id="paywall-kpi-people" class="mt-1 text-2xl font-semibold tabular-nums">—</div>
+              </div>
+              <div class="bg-surface p-4">
+                <div class="text-[11px] text-ink-muted">其中已付费</div>
+                <div id="paywall-kpi-paid" class="mt-1 text-2xl font-semibold tabular-nums">—</div>
+              </div>
+              <div class="bg-surface p-4">
+                <div class="text-[11px] text-ink-muted">最近点击</div>
+                <div id="paywall-kpi-last" class="mt-1 text-sm font-medium text-ink">—</div>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[720px] text-left text-sm">
+                <thead class="bg-surface-2/60 text-xs text-ink-muted">
+                  <tr>
+                    <th class="px-4 py-2.5 font-medium">按钮</th>
+                    <th class="px-4 py-2.5 font-medium">点击次数</th>
+                    <th class="px-4 py-2.5 text-right font-medium">人数</th>
+                    <th class="px-4 py-2.5 font-medium">最近一次</th>
+                  </tr>
+                </thead>
+                <tbody id="paywall-buttons-body" class="divide-y divide-border"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 点击过的人 -->
+          <div class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+              <div>
+                <h2 class="text-sm font-semibold">点击过的人</h2>
+                <p id="paywall-people-total" class="mt-1 text-xs text-ink-muted">—</p>
+              </div>
+              <input
+                id="paywall-people-search"
+                type="search"
+                placeholder="搜索邮箱或昵称"
+                class="w-44 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary sm:w-56"
+              />
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[980px] text-left text-sm">
+                <thead class="bg-surface-2/60 text-xs text-ink-muted">
+                  <tr>
+                    <th class="px-4 py-2.5 font-medium">人</th>
+                    <th class="px-4 py-2.5 font-medium">身份</th>
+                    <th id="paywall-col-month-auto" class="px-4 py-2.5 text-right font-medium">月付 · 自动续费</th>
+                    <th id="paywall-col-month-once" class="px-4 py-2.5 text-right font-medium">月付 · 一次性</th>
+                    <th id="paywall-col-year-auto" class="px-4 py-2.5 text-right font-medium">年付 · 自动续费</th>
+                    <th id="paywall-col-year-once" class="px-4 py-2.5 text-right font-medium">年付 · 一次性</th>
+                    <th class="px-4 py-2.5 text-right font-medium">合计</th>
+                    <th class="px-4 py-2.5 font-medium">最近</th>
+                  </tr>
+                </thead>
+                <tbody id="paywall-people-body" class="divide-y divide-border"></tbody>
+              </table>
+            </div>
+            <div
+              id="paywall-people-pager"
+              class="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-xs text-ink-muted"
+            ></div>
+          </div>
+
           <div class="rounded-2xl border border-border bg-surface">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
               <div>
