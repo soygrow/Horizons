@@ -26,7 +26,8 @@ app.get("/health", (c) => c.json({ ok: true, service: "horizons-api" }));
  */
 app.onError((err, c) => {
   console.error(`[api] ${c.req.method} ${c.req.path} →`, err instanceof Error ? err.stack : String(err));
-  return c.json({ error: "internal_error" }, 500);
+  const detail = err instanceof Error ? `${err.name}: ${err.message} | ${err.stack ?? ""}` : String(err);
+  return c.json({ error: "internal_error", detail: detail.slice(0, 900) }, 500);
 });
 
 export default app;
