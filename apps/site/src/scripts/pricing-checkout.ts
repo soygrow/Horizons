@@ -96,10 +96,15 @@ export function initPricingCheckout() {
         }
 
         if (!res.ok) {
+          const info = (await res.json().catch(() => null)) as {
+            paddleError?: string;
+          } | null;
           setNotice(
-            res.status === 503
-              ? "支付通道尚未配置完成，暂时无法下单。"
-              : "创建订单失败，请稍后重试。",
+            info?.paddleError
+              ? `创建订单失败：${info.paddleError}`
+              : res.status === 503
+                ? "支付通道尚未配置完成，暂时无法下单。"
+                : "创建订单失败，请稍后重试。",
           );
           return;
         }

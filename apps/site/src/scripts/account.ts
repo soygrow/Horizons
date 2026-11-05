@@ -477,6 +477,7 @@ export function initAccount() {
           clientToken?: string | null;
           paddleEnv?: PaddleEnv;
           proUntil?: number | null;
+          paddleError?: string;
         }>("/api/billing/checkout", { plan, autoRenew });
 
         if (res.status === 409) {
@@ -494,9 +495,11 @@ export function initAccount() {
         if (!res.ok || !res.data?.transactionId) {
           setBusy(false);
           showNotice(
-            res.status === 503
-              ? "支付通道尚未配置完成，暂时无法下单。"
-              : "创建订单失败，请稍后重试。",
+            res.data?.paddleError
+              ? `创建订单失败：${res.data.paddleError}`
+              : res.status === 503
+                ? "支付通道尚未配置完成，暂时无法下单。"
+                : "创建订单失败，请稍后重试。",
           );
           return;
         }

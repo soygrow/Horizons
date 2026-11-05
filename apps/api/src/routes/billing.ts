@@ -624,6 +624,14 @@ billing.post("/webhook", async (c) => {
 function paddleFailure(c: Context<{ Bindings: Env }>, e: unknown, scope: string) {
   console.error(`[paddle] ${scope} failed`, e);
   const status = e instanceof PaddleError ? e.status : 502;
-  return c.json({ error: "paddle_request_failed" }, status as ContentfulStatusCode);
+  // 沙箱阶段把上游错误原文带出来，方便定位（生产环境只返回统一错误码）
+  const diag =
+    c.env.PADDLE_ENV === "production"
+      ? {}
+      : { paddleError: e instanceof PaddleError ? e.message : String(e) };
+  return c.json(
+    { error: "paddle_request_failed", ...diag },
+    status as ContentfulStatusCode,
+  );
 }
 
