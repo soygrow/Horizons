@@ -10,6 +10,7 @@
 
 import { getPaddle, loadPaddleJs, type PaddleEnv } from "../lib/paddle-overlay";
 import { trackPaywallClick } from "../lib/paywall-track";
+import { hideToast, showToast } from "../lib/toast";
 
 const PENDING_TXN_KEY = "hzn_pending_txn";
 
@@ -23,15 +24,11 @@ interface CheckoutOk {
 }
 
 function setNotice(text: string | null) {
-  const el = document.getElementById("pricing-notice");
-  if (!el) return;
-  if (!text) {
-    el.classList.add("hidden");
-    el.textContent = "";
+  if (text) {
+    showToast(text);
     return;
   }
-  el.textContent = text;
-  el.classList.remove("hidden");
+  hideToast();
 }
 
 function formatDay(ms: number): string {

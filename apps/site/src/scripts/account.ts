@@ -8,6 +8,7 @@
  */
 
 import { getPaddle, loadPaddleJs, type PaddleEnv } from "../lib/paddle-overlay";
+import { hideToast, showToast } from "../lib/toast";
 
 interface SessionUser {
   id: string;
@@ -175,13 +176,11 @@ export function initAccount() {
   let busy = false;
 
   function showNotice(text: string) {
-    if (!els.notice) return;
-    els.notice.textContent = text;
-    els.notice.classList.remove("hidden");
+    showToast(text, 8000);
   }
 
   function hideNotice() {
-    els.notice?.classList.add("hidden");
+    hideToast();
   }
 
   function setBusy(next: boolean) {
