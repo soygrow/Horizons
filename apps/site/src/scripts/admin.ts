@@ -187,7 +187,7 @@ function badge(text: string, tone: "pro" | "free" | "warn" | "danger" | "ok"): s
 const state = {
   stats: null as Stats | null,
   chartCurrency: "",
-  tab: "overview" as "overview" | "users" | "payments",
+  tab: "overview" as "overview" | "users" | "payments" | "fields",
   users: { page: 1, q: "", type: "all", loaded: false, data: null as Page<UserItem> | null },
   payments: {
     page: 1,
@@ -600,9 +600,11 @@ document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((btn) =
     $("tab-overview").hidden = tab !== "overview";
     $("tab-users").hidden = tab !== "users";
     $("tab-payments").hidden = tab !== "payments";
+    $("tab-fields").hidden = tab !== "fields";
 
     if (tab === "users") void loadUsers();
     if (tab === "payments") void loadPayments();
+    if (tab === "fields" && !fieldHealth) void loadFieldHealth();
   });
 });
 
@@ -639,6 +641,166 @@ $("payments-search").addEventListener("input", onPaymentsSearch);
   state.payments.page = 1;
   void loadPayments();
 });
+
+/* ------------------------------ 数据字段健康度 ------------------------------ */
+
+type FieldRowStat = {
+  key: string;
+  label: string;
+  source: string;
+  risk: string;
+  type: string;
+  optional: boolean;
+  filled: number;
+  total: number;
+  coverage: number;
+  level: "ok" | "warn" | "bad" | "muted";
+};
+
+type FieldBlockStat = {
+  id: string;
+  name: string;
+  route: string;
+  file: string;
+  note: string | null;
+  items: number;
+  fieldCount: number;
+  updatedAt: string | null;
+  groups: { name: string; fields: FieldRowStat[] }[];
+};
+
+type FieldHealth = {
+  generatedAt: string;
+  totals: { fields: number; gaps: number; blocks: number };
+  blocks: FieldBlockStat[];
+};
+
+const FIELD_TYPE: Record<string, { text: string; color: string }> = {
+  o: { text: "官方接口", color: "#2563eb" },
+  e: { text: "第三方", color: "#6b7280" },
+  d: { text: "站内派生", color: "#7c3aed" },
+  l: { text: "模型生成", color: "#ea580c" },
+  m: { text: "人工维护", color: "#059669" },
+};
+
+const LEVEL_COLOR: Record<string, string> = {
+  ok: "#16a34a",
+  warn: "#d97706",
+  bad: "#dc2626",
+  muted: "#9ca3af",
+};
+
+let fieldHealth: FieldHealth | null = null;
+
+function dataAge(iso: string | null): { text: string; level: string } {
+  if (!iso) return { text: "时间未知", level: "muted" };
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+  if (days <= 0) return { text: "今天", level: "ok" };
+  if (days <= 2) return { text: `${days} 天前`, level: "ok" };
+  if (days <= 7) return { text: `${days} 天前`, level: "warn" };
+  return { text: `${days} 天前`, level: "bad" };
+}
+
+function fieldRow(row: FieldRowStat, isDoc = false): string {
+  const color = LEVEL_COLOR[row.level] ?? LEVEL_COLOR.muted;
+  const meta = FIELD_TYPE[row.type] ?? FIELD_TYPE.d;
+  const covered = row.level === "muted" ? "常态缺失" : isDoc ? (row.filled ? "有值" : "缺失") : `${row.coverage}%`;
+  return `<tr class="align-top border-t border-border/60">
+    <td class="px-4 py-2.5">
+      <div class="text-[13px] font-medium text-ink">${esc(row.label)}</div>
+      <div class="mt-0.5 font-mono text-[10px] text-ink-muted">${esc(row.key)}</div>
+    </td>
+    <td class="px-4 py-2.5">
+      <div class="flex flex-wrap items-center gap-1.5">
+        <span class="rounded px-1.5 py-0.5 text-[10px] font-medium" style="color:${meta.color};background:${meta.color}14">${meta.text}</span>
+        <span class="text-xs text-ink-secondary">${esc(row.source)}</span>
+      </div>
+    </td>
+    <td class="whitespace-nowrap px-4 py-2.5">
+      <div class="flex items-center gap-2">
+        <div class="h-1.5 w-16 overflow-hidden rounded-full bg-surface-2">
+          <div class="h-full rounded-full" style="width:${Math.max(row.coverage, row.filled ? 2 : 0)}%;background:${color}"></div>
+        </div>
+        <span class="w-14 text-xs font-medium tabular-nums" style="color:${color}">${covered}</span>
+        ${isDoc ? "" : `<span class="text-[11px] tabular-nums text-ink-muted">${row.filled}/${row.total}</span>`}
+      </div>
+    </td>
+    <td class="px-4 py-2.5 text-xs leading-relaxed text-ink-secondary">
+      ${esc(row.risk)}${row.optional ? '<span class="ml-1 text-[10px] text-ink-muted">（可缺省）</span>' : ""}
+    </td>
+  </tr>`;
+}
+
+function fieldBlockCard(block: FieldBlockStat): string {
+  const age = dataAge(block.updatedAt);
+  const ageColor = LEVEL_COLOR[age.level] ?? LEVEL_COLOR.muted;
+  const groups = block.groups
+    .map(
+      (group) => `<div class="border-t border-border">
+        <div class="bg-surface-2/40 px-4 py-2 text-[11px] font-medium text-ink-secondary">${esc(group.name)}</div>
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[880px] text-left">
+            <thead class="text-[11px] text-ink-muted">
+              <tr>
+                <th class="px-4 py-1.5 font-medium">字段</th>
+                <th class="px-4 py-1.5 font-medium">获取来源</th>
+                <th class="px-4 py-1.5 font-medium">覆盖情况</th>
+                <th class="px-4 py-1.5 font-medium">可能的问题</th>
+              </tr>
+            </thead>
+            <tbody>${group.fields.map((f) => fieldRow(f, block.items === 0)).join("")}</tbody>
+          </table>
+        </div>
+      </div>`,
+    )
+    .join("");
+
+  return `<article class="overflow-hidden rounded-2xl border border-border bg-surface">
+    <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
+      <div class="flex flex-wrap items-baseline gap-2">
+        <h3 class="text-sm font-semibold">${esc(block.name)}</h3>
+        <a href="${esc(block.route)}" target="_blank" rel="noopener" class="text-[11px] text-primary hover:underline">${esc(block.route)}</a>
+        <span class="text-[11px] text-ink-muted">${block.items ? `${block.items} 条 · ` : ""}${block.fieldCount} 个字段</span>
+        ${block.note ? `<span class="text-[11px] text-ink-muted">· ${esc(block.note)}</span>` : ""}
+      </div>
+      <span class="text-[11px]" style="color:${ageColor}">数据 ${age.text}</span>
+    </div>
+    ${groups}
+  </article>`;
+}
+
+function renderFieldHealth(): void {
+  if (!fieldHealth) return;
+  const { totals, blocks, generatedAt } = fieldHealth;
+  $("fields-summary").textContent = `${totals.blocks} 个页面块 · ${totals.fields} 个字段 · ${totals.gaps} 个必填缺口 · 快照 ${new Date(generatedAt).toLocaleString("zh-CN", { hour12: false })}`;
+  $("fields-body").innerHTML = blocks.map(fieldBlockCard).join("");
+}
+
+async function loadFieldHealth(force = false): Promise<void> {
+  const button = $("fields-reload") as HTMLButtonElement;
+  const note = $("fields-reload-note");
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = "获取中…";
+  try {
+    const res = await fetch(`/data/field-health.json${force ? `?t=${Date.now()}` : ""}`, {
+      cache: force ? "no-store" : "default",
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    fieldHealth = (await res.json()) as FieldHealth;
+    renderFieldHealth();
+    note.textContent = `最近获取 ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
+  } catch {
+    note.textContent = "读取失败";
+    $("fields-body").innerHTML =
+      '<p class="rounded-2xl border border-border bg-surface p-4 text-xs text-ink-muted">没有读到 field-health.json：先跑一次 pnpm data 或 pnpm build 生成快照，再回来点「重新获取」。</p>';
+  } finally {
+    button.disabled = false;
+    button.textContent = label;
+  }
+}
+
+$("fields-reload").addEventListener("click", () => void loadFieldHealth(true));
 
 /* --------------------------------- 启动 --------------------------------- */
 
