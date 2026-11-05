@@ -66,6 +66,15 @@ interface PasswordHash {
   hash: Uint8Array;
 }
 
+/**
+ * Cloudflare Workers 的 WebCrypto 对 PBKDF2 有硬上限：迭代次数 > 100,000 会抛
+ * `NotSupportedError: Pbkdf2 failed: iteration counts above 100000 are not supported`。
+ * 本地 miniflare 走 Node 实现没有这个限制，所以「本地能登、线上 500」只会在部署后暴露。
+ * 这里显式卡住上限，配置越界时直接报配置错误，而不是让请求崩成 500。
+ */
+const MIN_ITERATIONS = 10_000;
+const MAX_ITERATIONS = 100_000;
+
 /** 解析 `pbkdf2$sha256$<iter>$<saltB64Url>$<hashB64Url>`，格式不对一律拒绝 */
 function parsePasswordHash(raw: string): PasswordHash | null {
   const parts = raw.trim().split("$");
@@ -73,7 +82,9 @@ function parsePasswordHash(raw: string): PasswordHash | null {
   const [scheme, digest, iterRaw, saltRaw, hashRaw] = parts;
   if (scheme !== "pbkdf2" || digest !== "sha256") return null;
   const iterations = Number.parseInt(iterRaw ?? "", 10);
-  if (!Number.isFinite(iterations) || iterations < 10_000 || iterations > 2_000_000) return null;
+  if (!Number.isFinite(iterations) || iterations < MIN_ITERATIONS || iterations > MAX_ITERATIONS) {
+    return null;
+  }
   try {
     const salt = base64UrlDecode(saltRaw ?? "");
     const hash = base64UrlDecode(hashRaw ?? "");
@@ -208,9 +219,13 @@ admin.use("*", async (c, next) => {
 
 admin.post("/login", async (c) => {
   const { ADMIN_USERNAME, ADMIN_PASSWORD_HASH } = c.env;
-  const parsed = ADMIN_PASSWORD_HASH ? parsePasswordHash(ADMIN_PASSWORD_HASH) : null;
-  if (!ADMIN_USERNAME || !parsed) {
+  if (!ADMIN_USERNAME || !ADMIN_PASSWORD_HASH) {
     return c.json({ error: "admin_not_configured" }, 503);
+  }
+  const parsed = parsePasswordHash(ADMIN_PASSWORD_HASH);
+  if (!parsed) {
+    // 哈希格式不合法，或迭代次数超出 Workers 的 100,000 上限：这是配置问题，不是密码错
+    return c.json({ error: "admin_hash_unsupported" }, 503);
   }
 
   let body: unknown;
@@ -244,10 +259,15 @@ admin.post("/login", async (c) => {
   }
 
   // 无论用户名对不对都跑一次 PBKDF2：耗时一致，不能靠响应快慢猜用户名
-  const [userOk, derived] = await Promise.all([
-    safeEqual(username, ADMIN_USERNAME),
-    derivePassword(password, parsed.salt, parsed.iterations),
-  ]);
+  const userOkPromise = safeEqual(username, ADMIN_USERNAME);
+  let derived: Uint8Array;
+  try {
+    derived = await derivePassword(password, parsed.salt, parsed.iterations);
+  } catch {
+    // 运行时仍拒绝（不同账号/套餐的 WebCrypto 限制可能有差异），按配置错误返回
+    return c.json({ error: "admin_hash_unsupported" }, 503);
+  }
+  const userOk = await userOkPromise;
   const passOk = equalBytes(derived, parsed.hash);
 
   if (!userOk || !passOk) {

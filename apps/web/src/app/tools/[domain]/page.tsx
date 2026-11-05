@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { tools, getToolByDomain, getMoMGrowth, getLaunchedAt } from "@/lib/data";
+import { listedTools, getToolByDomain, getMoMGrowth, getLaunchedAt, isListed } from "@/lib/data";
 import { CopyDataButton } from "@/components/detail/CopyDataButton";
 import { FavoriteButton } from "@/components/detail/FavoriteButton";
 import { ScreenshotLightbox } from "@/components/detail/ScreenshotLightbox";
@@ -187,7 +187,7 @@ function Split({ left, right }: { left: ReactNode; right: ReactNode }) {
 /* --------------------------------- 数据组装 -------------------------------- */
 
 export function generateStaticParams() {
-  return tools.map((t) => ({ domain: t.domain }));
+  return listedTools.map((t) => ({ domain: t.domain }));
 }
 
 export async function generateMetadata({
@@ -208,7 +208,8 @@ export default async function ToolDetailPage({
 }) {
   const { domain } = await params;
   const tool = getToolByDomain(domain);
-  if (!tool) notFound();
+  // 黑名单 / 未达门槛的站不进榜，详情页同样 404，避免被外链与搜索绕进来
+  if (!tool || !isListed(tool)) notFound();
 
   const ai = tool.aiInsight;
   const td = tool.trafficDecrypt;

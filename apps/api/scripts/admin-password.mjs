@@ -13,8 +13,13 @@
 import { pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
 import process, { stdin, stdout } from "node:process";
 
-const ITERATIONS = 210_000;
-const MIN_LENGTH = 12;
+/**
+ * Cloudflare Workers 的 WebCrypto 对 PBKDF2 有硬上限 100,000 次迭代，
+ * 超过会在线上抛 NotSupportedError（本地 dev 不会报错，很容易漏到部署后才发现）。
+ * 所以这里直接按上限生成，并靠「更长的密码 + 登录限流 + 8 小时会话」补强度。
+ */
+const ITERATIONS = 100_000;
+const MIN_LENGTH = 16;
 
 function base64Url(buffer) {
   return buffer.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -63,7 +68,7 @@ const fromArgv = process.argv[2];
 const password = fromEnv ?? fromArgv ?? (await promptHidden("设置后台密码（不回显）: "));
 
 if (password.length < MIN_LENGTH) {
-  console.error(`密码至少 ${MIN_LENGTH} 位，建议 16 位以上并混用大小写、数字与符号。`);
+  console.error(`密码至少 ${MIN_LENGTH} 位，建议 20 位以上并混用大小写、数字与符号。`);
   process.exit(1);
 }
 

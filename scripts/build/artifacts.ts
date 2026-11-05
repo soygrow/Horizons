@@ -363,7 +363,9 @@ async function main() {
   // 榜单顺序 = 综合得分名次：rank 在此固化，筛选、排序、翻页都不会改变它
   const toolRows = getToolsByScore().map((t, i) => toToolRow(t, i + 1));
 
-  const toolDetail = tools.map((t) => ({
+  // 详情页只对「已进榜」的站生成：黑名单（大厂主站 / 非独立 AI 产品）与未达门槛的站
+  // 连详情页都不产出，避免从搜索、外链或相似推荐绕回榜单
+  const toolDetail = listedTools.map((t) => ({
     rel: `tools/detail/${t.domain}.json`,
     data: { data: t, derived: toToolRow(t, 0) },
   }));
@@ -372,7 +374,7 @@ async function main() {
     generatedAt: GENERATED_AT,
     categories: allCategories.map((c) => ({
       value: c,
-      count: tools.filter((t) => t.categories.includes(c)).length,
+      count: listedTools.filter((t) => t.categories.includes(c)).length,
     })),
     sorts: [
       { value: "hot", label: "热度" },

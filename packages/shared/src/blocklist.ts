@@ -10,6 +10,7 @@
 export const PLATFORM_BLOCKLIST: readonly string[] = [
   "microsoft.com",
   "google.com",
+  "labs.google", // .google 是 gTLD，后缀匹配不到 google.com，需单列
   "apple.com",
   "amazon.com",
   "cloudflare.com",
@@ -18,6 +19,7 @@ export const PLATFORM_BLOCKLIST: readonly string[] = [
   "notion.so",
   "slack.com",
   "zoom.us",
+  "xiaomi.com", // 手机/硬件厂商官网，AI 只是产品页里的一个型号
 ];
 
 /**
@@ -28,7 +30,11 @@ export const AI_FIT_BLOCKLIST: readonly string[] = [
   "notion.com", // 与 notion.so 同一产品，协作平台而非 AI 原生工具
   "1password.com", // 密码管理器，agent 只是附加功能
   "bigmodel.cn", // 大模型开放平台，属平台/基础设施
-  "claude.com", // 与 claude.ai 重复收录，保留使用入口 claude.ai
+  "claude.com", // Anthropic 官方站，非独立可复刻的 AI 工具
+  "claude.ai", // 同上：厂商官方对话入口，不是受众要做的产品
+  "deepseek.com", // 同上：模型厂商官方站
+  "jotform.com", // 表单工具，AI 只是附加功能（与 1password 同类）
+  "gitbook.com", // 文档工具，AI 只是附加功能
 ];
 
 /** 判断域名是否命中任一黑名单（含子域，如 learn.microsoft.com） */

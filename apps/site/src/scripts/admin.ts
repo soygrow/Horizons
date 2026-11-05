@@ -205,6 +205,19 @@ const appView = $("app-view");
 const loginForm = $("login-form") as HTMLFormElement;
 const loginError = $("login-error");
 const loginSubmit = $("login-submit") as HTMLButtonElement;
+const passwordInput = $("login-password") as HTMLInputElement;
+const togglePassword = $("toggle-password") as HTMLButtonElement;
+
+/* 密码明文切换：只改 input 的 type，值不复制到别处，也不留任何副本 */
+togglePassword.addEventListener("click", () => {
+  const show = passwordInput.type === "password";
+  passwordInput.type = show ? "text" : "password";
+  togglePassword.setAttribute("aria-pressed", String(show));
+  togglePassword.setAttribute("aria-label", show ? "隐藏密码" : "显示密码");
+  $("icon-eye").classList.toggle("hidden", show);
+  $("icon-eye-off").classList.toggle("hidden", !show);
+  passwordInput.focus({ preventScroll: true });
+});
 
 function setLoginError(message: string | null): void {
   loginError.textContent = message ?? "";
@@ -262,7 +275,13 @@ loginForm.addEventListener("submit", async (event) => {
     else if (err.status === 429) {
       const minutes = Math.max(1, Math.ceil((err.retryAfter ?? 900) / 60));
       setLoginError(`尝试次数过多，请 ${minutes} 分钟后再试`);
-    } else if (err.status === 503) setLoginError("后台账号尚未配置（ADMIN_USERNAME / ADMIN_PASSWORD_HASH）");
+    } else if (err.status === 503) {
+      setLoginError(
+        err.code === "admin_hash_unsupported"
+          ? "服务端密码哈希不可用（PBKDF2 迭代次数需 ≤ 100000），请用 admin-password.mjs 重新生成后更新 ADMIN_PASSWORD_HASH"
+          : "后台账号尚未配置（ADMIN_USERNAME / ADMIN_PASSWORD_HASH）",
+      );
+    }
     else setLoginError("登录失败，请稍后再试");
     loginSubmit.disabled = false;
     loginSubmit.textContent = "登录";
