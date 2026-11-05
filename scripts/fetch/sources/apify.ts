@@ -3,6 +3,7 @@
  * 主：vortex_data/similarweb-scraper；备：lergassy/similarweb-traffic-scraper。
  * 获取「产品表现」8 指标；低流量站渠道份额 null 时兜底为 0。
  */
+import { createHash } from "node:crypto";
 import type { KeywordItem } from "@horizons/shared";
 import { config } from "../config";
 import { cachedCall } from "../api-cache";
@@ -460,6 +461,106 @@ async function fetchDomainRatingRaw(domain: string): Promise<number | null> {
     /* ignore */
   }
   return null;
+}
+
+/**
+ * 批量取 Ahrefs DR。
+ * 该 Actor 名为 bulk-domain-rating-checker，一次可传多个 targets，只付一次启动开销。
+ * 逐域计价仍为 $0.0028，批量只省时间不省钱，但能把 178 站从 ~1 小时压到几分钟。
+ */
+export async function fetchDomainRatingBatch(domains: string[]): Promise<Map<string, number>> {
+  const out = new Map<string, number>();
+  if (domains.length === 0) return out;
+  const key = createHash("sha256").update(domains.join("|")).digest("hex").slice(0, 16);
+  const items = await cachedCall<DomainRatingItem[]>(
+    {
+      provider: "apify",
+      endpoint: "datascraperes/bulk-domain-rating-checker#batch",
+      key,
+      costUsd: APIFY_COST_PER_DOMAIN * domains.length,
+      ttlDays: 90,
+    },
+    async () => {
+      const token = process.env.APIFY_TOKEN!;
+      const res = await fetch(
+        `https://api.apify.com/v2/acts/datascraperes~bulk-domain-rating-checker/run-sync-get-dataset-items?token=${encodeURIComponent(token)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "User-Agent": config.userAgent },
+          body: JSON.stringify({ targets: domains.map((d) => `https://${d}`) }),
+          signal: AbortSignal.timeout(600_000),
+        },
+      );
+      if (!res.ok) throw new Error(`DR batch ${res.status}`);
+      return (await res.json()) as DomainRatingItem[];
+    },
+  );
+  for (const it of items ?? []) {
+    const host = it.target?.replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/^www\./, "").toLowerCase();
+    if (host && typeof it.domainRating === "number" && Number.isFinite(it.domainRating)) {
+      out.set(host, it.domainRating);
+    }
+  }
+  return out;
+}
+
+/* --------------------------- Wayback 首快照（上线时间） --------------------------- */
+
+export interface WaybackSnapshotItem {
+  queryUrl?: string;
+  archiveDate?: string;
+  timestamp?: string;
+  statusCode?: string;
+}
+
+/**
+ * 取每个域名在 Wayback Machine 的最早快照时间（网站第一次被公开存档）。
+ * 这是「网站上线时间」目前唯一可大规模获得的客观证据：
+ *   - Product Hunt 的 createdAt 按名字搜到的是最近一条 post，实测全部落在采集当月，不可用；
+ *   - 域名注册时间只说明域名被注册，老域名改造的站会早出数年。
+ * 无存档记录返回空 Map（新站常见），调用方需自行兜底。
+ */
+export async function fetchWaybackFirstSnapshots(domains: string[]): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  if (domains.length === 0) return out;
+  const key = createHash("sha256").update(domains.join("|")).digest("hex").slice(0, 16);
+  const items = await cachedCall<WaybackSnapshotItem[]>(
+    {
+      provider: "apify",
+      endpoint: "ryanclinton/wayback-machine-search#batch",
+      key,
+      costUsd: 0.001 * domains.length,
+      ttlDays: 365, // 首快照是历史事实，不会变
+    },
+    async () => {
+      const token = process.env.APIFY_TOKEN!;
+      const res = await fetch(
+        `https://api.apify.com/v2/acts/ryanclinton~wayback-machine-search/run-sync-get-dataset-items?token=${encodeURIComponent(token)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "User-Agent": config.userAgent },
+          body: JSON.stringify({
+            urls: domains,
+            maxResults: 1,
+            includeInsights: false,
+            generateReport: false,
+            statusFilter: "200",
+          }),
+          signal: AbortSignal.timeout(900_000),
+        },
+      );
+      if (!res.ok) throw new Error(`wayback batch ${res.status}`);
+      return (await res.json()) as WaybackSnapshotItem[];
+    },
+  );
+  for (const it of items ?? []) {
+    const host = it.queryUrl?.replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/^www\./, "").toLowerCase();
+    const date = it.archiveDate ?? (it.timestamp ? `${it.timestamp.slice(0, 4)}-${it.timestamp.slice(4, 6)}-${it.timestamp.slice(6, 8)}` : undefined);
+    if (!host || !date) continue;
+    const prev = out.get(host);
+    if (!prev || date < prev) out.set(host, date);
+  }
+  return out;
 }
 
 /**

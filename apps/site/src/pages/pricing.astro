@@ -8,6 +8,7 @@ import Base from "../layouts/Base.astro";
 
 const plans = [
   {
+    key: "month",
     name: "Pro 月付",
     price: "$20",
     unit: "/ 月",
@@ -21,6 +22,7 @@ const plans = [
     community: { text: "每日情报群仅限年付会员加入", included: false },
   },
   {
+    key: "year",
     name: "Pro 年付",
     price: "$160",
     unit: "/ 年",
@@ -175,23 +177,27 @@ const description =
               <p class="mt-2 text-xs text-ink-muted">{p.note}</p>
 
               <div class="mt-5 space-y-2">
-                <a
-                  href="/account"
+                <button
+                  type="button"
+                  data-checkout-plan={p.key}
+                  data-autorenew="1"
                   class:list={[
-                    "block rounded-lg px-4 py-2.5 text-center text-sm font-medium transition",
+                    "block w-full rounded-lg px-4 py-2.5 text-center text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60",
                     p.featured
                       ? "bg-primary text-white hover:bg-primary-hover"
                       : "border-2 border-primary text-ink hover:bg-primary-soft",
                   ]}
                 >
                   自动续费 · {p.price}{p.unit}
-                </a>
-                <a
-                  href="/account"
-                  class="block rounded-lg border border-border px-4 py-2.5 text-center text-sm font-medium text-ink-secondary transition hover:border-primary/40 hover:text-ink"
+                </button>
+                <button
+                  type="button"
+                  data-checkout-plan={p.key}
+                  data-autorenew="0"
+                  class="block w-full rounded-lg border border-border px-4 py-2.5 text-center text-sm font-medium text-ink-secondary transition hover:border-primary/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   一次性 · {p.oncePrice} / {p.onceUnit}
-                </a>
+                </button>
               </div>
 
               <p class="mt-2 text-center text-[11px] text-ink-muted">
@@ -259,6 +265,12 @@ const description =
 
       <p class="mt-4 text-center text-xs text-ink-muted">
         价格以美元标注，中国用户按人民币结算。税费由 Paddle 按账单地址计算，最终金额以结算页为准。
+      </p>
+
+      <p
+        id="pricing-notice"
+        class="mx-auto mt-4 hidden max-w-3xl rounded-lg border border-warning/30 bg-warning-soft px-4 py-3 text-center text-sm leading-relaxed text-ink-secondary"
+      >
       </p>
 
       <!-- 权益说明 -->
@@ -331,3 +343,8 @@ const description =
     </div>
   </section>
 </Base>
+
+<script>
+  import { initPricingCheckout } from "../scripts/pricing-checkout";
+  initPricingCheckout();
+</script>

@@ -6,6 +6,10 @@
  * 与「我在做」等交互一致——首屏只渲染骨架，避免为了一次付费把整站改成 SSR。
  */
 import Base from "../layouts/Base.astro";
+import { allOpportunities } from "../lib/dataset";
+
+/** 留言只存 slug，机会标题在构建期映射好，避免为了一个标题多跑一次请求 */
+const oppTitles = Object.fromEntries(allOpportunities().map((o) => [o.slug, o.title]));
 ---
 
 <Base
@@ -165,6 +169,27 @@ import Base from "../layouts/Base.astro";
         </p>
       </section>
 
+      <!-- 我的留言 -->
+      <section class="mt-6">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <h2 class="text-base font-semibold text-ink">我的留言</h2>
+            <p id="acct-updates-summary" class="mt-1 text-xs text-ink-muted">—</p>
+          </div>
+          <a
+            href="/opportunity"
+            class="shrink-0 text-xs font-medium text-primary transition hover:text-primary-hover"
+          >
+            去机会榜
+          </a>
+        </div>
+        <div id="acct-updates" class="mt-3 space-y-2.5">
+          <p class="rounded-xl border border-border bg-surface px-5 py-6 text-sm text-ink-muted">
+            加载中…
+          </p>
+        </div>
+      </section>
+
       <!-- 订单 -->
       <section class="mt-6">
         <h2 class="text-base font-semibold text-ink">历史订单</h2>
@@ -178,6 +203,8 @@ import Base from "../layouts/Base.astro";
     </div>
   </section>
 </Base>
+
+<script type="application/json" id="acct-opp-titles" is:inline set:html={JSON.stringify(oppTitles)}></script>
 
 <script>
   import { initAccount } from "../scripts/account";

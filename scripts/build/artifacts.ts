@@ -155,6 +155,7 @@ function toToolRow(t: (typeof tools)[number], rank: number): ToolRow {
     growth: computeGrowth(t),
     spark: trafficSparklinePoints(t)?.map((v) => Math.round(v * 100)) ?? null,
     launchedAt: getLaunchedAt(t) ?? null,
+    launchedEstimated: t.launchedAt ? t.launchedAtEstimated === true : undefined,
     pricing: derivePricingModel(t) ?? null,
     verified: t.verified,
     tags: t.tags ?? [],

@@ -2,14 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { tools, getToolByDomain, getMoMGrowth } from "@/lib/data";
+import { tools, getToolByDomain, getMoMGrowth, getLaunchedAt } from "@/lib/data";
 import { CopyDataButton } from "@/components/detail/CopyDataButton";
 import { FavoriteButton } from "@/components/detail/FavoriteButton";
 import { ScreenshotLightbox } from "@/components/detail/ScreenshotLightbox";
 import { TrafficTrendChart } from "@/components/detail/TrafficTrendChart";
 import { buildSiteMarkdown } from "@/lib/site-markdown";
 import { getDict, format as tf } from "@/lib/i18n";
-import { formatCount } from "@/lib/format";
+import { formatCount, formatMom, momCapHint, isLaunchPlausible } from "@/lib/format";
 
 const dict = getDict("zh");
 
@@ -217,13 +217,14 @@ export default async function ToolDetailPage({
   // 环比：上月基数为 0 / 无上月快照时为 undefined，页面按「—」呈现
   const mom = getMoMGrowth(tool);
   /**
-   * .ai 域名注册时间可信度：注册表 2017-12 迁移到 Donuts/Identity Digital 时
-   * 把存量域名 Creation Date 统一重置为迁移日（2017-12-15/16），非真实注册时间。
+   * 上线时间：Wayback 首快照。老域名首快照只能证明域名史，
+   * 用 launchedAtEstimated 标注「产品实际上线可能更晚」。
    */
-  const regRaw: string | undefined = m?.registeredAt;
-  const regSuspect =
-    m?.registeredAtSuspect === true ||
-    (!!regRaw && /\.ai$/i.test(tool.domain ?? "") && regRaw >= "2017-12-14" && regRaw <= "2017-12-17");
+  const launchedRaw = getLaunchedAt(tool);
+  const launchKnown = isLaunchPlausible(launchedRaw);
+  const launchedAt = launchKnown ? launchedRaw : undefined;
+  const launchedEstimated = launchedAt !== undefined && tool.launchedAtEstimated === true;
+  const launchedUnknown = launchedRaw !== undefined && !launchKnown;
   const b = tool.backlinks;
   const audit = tool.siteAudit;
   const ps = tool.pageStructure;
@@ -385,10 +386,10 @@ export default async function ToolDetailPage({
             />
             <Stat
               label={dict.metrics.monthlyVisitsGrowth}
-              value={mom !== undefined ? `${mom > 0 ? "+" : ""}${mom}%` : undefined}
+              value={mom !== undefined ? formatMom(mom) : undefined}
               success={(mom ?? 0) > 0}
               placeholder="n/a"
-              hint="上月无数据或基数为 0，无法计算环比"
+              hint={momCapHint(mom) ?? "上月无数据或基数为 0，无法计算环比"}
             />
             <Stat
               label={dict.metrics.organicSearchVisits}
@@ -422,16 +423,25 @@ export default async function ToolDetailPage({
               hint="未采集到该站的域名权重"
             />
             <Stat
-              label={dict.metrics.registeredAt}
-              value={m?.registeredAt ? `${m.registeredAt}${regSuspect ? " *" : ""}` : undefined}
+              label={dict.metrics.launchedAt}
+              value={launchedAt ? `${launchedAt.slice(0, 10)}${launchedEstimated ? " *" : ""}` : undefined}
               placeholder="n/a"
+              hint={
+                launchedUnknown
+                  ? "该域名更早年份已有存档（多为停放页或其他项目），无法确定产品上线时间"
+                  : launchedEstimated
+                    ? "该域名早期已有其他站点存档，产品实际上线可能更晚"
+                    : "站点首次被 Wayback 存档的时间"
+              }
             />
           </div>
 
-          {regSuspect && (
+          {(launchedUnknown || launchedEstimated) && (
             <p className="text-xs leading-relaxed text-ink-muted">
-              * 该 .ai 域名在 2017 年 12 月注册局（Island Networks → Donuts/Identity
-              Digital）数据库迁移时被统一重置了 Creation Date，显示的并非真实注册时间。
+              * 该域名在更早年份就已有网页存档（多为域名停放页或其他项目），
+              {launchedUnknown
+                ? "无法据此确定产品上线时间，故未展示。"
+                : "此处显示的是最早存档时间，产品实际上线可能更晚。"}
             </p>
           )}
 

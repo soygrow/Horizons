@@ -12,7 +12,13 @@ import {
   getLaunchedAt,
   categoryLabel,
 } from "@/lib/data";
-import { formatDateShort, formatCount } from "@/lib/format";
+import {
+  formatDateShort,
+  formatCount,
+  formatMom,
+  momCapHint,
+  isLaunchPlausible,
+} from "@/lib/format";
 
 export function ToolListRow({ tool, rank }: { tool: AITool; rank: number }) {
   const traffic = trafficSparklinePoints(tool);
@@ -21,6 +27,7 @@ export function ToolListRow({ tool, rank }: { tool: AITool; rank: number }) {
   const organic = getOrganicVisits(tool);
   const dw = getDomainWeight(tool);
   const launched = getLaunchedAt(tool);
+  const launchKnown = isLaunchPlausible(launched);
 
   return (
     <Link
@@ -76,7 +83,7 @@ export function ToolListRow({ tool, rank }: { tool: AITool; rank: number }) {
 
       {/* 环比增长：无上月基数时显示 n/a，避免「—」被误读成负号 */}
       <div
-        title={growth === undefined ? "上月无数据，无法计算环比" : undefined}
+        title={momCapHint(growth) ?? (growth === undefined ? "上月无数据，无法计算环比" : undefined)}
         className={`text-center text-sm tabular-nums ${
           growth === undefined
             ? "text-ink-muted"
@@ -85,7 +92,7 @@ export function ToolListRow({ tool, rank }: { tool: AITool; rank: number }) {
               : "text-rose-400"
         }`}
       >
-        {growth !== undefined ? `${growth > 0 ? "+" : ""}${growth}%` : "n/a"}
+        {formatMom(growth)}
       </div>
 
       {/* 自然搜索量 */}
@@ -101,9 +108,21 @@ export function ToolListRow({ tool, rank }: { tool: AITool; rank: number }) {
         {dw.value !== undefined ? `${formatCount(dw.value)} ${dw.label ?? "DR"}` : "n/a"}
       </div>
 
-      {/* 注册时间 */}
-      <div className="whitespace-nowrap text-center text-sm text-ink-secondary tabular-nums">
-        {formatDateShort(launched)}
+      {/* 上线时间：首快照早于 2017 视为域名前史，不当上线时间展示 */}
+      <div
+        title={
+          !launched
+            ? "未采集到上线时间"
+            : !launchKnown
+              ? "该域名在更早年份已有存档（多为停放页或其他项目），无法确定产品上线时间"
+              : tool.launchedAtEstimated
+                ? "该域名早期已有其他站点存档，产品实际上线可能更晚"
+                : undefined
+        }
+        className="whitespace-nowrap text-center text-sm text-ink-secondary tabular-nums"
+      >
+        {launchKnown ? formatDateShort(launched) : "—"}
+        {launchKnown && tool.launchedAtEstimated && <span className="ml-0.5 text-ink-muted">*</span>}
       </div>
     </Link>
   );

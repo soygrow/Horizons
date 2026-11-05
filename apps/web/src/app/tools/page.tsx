@@ -209,7 +209,7 @@ export default async function ToolsPage({
           <FilterSelect title="月访问量" param="visits" options={visitOptions} current={query.visits} baseQueryStr={baseQueryStr} />
           <FilterSelect title="环比增长" param="growth" options={growthOptions} current={query.growth} baseQueryStr={baseQueryStr} />
           <FilterSelect title="自然搜索占比" param="org" options={orgOptions} current={query.org} baseQueryStr={baseQueryStr} />
-          <FilterSelect title="注册时间" param="reg" options={regOptions} current={query.reg} baseQueryStr={baseQueryStr} />
+          <FilterSelect title="上线时间" param="reg" options={regOptions} current={query.reg} baseQueryStr={baseQueryStr} />
         </div>
       </div>
 

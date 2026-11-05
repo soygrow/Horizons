@@ -49,6 +49,32 @@ async function currentUser(c: Context<{ Bindings: Env }>): Promise<SessionUser |
   return verifySession(token, c.env.SESSION_SECRET);
 }
 
+/* ------------------------------ 我的留言（账户页） ------------------------------ */
+
+/**
+ * 当前用户最近的全部留言，跨机会聚合，按时间倒序。
+ * 机会标题不进库（内容侧才是权威），由站点按 slug 映射展示。
+ */
+opportunity.get("/mine/updates", async (c) => {
+  const user = await currentUser(c);
+  if (!user) return c.json({ error: "unauthorized" }, 401);
+
+  const raw = Number(c.req.query("limit"));
+  const limit = Math.min(Math.max(Number.isFinite(raw) ? raw : MAX_UPDATES, 1), 100);
+
+  const { results } = await c.env.DB.prepare(
+    `SELECT opportunity_slug AS slug, body, status, created_at AS createdAt
+     FROM opportunity_updates
+     WHERE user_id = ?
+     ORDER BY created_at DESC
+     LIMIT ?`,
+  )
+    .bind(user.id, limit)
+    .all<{ slug: string; body: string; status: DoingStatus; createdAt: number }>();
+
+  return c.json({ updates: results ?? [] });
+});
+
 /* ------------------------------ 批量人数（列表页） ------------------------------ */
 
 /** 列表页只显示「多少人在做」，一次请求带回多条的计数 */

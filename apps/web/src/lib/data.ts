@@ -200,7 +200,7 @@ export function getDomainWeight(tool: AITool): { value?: number; label?: string 
 }
 
 /**
- * 注册 / 上线时间：launchedAt 优先，回退域名注册时间。
+ * 上线时间：launchedAt（Wayback 首快照）优先，回退域名注册时间。
  * 注册时间不可信（如 .ai 2017-12 注册局迁移日）时不回退，避免把迁移日当成上线时间。
  */
 export function getLaunchedAt(tool: AITool): string | undefined {

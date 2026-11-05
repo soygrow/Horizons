@@ -7,7 +7,13 @@
  *  - 类名位于 apps/site 内，Tailwind 可正常扫描。
  */
 import { categoryLabel } from "./labels";
-import { formatCount, formatDateShort } from "./format";
+import {
+  formatCount,
+  formatDateShort,
+  formatMom,
+  momCapHint,
+  isLaunchPlausible,
+} from "./format";
 import { gradeTone, priceText, priceTone } from "./model-score";
 import { vendorIconUrl } from "./vendor-logos";
 import type { ModelRow, RepoRow, ToolRow, TrendRow } from "./types";
@@ -137,8 +143,9 @@ export function sparklineSvg(points: number[] | null, width = 72, height = 26): 
 
 export function toolRowHtml(t: ToolRow): string {
   const momCls = t.mom === null ? "text-ink-muted" : t.mom >= 0 ? "text-accent" : "text-rose-400";
-  const momText = t.mom !== null ? `${t.mom > 0 ? "+" : ""}${t.mom}%` : "—";
-  const momTitle = t.mom === null ? ` title="上月无数据，无法计算环比"` : "";
+  const momText = formatMom(t.mom);
+  const momHint = t.mom === null ? "上月无数据，无法计算环比" : momCapHint(t.mom);
+  const momTitle = momHint ? ` title="${esc(momHint)}"` : "";
   // 无 DR 时回退的是 SimilarWeb 全球排名（越小越强），加 # 前缀区分口径
   const drIsRank = t.drLabel === "全球排名";
   const drTitle =
@@ -148,6 +155,16 @@ export function toolRowHtml(t: ToolRow): string {
         ? ` title="SimilarWeb 全球排名（非 Ahrefs DR）"`
         : "";
   const drText = t.dr === null ? "—" : `${drIsRank ? "#" : ""}${formatCount(t.dr)}`;
+  // 首快照早于 2017 视为域名前史，不当上线时间展示
+  const launchKnown = isLaunchPlausible(t.launchedAt);
+  const launchTitle = !t.launchedAt
+    ? ` title="未采集到上线时间"`
+    : !launchKnown
+      ? ` title="该域名在更早年份已有存档（多为停放页或其他项目），无法确定产品上线时间"`
+      : t.launchedEstimated
+        ? ` title="该域名早期已有其他站点存档，此处为最早存档时间，产品实际上线可能更晚"`
+        : "";
+  const launchText = launchKnown ? formatDateShort(t.launchedAt) : "—";
 
   return (
     `<a href="/tools/${esc(t.domain)}" target="_blank" rel="noopener noreferrer" ` +
@@ -178,7 +195,9 @@ export function toolRowHtml(t: ToolRow): string {
     `<div${momTitle} class="text-center text-sm tabular-nums ${momCls}">${momText}</div>` +
     `<div class="text-center text-sm text-ink-secondary tabular-nums">${t.organic !== null ? formatCount(t.organic) : "—"}</div>` +
     `<div${drTitle} class="text-center text-sm text-ink-secondary tabular-nums">${drText}</div>` +
-    `<div class="whitespace-nowrap text-center text-sm text-ink-secondary tabular-nums">${formatDateShort(t.launchedAt)}</div>` +
+    `<div${launchTitle} class="whitespace-nowrap text-center text-sm text-ink-secondary tabular-nums">${launchText}${
+      launchKnown && t.launchedEstimated ? `<span class="ml-0.5 text-ink-muted">*</span>` : ""
+    }</div>` +
     `</a>`
   );
 }

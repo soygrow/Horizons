@@ -7,6 +7,8 @@
  * 这里只是把「付了但页面没变」的等待感消掉）。
  */
 
+import { getPaddle, loadPaddleJs, type PaddleEnv } from "../lib/paddle-overlay";
+
 interface SessionUser {
   id: string;
   email: string;
@@ -52,61 +54,7 @@ const PENDING_TXN_KEY = "hzn_pending_txn";
 const POLL_INTERVAL_MS = 2500;
 const POLL_ATTEMPTS = 24;
 
-/** Paddle.js 的 sandbox 与生产是两套 CDN，client token 也不通用 */
-const PADDLE_SDK_URL = {
-  sandbox: "https://sandbox-cdn.paddle.com/paddle/v2/paddle.js",
-  production: "https://cdn.paddle.com/paddle/v2/paddle.js",
-} as const;
 
-type PaddleEnv = keyof typeof PADDLE_SDK_URL;
-
-interface PaddleJs {
-  Environment: { set: (env: string) => void };
-  Initialize: (opts: {
-    token: string;
-    eventCallback?: (event: { name: string }) => void;
-  }) => void;
-  Checkout: { open: (opts: { transactionId: string; settings?: Record<string, unknown> }) => void };
-}
-
-let paddleLoading: Promise<boolean> | null = null;
-
-/**
- * 按需加载 Paddle.js。返回 false 时调用方退化为跳转 checkout.url。
- * 只初始化一次，同一页面重复下单复用同一实例。
- */
-function loadPaddleJs(env: PaddleEnv, token: string, onCompleted: () => void): Promise<boolean> {
-  if (paddleLoading) return paddleLoading;
-
-  paddleLoading = new Promise<boolean>((resolve) => {
-    const script = document.createElement("script");
-    script.src = PADDLE_SDK_URL[env];
-    script.async = true;
-    script.onload = () => {
-      try {
-        const paddle = (window as unknown as { Paddle?: PaddleJs }).Paddle;
-        if (!paddle) {
-          resolve(false);
-          return;
-        }
-        if (env === "sandbox") paddle.Environment.set("sandbox");
-        paddle.Initialize({
-          token,
-          eventCallback: (event) => {
-            if (event.name === "checkout.completed") onCompleted();
-          },
-        });
-        resolve(true);
-      } catch {
-        resolve(false);
-      }
-    };
-    script.onerror = () => resolve(false);
-    document.head.appendChild(script);
-  });
-
-  return paddleLoading;
-}
 
 /** 与 Paddle 后台的价格保持一致；仅用于展示，真实金额由结算页决定 */
 const PRICES = {
@@ -208,6 +156,8 @@ export function initAccount() {
     planBadge: document.getElementById("acct-plan-badge"),
     notice: document.getElementById("acct-notice"),
     orders: document.getElementById("acct-orders"),
+    updates: document.getElementById("acct-updates"),
+    updatesSummary: document.getElementById("acct-updates-summary"),
     logout: document.getElementById("acct-logout"),
     plans: document.getElementById("acct-plans"),
     sub: document.getElementById("acct-sub"),
@@ -417,6 +367,69 @@ export function initAccount() {
     </table>`;
   }
 
+  /* ---------------------------- 我的留言 ---------------------------- */
+
+  interface MyUpdate {
+    slug: string;
+    body: string;
+    status: string;
+    createdAt: number;
+  }
+
+  /** 构建期注入的 slug→标题映射，查不到时退回 slug，不至于整块空白 */
+  function oppTitleMap(): Record<string, string> {
+    const el = document.getElementById("acct-opp-titles");
+    if (!el?.textContent) return {};
+    try {
+      return JSON.parse(el.textContent) as Record<string, string>;
+    } catch {
+      return {};
+    }
+  }
+
+  function formatDateTime(ms: number): string {
+    const d = new Date(ms);
+    const p = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  function renderUpdates(updates: MyUpdate[]) {
+    const box = els.updates;
+    const summary = els.updatesSummary;
+    if (!box) return;
+
+    if (!updates.length) {
+      box.innerHTML =
+        '<p class="rounded-xl border border-border bg-surface px-5 py-6 text-sm text-ink-muted">还没有留言。在机会详情页加入「我在做」写下进展，会汇总到这里。</p>';
+      if (summary) summary.textContent = "还没有留言";
+      return;
+    }
+
+    const titles = oppTitleMap();
+    if (summary) {
+      summary.textContent = `共 ${updates.length} 条，点击在新标签打开对应机会`;
+    }
+
+    box.innerHTML = updates
+      .map((u) => {
+        const title = titles[u.slug] ?? u.slug;
+        return `<a href="/opportunity/${encodeURIComponent(u.slug)}" target="_blank" rel="noopener"
+          class="block rounded-xl border border-border bg-surface px-5 py-4 transition hover:border-primary/40">
+          <div class="flex items-start justify-between gap-3">
+            <p class="min-w-0 flex-1 truncate text-sm font-medium text-ink">${esc(title)}</p>
+            <time class="shrink-0 text-xs tabular-nums text-ink-muted">${esc(formatDateTime(u.createdAt))}</time>
+          </div>
+          <p class="mt-1.5 text-sm leading-relaxed text-ink-secondary">${esc(u.body)}</p>
+        </a>`;
+      })
+      .join("");
+  }
+
+  async function loadUpdates() {
+    const data = await getJson<{ updates: MyUpdate[] }>("/api/opportunity/mine/updates?limit=30");
+    renderUpdates(data?.updates ?? []);
+  }
+
   async function refresh(): Promise<BillingMe | null> {
     const billing = await getJson<BillingMe>("/api/billing/me");
     if (billing) renderBilling(billing);
@@ -490,7 +503,7 @@ export function initAccount() {
           const ready = await loadPaddleJs(res.data.paddleEnv ?? "sandbox", res.data.clientToken, () => {
             void settlePending(transactionId);
           });
-          const paddle = (window as unknown as { Paddle?: PaddleJs }).Paddle;
+          const paddle = getPaddle();
           if (ready && paddle) {
             setBusy(false);
             paddle.Checkout.open({ transactionId, settings: { displayMode: "overlay" } });
@@ -560,6 +573,7 @@ export function initAccount() {
     els.main?.classList.remove("hidden");
     wireBuyButtons();
     wireSubscriptionActions();
+    void loadUpdates();
 
     const billing = await refresh();
 

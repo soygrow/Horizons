@@ -18,6 +18,8 @@ import { extractTrafficMetrics, fetchDomainRating, fetchLergassyMulti } from "./
  */
 const DRY = process.argv.includes("--dry");
 const WITH_WEIGHT = process.argv.includes("--weight");
+/** --refresh：已有月访问但缺少趋势/环比的站也重拉，只补空字段 */
+const REFRESH = process.argv.includes("--refresh");
 const argDomains = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const listPath = "/tmp/no-tm.txt";
 const domains = argDomains.length
@@ -48,7 +50,8 @@ async function main(): Promise<void> {
     }
 
     // 1) 全渠道流量
-    if (tool.trafficMetrics?.monthlyVisits) {
+    const thin = !tool.trend || tool.trend.length < 2 || tool.trafficMetrics?.monthlyVisitsGrowth == null;
+    if (tool.trafficMetrics?.monthlyVisits && !(REFRESH && thin)) {
       console.log(`- ${domain} 已有 trafficMetrics，跳过流量`);
     } else {
       const item = raw.get(domain);
@@ -70,7 +73,21 @@ async function main(): Promise<void> {
             }`,
           );
           if (!DRY) {
+            // 自然搜索量与占比本轮不动：刷新时若新结果没有该渠道，
+            // 保留原有值，避免 applyTraffic 整体覆盖把已采到的自然搜索清空
+            const prevOrganicVisits = tool.trafficMetrics?.organicSearchVisits;
+            const prevOrganicMetric = tool.metrics?.organicVisits;
+            const prevShare = tool.metrics?.organicShare;
             applyTraffic(tool as any, item as any, metrics);
+            if (tool.trafficMetrics && tool.trafficMetrics.organicSearchVisits == null && prevOrganicVisits != null) {
+              tool.trafficMetrics.organicSearchVisits = prevOrganicVisits;
+            }
+            if (tool.metrics && tool.metrics.organicVisits == null && prevOrganicMetric != null) {
+              tool.metrics.organicVisits = prevOrganicMetric;
+            }
+            if (tool.metrics && tool.metrics.organicShare == null && prevShare != null) {
+              tool.metrics.organicShare = prevShare;
+            }
             changed++;
           }
           ok++;

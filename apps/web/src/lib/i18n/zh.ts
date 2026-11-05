@@ -68,6 +68,8 @@ export const zh = {
     avgVisitDuration: "平均访问时长",
     organicShare: "自然搜索占比",
     domainWeight: "域名权重",
+    /** 详情页展示用：产品上线时间（Wayback 首快照） */
+    launchedAt: "上线时间",
     registeredAt: "域名注册",
     snapshot: "数据快照：{period}",
     lastSync: "最后同步：{time}",

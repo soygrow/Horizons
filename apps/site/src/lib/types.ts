@@ -25,6 +25,8 @@ export interface ToolRow {
   growth: number | null;
   spark: number[] | null;
   launchedAt: string | null;
+  /** 上线时间为推断值时（域名历史早于当前产品 / 仅能取到域名注册）为 true，前端加 * */
+  launchedEstimated?: boolean;
   pricing: PricingModel | null;
   verified: "verified" | "pending";
   tags: string[];
