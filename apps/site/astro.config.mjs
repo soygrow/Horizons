@@ -2,10 +2,10 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
-// 复用 apps/web 的 lib 时需要它的 @content 别名（只读 JSON，构建期解析）
+// 数据层（src/lib/data.ts、trends.ts）直接读 content/*.json，需要 @content 别名（只读，构建期解析）
 const contentDir = fileURLToPath(new URL("../../content", import.meta.url));
 
-// URL 与现有 Next 站保持一致：无尾斜杠。
+// URL 保持既有线上路径：无尾斜杠。
 // 产物为 /tools/xxx/index.html，由 Cloudflare 静态资产以 html_handling=drop-trailing-slash 直出。
 export default defineConfig({
   site: "https://horizons.tools",

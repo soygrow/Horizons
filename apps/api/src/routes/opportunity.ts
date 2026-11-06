@@ -75,6 +75,50 @@ opportunity.get("/mine/updates", async (c) => {
   return c.json({ updates: results ?? [] });
 });
 
+/**
+ * 当前用户「我在做」过的全部机会：只要点过就算，不看有没有留言。
+ * 与 /mine/updates 的区别：那个是留言流水，这个是一人一条的参与清单，
+ * 账户页用它做「在做机会」列表（未留言的机会也要出现）。
+ * 机会标题不进库（内容侧才是权威），由站点按 slug 映射展示。
+ */
+opportunity.get("/mine/doing", async (c) => {
+  const user = await currentUser(c);
+  if (!user) return c.json({ error: "unauthorized" }, 401);
+
+  const raw = Number(c.req.query("limit"));
+  const limit = Math.min(Math.max(Number.isFinite(raw) ? raw : MAX_UPDATES, 1), 100);
+
+  const { results } = await c.env.DB.prepare(
+    `SELECT d.opportunity_slug AS slug,
+            d.status         AS status,
+            d.created_at     AS joinedAt,
+            d.updated_at     AS updatedAt,
+            (SELECT COUNT(*) FROM opportunity_updates x
+              WHERE x.opportunity_slug = d.opportunity_slug AND x.user_id = d.user_id) AS updateCount,
+            COALESCE(
+              (SELECT MAX(x.created_at) FROM opportunity_updates x
+                WHERE x.opportunity_slug = d.opportunity_slug AND x.user_id = d.user_id),
+              d.updated_at
+            ) AS lastAt
+     FROM opportunity_doers d
+     WHERE d.user_id = ?
+     ORDER BY lastAt DESC
+     LIMIT ?`,
+  )
+    .bind(user.id, limit)
+    .all<{
+      slug: string;
+      status: DoingStatus;
+      joinedAt: number;
+      updatedAt: number;
+      updateCount: number;
+      lastAt: number;
+    }>();
+
+  const doing = (results ?? []).map((r) => ({ ...r, updateCount: Number(r.updateCount) }));
+  return c.json({ doing });
+});
+
 /* ------------------------------ 批量人数（列表页） ------------------------------ */
 
 /** 列表页只显示「多少人在做」，一次请求带回多条的计数 */

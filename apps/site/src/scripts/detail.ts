@@ -1,26 +1,15 @@
 /**
  * 工具详情页交互：复制 Markdown、收藏、截屏放大。
- * 均无第三方依赖，纯 localStorage / Clipboard / DOM。
+ * 收藏：登录后写 D1（跨设备），未登录先存 localStorage，登录时自动合并。
  */
-
-const FAV_KEY = "horizons:favorites";
-
-const readFavs = (): string[] => {
-  try {
-    const raw = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
-    return Array.isArray(raw) ? raw : [];
-  } catch {
-    return [];
-  }
-};
-
-const writeFavs = (list: string[]) => {
-  try {
-    localStorage.setItem(FAV_KEY, JSON.stringify(list));
-  } catch {
-    /* 隐私模式下忽略 */
-  }
-};
+import {
+  addFavorite,
+  fetchRemoteFavorites,
+  mergeLocalFavorites,
+  readLocalFavorites,
+  removeFavorite,
+  writeLocalFavorites,
+} from "../lib/favorites";
 
 const FAV_OFF =
   "inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-border bg-surface px-4 text-sm font-medium text-ink-secondary transition hover:border-primary/40 hover:text-ink";
@@ -44,23 +33,60 @@ export function initToolDetail() {
     });
   });
 
-  // 收藏（localStorage）
-  const favs = new Set(readFavs());
-  document.querySelectorAll<HTMLButtonElement>("[data-fav]").forEach((btn) => {
-    const domain = btn.dataset.fav || "";
-    const paint = () => {
-      const on = favs.has(domain);
+  // 收藏：先用本地立即上色，再按登录态切到服务端（跨设备）
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>("[data-fav]")];
+  if (buttons.length) {
+    let favs = new Set(readLocalFavorites());
+    /** null = 未登录，走本地；Set = 已登录，走 /api/favorites */
+    let remote: Set<string> | null = null;
+    let busy = false;
+
+    const paint = (btn: HTMLButtonElement) => {
+      const on = favs.has(btn.dataset.fav || "");
       btn.textContent = on ? "已收藏" : "收藏";
       btn.className = on ? FAV_ON : FAV_OFF;
     };
-    paint();
-    btn.addEventListener("click", () => {
-      if (favs.has(domain)) favs.delete(domain);
-      else favs.add(domain);
-      writeFavs([...favs]);
-      paint();
+    buttons.forEach(paint);
+
+    (async () => {
+      const fetched = await fetchRemoteFavorites();
+      if (!fetched) return; // 未登录：保持本地态
+      remote = await mergeLocalFavorites(fetched);
+      favs = new Set(remote);
+      buttons.forEach(paint);
+    })();
+
+    buttons.forEach((btn) => {
+      const domain = btn.dataset.fav || "";
+      if (!domain) return;
+
+      btn.addEventListener("click", async () => {
+        if (busy) return;
+        busy = true;
+        try {
+          if (remote) {
+            const on = !favs.has(domain);
+            const ok = on ? await addFavorite(domain) : await removeFavorite(domain);
+            if (ok) {
+              if (on) favs.add(domain);
+              else favs.delete(domain);
+              paint(btn);
+            } else {
+              btn.textContent = "操作失败";
+              window.setTimeout(() => paint(btn), 1600);
+            }
+          } else {
+            if (favs.has(domain)) favs.delete(domain);
+            else favs.add(domain);
+            writeLocalFavorites([...favs]);
+            paint(btn);
+          }
+        } finally {
+          busy = false;
+        }
+      });
     });
-  });
+  }
 
   // 截图放大：点击缩略图查看原图
   document.querySelectorAll<HTMLButtonElement>("[data-lightbox]").forEach((btn) => {

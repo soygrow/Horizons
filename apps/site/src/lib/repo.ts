@@ -1,5 +1,5 @@
 /**
- * GitHub 详情页的纯计算：与 apps/web/src/lib/data.ts 的
+ * GitHub 详情页的纯计算：与 data.ts 的
  * computeStarGrowth / isPermissiveLicense / toTrendPoints 口径一致。
  * 详情数据直接取自 content/dist/github/detail/*.json，避免引入体积较大的源站 lib。
  */

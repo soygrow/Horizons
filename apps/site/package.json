@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "data": "node ../../scripts/build/web-data.mjs && tsx --tsconfig ../web/tsconfig.json ../../scripts/build/artifacts.ts && node ../../scripts/build/field-health.mjs",
+    "data": "node ../../scripts/build/web-data.mjs && tsx --tsconfig tsconfig.json ../../scripts/build/artifacts.ts && node ../../scripts/build/field-health.mjs",
     "deploy": "pnpm data && astro build && wrangler deploy"
   },
   "dependencies": {

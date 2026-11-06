@@ -87,7 +87,7 @@ cleanup_lock() { rm -rf "$LOCK"; }
 trap cleanup_lock EXIT INT TERM
 
 # 等外部（手动 / 其他终端）的 astro build 跑完，避免它把 dist 写成半成品。
-# 只等会写 apps/site/dist 的进程；apps/web 的 next-build 与本地产物无关，不等。
+# 只等会写 apps/site/dist 的进程；api dev 等与本地产物无关，不等。
 wait_external_builds() {
   local busy
   busy="$(pgrep -f 'astro[^ ]* .*build' 2>/dev/null | grep -v "^$$\$" || true)"

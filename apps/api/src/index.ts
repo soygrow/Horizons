@@ -4,6 +4,7 @@ import { auth } from "./routes/auth";
 import { user } from "./routes/user";
 import { ph } from "./routes/ph";
 import { opportunity } from "./routes/opportunity";
+import { favorites } from "./routes/favorites";
 import { billing } from "./routes/billing";
 import { track } from "./routes/track";
 import { admin } from "./routes/admin";
@@ -18,6 +19,7 @@ app.route("/api/ph", ph);
 app.route("/api/admin", admin);
 // 顺序无关：/doing/counts 与 /:slug/doing 不会互相吞掉（前者无 :slug 段）
 app.route("/api/opportunity", opportunity);
+app.route("/api/favorites", favorites);
 app.route("/api", user);
 
 app.get("/health", (c) => c.json({ ok: true, service: "horizons-api" }));

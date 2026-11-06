@@ -8,7 +8,7 @@ import type { SimilarwebRawItem } from "./sources/apify";
 import { applyTraffic } from "./apply-traffic";
 
 /* --------------------------- 榜单判定（与 web 侧一致） --------------------------- */
-// 与 apps/web/src/lib/data.ts 的 tierOf 保持同步，避免「榜内」口径漂移。
+// 与 apps/site/src/lib/data.ts 的 tierOf 保持同步，避免「榜内」口径漂移。
 const MIN_VISITS_CORE = 10_000;
 const MIN_VISITS_WATCH = 1_000;
 const WATCH_PH_UPVOTES = 300;

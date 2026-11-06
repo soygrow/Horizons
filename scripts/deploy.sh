@@ -6,16 +6,14 @@
 # push 到 origin/main 即在 GitHub 机器上构建并部署，不经过本地网络上传。
 # 本脚本保留给：紧急回滚、本地预演（--dry）、需要先跑 D1 迁移的 api 发布。
 #
-# 拓扑（2026-10-29 起）：
-#   horizons-site  apps/site（Astro 静态站）→ 主域 horizons.tools/*   ← 线上正式前端
-#   horizons-web   apps/web（旧 Next 站）  → 无路由，仅作回滚备胎
+# 拓扑（2026-11-06 起）：
+#   horizons-site  apps/site（Astro 静态站）→ 主域 horizons.tools/*   ← 唯一前端
 #   horizons-api   apps/api（Hono/D1）     → horizons.tools/api/*
 #
 # 用法：
 #   bash scripts/deploy.sh                # 构建并部署 site + api（默认）
 #   bash scripts/deploy.sh site           # 只部署前端 horizons-site
 #   bash scripts/deploy.sh api            # 只部署后端 horizons-api
-#   bash scripts/deploy.sh web            # 只部署旧 Next 站 horizons-web（回滚用，不带路由）
 #   bash scripts/deploy.sh --dry          # 只构建 + 类型检查，不上传（发布前自检）
 #   bash scripts/deploy.sh site --strict  # 线上验收异常时以非零退出码阻断
 #   bash scripts/deploy.sh api --migrate  # 部署前先 apply D1 迁移
@@ -31,12 +29,12 @@ MIGRATE=0
 STRICT=0
 for arg in "$@"; do
   case "$arg" in
-    site|api|web|all) TARGET="$arg" ;;
+    site|api|all) TARGET="$arg" ;;
     --dry) DRY=1 ;;
     --migrate) MIGRATE=1 ;;
     --strict) STRICT=1 ;;
     -h|--help) sed -n '2,25p' "${BASH_SOURCE[0]}" | grep '^#' | sed 's/^# \{0,1\}//'; exit 0 ;;
-    *) echo "未知参数：$arg（可用：site | api | web | all | --dry | --migrate | --strict）" >&2; exit 1 ;;
+    *) echo "未知参数：$arg（可用：site | api | all | --dry | --migrate | --strict）" >&2; exit 1 ;;
   esac
 done
 
@@ -87,18 +85,6 @@ deploy_site() {
   ok "horizons-site 完成"
 }
 
-deploy_web() {
-  warn "horizons-web 是旧 Next 站（已不绑路由），仅用于回滚"
-  if [ "$DRY" = "1" ]; then
-    log "构建 horizons-web（OpenNext，不上传）"
-    pnpm --filter @horizons/web run opennext:build
-  else
-    log "构建并部署 horizons-web（OpenNext → wrangler）"
-    pnpm --filter @horizons/web run deploy
-  fi
-  ok "horizons-web 完成"
-}
-
 deploy_api() {
   if [ "$MIGRATE" = "1" ]; then
     log "应用 D1 迁移（远程 horizons-db）"
@@ -119,7 +105,6 @@ deploy_api() {
 
 case "$TARGET" in
   site) deploy_site ;;
-  web) deploy_web ;;
   api) deploy_api ;;
   all) deploy_site; deploy_api ;;
 esac

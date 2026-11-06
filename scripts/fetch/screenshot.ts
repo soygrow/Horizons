@@ -4,14 +4,14 @@ import { chromium, type Browser } from "playwright";
 import type { AITool } from "@horizons/shared";
 
 /**
- * 官网截图采集：访问每个工具的官网首页并截图（桌面 + 移动），存到 apps/web/public/screenshots/，
+ * 官网截图采集：访问每个工具的官网首页并截图（桌面 + 移动），存到 apps/site/public/screenshots/，
  * 并把 screenshotUrl / screenshotMobileUrl 写回 content/aitools.json。已存在的截图自动跳过，可增量执行。
  *
  * 用法：pnpm run screenshot [--limit N]
  */
 
 const TOOLS_PATH = path.resolve(process.cwd(), "content/aitools.json");
-const SCREENSHOT_DIR = path.resolve(process.cwd(), "apps/web/public/screenshots");
+const SCREENSHOT_DIR = path.resolve(process.cwd(), "apps/site/public/screenshots");
 
 /** 桌面 + 移动双视口；移动端截图几乎零额外成本（同页二次截图） */
 const VIEWPORTS: {

@@ -7,7 +7,7 @@ import { detectPricing } from "./sources/pricing";
 import { isBlockedDomain } from "@horizons/shared";
 import type { AITool } from "@horizons/shared";
 
-/* 榜单判定，与 apps/web/src/lib/data.ts 的 tierOf 保持同步 */
+/* 榜单判定，与 apps/site/src/lib/data.ts 的 tierOf 保持同步 */
 const MIN_VISITS_CORE = 10_000;
 const MIN_VISITS_WATCH = 1_000;
 const WATCH_PH_UPVOTES = 300;

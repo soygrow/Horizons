@@ -1,5 +1,5 @@
 ---
-/** 工具详情页：与 apps/web/src/app/tools/[domain]/page.tsx 逐块对齐 */
+/** 工具详情页 */
 import Base from "../../layouts/Base.astro";
 import ToolHero from "../../components/detail/ToolHero.astro";
 import PerformanceSection from "../../components/detail/sections/PerformanceSection.astro";
@@ -8,7 +8,7 @@ import TrafficSection from "../../components/detail/sections/TrafficSection.astr
 import BusinessSection from "../../components/detail/sections/BusinessSection.astro";
 import PlaybookSection from "../../components/detail/sections/PlaybookSection.astro";
 import IdeasSection from "../../components/detail/sections/IdeasSection.astro";
-import { buildSiteMarkdown } from "../../../../web/src/lib/site-markdown";
+import { buildSiteMarkdown } from "../../lib/site-markdown";
 
 export async function getStaticPaths() {
   const mods = import.meta.glob("../../../../../content/dist/tools/detail/*.json", {

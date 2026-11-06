@@ -4,10 +4,10 @@
  * 输入：content/*.json      —— 只读，唯一真源（花钱采集的数据，任何脚本都不写）
  * 输出：content/dist/**     —— 派生，可随时删除重建
  *
- * 口径：直接复用 apps/web/src/lib/data.ts 的派生函数，保证新旧站计算结果完全一致。
+ * 口径：派生函数在 apps/site/src/lib/data.ts、trends.ts，构建期与浏览器端共用同一份实现。
  *
  * 用法：pnpm --filter @horizons/site data
- *   或：cd apps/web && pnpm exec tsx --tsconfig ./tsconfig.json ../../scripts/build/artifacts.ts
+ *   或：cd apps/site && pnpm exec tsx --tsconfig ./tsconfig.json ../../scripts/build/artifacts.ts
  */
 import { createHash } from "node:crypto";
 import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
@@ -41,7 +41,7 @@ import {
   repoUpdatedDays,
   starSparklinePoints,
   isPermissiveLicense,
-} from "../../apps/web/src/lib/data";
+} from "../../apps/site/src/lib/data";
 
 // 趋势词口径同样复用 web 端实现
 import {
@@ -59,7 +59,7 @@ import {
   opportunityScore,
   overallScore,
   daysSince,
-} from "../../apps/web/src/lib/trends";
+} from "../../apps/site/src/lib/trends";
 
 // 行 HTML 唯一模板源（同一样式在构建期与浏览器筛选时共用）
 import { modelRowHtml, repoRowHtml, toolRowHtml, trendRowHtml } from "../../apps/site/src/lib/row-html";
@@ -419,7 +419,7 @@ async function main() {
   };
 
   // ---------- AI 趋势词 ----------
-  // 名次 = 综合得分 S 降序（同分先比 T，再按 slug 稳定排序），与 apps/web 口径一致
+  // 名次 = 综合得分 S 降序（同分先比 T，再按 slug 稳定排序），与浏览器端口径一致
   const orderedTrends = [...trendKeywords].sort((a, b) => {
     const sa = hasEnoughData(a) ? overallScore(a) : -1;
     const sb = hasEnoughData(b) ? overallScore(b) : -1;

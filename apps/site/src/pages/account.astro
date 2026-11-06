@@ -169,12 +169,12 @@ const oppTitles = Object.fromEntries(allOpportunities().map((o) => [o.slug, o.ti
         </p>
       </section>
 
-      <!-- 我的留言 -->
+      <!-- 在做机会：点过「我在做」即收录，不看有没有留言 -->
       <section class="mt-6">
         <div class="flex items-end justify-between gap-4">
           <div>
-            <h2 class="text-base font-semibold text-ink">我的留言</h2>
-            <p id="acct-updates-summary" class="mt-1 text-xs text-ink-muted">—</p>
+            <h2 class="text-base font-semibold text-ink">在做机会</h2>
+            <p id="acct-doing-summary" class="mt-1 text-xs text-ink-muted">—</p>
           </div>
           <a
             href="/opportunity"
@@ -183,7 +183,28 @@ const oppTitles = Object.fromEntries(allOpportunities().map((o) => [o.slug, o.ti
             去机会榜
           </a>
         </div>
-        <div id="acct-updates" class="mt-3 space-y-2.5">
+        <div id="acct-doing" class="mt-3 space-y-2.5">
+          <p class="rounded-xl border border-border bg-surface px-5 py-6 text-sm text-ink-muted">
+            加载中…
+          </p>
+        </div>
+      </section>
+
+      <!-- 工具收藏：账号级，跨设备 -->
+      <section class="mt-6">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <h2 class="text-base font-semibold text-ink">工具收藏</h2>
+            <p id="acct-favs-summary" class="mt-1 text-xs text-ink-muted">—</p>
+          </div>
+          <a
+            href="/tools"
+            class="shrink-0 text-xs font-medium text-primary transition hover:text-primary-hover"
+          >
+            去 AI 工具榜
+          </a>
+        </div>
+        <div id="acct-favs" class="mt-3 space-y-2.5">
           <p class="rounded-xl border border-border bg-surface px-5 py-6 text-sm text-ink-muted">
             加载中…
           </p>

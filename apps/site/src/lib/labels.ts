@@ -1,4 +1,4 @@
-/** 文案映射：与现有 apps/web/src/lib/data.ts 一致 */
+/** 文案映射：与 data.ts 一致 */
 
 export type PricingModel = "free" | "freemium" | "paid";
 

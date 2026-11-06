@@ -18,9 +18,8 @@ node_modules/
 .dev.vars
 .dev.vars.*
 
-# 采集产物：截图源目录（apps/web 为回滚备胎，其副本不入库）
-# 正式站 apps/site 的副本必须入库，由 astro build 复制进 dist 一起部署
-apps/web/public/screenshots/
+# 采集产物：官网截图直接落在 apps/site/public/screenshots（入库），
+# 由 astro build 复制进 dist 一起部署；采集器只覆盖同名文件，不会清空目录
 
 # production
 /build

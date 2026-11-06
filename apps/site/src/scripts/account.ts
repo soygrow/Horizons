@@ -9,6 +9,13 @@
 
 import { getPaddle, loadPaddleJs, type PaddleEnv } from "../lib/paddle-overlay";
 import { hideToast, showToast } from "../lib/toast";
+import { formatCount, formatMom } from "../lib/format";
+import {
+  fetchRemoteFavorites,
+  mergeLocalFavorites,
+  readLocalFavorites,
+  removeFavorite,
+} from "../lib/favorites";
 
 interface SessionUser {
   id: string;
@@ -157,8 +164,10 @@ export function initAccount() {
     planBadge: document.getElementById("acct-plan-badge"),
     notice: document.getElementById("acct-notice"),
     orders: document.getElementById("acct-orders"),
-    updates: document.getElementById("acct-updates"),
-    updatesSummary: document.getElementById("acct-updates-summary"),
+    doing: document.getElementById("acct-doing"),
+    doingSummary: document.getElementById("acct-doing-summary"),
+    favs: document.getElementById("acct-favs"),
+    favsSummary: document.getElementById("acct-favs-summary"),
     logout: document.getElementById("acct-logout"),
     plans: document.getElementById("acct-plans"),
     sub: document.getElementById("acct-sub"),
@@ -366,16 +375,30 @@ export function initAccount() {
     </table>`;
   }
 
-  /* ---------------------------- 我的留言 ---------------------------- */
+  /* ---------------------------- 在做机会 ---------------------------- */
 
-  interface MyUpdate {
+  interface MyDoing {
     slug: string;
-    body: string;
     status: string;
-    createdAt: number;
+    joinedAt: number;
+    updateCount: number;
+    lastAt: number;
   }
 
-  /** 构建期注入的 slug→标题映射，查不到时退回 slug，不至于整块空白 */
+  const DOING_STATUS: Record<string, { label: string; cls: string }> = {
+    doing: { label: "在做", cls: "bg-primary-soft text-primary" },
+    shipped: { label: "已上线", cls: "bg-accent-soft text-accent" },
+    paused: { label: "已暂停", cls: "bg-surface-2 text-ink-muted" },
+    dropped: { label: "已放弃", cls: "bg-surface-2 text-ink-muted" },
+  };
+
+  function formatDateTime(ms: number): string {
+    const d = new Date(ms);
+    const p = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  /** 构建期注入的 slug→标题映射；查不到说明该机会已下架 */
   function oppTitleMap(): Record<string, string> {
     const el = document.getElementById("acct-opp-titles");
     if (!el?.textContent) return {};
@@ -386,47 +409,154 @@ export function initAccount() {
     }
   }
 
-  function formatDateTime(ms: number): string {
-    const d = new Date(ms);
-    const p = (n: number) => String(n).padStart(2, "0");
-    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-  }
-
-  function renderUpdates(updates: MyUpdate[]) {
-    const box = els.updates;
-    const summary = els.updatesSummary;
+  function renderDoing(items: MyDoing[]) {
+    const box = els.doing;
+    const summary = els.doingSummary;
     if (!box) return;
 
-    if (!updates.length) {
+    if (!items.length) {
       box.innerHTML =
-        '<p class="rounded-xl border border-border bg-surface px-5 py-6 text-sm text-ink-muted">还没有留言。在机会详情页加入「我在做」写下进展，会汇总到这里。</p>';
-      if (summary) summary.textContent = "还没有留言";
+        '<p class="rounded-xl border border-border bg-surface px-5 py-6 text-sm text-ink-muted">还没有参与的机会。在机会详情页点「我在做」就会出现在这里，留不留言都算。</p>';
+      if (summary) summary.textContent = "还没有参与的机会";
       return;
     }
 
     const titles = oppTitleMap();
+    const withNotes = items.filter((i) => i.updateCount > 0).length;
     if (summary) {
-      summary.textContent = `共 ${updates.length} 条，点击在新标签打开对应机会`;
+      summary.textContent = `共 ${items.length} 个${
+        withNotes ? `，其中 ${withNotes} 个有留言` : ""
+      }，按最近活动排序`;
     }
 
-    box.innerHTML = updates
-      .map((u) => {
-        const title = titles[u.slug] ?? u.slug;
-        return `<a href="/opportunity/${encodeURIComponent(u.slug)}" target="_blank" rel="noopener"
-          class="block rounded-xl border border-border bg-surface px-5 py-4 transition hover:border-primary/40">
-          <div class="flex items-start justify-between gap-3">
-            <p class="min-w-0 flex-1 truncate text-sm font-medium text-ink">${esc(title)}</p>
-            <time class="shrink-0 text-xs tabular-nums text-ink-muted">${esc(formatDateTime(u.createdAt))}</time>
+    box.innerHTML = items
+      .map((it) => {
+        const title = titles[it.slug];
+        const badge = DOING_STATUS[it.status] ?? DOING_STATUS.doing;
+        const meta = [`加入于 ${formatDate(it.joinedAt)}`];
+        if (it.updateCount > 0) meta.push(`${it.updateCount} 条留言`);
+        meta.push(`最近 ${formatDate(it.lastAt)}`);
+
+        const inner = `<div class="flex items-center justify-between gap-3">
+            <p class="min-w-0 flex-1 truncate text-sm font-medium text-ink">${esc(title ?? it.slug)}</p>
+            <span class="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${badge.cls}">${esc(badge.label)}</span>
           </div>
-          <p class="mt-1.5 text-sm leading-relaxed text-ink-secondary">${esc(u.body)}</p>
-        </a>`;
+          <p class="mt-1 truncate text-xs text-ink-muted">${esc(meta.join(" · "))}</p>`;
+
+        return title
+          ? `<a href="/opportunity/${encodeURIComponent(it.slug)}" class="block rounded-xl border border-border bg-surface px-5 py-3.5 transition hover:border-primary/40">${inner}</a>`
+          : `<div class="rounded-xl border border-dashed border-border bg-surface px-5 py-3.5 opacity-70">${inner}</div>`;
       })
       .join("");
   }
 
-  async function loadUpdates() {
-    const data = await getJson<{ updates: MyUpdate[] }>("/api/opportunity/mine/updates?limit=30");
-    renderUpdates(data?.updates ?? []);
+  async function loadDoing() {
+    const data = await getJson<{ doing: MyDoing[] }>("/api/opportunity/mine/doing?limit=50");
+    renderDoing(data?.doing ?? []);
+  }
+
+  /* ---------------------------- 工具收藏 ---------------------------- */
+
+  interface FavRow {
+    domain: string;
+    createdAt: number;
+  }
+
+  /** 展示指标来自榜单数据，库里只存 domain，避免快照过期 */
+  interface ToolIndexRow {
+    domain: string;
+    name: string;
+    visits: number | null;
+    mom: number | null;
+    dr: number | null;
+  }
+
+  let toolsIndex: Map<string, ToolIndexRow> | null = null;
+
+  async function getToolsIndex(): Promise<Map<string, ToolIndexRow>> {
+    if (toolsIndex) return toolsIndex;
+    const rows = await getJson<ToolIndexRow[]>("/data/tools.json");
+    toolsIndex = new Map((rows ?? []).map((r) => [r.domain, r]));
+    return toolsIndex;
+  }
+
+  function renderFavorites(items: FavRow[], index: Map<string, ToolIndexRow>) {
+    const box = els.favs;
+    const summary = els.favsSummary;
+    if (!box) return;
+
+    if (!items.length) {
+      box.innerHTML =
+        '<p class="rounded-xl border border-border bg-surface px-5 py-6 text-sm text-ink-muted">还没有收藏工具。在任意工具详情页点「收藏」会同步到这里；未登录时先存在本机，登录后自动并入账号。</p>';
+      if (summary) summary.textContent = "还没有收藏";
+      return;
+    }
+
+    let missed = 0;
+    const rows = items.map((f) => {
+      const t = index.get(f.domain);
+      if (!t) {
+        missed += 1;
+        return `<div class="flex items-center gap-3 rounded-xl border border-dashed border-border bg-surface px-5 py-3.5">
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-medium text-ink-muted">${esc(f.domain)}</p>
+            <p class="mt-1 text-xs text-ink-muted">已下榜，暂不提供详情页</p>
+          </div>
+          <button type="button" data-fav-remove="${esc(f.domain)}" class="shrink-0 text-xs text-ink-muted transition hover:text-ink">取消</button>
+        </div>`;
+      }
+
+      const meta = [t.domain];
+      if (typeof t.visits === "number") meta.push(`月访问 ${formatCount(t.visits)}`);
+      if (typeof t.mom === "number") meta.push(`环比 ${formatMom(t.mom)}`);
+      if (typeof t.dr === "number") meta.push(`DR ${t.dr}`);
+
+      return `<div class="flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-3.5 transition hover:border-primary/40">
+        <a href="/tools/${encodeURIComponent(t.domain)}" class="min-w-0 flex-1">
+          <p class="truncate text-sm font-medium text-ink">${esc(t.name || t.domain)}</p>
+          <p class="mt-1 truncate text-xs text-ink-muted">${esc(meta.join(" · "))}</p>
+        </a>
+        <button type="button" data-fav-remove="${esc(t.domain)}" class="shrink-0 text-xs text-ink-muted transition hover:text-ink">取消</button>
+      </div>`;
+    });
+
+    summary.textContent = `共 ${items.length} 个${missed ? `，其中 ${missed} 个已下榜` : ""}`;
+    box.innerHTML = rows.join("");
+  }
+
+  async function loadFavorites() {
+    // 未登录期间的收藏在本机：先并入账号再读服务端，避免「明明收藏过却不显示」
+    if (readLocalFavorites().length) {
+      const remote = await fetchRemoteFavorites();
+      if (remote) await mergeLocalFavorites(remote);
+    }
+
+    const data = await getJson<{ favorites: FavRow[] }>("/api/favorites");
+    const items = data?.favorites ?? [];
+    const index = items.length ? await getToolsIndex() : new Map<string, ToolIndexRow>();
+    renderFavorites(items, index);
+  }
+
+  /** 收藏行里的「取消」：事件委托，避免每次重渲染重复绑定 */
+  function wireFavoriteRemoval() {
+    els.favs?.addEventListener("click", async (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-fav-remove]");
+      if (!btn || btn.disabled) return;
+
+      const domain = btn.dataset.favRemove || "";
+      if (!domain) return;
+
+      btn.disabled = true;
+      const label = btn.textContent;
+      btn.textContent = "…";
+      const ok = await removeFavorite(domain);
+      if (ok) {
+        void loadFavorites();
+      } else {
+        btn.disabled = false;
+        btn.textContent = label ?? "取消";
+      }
+    });
   }
 
   async function refresh(): Promise<BillingMe | null> {
@@ -581,7 +711,9 @@ export function initAccount() {
     els.main?.classList.remove("hidden");
     wireBuyButtons();
     wireSubscriptionActions();
-    void loadUpdates();
+    wireFavoriteRemoval();
+    void loadDoing();
+    void loadFavorites();
 
     const billing = await refresh();
 

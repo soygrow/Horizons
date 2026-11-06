@@ -2,7 +2,7 @@
 /**
  * 把官网截图上传到 R2（键名与站内 URL 一致：/screenshots/<file> → <file>）。
  *
- * 截图一直存在 apps/web/public/screenshots 且被 .gitignore 排除，
+ * 截图存放在 apps/site/public/screenshots（入库），
  * 新站（apps/site）构建产物里没有这些文件，于是线上全部 404。
  * 这里一次性搬到 R2，由 site 的 Worker 在 /screenshots/* 上读取。
  *
@@ -15,7 +15,7 @@ import { spawn } from "node:child_process";
 import { readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 
-const SRC = "apps/web/public/screenshots";
+const SRC = "apps/site/public/screenshots";
 const BUCKET = process.env.R2_BUCKET || "horizons-images";
 const CONTENT_TYPES = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp" };
 const dry = process.argv.includes("--dry");
