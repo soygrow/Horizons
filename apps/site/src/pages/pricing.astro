@@ -64,6 +64,34 @@ const explainers = [
   },
 ];
 
+// 交付说明：回答「付了钱具体拿到什么、多久更新一次」，不承诺做不到的频率。
+const deliverables = [
+  {
+    title: "六份数据集",
+    body: "每日情报、AI 工具榜、GitHub 榜、AI 模型榜、AI 趋势词榜、机会榜。每份都是全量条目，包含未进入首页分区的长尾部分。",
+  },
+  {
+    title: "每条记录的字段",
+    body: "名称、来源网址、所属品类、评分（热度 / 趋势 / 机会）、首次收录时间与最近采集时间。机会榜另附评分权重明细与证据链。",
+  },
+  {
+    title: "来源可追溯",
+    body: "数据来自官方公开接口与人工整理，每条记录都保留来源网址和采集日期，可以回到原始页面自行核对。",
+  },
+  {
+    title: "更新节奏",
+    body: "各榜数据源不同，更新频率也不同：工具榜、GitHub 榜随抓取批次更新，模型榜与机会榜在评分重算后更新，趋势词榜按周采集。我们不承诺固定频率，但每份榜单顶部都标注最近一次采集时间。",
+  },
+  {
+    title: "交付形式",
+    body: "网页形式，登录后即时可读，不需要安装客户端，也没有额外的下载或激活步骤。订阅有效期内不限次数访问。",
+  },
+  {
+    title: "计费与退款",
+    body: "月付或年付，自动续费可随时在账户页自行取消，取消后已付有效期不缩短。付款、发票与退款由 Paddle 作为 Merchant of Record 处理。",
+  },
+];
+
 const faqs = [
   {
     q: "现在可以直接付款吗？",
@@ -272,6 +300,24 @@ const description =
         class="mx-auto mt-4 hidden max-w-3xl rounded-lg border border-warning/30 bg-warning-soft px-4 py-3 text-center text-sm leading-relaxed text-ink-secondary"
       >
       </p>
+
+      <!-- 交付说明 -->
+      <section class="mx-auto mt-16 max-w-3xl">
+        <h2 class="text-center text-xl font-semibold tracking-tight text-ink">你订阅后实际拿到什么</h2>
+        <p class="mx-auto mt-3 max-w-xl text-center text-sm leading-relaxed text-ink-secondary">
+          付费解锁的是数据库的读取权限，不是一次性的报告。下面是具体交付内容。
+        </p>
+        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+          {
+            deliverables.map((d) => (
+              <div class="rounded-xl border border-border bg-surface p-5">
+                <h3 class="text-sm font-semibold text-ink">{d.title}</h3>
+                <p class="mt-2 text-xs leading-relaxed text-ink-secondary">{d.body}</p>
+              </div>
+            ))
+          }
+        </div>
+      </section>
 
       <!-- 权益说明 -->
       <section class="mx-auto mt-16 max-w-3xl">
