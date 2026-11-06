@@ -8,6 +8,7 @@
  */
 
 import { getPaddle, loadPaddleJs, type PaddleEnv } from "../lib/paddle-overlay";
+import { confirmAction } from "../lib/confirm";
 import { hideToast, showToast } from "../lib/toast";
 import { formatCount, formatMom } from "../lib/format";
 import {
@@ -385,13 +386,6 @@ export function initAccount() {
     lastAt: number;
   }
 
-  const DOING_STATUS: Record<string, { label: string; cls: string }> = {
-    doing: { label: "在做", cls: "bg-primary-soft text-primary" },
-    shipped: { label: "已上线", cls: "bg-accent-soft text-accent" },
-    paused: { label: "已暂停", cls: "bg-surface-2 text-ink-muted" },
-    dropped: { label: "已放弃", cls: "bg-surface-2 text-ink-muted" },
-  };
-
   function formatDateTime(ms: number): string {
     const d = new Date(ms);
     const p = (n: number) => String(n).padStart(2, "0");
@@ -431,29 +425,27 @@ export function initAccount() {
 
     box.innerHTML = items
       .map((it) => {
-        const title = titles[it.slug];
-        const badge = DOING_STATUS[it.status] ?? DOING_STATUS.doing;
+        const name = titles[it.slug] ?? it.slug;
         const meta = [`加入于 ${formatDate(it.joinedAt)}`];
         if (it.updateCount > 0) meta.push(`${it.updateCount} 条留言`);
         meta.push(`最近 ${formatDate(it.lastAt)}`);
 
-        const head = `<div class="flex items-center justify-between gap-3">
-            <p class="min-w-0 flex-1 truncate text-sm font-medium text-ink">${esc(title ?? it.slug)}</p>
-            <span class="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${badge.cls}">${esc(badge.label)}</span>
-          </div>
+        const head = `<p class="truncate text-sm font-medium text-ink">${esc(name)}</p>
           <p class="mt-1 truncate text-xs text-ink-muted">${esc(meta.join(" · "))}</p>`;
 
         // 已下架的机会没有详情页，标题不包链接，但仍允许取消
-        const main = title
+        const main = titles[it.slug]
           ? `<a href="/opportunity/${encodeURIComponent(it.slug)}" class="min-w-0 flex-1">${head}</a>`
           : `<div class="min-w-0 flex-1 opacity-70">${head}</div>`;
 
-        return `<div class="flex items-start gap-3 rounded-xl border border-border bg-surface px-5 py-3.5 transition hover:border-primary/40">
+        return `<div class="flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-3.5 transition hover:border-primary/40">
             ${main}
             <button
               type="button"
               data-doing-cancel="${esc(it.slug)}"
-              class="shrink-0 text-xs text-ink-muted transition hover:text-rose-500"
+              data-doing-name="${esc(name)}"
+              data-doing-notes="${it.updateCount}"
+              class="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs text-ink-secondary transition hover:border-rose-400/50 hover:bg-rose-500/5 hover:text-rose-500"
             >取消</button>
           </div>`;
       })
@@ -487,13 +479,26 @@ export function initAccount() {
 
       const slug = btn.dataset.doingCancel || "";
       if (!slug) return;
-      if (!window.confirm("取消后，你在这条机会下的留言也会一起删除，确定吗？")) return;
+
+      const name = btn.dataset.doingName || slug;
+      const notes = Number(btn.dataset.doingNotes || 0);
+      const ok = await confirmAction({
+        title: "取消参与？",
+        description:
+          notes > 0
+            ? `你在「${name}」下的 ${notes} 条留言会一起删除，之后可以重新加入。`
+            : `取消后「${name}」不再出现在这里，之后可以重新加入。`,
+        confirmText: "取消参与",
+        cancelText: "先留着",
+        tone: "danger",
+      });
+      if (!ok) return;
 
       btn.disabled = true;
       const label = btn.textContent;
       btn.textContent = "…";
-      const ok = await leaveDoing(slug);
-      if (ok) {
+      const done = await leaveDoing(slug);
+      if (done) {
         void loadDoing();
       } else {
         btn.disabled = false;
@@ -564,7 +569,7 @@ export function initAccount() {
           <p class="truncate text-sm font-medium text-ink">${esc(t.name || t.domain)}</p>
           <p class="mt-1 truncate text-xs text-ink-muted">${esc(meta.join(" · "))}</p>
         </a>
-        <button type="button" data-fav-remove="${esc(t.domain)}" class="shrink-0 text-xs text-ink-muted transition hover:text-ink">取消</button>
+        <button type="button" data-fav-remove="${esc(t.domain)}" class="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs text-ink-secondary transition hover:border-border-strong hover:bg-surface-2 hover:text-ink">取消</button>
       </div>`;
     });
 
@@ -712,9 +717,13 @@ export function initAccount() {
   function wireSubscriptionActions() {
     els.cancel?.addEventListener("click", async () => {
       if (busy) return;
-      const ok = window.confirm(
-        "取消后不再自动续费，当期权益保留到期日为止，之后不会扣款。确定取消吗？",
-      );
+      const ok = await confirmAction({
+        title: "取消自动续费？",
+        description: "取消后不再自动续费，当期权益保留到期日为止，之后不会扣款。",
+        confirmText: "取消自动续费",
+        cancelText: "继续续费",
+        tone: "danger",
+      });
       if (!ok) return;
 
       setBusy(true);

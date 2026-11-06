@@ -5,6 +5,8 @@
  * 首屏先渲染骨架，脚本拉到数据后填充，未登录时按钮引导去 Google 登录并回跳本页。
  */
 
+import { confirmAction } from "../lib/confirm";
+
 type DoingStatus = "doing" | "shipped" | "paused" | "dropped";
 
 interface DoingUpdate {
@@ -330,7 +332,19 @@ export function initDoing() {
   });
 
   leaveBtn?.addEventListener("click", async () => {
-    if (!window.confirm("退出后，你在这条机会下的留言也会一起删除，确定吗？")) return;
+    const notes = state?.me?.updates.length ?? 0;
+    const ok = await confirmAction({
+      title: "取消参与？",
+      description:
+        notes > 0
+          ? `你在这条机会下的 ${notes} 条留言会一起删除，之后可以重新加入。`
+          : "取消后不再出现在你的「在做」列表里，之后可以重新加入。",
+      confirmText: "取消参与",
+      cancelText: "先留着",
+      tone: "danger",
+    });
+    if (!ok) return;
+
     leaveBtn.setAttribute("disabled", "true");
     try {
       const res = await fetch(api, { method: "DELETE", credentials: "same-origin" });
