@@ -19,7 +19,7 @@ const plans = [
     note: "自动续费，随时可取消",
     featured: false,
     badge: "",
-    community: { text: "每日情报群仅限年付会员加入", included: false },
+    community: { text: "30 天访问期，不含年付优惠", included: false },
   },
   {
     key: "year",
@@ -33,7 +33,7 @@ const plans = [
     note: "早期用户价，折合 $13.3 / 月",
     featured: true,
     badge: "省 33%",
-    community: { text: "付费 VIP 每日情报群（年付专属）", included: true },
+    community: { text: "365 天访问期，含订阅期内全部更新", included: true },
   },
 ];
 
@@ -46,7 +46,6 @@ const benefits = [
   "全部筛选条件与交叉排序维度",
   "机会榜完整证据链与评分拆解",
   "工具与仓库详情扩展字段：技术栈、定价、留存、相似产品",
-  "付费 VIP 同行交流群",
 ];
 
 const explainers = [
@@ -59,8 +58,8 @@ const explainers = [
     body: "多维筛选与交叉排序、趋势词评分拆解、机会评分权重明细，一眼看清每个结论是怎么来的。",
   },
   {
-    title: "交流与情报",
-    body: "付费 VIP 同行交流群随时交流，年付会员另有每日情报群，第一时间收到当天新增的机会信号。",
+    title: "来源与时点",
+    body: "每条记录保留来源网址与采集日期，订阅期内可随时回查。数据新旧由页面标注的采集时间决定，不做模糊承诺。",
   },
 ];
 
@@ -125,7 +124,7 @@ const faqs = [
 
 const title = "定价 · Horizons";
 const description =
-  "Horizons Pro：解锁机会榜、AI 工具榜、GitHub 榜、AI 模型榜与 AI 趋势词榜，含全部筛选维度、机会证据链与付费 VIP 社群。自动续费月付 $20 / 年付 $160，或一次性 $23 / $180 买断，不自动扣款。";
+  "Horizons Pro：解锁机会榜、AI 工具榜、GitHub 榜、AI 模型榜与 AI 趋势词榜，含全部筛选维度与机会证据链。自动续费月付 $20 / 年付 $160，或一次性 $23 / $180 买断，不自动扣款。";
 ---
 
 <Base title={title} description={description}>
