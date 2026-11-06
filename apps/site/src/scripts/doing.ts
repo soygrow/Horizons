@@ -175,14 +175,18 @@ export function initDoing() {
   const renderHistory = () => {
     if (!historyEl) return;
     const updates = state?.me?.updates ?? [];
+    // 退出按钮只看「是否已加入」，不看有没有留言：
+    // 只点了「我在做」还没写进展的人，同样要能退出。
+    leaveBtn?.classList.toggle("hidden", !state?.me);
+    if (leaveBtn) {
+      leaveBtn.textContent = updates.length ? "取消参与（同时删除留言）" : "取消参与";
+    }
     if (!updates.length) {
       historyEl.innerHTML = "";
       historyEl.classList.add("hidden");
-      leaveBtn?.classList.add("hidden");
       return;
     }
     historyEl.classList.remove("hidden");
-    leaveBtn?.classList.remove("hidden");
     historyEl.innerHTML = updates
       .map(
         (u) => `

@@ -437,15 +437,25 @@ export function initAccount() {
         if (it.updateCount > 0) meta.push(`${it.updateCount} 条留言`);
         meta.push(`最近 ${formatDate(it.lastAt)}`);
 
-        const inner = `<div class="flex items-center justify-between gap-3">
+        const head = `<div class="flex items-center justify-between gap-3">
             <p class="min-w-0 flex-1 truncate text-sm font-medium text-ink">${esc(title ?? it.slug)}</p>
             <span class="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${badge.cls}">${esc(badge.label)}</span>
           </div>
           <p class="mt-1 truncate text-xs text-ink-muted">${esc(meta.join(" · "))}</p>`;
 
-        return title
-          ? `<a href="/opportunity/${encodeURIComponent(it.slug)}" class="block rounded-xl border border-border bg-surface px-5 py-3.5 transition hover:border-primary/40">${inner}</a>`
-          : `<div class="rounded-xl border border-dashed border-border bg-surface px-5 py-3.5 opacity-70">${inner}</div>`;
+        // 已下架的机会没有详情页，标题不包链接，但仍允许取消
+        const main = title
+          ? `<a href="/opportunity/${encodeURIComponent(it.slug)}" class="min-w-0 flex-1">${head}</a>`
+          : `<div class="min-w-0 flex-1 opacity-70">${head}</div>`;
+
+        return `<div class="flex items-start gap-3 rounded-xl border border-border bg-surface px-5 py-3.5 transition hover:border-primary/40">
+            ${main}
+            <button
+              type="button"
+              data-doing-cancel="${esc(it.slug)}"
+              class="shrink-0 text-xs text-ink-muted transition hover:text-rose-500"
+            >取消</button>
+          </div>`;
       })
       .join("");
   }
@@ -453,6 +463,44 @@ export function initAccount() {
   async function loadDoing() {
     const data = await getJson<{ doing: MyDoing[] }>("/api/opportunity/mine/doing?limit=50");
     renderDoing(data?.doing ?? []);
+  }
+
+  /** 退出「我在做」：服务端会连同该机会下的留言一起删除 */
+  async function leaveDoing(slug: string): Promise<boolean> {
+    try {
+      const res = await fetch(`/api/opportunity/${encodeURIComponent(slug)}/doing`, {
+        method: "DELETE",
+        credentials: "same-origin",
+        headers: { accept: "application/json" },
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  /** 列表里的「取消」：事件委托，重渲染后不用重新绑定 */
+  function wireDoingLeave() {
+    els.doing?.addEventListener("click", async (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-doing-cancel]");
+      if (!btn || btn.disabled) return;
+
+      const slug = btn.dataset.doingCancel || "";
+      if (!slug) return;
+      if (!window.confirm("取消后，你在这条机会下的留言也会一起删除，确定吗？")) return;
+
+      btn.disabled = true;
+      const label = btn.textContent;
+      btn.textContent = "…";
+      const ok = await leaveDoing(slug);
+      if (ok) {
+        void loadDoing();
+      } else {
+        btn.disabled = false;
+        btn.textContent = label ?? "取消";
+        showToast("取消失败，请稍后再试");
+      }
+    });
   }
 
   /* ---------------------------- 工具收藏 ---------------------------- */
@@ -520,7 +568,7 @@ export function initAccount() {
       </div>`;
     });
 
-    summary.textContent = `共 ${items.length} 个${missed ? `，其中 ${missed} 个已下榜` : ""}`;
+    if (summary) summary.textContent = `共 ${items.length} 个${missed ? `，其中 ${missed} 个已下榜` : ""}`;
     box.innerHTML = rows.join("");
   }
 
@@ -712,6 +760,7 @@ export function initAccount() {
     wireBuyButtons();
     wireSubscriptionActions();
     wireFavoriteRemoval();
+    wireDoingLeave();
     void loadDoing();
     void loadFavorites();
 
