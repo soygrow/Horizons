@@ -709,7 +709,7 @@ export function initAccount() {
         }
 
         setBusy(false);
-        showNotice("结算页未能打开，请刷新后重试，或联系 308541325@qq.com。");
+        showNotice("结算页未能打开，请刷新后重试，或联系 woshizhanghao1125@gmail.com。");
       });
     }
   }
