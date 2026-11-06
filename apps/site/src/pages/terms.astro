@@ -44,7 +44,7 @@ const sections: Array<{
     id: "billing",
     title: "订阅与退款",
     paragraphs: [
-      "订阅属于数据查看服务，支付成功后即时生效，因此不支持退款。如果付费后有任何不满意，请邮件联系我们，我们会尽力协助解决。",
+      "订阅属于数据查看服务，支付成功后即时生效，原则上不支持退款；重复扣款、未经授权的扣款、权益未开通等情形除外，完整的说明见《退款与取消政策》。如果付费后有任何不满意，请邮件联系我们，我们会尽力协助解决。",
     ],
   },
   {
@@ -159,6 +159,15 @@ const sections: Array<{
               {s.after?.map((p) => (
                 <p class="text-sm leading-relaxed text-ink-secondary sm:text-[15px] sm:leading-7">{p}</p>
               ))}
+
+              {s.id === "billing" && (
+                <a
+                  href="/refund"
+                  class="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-ink transition hover:border-primary/40 hover:text-primary"
+                >
+                  查看《退款与取消政策》
+                </a>
+              )}
 
               {s.id === "contact" && (
                 <a

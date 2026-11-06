@@ -65,3 +65,4 @@ apps/site/public/data/
 # 本地 MCP 配置（含 Paddle API 密钥，绝不入库）
 .mcp.json
 .codebuddy/mcp.json
+.codebuddy/mcp.json*

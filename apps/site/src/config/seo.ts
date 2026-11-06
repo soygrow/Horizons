@@ -9,7 +9,7 @@
 export const SITE = "https://horizons.tools";
 
 /** 允许被搜索引擎索引的路径（无尾斜杠） */
-export const INDEXABLE_PATHS = ["/", "/tools", "/github", "/trends", "/privacy", "/terms"];
+export const INDEXABLE_PATHS = ["/", "/tools", "/github", "/trends", "/privacy", "/terms", "/refund"];
 
 /** 只在 sitemap 中出现的路径：与 INDEXABLE_PATHS 保持一致 */
 export const SITEMAP_PATHS = INDEXABLE_PATHS;
