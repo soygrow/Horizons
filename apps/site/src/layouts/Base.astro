@@ -9,17 +9,20 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  /** 覆盖 canonical 的路径：同义别名页指向代表词，避免被判重复内容 */
+  canonicalPath?: string;
 }
 
 const {
   title = "Horizons — 发现值得关注的 AI 工具",
   description = "用可追溯的信号，追踪值得关注的 AI 工具榜单——热度、定价、趋势，一目了然。",
   noindex = false,
+  canonicalPath,
 } = Astro.props;
 
 // 站点 URL 统一无尾斜杠：/tools/ → /tools，根路径保持 /
 const pathname = normalizePath(Astro.url.pathname);
-const canonical = new URL(pathname, SITE).href;
+const canonical = new URL(canonicalPath ?? pathname, SITE).href;
 // 默认不索引：只有白名单频道进索引；页面可显式 noindex 覆盖
 const robots = noindex || !isIndexablePath(pathname) ? "noindex,follow" : "index,follow";
 

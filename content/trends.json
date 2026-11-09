@@ -53,10 +53,10 @@
         ]
       },
       "trendParts": {
-        "growth": 48,
+        "growth": 45,
         "persistence": 64,
         "breakout": 30,
-        "novelty": 100,
+        "novelty": 67,
         "reliability": 100
       },
       "oppParts": {
@@ -321,10 +321,10 @@
         ]
       },
       "trendParts": {
-        "growth": 39,
+        "growth": 32,
         "persistence": 14,
         "breakout": 46,
-        "novelty": 100,
+        "novelty": 67,
         "reliability": 100
       },
       "oppParts": {
@@ -577,10 +577,10 @@
         ]
       },
       "trendParts": {
-        "growth": 95,
+        "growth": 78,
         "persistence": 100,
         "breakout": 67,
-        "novelty": 100,
+        "novelty": 67,
         "reliability": 100
       },
       "oppParts": {
@@ -855,10 +855,10 @@
         ]
       },
       "trendParts": {
-        "growth": 95,
+        "growth": 78,
         "persistence": 100,
         "breakout": 62,
-        "novelty": 100,
+        "novelty": 67,
         "reliability": 100
       },
       "oppParts": {
@@ -1120,10 +1120,10 @@
         ]
       },
       "trendParts": {
-        "growth": 33,
+        "growth": 16,
         "persistence": 0,
         "breakout": 53,
-        "novelty": 100,
+        "novelty": 67,
         "reliability": 100
       },
       "oppParts": {
@@ -1373,10 +1373,10 @@
         ]
       },
       "trendParts": {
-        "growth": 51,
+        "growth": 35,
         "persistence": 64,
         "breakout": 34,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -1575,7 +1575,8 @@
         "audience": "Claude 重度用户、AI 工作流开发者",
         "entryAngle": "做 skills 市场+调试器：可视化编辑 skill、本地模拟触发、一键发布并统计调用效果",
         "whyAccepted": "新能力名词，周边已出现 skill 编写、分发、调试需求，生态早期"
-      }
+      },
+      "variantOf": "claude-code-skills"
     },
     {
       "slug": "vibe-coding",
@@ -1627,10 +1628,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 34,
         "persistence": 71,
         "breakout": 33,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -1905,10 +1906,10 @@
         ]
       },
       "trendParts": {
-        "growth": 42,
+        "growth": 35,
         "persistence": 7,
         "breakout": 41,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -2173,7 +2174,7 @@
         "growth": 92,
         "persistence": 93,
         "breakout": 64,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -2431,10 +2432,10 @@
         ]
       },
       "trendParts": {
-        "growth": 45,
+        "growth": 23,
         "persistence": 0,
         "breakout": 30,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -2695,10 +2696,10 @@
         ]
       },
       "trendParts": {
-        "growth": 51,
+        "growth": 25,
         "persistence": 57,
         "breakout": 39,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -2954,10 +2955,10 @@
         ]
       },
       "trendParts": {
-        "growth": 43,
+        "growth": 30,
         "persistence": 29,
         "breakout": 31,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -3226,7 +3227,7 @@
         "growth": 49,
         "persistence": 64,
         "breakout": 25,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -3496,10 +3497,10 @@
         ]
       },
       "trendParts": {
-        "growth": 45,
+        "growth": 31,
         "persistence": 57,
         "breakout": 35,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -3776,10 +3777,10 @@
         ]
       },
       "trendParts": {
-        "growth": 44,
+        "growth": 22,
         "persistence": 14,
         "breakout": 39,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -4036,10 +4037,10 @@
         ]
       },
       "trendParts": {
-        "growth": 41,
+        "growth": 21,
         "persistence": 29,
         "breakout": 30,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -4295,10 +4296,10 @@
         ]
       },
       "trendParts": {
-        "growth": 44,
+        "growth": 41,
         "persistence": 29,
         "breakout": 27,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -4551,10 +4552,10 @@
         ]
       },
       "trendParts": {
-        "growth": 47,
+        "growth": 24,
         "persistence": 50,
         "breakout": 32,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -4803,10 +4804,10 @@
         ]
       },
       "trendParts": {
-        "growth": 86,
+        "growth": 71,
         "persistence": 93,
         "breakout": 67,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -5055,10 +5056,10 @@
         ]
       },
       "trendParts": {
-        "growth": 58,
+        "growth": 53,
         "persistence": 93,
         "breakout": 35,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -5314,7 +5315,7 @@
         "growth": 92,
         "persistence": 93,
         "breakout": 64,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -5555,10 +5556,10 @@
         ]
       },
       "trendParts": {
-        "growth": 48,
+        "growth": 24,
         "persistence": 14,
         "breakout": 27,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -5827,10 +5828,10 @@
         ]
       },
       "trendParts": {
-        "growth": 91,
+        "growth": 75,
         "persistence": 93,
         "breakout": 61,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -6077,7 +6078,7 @@
         "growth": 63,
         "persistence": 71,
         "breakout": 49,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -6338,10 +6339,10 @@
         ]
       },
       "trendParts": {
-        "growth": 73,
+        "growth": 59,
         "persistence": 100,
         "breakout": 48,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -6595,10 +6596,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 25,
         "persistence": 57,
         "breakout": 28,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -6862,10 +6863,10 @@
         ]
       },
       "trendParts": {
-        "growth": 48,
+        "growth": 39,
         "persistence": 21,
         "breakout": 27,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -7115,7 +7116,7 @@
         "growth": 67,
         "persistence": 93,
         "breakout": 90,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -7367,7 +7368,7 @@
         "growth": 58,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -7628,10 +7629,10 @@
         ]
       },
       "trendParts": {
-        "growth": 45,
+        "growth": 30,
         "persistence": 64,
         "breakout": 40,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -7885,10 +7886,10 @@
         ]
       },
       "trendParts": {
-        "growth": 34,
+        "growth": 28,
         "persistence": 0,
         "breakout": 35,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -8139,10 +8140,10 @@
         ]
       },
       "trendParts": {
-        "growth": 53,
+        "growth": 49,
         "persistence": 29,
         "breakout": 32,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -8395,10 +8396,10 @@
         ]
       },
       "trendParts": {
-        "growth": 73,
+        "growth": 50,
         "persistence": 100,
         "breakout": 57,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -8661,7 +8662,7 @@
         "growth": 92,
         "persistence": 79,
         "breakout": 70,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -8941,10 +8942,10 @@
         ]
       },
       "trendParts": {
-        "growth": 68,
+        "growth": 62,
         "persistence": 93,
         "breakout": 73,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -9202,7 +9203,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -9449,7 +9450,7 @@
         "growth": 89,
         "persistence": 100,
         "breakout": 62,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -9702,10 +9703,10 @@
         ]
       },
       "trendParts": {
-        "growth": 68,
+        "growth": 63,
         "persistence": 93,
         "breakout": 74,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -9962,7 +9963,7 @@
         "growth": 100,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -10232,10 +10233,10 @@
         ]
       },
       "trendParts": {
-        "growth": 43,
+        "growth": 36,
         "persistence": 7,
         "breakout": 31,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -10491,10 +10492,10 @@
         ]
       },
       "trendParts": {
-        "growth": 38,
+        "growth": 35,
         "persistence": 0,
         "breakout": 33,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -10769,7 +10770,7 @@
         "growth": 77,
         "persistence": 86,
         "breakout": 66,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -11035,10 +11036,10 @@
         ]
       },
       "trendParts": {
-        "growth": 91,
+        "growth": 62,
         "persistence": 93,
         "breakout": 60,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -11301,7 +11302,7 @@
         "growth": 96,
         "persistence": 93,
         "breakout": 71,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -11547,10 +11548,10 @@
         ]
       },
       "trendParts": {
-        "growth": 72,
+        "growth": 36,
         "persistence": 93,
         "breakout": 65,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -11806,10 +11807,10 @@
         ]
       },
       "trendParts": {
-        "growth": 46,
+        "growth": 38,
         "persistence": 7,
         "breakout": 30,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -12065,7 +12066,7 @@
         "growth": 92,
         "persistence": 36,
         "breakout": 92,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -12331,10 +12332,10 @@
         ]
       },
       "trendParts": {
-        "growth": 29,
+        "growth": 20,
         "persistence": 0,
         "breakout": 38,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -12588,10 +12589,10 @@
         ]
       },
       "trendParts": {
-        "growth": 43,
+        "growth": 35,
         "persistence": 14,
         "breakout": 64,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -12781,7 +12782,8 @@
         "audience": "内容创作者、做二次剪辑的个人用户",
         "entryAngle": "做 YouTube 视频转结构化笔记的工具：下载音频→转写→按章节生成摘要与时间戳，输出 Markdown，先只做英文长视频这一个场景",
         "whyAccepted": "需求真实且高频，但红海且版权风险高，只能靠细分场景（字幕/摘要/批量转写）差异化"
-      }
+      },
+      "variantOf": "ai-youtube-downloader"
     },
     {
       "slug": "ai-youtube-downloader",
@@ -12833,10 +12835,10 @@
         ]
       },
       "trendParts": {
-        "growth": 97,
+        "growth": 79,
         "persistence": 100,
         "breakout": 59,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -13102,10 +13104,10 @@
         ]
       },
       "trendParts": {
-        "growth": 94,
+        "growth": 47,
         "persistence": 93,
         "breakout": 64,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -13350,10 +13352,10 @@
         ]
       },
       "trendParts": {
-        "growth": 63,
+        "growth": 31,
         "persistence": 86,
         "breakout": 65,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -13606,10 +13608,10 @@
         ]
       },
       "trendParts": {
-        "growth": 85,
+        "growth": 42,
         "persistence": 93,
         "breakout": 64,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -13858,7 +13860,7 @@
         "growth": 70,
         "persistence": 93,
         "breakout": 87,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -14124,10 +14126,10 @@
         ]
       },
       "trendParts": {
-        "growth": 89,
+        "growth": 45,
         "persistence": 93,
         "breakout": 63,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -14377,7 +14379,7 @@
         "growth": 35,
         "persistence": 43,
         "breakout": 72,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -14641,7 +14643,7 @@
         "growth": 91,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -14889,10 +14891,10 @@
         ]
       },
       "trendParts": {
-        "growth": 49,
+        "growth": 40,
         "persistence": 64,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -15142,10 +15144,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 5,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -15391,10 +15393,10 @@
         ]
       },
       "trendParts": {
-        "growth": 61,
+        "growth": 57,
         "persistence": 93,
         "breakout": 56,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -15646,7 +15648,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -15924,7 +15926,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -16161,10 +16163,10 @@
         ]
       },
       "trendParts": {
-        "growth": 79,
+        "growth": 73,
         "persistence": 86,
         "breakout": 87,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -16427,7 +16429,7 @@
         "growth": 97,
         "persistence": 57,
         "breakout": 82,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -16684,10 +16686,10 @@
         ]
       },
       "trendParts": {
-        "growth": 99,
+        "growth": 50,
         "persistence": 93,
         "breakout": 99,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -16947,10 +16949,10 @@
         ]
       },
       "trendParts": {
-        "growth": 35,
+        "growth": 29,
         "persistence": 0,
         "breakout": 36,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -17190,7 +17192,7 @@
         "growth": 51,
         "persistence": 71,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -17460,7 +17462,7 @@
         "growth": 43,
         "persistence": 0,
         "breakout": 28,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -17725,7 +17727,7 @@
         "growth": 45,
         "persistence": 7,
         "breakout": 27,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -17975,7 +17977,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -18248,7 +18250,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -18503,10 +18505,10 @@
         ]
       },
       "trendParts": {
-        "growth": 100,
+        "growth": 92,
         "persistence": 93,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -18708,7 +18710,8 @@
         "audience": "SaaS 独立开发者与种子期创始人",
         "entryAngle": "做面向 SaaS 落地页的演示生成器：输入产品 URL 自动抓取界面生成交互式 demo 片段，可嵌入官网，按站点订阅",
         "whyAccepted": "与 ai demo video 同源需求，搜的人在找能快速产出产品演示的方案，场景和人群明确"
-      }
+      },
+      "variantOf": "ai-product-demo-video-generator"
     },
     {
       "slug": "voice-agent-platform",
@@ -18760,10 +18763,10 @@
         ]
       },
       "trendParts": {
-        "growth": 100,
+        "growth": 50,
         "persistence": 71,
         "breakout": 81,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -19034,10 +19037,10 @@
         ]
       },
       "trendParts": {
-        "growth": 88,
+        "growth": 60,
         "persistence": 93,
         "breakout": 65,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -19285,10 +19288,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 5,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -19545,10 +19548,10 @@
         ]
       },
       "trendParts": {
-        "growth": 51,
+        "growth": 47,
         "persistence": 79,
         "breakout": 64,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -19795,10 +19798,10 @@
         ]
       },
       "trendParts": {
-        "growth": 98,
+        "growth": 66,
         "persistence": 100,
         "breakout": 64,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -20035,10 +20038,10 @@
         ]
       },
       "trendParts": {
-        "growth": 73,
+        "growth": 37,
         "persistence": 71,
         "breakout": 73,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -20315,10 +20318,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 41,
         "persistence": 50,
         "breakout": 38,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -20595,10 +20598,10 @@
         ]
       },
       "trendParts": {
-        "growth": 52,
+        "growth": 36,
         "persistence": 43,
         "breakout": 55,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -20856,7 +20859,7 @@
         "growth": 28,
         "persistence": 0,
         "breakout": 52,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -21109,7 +21112,7 @@
         "growth": 95,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -21392,10 +21395,10 @@
         ]
       },
       "trendParts": {
-        "growth": 58,
+        "growth": 19,
         "persistence": 43,
         "breakout": 75,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -21669,10 +21672,10 @@
         ]
       },
       "trendParts": {
-        "growth": 93,
+        "growth": 47,
         "persistence": 93,
         "breakout": 65,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -21928,10 +21931,10 @@
         ]
       },
       "trendParts": {
-        "growth": 83,
+        "growth": 42,
         "persistence": 86,
         "breakout": 64,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -22184,10 +22187,10 @@
         ]
       },
       "trendParts": {
-        "growth": 94,
+        "growth": 47,
         "persistence": 86,
         "breakout": 65,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -22395,7 +22398,8 @@
         "audience": "个人用户、想试水语音 AI 的小团队",
         "entryAngle": "做浏览器内一键拨打 AI 的 demo 工具，免费额度引流，后端卖可嵌入的语音 agent SDK。",
         "whyAccepted": "与 ai phone call free 同源，用户明确在找免费拨打 AI 的方案，需求真实但成本结构受限。"
-      }
+      },
+      "variantOf": "call-ai-for-free-online"
     },
     {
       "slug": "ai-table-generator",
@@ -22447,10 +22451,10 @@
         ]
       },
       "trendParts": {
-        "growth": 88,
+        "growth": 44,
         "persistence": 93,
         "breakout": 65,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -22703,10 +22707,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -22915,7 +22919,8 @@
         "audience": "重度邮件处理的独立开发者、销售与自由职业者",
         "entryAngle": "不做通用客户端，做 Gmail 侧边插件：自动把长邮件线程压缩成待办+草稿回复，聚焦「收件箱清零」单一场景，按人月收费",
         "whyAccepted": "需求真实但邮箱客户端是红海且被巨头免费功能承接，需靠细分场景差异化"
-      }
+      },
+      "variantOf": "ai-email-client"
     },
     {
       "slug": "ai-reddit-search",
@@ -22967,10 +22972,10 @@
         ]
       },
       "trendParts": {
-        "growth": 81,
+        "growth": 75,
         "persistence": 100,
         "breakout": 68,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -23229,7 +23234,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -23486,7 +23491,7 @@
         "growth": 16,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -23754,10 +23759,10 @@
         ]
       },
       "trendParts": {
-        "growth": 54,
+        "growth": 45,
         "persistence": 100,
         "breakout": 33,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -24015,10 +24020,10 @@
         ]
       },
       "trendParts": {
-        "growth": 82,
+        "growth": 67,
         "persistence": 93,
         "breakout": 70,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -24279,7 +24284,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -24493,7 +24498,8 @@
         "audience": "做内容站和 SaaS 的独立开发者、小团队增长负责人",
         "entryAngle": "做一个免费检测页：输入域名，抓取 ChatGPT/Perplexity 回答里是否提及该品牌，输出缺失关键词清单并给出可复制的改写文案，用邮箱换报告做获客",
         "whyAccepted": "GEO/AI 搜索可见性是真需求，免费工具查询说明有人在找低成本方案，供给尚未饱和"
-      }
+      },
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "inbox-zero-ai",
@@ -24553,7 +24559,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -24814,10 +24820,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 8,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -25063,10 +25069,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -25335,10 +25341,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -25531,7 +25537,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -25734,7 +25740,8 @@
           "reason": "相关搜索词丰富，内容成本低，可为产品导流。",
           "uncertainty": "搜索量相对值不高，内容竞争可能来自通用邮件助手。"
         }
-      ]
+      ],
+      "variantOf": "ai-email-assistant"
     },
     {
       "slug": "mcp",
@@ -25794,7 +25801,7 @@
         "growth": 48,
         "persistence": 64,
         "breakout": 28,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -26059,7 +26066,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -26268,7 +26275,8 @@
           "reason": "替代类搜索词明确，内容成本低，可先验证需求再开发。",
           "uncertainty": "HN 讨论热度低，内容传播可能有限。"
         }
-      ]
+      ],
+      "variantOf": "ai-meeting-notes"
     },
     {
       "slug": "ai-quality-evaluation",
@@ -26325,10 +26333,10 @@
         ]
       },
       "trendParts": {
-        "growth": 98,
+        "growth": 80,
         "persistence": 100,
         "breakout": 88,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -26562,10 +26570,10 @@
         ]
       },
       "trendParts": {
-        "growth": 83,
+        "growth": 42,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -26828,7 +26836,7 @@
         "growth": 43,
         "persistence": 21,
         "breakout": 86,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -27076,10 +27084,10 @@
         ]
       },
       "trendParts": {
-        "growth": 49,
+        "growth": 45,
         "persistence": 43,
         "breakout": 35,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -27350,7 +27358,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -27609,7 +27617,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -27859,7 +27867,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -28127,10 +28135,10 @@
         ]
       },
       "trendParts": {
-        "growth": 82,
+        "growth": 41,
         "persistence": 50,
         "breakout": 85,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -28381,7 +28389,7 @@
         "growth": 77,
         "persistence": 100,
         "breakout": 84,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -28662,7 +28670,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -28940,7 +28948,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -29189,10 +29197,10 @@
         ]
       },
       "trendParts": {
-        "growth": 92,
+        "growth": 63,
         "persistence": 100,
         "breakout": 66,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -29436,10 +29444,10 @@
         ]
       },
       "trendParts": {
-        "growth": 82,
+        "growth": 26,
         "persistence": 57,
         "breakout": 76,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -29694,10 +29702,10 @@
         ]
       },
       "trendParts": {
-        "growth": 61,
+        "growth": 30,
         "persistence": 79,
         "breakout": 89,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -29948,7 +29956,7 @@
         "growth": 84,
         "persistence": 93,
         "breakout": 61,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -30210,7 +30218,7 @@
         "growth": 97,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -30470,10 +30478,10 @@
         ]
       },
       "trendParts": {
-        "growth": 77,
+        "growth": 38,
         "persistence": 71,
         "breakout": 67,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -30691,7 +30699,8 @@
           "reason": "搜索意图明确，内容可低成本获取早期用户并验证需求。",
           "uncertainty": "内容竞争可能来自现有博客和文档，需差异化角度。"
         }
-      ]
+      ],
+      "variantOf": "text-to-diagram-ai"
     },
     {
       "slug": "ai-meeting-notes-zoom",
@@ -30748,10 +30757,10 @@
         ]
       },
       "trendParts": {
-        "growth": 88,
+        "growth": 60,
         "persistence": 64,
         "breakout": 79,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -30967,7 +30976,8 @@
           "reason": "比较词与问题词已出现，内容成本低且能验证搜索意图强度。",
           "uncertainty": "Trends 不提供意图份额，内容转化率需实测。"
         }
-      ]
+      ],
+      "variantOf": "ai-meeting-notes"
     },
     {
       "slug": "ai-meeting-notes-google-meet",
@@ -31027,7 +31037,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -31223,7 +31233,8 @@
           "reason": "相关搜索列表为空，说明内容侧竞争低，可用低成本内容验证搜索意图。",
           "uncertainty": "Trends 不提供搜索量，无法判断长尾绝对规模。"
         }
-      ]
+      ],
+      "variantOf": "ai-meeting-notes"
     },
     {
       "slug": "remove-background-ai-photo-editor",
@@ -31283,7 +31294,7 @@
         "growth": 92,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -31551,7 +31562,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -31804,10 +31815,10 @@
         ]
       },
       "trendParts": {
-        "growth": 96,
+        "growth": 48,
         "persistence": 93,
         "breakout": 63,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -32084,10 +32095,10 @@
         ]
       },
       "trendParts": {
-        "growth": 96,
+        "growth": 65,
         "persistence": 100,
         "breakout": 66,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -32356,10 +32367,10 @@
         ]
       },
       "trendParts": {
-        "growth": 86,
+        "growth": 27,
         "persistence": 29,
         "breakout": 88,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -32612,10 +32623,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -32805,7 +32816,8 @@
           "reason": "HN 有开发者明确抱怨 LLM API 难用，problem 类搜索意图明确，内容成本低、可验证需求。",
           "uncertainty": "报错类型随 API 版本变化，内容需持续维护。"
         }
-      ]
+      ],
+      "variantOf": "openai-tools-api-streaming"
     },
     {
       "slug": "ai-code-editor-open-source",
@@ -32865,7 +32877,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -33061,7 +33073,8 @@
           "reason": "搜索意图集中在找替代与怎么装，内容成本低且能验证需求",
           "uncertainty": "搜索热度为相对值，实际转化需用落地页验证"
         }
-      ]
+      ],
+      "variantOf": "open-source-ai-code-editor"
     },
     {
       "slug": "rag-pipeline-chunking-strategy",
@@ -33121,7 +33134,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -33355,10 +33368,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 25,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -33622,7 +33635,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -33878,7 +33891,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -34042,7 +34055,8 @@
           "reason": "搜索者意图偏 problem/howto，内容成本低且能验证需求强度。",
           "uncertainty": "长尾词搜索量小，内容曝光可能有限。"
         }
-      ]
+      ],
+      "variantOf": "vibe-coding"
     },
     {
       "slug": "llm-fine-tuning-lora",
@@ -34102,7 +34116,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -34339,7 +34353,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -34578,10 +34592,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 46,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -34818,7 +34832,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -35061,7 +35075,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -35316,7 +35330,7 @@
         "growth": 36,
         "persistence": 36,
         "breakout": 81,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -35587,7 +35601,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -35857,7 +35871,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -36110,10 +36124,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 8,
         "persistence": 21,
         "breakout": 84,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -36369,7 +36383,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -36616,10 +36630,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -36867,7 +36881,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -37100,7 +37114,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -37353,10 +37367,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 34,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -37601,7 +37615,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -37834,10 +37848,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 5,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -38032,7 +38046,8 @@
           "reason": "搜索意图以学习为主，内容供给少，可低成本获客。",
           "uncertainty": "内容转化到付费报告的路径尚未验证。"
         }
-      ]
+      ],
+      "variantOf": "local-business-ai-citation"
     },
     {
       "slug": "ai-ugc-video-ads",
@@ -38092,7 +38107,7 @@
         "growth": 99,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -38286,7 +38301,8 @@
           "reason": "开源替代项目获 404 星说明用户主动找免费方案，对比内容竞争尚不拥挤。",
           "uncertainty": "相关搜索词列表为空，长尾词需用实际搜索验证。"
         }
-      ]
+      ],
+      "variantOf": "ai-ugc-ads"
     },
     {
       "slug": "ai-ugc-ads-for-tiktok",
@@ -38346,7 +38362,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -38580,7 +38596,8 @@
           "reason": "howto 和 problem 意图明确，HN 讨论标题直接指向制作方法，GitHub 提示词仓库证明模板需求存在。",
           "uncertainty": "内容竞争可能来自现有 AI 视频工具博客，需用合规清单差异化。"
         }
-      ]
+      ],
+      "variantOf": "ai-ugc-ads"
     },
     {
       "slug": "text-to-ai-avatar-video",
@@ -38640,7 +38657,7 @@
         "growth": 20,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -38911,7 +38928,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -39162,7 +39179,7 @@
         "growth": 96,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -39414,7 +39431,7 @@
         "growth": 100,
         "persistence": 100,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -39682,10 +39699,10 @@
         ]
       },
       "trendParts": {
-        "growth": 84,
+        "growth": 42,
         "persistence": 50,
         "breakout": 77,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -39898,7 +39915,8 @@
           "reason": "搜索意图集中在howto与problem，现有内容偏搭建教学，容错主题供给少，内容可低成本获客",
           "uncertainty": "该长尾搜索量级未经验证，需用Search Console数据校准"
         }
-      ]
+      ],
+      "variantOf": "ai-content-workflow-automation"
     },
     {
       "slug": "ai-saas-pricing-model",
@@ -39958,7 +39976,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -40203,10 +40221,10 @@
         ]
       },
       "trendParts": {
-        "growth": 39,
+        "growth": 36,
         "persistence": 7,
         "breakout": 57,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -40455,7 +40473,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -40712,7 +40730,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -40933,7 +40951,7 @@
         "growth": 69,
         "persistence": 86,
         "breakout": 72,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -41177,10 +41195,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -41434,10 +41452,10 @@
         ]
       },
       "trendParts": {
-        "growth": 23,
+        "growth": 21,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -41684,10 +41702,10 @@
         ]
       },
       "trendParts": {
-        "growth": 92,
+        "growth": 84,
         "persistence": 93,
         "breakout": 67,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -41976,7 +41994,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -42241,7 +42259,7 @@
         "growth": 100,
         "persistence": 50,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -42494,10 +42512,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -42750,7 +42768,7 @@
         "growth": 90,
         "persistence": 71,
         "breakout": 69,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -42981,10 +42999,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 5,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -43208,10 +43226,10 @@
         ]
       },
       "trendParts": {
-        "growth": 96,
+        "growth": 79,
         "persistence": 100,
         "breakout": 63,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -43385,7 +43403,8 @@
           "reason": "相关搜索混杂下载与转录意图，内容可低成本验证关键词需求。",
           "uncertainty": "内容排名周期不确定。"
         }
-      ]
+      ],
+      "variantOf": "youtube-to-text-ai-free"
     },
     {
       "slug": "youtube-video-to-notes-ai",
@@ -43445,7 +43464,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -43694,7 +43713,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -43966,7 +43985,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -44213,10 +44232,10 @@
         ]
       },
       "trendParts": {
-        "growth": 98,
+        "growth": 67,
         "persistence": 93,
         "breakout": 81,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -44468,10 +44487,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 5,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -44702,7 +44721,7 @@
         "growth": 50,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -44949,10 +44968,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -45208,7 +45227,7 @@
         "growth": 99,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -45463,7 +45482,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -45727,7 +45746,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -45887,7 +45906,8 @@
           "reason": "峰值倍数高但持续性差，过早投入内容可能错过窗口；需观察3个月趋势。",
           "uncertainty": "Google Trends样本仅30天，无法判断长期趋势；缺乏搜索量绝对值。"
         }
-      ]
+      ],
+      "variantOf": "abm-marketing-automation"
     },
     {
       "slug": "discovery-agent-open-source",
@@ -45947,7 +45967,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -46182,7 +46202,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 85
       },
       "oppParts": {
@@ -46429,10 +46449,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 5,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -46691,7 +46711,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -46965,7 +46985,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -47232,10 +47252,10 @@
         ]
       },
       "trendParts": {
-        "growth": 100,
+        "growth": 50,
         "persistence": 86,
         "breakout": 88,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -47504,7 +47524,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -47686,7 +47706,8 @@
           "reason": "搜索意图偏 howto 与 alternative，内容成本低且能承接脉冲流量。",
           "uncertainty": "相关搜索词未给出具体量级，内容选题需用真实搜索建议二次确认。"
         }
-      ]
+      ],
+      "variantOf": "ai-product-demo-video-generator"
     },
     {
       "slug": "conversational-crm-ai",
@@ -47746,7 +47767,7 @@
         "growth": 78,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -48000,10 +48021,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 25,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -48211,7 +48232,8 @@
           "reason": "内容成本低，可捕获搜索替代品和对比词的用户，为产品导流。",
           "uncertainty": "内容竞争可能加剧，需持续更新。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "manage-multiple-ai-agents",
@@ -48268,10 +48290,10 @@
         ]
       },
       "trendParts": {
-        "growth": 79,
+        "growth": 39,
         "persistence": 29,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -48546,10 +48568,10 @@
         ]
       },
       "trendParts": {
-        "growth": 87,
+        "growth": 44,
         "persistence": 100,
         "breakout": 61,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 70
       },
       "oppParts": {
@@ -48754,10 +48776,10 @@
         ]
       },
       "trendParts": {
-        "growth": 96,
+        "growth": 48,
         "persistence": 86,
         "breakout": 76,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -48949,7 +48971,8 @@
           "reason": "搜索者以 howto 为主，HN 已有大师课类内容验证学习需求，内容成本低、可测意图。",
           "uncertainty": "内容到付费的转化率缺少数据，需小规模测试。"
         }
-      ]
+      ],
+      "variantOf": "n8n-ai-workflow-examples"
     },
     {
       "slug": "ai-content-workflow",
@@ -49006,10 +49029,10 @@
         ]
       },
       "trendParts": {
-        "growth": 94,
+        "growth": 64,
         "persistence": 100,
         "breakout": 65,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -49206,7 +49229,8 @@
           "reason": "howto 与 compare 意图明显，教程可低成本验证需求并收集种子用户。",
           "uncertainty": "搜索热度波动大，需观察 30 天序列是否站稳在基线以上。"
         }
-      ]
+      ],
+      "variantOf": "ai-content-workflow-automation"
     },
     {
       "slug": "are-ai-conversations-private",
@@ -49266,7 +49290,7 @@
         "growth": 50,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -49519,7 +49543,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 70,
         "reliability": 100
       },
       "oppParts": {
@@ -49762,7 +49786,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -49998,10 +50022,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 41,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -50197,7 +50221,8 @@
           "reason": "内容成本低，可吸引早期采用者并验证需求。",
           "uncertainty": "竞争内容可能已存在，需差异化。"
         }
-      ]
+      ],
+      "variantOf": "memory-management-ai-sdk"
     },
     {
       "slug": "best-ai-video-generator",
@@ -50249,10 +50274,10 @@
         ]
       },
       "trendParts": {
-        "growth": 48,
+        "growth": 24,
         "persistence": 29,
         "breakout": 25,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -50445,7 +50470,8 @@
           "reason": "峰值倍数仅 1.18，模型层竞争由大厂主导，独立开发直接做生成器风险高。",
           "uncertainty": "缺少各工具实际使用量与付费转化的公开数据。"
         }
-      ]
+      ],
+      "variantOf": "ai-video-generator"
     },
     {
       "slug": "ai-workflow-automation",
@@ -50497,10 +50523,10 @@
         ]
       },
       "trendParts": {
-        "growth": 46,
+        "growth": 23,
         "persistence": 7,
         "breakout": 51,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -50689,7 +50715,8 @@
           "reason": "n8n 与 Activepieces 均已占据平台位，独立开发者正面做运行时可行性低",
           "uncertainty": "开源框架新项目刚发布，生态归属未定"
         }
-      ]
+      ],
+      "variantOf": "ai-content-workflow-automation"
     },
     {
       "slug": "ai-avatar-video-generator",
@@ -50741,10 +50768,10 @@
         ]
       },
       "trendParts": {
-        "growth": 60,
+        "growth": 30,
         "persistence": 71,
         "breakout": 75,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -50993,7 +51020,7 @@
         "growth": 27,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -51207,7 +51234,8 @@
           "reason": "相关搜索已出现替代方案与工具选型词，说明用户处于选型阶段，内容可低成本获取早期用户。",
           "uncertainty": "Trends 相关搜索样本有限，实际搜索量未知，内容转化率需实测。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "ai-cover-letter-generator",
@@ -51264,10 +51292,10 @@
         ]
       },
       "trendParts": {
-        "growth": 93,
+        "growth": 30,
         "persistence": 43,
         "breakout": 83,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -51529,10 +51557,10 @@
         ]
       },
       "trendParts": {
-        "growth": 100,
+        "growth": 32,
         "persistence": 36,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -51728,7 +51756,8 @@
           "reason": "免费工具竞争已存在，独立开发需找到差异化切口。",
           "uncertainty": "现有免费工具可能快速覆盖需求，付费意愿不明。"
         }
-      ]
+      ],
+      "variantOf": "ai-code-editor-free"
     },
     {
       "slug": "ai-diagram-generator-from-text",
@@ -51788,7 +51817,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -51988,7 +52017,8 @@
           "reason": "相关搜索词明确，HN 同类 Show HN 得分低，中立对比内容有搜索机会。",
           "uncertainty": "内容竞争可能来自通用 AI 工具博客，需持续更新图种与导出格式对比。"
         }
-      ]
+      ],
+      "variantOf": "text-to-diagram-ai"
     },
     {
       "slug": "mcp-client",
@@ -52045,10 +52075,10 @@
         ]
       },
       "trendParts": {
-        "growth": 87,
+        "growth": 80,
         "persistence": 93,
         "breakout": 66,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -52309,10 +52339,10 @@
         ]
       },
       "trendParts": {
-        "growth": 90,
+        "growth": 45,
         "persistence": 64,
         "breakout": 72,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -52572,10 +52602,10 @@
         ]
       },
       "trendParts": {
-        "growth": 48,
+        "growth": 24,
         "persistence": 57,
         "breakout": 32,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -52847,10 +52877,10 @@
         ]
       },
       "trendParts": {
-        "growth": 95,
+        "growth": 78,
         "persistence": 100,
         "breakout": 65,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -53101,7 +53131,7 @@
         "growth": 39,
         "persistence": 50,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -53359,7 +53389,7 @@
         "growth": 47,
         "persistence": 29,
         "breakout": 25,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -53609,7 +53639,7 @@
         "growth": 94,
         "persistence": 71,
         "breakout": 80,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -53852,10 +53882,10 @@
         ]
       },
       "trendParts": {
-        "growth": 88,
+        "growth": 44,
         "persistence": 100,
         "breakout": 65,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -54114,7 +54144,7 @@
         "growth": 91,
         "persistence": 79,
         "breakout": 73,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -54376,10 +54406,10 @@
         ]
       },
       "trendParts": {
-        "growth": 62,
+        "growth": 31,
         "persistence": 57,
         "breakout": 85,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -54638,10 +54668,10 @@
         ]
       },
       "trendParts": {
-        "growth": 51,
+        "growth": 26,
         "persistence": 64,
         "breakout": 48,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -54827,7 +54857,8 @@
           "reason": "产品机会依赖平台政策变化，过早投入可能被官方功能覆盖。",
           "uncertainty": "OpenAI 可能推出更完善的隐私控制，压缩第三方工具空间。"
         }
-      ]
+      ],
+      "variantOf": "chatgpt-privacy-mode"
     },
     {
       "slug": "github-copilot-alternative",
@@ -54887,7 +54918,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -55136,7 +55167,7 @@
         "growth": 93,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -55334,7 +55365,8 @@
           "reason": "搜索者多为 howto 和 price 意图，现有 HN 文章仅 2 分，内容竞争弱，可低成本获取长尾流量。",
           "uncertainty": "搜索量绝对值仍低（近期热度 11.3/100），内容流量天花板可能有限。"
         }
-      ]
+      ],
+      "variantOf": "gemini-ocr"
     },
     {
       "slug": "mcp-search-server",
@@ -55391,10 +55423,10 @@
         ]
       },
       "trendParts": {
-        "growth": 98,
+        "growth": 66,
         "persistence": 93,
         "breakout": 77,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -55585,7 +55617,8 @@
           "reason": "相关搜索出现 ai search engine api，HN 上同类发布讨论量低（2 分、1 分），内容供给不足",
           "uncertainty": "搜索意图分散，长尾词真实搜索量无法从 Trends 确认"
         }
-      ]
+      ],
+      "variantOf": "brave-search-mcp-server"
     },
     {
       "slug": "ai-agent-monitoring",
@@ -55642,10 +55675,10 @@
         ]
       },
       "trendParts": {
-        "growth": 96,
+        "growth": 79,
         "persistence": 100,
         "breakout": 64,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -55892,10 +55925,10 @@
         ]
       },
       "trendParts": {
-        "growth": 85,
+        "growth": 58,
         "persistence": 93,
         "breakout": 67,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -56142,10 +56175,10 @@
         ]
       },
       "trendParts": {
-        "growth": 91,
+        "growth": 46,
         "persistence": 64,
         "breakout": 78,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -56347,7 +56380,8 @@
           "reason": "搜索意图集中在配置与报错，内容成本低且能为托管产品导流",
           "uncertainty": "该词绝对热度仍低（峰值仅11），内容流量上限有限"
         }
-      ]
+      ],
+      "variantOf": "reddit-api-mcp-server"
     },
     {
       "slug": "ai-career-coach",
@@ -56404,10 +56438,10 @@
         ]
       },
       "trendParts": {
-        "growth": 98,
+        "growth": 49,
         "persistence": 64,
         "breakout": 89,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -56678,7 +56712,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -56936,7 +56970,7 @@
         "growth": 99,
         "persistence": 93,
         "breakout": 94,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -57125,7 +57159,8 @@
           "reason": "搜索意图以 learn/howto 为主，内容可低成本获取早期线索。",
           "uncertainty": "搜索热度波动大，内容转化路径需测试。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "ai-email-assistant",
@@ -57182,10 +57217,10 @@
         ]
       },
       "trendParts": {
-        "growth": 68,
+        "growth": 46,
         "persistence": 93,
         "breakout": 64,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -57449,7 +57484,7 @@
         "growth": 50,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -57709,10 +57744,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -57973,10 +58008,10 @@
         ]
       },
       "trendParts": {
-        "growth": 95,
+        "growth": 48,
         "persistence": 93,
         "breakout": 68,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -58233,7 +58268,7 @@
         "growth": 36,
         "persistence": 0,
         "breakout": 75,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -58482,7 +58517,7 @@
         "growth": 92,
         "persistence": 64,
         "breakout": 76,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -58753,7 +58788,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -59005,7 +59040,7 @@
         "growth": 73,
         "persistence": 43,
         "breakout": 80,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -59209,7 +59244,8 @@
           "reason": "相关教程帖 HN 仅 2 分，内容竞争弱，可承接搜索流量。",
           "uncertainty": "搜索词偏 howto，转化到插件安装的比例未知。"
         }
-      ]
+      ],
+      "variantOf": "local-llm-for-coding"
     },
     {
       "slug": "ai-website-generator",
@@ -59266,10 +59302,10 @@
         ]
       },
       "trendParts": {
-        "growth": 43,
+        "growth": 14,
         "persistence": 21,
         "breakout": 43,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -59562,10 +59598,10 @@
         ]
       },
       "trendParts": {
-        "growth": 100,
+        "growth": 32,
         "persistence": 29,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -59817,7 +59853,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -60069,7 +60105,7 @@
         "growth": 51,
         "persistence": 71,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -60280,7 +60316,8 @@
           "reason": "开源 MCP 项目星数增长快，平台方可能把公式生成做成内置能力。",
           "uncertainty": "微软 Copilot 的免费化节奏不明确，可能压缩独立工具空间。"
         }
-      ]
+      ],
+      "variantOf": "ai-excel-formula-generator"
     },
     {
       "slug": "local-seo-ai",
@@ -60332,10 +60369,10 @@
         ]
       },
       "trendParts": {
-        "growth": 98,
+        "growth": 67,
         "persistence": 93,
         "breakout": 74,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -60524,7 +60561,8 @@
           "reason": "HN 讨论显示从业者对 AI 概览冲击本地 SEO 有困惑，内容需求明确。",
           "uncertainty": "内容竞争程度未知，需验证关键词难度。"
         }
-      ]
+      ],
+      "variantOf": "local-business-ai-citation"
     },
     {
       "slug": "ai-sql-copilot",
@@ -60579,7 +60617,7 @@
         "growth": 98,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -60838,7 +60876,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -61082,7 +61120,7 @@
         "growth": 78,
         "persistence": 100,
         "breakout": 72,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -61337,10 +61375,10 @@
         ]
       },
       "trendParts": {
-        "growth": 95,
+        "growth": 47,
         "persistence": 86,
         "breakout": 65,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -61572,10 +61610,10 @@
         ]
       },
       "trendParts": {
-        "growth": 92,
+        "growth": 46,
         "persistence": 93,
         "breakout": 62,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -61834,7 +61872,7 @@
         "growth": 44,
         "persistence": 7,
         "breakout": 65,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -62085,7 +62123,7 @@
         "growth": 100,
         "persistence": 50,
         "breakout": 93,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -62342,7 +62380,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -62571,10 +62609,10 @@
         ]
       },
       "trendParts": {
-        "growth": 61,
+        "growth": 50,
         "persistence": 71,
         "breakout": 48,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -62786,7 +62824,8 @@
           "reason": "对比与 howto 类搜索词密集，而现有产品缺少可信评测内容，内容可先于产品验证需求。",
           "uncertainty": "Trends 不提供搜索量，内容流量上限无法从现有数据判断。"
         }
-      ]
+      ],
+      "variantOf": "ai-homework-help"
     },
     {
       "slug": "ai-homework-solver",
@@ -62841,7 +62880,7 @@
         "growth": 89,
         "persistence": 64,
         "breakout": 74,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -63108,7 +63147,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -63360,7 +63399,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -63629,7 +63668,7 @@
         "growth": 48,
         "persistence": 64,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -63887,7 +63926,7 @@
         "growth": 60,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -64136,10 +64175,10 @@
         ]
       },
       "trendParts": {
-        "growth": 98,
+        "growth": 49,
         "persistence": 64,
         "breakout": 79,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -64343,7 +64382,8 @@
           "reason": "howto 与 problem 类搜索意图明确，内容成本低，可验证需求真伪。",
           "uncertainty": "Trends 不提供意图份额，无法判断教程与工具哪类内容更吃量。"
         }
-      ]
+      ],
+      "variantOf": "mcp-server-management-tool"
     },
     {
       "slug": "yaml-agent-topology",
@@ -64398,7 +64438,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -64643,7 +64683,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -64888,10 +64928,10 @@
         ]
       },
       "trendParts": {
-        "growth": 69,
+        "growth": 35,
         "persistence": 43,
         "breakout": 89,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -65085,7 +65125,8 @@
           "reason": "LinkedIn 匹配算法偏见曾被广泛讨论，合规风险会影响产品定位",
           "uncertainty": "缺乏近期用户付费数据，无法判断付费规模"
         }
-      ]
+      ],
+      "variantOf": "ai-job-matching-tool"
     },
     {
       "slug": "ai-crm-assistant",
@@ -65140,7 +65181,7 @@
         "growth": 100,
         "persistence": 50,
         "breakout": 94,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -65388,7 +65429,7 @@
         "growth": 52,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -65594,7 +65635,8 @@
           "reason": "搜索意图以学习和对比为主，内容可低成本获客并反哺产品。",
           "uncertainty": "内容竞争可能来自现有 SaaS 官方文档，需用自托管和成本角度差异化。"
         }
-      ]
+      ],
+      "variantOf": "whatsapp-broadcast-automation"
     },
     {
       "slug": "claude-code-workflow",
@@ -65646,10 +65688,10 @@
         ]
       },
       "trendParts": {
-        "growth": 85,
+        "growth": 42,
         "persistence": 93,
         "breakout": 57,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -65891,10 +65933,10 @@
         ]
       },
       "trendParts": {
-        "growth": 87,
+        "growth": 43,
         "persistence": 93,
         "breakout": 61,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -66093,7 +66135,8 @@
           "reason": "技能包形态已被高星仓库验证，测试方向尚空",
           "uncertainty": "官方 hooks 与内置能力可能覆盖同样场景"
         }
-      ]
+      ],
+      "variantOf": "claude-code-api-testing"
     },
     {
       "slug": "claude-code-migration",
@@ -66145,10 +66188,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 5,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -66344,7 +66387,8 @@
           "reason": "工具层需求尚未被验证，过早投入产品风险高",
           "uncertainty": "迁移场景可能被 Claude Code 内置能力吸收"
         }
-      ]
+      ],
+      "variantOf": "claude-code-codebase-migration"
     },
     {
       "slug": "claude-code-router",
@@ -66396,10 +66440,10 @@
         ]
       },
       "trendParts": {
-        "growth": 83,
+        "growth": 42,
         "persistence": 79,
         "breakout": 66,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -66642,10 +66686,10 @@
         ]
       },
       "trendParts": {
-        "growth": 95,
+        "growth": 78,
         "persistence": 100,
         "breakout": 60,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -66840,7 +66884,8 @@
           "reason": "教程和对比搜索意图明确，内容成本低，可引流至产品。",
           "uncertainty": "竞争内容可能增多，需持续更新。"
         }
-      ]
+      ],
+      "variantOf": "local-ai-chat-app"
     },
     {
       "slug": "ai-conversation-storage",
@@ -66895,7 +66940,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -67158,10 +67203,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 41,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -67415,7 +67460,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -67670,7 +67715,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -67888,7 +67933,8 @@
           "reason": "搜索意图以 howto 为主，教程内容可低成本验证需求并导流产品。",
           "uncertainty": "教程类内容竞争可能来自现有工具官方博客，需差异化实操数据。"
         }
-      ]
+      ],
+      "variantOf": "ai-ugc-ads"
     },
     {
       "slug": "ugc-ad-factory-ai",
@@ -67948,7 +67994,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -68128,7 +68174,8 @@
           "reason": "开源项目星标低但方向一致，实测可判断技术门槛与差异化空间",
           "uncertainty": "仓库活跃度与长期维护情况未知"
         }
-      ]
+      ],
+      "variantOf": "ai-ugc-ads"
     },
     {
       "slug": "ai-tools-for-teachers",
@@ -68188,7 +68235,7 @@
         "growth": 98,
         "persistence": 79,
         "breakout": 82,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -68439,7 +68486,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -68694,7 +68741,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -68912,7 +68959,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -69159,7 +69206,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -69411,7 +69458,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -69609,7 +69656,8 @@
           "reason": "对比类搜索词出现，内容竞争较小，可低成本获取早期用户。",
           "uncertainty": "内容排名需要时间，且工具市场变化快。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "anti-ai-crawler-tarpit",
@@ -69669,7 +69717,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 70
       },
       "oppParts": {
@@ -69860,10 +69908,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -70117,10 +70165,10 @@
         ]
       },
       "trendParts": {
-        "growth": 86,
+        "growth": 28,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -70370,7 +70418,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -70561,7 +70609,8 @@
           "reason": "相关搜索词已出现，内容竞争少，可低成本验证意图。",
           "uncertainty": "搜索量绝对值未知，内容引流效果待测。"
         }
-      ]
+      ],
+      "variantOf": "ai-reddit-search"
     },
     {
       "slug": "free-ai-resume-builder",
@@ -70618,10 +70667,10 @@
         ]
       },
       "trendParts": {
-        "growth": 94,
+        "growth": 64,
         "persistence": 93,
         "breakout": 62,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -70839,7 +70888,8 @@
           "reason": "搜索意图中howto和compare明显，内容成本低，可为产品导流。",
           "uncertainty": "内容竞争程度未量化，需观察实际搜索排名效果。"
         }
-      ]
+      ],
+      "variantOf": "ai-resume-builder"
     },
     {
       "slug": "chatgpt-brand-mention-checker",
@@ -70899,7 +70949,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -71117,7 +71167,8 @@
           "reason": "相关搜索出现免费工具需求，内容可低成本验证搜索意图并导流。",
           "uncertainty": "内容竞争度未知，需观察自然流量。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "ai-search-visibility-report",
@@ -71177,7 +71228,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -71382,7 +71433,8 @@
           "reason": "相关搜索出现免费工具需求，内容成本低且能导向产品。",
           "uncertainty": "搜索热度绝对值仍低，近 7 天仅 14.3，内容流量可能有限。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "vector-database-for-rag",
@@ -71442,7 +71494,7 @@
         "growth": 100,
         "persistence": 43,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -71707,7 +71759,7 @@
         "growth": 100,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -71971,7 +72023,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -72194,10 +72246,10 @@
         ]
       },
       "trendParts": {
-        "growth": 69,
+        "growth": 63,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -72398,7 +72450,8 @@
           "reason": "比较与替代类搜索意图清晰，内容成本低，可为托管服务导流",
           "uncertainty": "对比内容竞争较多，需靠实测数据差异化"
         }
-      ]
+      ],
+      "variantOf": "ai-evaluation-framework"
     },
     {
       "slug": "agent-evaluation-framework",
@@ -72455,10 +72508,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -72657,7 +72710,8 @@
           "reason": "相关搜索存在多个变体，内容可低成本获取早期用户并反哺 SDK 采用。",
           "uncertainty": "搜索量绝对值未知，内容流量上限不确定。"
         }
-      ]
+      ],
+      "variantOf": "ai-evaluation-framework"
     },
     {
       "slug": "ollama-docker-compose",
@@ -72717,7 +72771,7 @@
         "growth": 92,
         "persistence": 64,
         "breakout": 80,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -72980,7 +73034,7 @@
         "growth": 99,
         "persistence": 71,
         "breakout": 79,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -73238,10 +73292,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -73444,7 +73498,8 @@
           "reason": "相关搜索已出现审计和本地商家 AI SEO 词，内容可低成本获客并验证付费意愿。",
           "uncertainty": "搜索热度绝对值仍低，内容流量规模有限。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "ai-ugc-video-generator",
@@ -73504,7 +73559,7 @@
         "growth": 57,
         "persistence": 29,
         "breakout": 90,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -73714,7 +73769,8 @@
           "reason": "搜索词集中在 howto 与 free，内容获客成本低于投放",
           "uncertainty": "免费工具竞争激烈，转化率未知"
         }
-      ]
+      ],
+      "variantOf": "ai-ugc-ads"
     },
     {
       "slug": "ai-tutor-for-homework",
@@ -73774,7 +73830,7 @@
         "growth": 97,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -74023,7 +74079,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -74236,7 +74292,8 @@
           "reason": "相关搜索已出现对比类长尾，内容成本低，可先验证需求再决定是否开发。",
           "uncertainty": "对比类内容竞争可能来自CRM厂商官方博客。"
         }
-      ]
+      ],
+      "variantOf": "ai-crm-assistant"
     },
     {
       "slug": "brand-visibility-in-chatgpt",
@@ -74293,10 +74350,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 25,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -74491,7 +74548,8 @@
           "reason": "相关搜索词如 ai visibility audit 已出现，内容可建立权威并导流至工具。",
           "uncertainty": "内容竞争可能来自 SEO 博客，需持续更新以保持排名。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "agents-md-example",
@@ -74548,10 +74606,10 @@
         ]
       },
       "trendParts": {
-        "growth": 98,
+        "growth": 31,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -74809,7 +74867,7 @@
         "growth": 97,
         "persistence": 43,
         "breakout": 92,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -75005,7 +75063,8 @@
           "reason": "生成器已有早期项目但星数不高，产品化时机需等需求进一步验证。",
           "uncertainty": "大厂编码 agent 可能内置配置管理，挤压独立工具空间。"
         }
-      ]
+      ],
+      "variantOf": "agents-md-opencode"
     },
     {
       "slug": "mcp-inspector",
@@ -75062,10 +75121,10 @@
         ]
       },
       "trendParts": {
-        "growth": 98,
+        "growth": 49,
         "persistence": 71,
         "breakout": 79,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -75313,10 +75372,10 @@
         ]
       },
       "trendParts": {
-        "growth": 94,
+        "growth": 64,
         "persistence": 100,
         "breakout": 60,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -75562,10 +75621,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 8,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -75812,10 +75871,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 5,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -76019,7 +76078,8 @@
           "reason": "三个工具都刚出现且 HN 互动低，市场是否成立还需更多信号。",
           "uncertainty": "大厂编码 agent 可能内置指令文件管理，挤压独立工具空间。"
         }
-      ]
+      ],
+      "variantOf": "copilot-instructions-file"
     },
     {
       "slug": "mcp-server-hosting",
@@ -76079,7 +76139,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -76326,10 +76386,10 @@
         ]
       },
       "trendParts": {
-        "growth": 100,
+        "growth": 50,
         "persistence": 43,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -76575,7 +76635,7 @@
         "growth": 44,
         "persistence": 57,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -76838,7 +76898,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -77084,10 +77144,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -77308,10 +77368,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 25,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -77557,7 +77617,7 @@
         "growth": 16,
         "persistence": 14,
         "breakout": 98,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -77748,7 +77808,8 @@
           "reason": "HN 同类测试帖获讨论，搜索者需要可核对的防护效果证据，内容可低成本获取早期用户。",
           "uncertainty": "话题偏技术，受众规模有限，转化到付费需配合工具落地。"
         }
-      ]
+      ],
+      "variantOf": "prompt-injection-detection"
     },
     {
       "slug": "mcp-proxy-server",
@@ -77805,10 +77866,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -78070,10 +78131,10 @@
         ]
       },
       "trendParts": {
-        "growth": 93,
+        "growth": 47,
         "persistence": 93,
         "breakout": 63,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -78262,7 +78323,8 @@
           "reason": "相关搜索集中在数据使用、删除历史与脱敏工具，内容可低成本获取早期用户。",
           "uncertainty": "内容竞争以官方文档为主，需用可操作模板和日志样例做出差异。"
         }
-      ]
+      ],
+      "variantOf": "chatgpt-privacy-mode"
     },
     {
       "slug": "chatgpt-privacy-mode",
@@ -78322,7 +78384,7 @@
         "growth": 16,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -78574,10 +78636,10 @@
         ]
       },
       "trendParts": {
-        "growth": 82,
+        "growth": 75,
         "persistence": 100,
         "breakout": 75,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -78764,7 +78826,8 @@
           "reason": "howto和problem类搜索意图明确，内容成本低，可导流至工具。",
           "uncertainty": "SEO竞争程度未量化，需观察排名效果。"
         }
-      ]
+      ],
+      "variantOf": "chatgpt-clear-all-history"
     },
     {
       "slug": "self-hosted-copilot",
@@ -78824,7 +78887,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -79077,7 +79140,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -79282,7 +79345,8 @@
           "reason": "搜索者多为想自己动手的开发者，教程可承接长尾并验证付费意愿。",
           "uncertainty": "相关搜索量未在 Trends 中给出，长尾规模不确定。"
         }
-      ]
+      ],
+      "variantOf": "gemini-ocr"
     },
     {
       "slug": "ai-agent-observability",
@@ -79342,7 +79406,7 @@
         "growth": 96,
         "persistence": 93,
         "breakout": 91,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -79598,7 +79662,7 @@
         "growth": 66,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -79794,7 +79858,8 @@
           "reason": "搜索意图偏 howto 和 problem，教程能低成本获取早期用户和反馈。",
           "uncertainty": "教程类内容竞争可能快速增加，需持续更新。"
         }
-      ]
+      ],
+      "variantOf": "reddit-api-mcp-server"
     },
     {
       "slug": "ai-interview-coach",
@@ -79854,7 +79919,7 @@
         "growth": 66,
         "persistence": 21,
         "breakout": 98,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -80118,7 +80183,7 @@
         "growth": 100,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -80393,7 +80458,7 @@
         "growth": 86,
         "persistence": 100,
         "breakout": 68,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -80661,10 +80726,10 @@
         ]
       },
       "trendParts": {
-        "growth": 94,
+        "growth": 47,
         "persistence": 64,
         "breakout": 79,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -80937,7 +81002,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -81202,10 +81267,10 @@
         ]
       },
       "trendParts": {
-        "growth": 45,
+        "growth": 41,
         "persistence": 64,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -81453,7 +81518,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 70
       },
       "oppParts": {
@@ -81636,10 +81701,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -81886,10 +81951,10 @@
         ]
       },
       "trendParts": {
-        "growth": 78,
+        "growth": 72,
         "persistence": 100,
         "breakout": 73,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -82146,7 +82211,7 @@
         "growth": 74,
         "persistence": 100,
         "breakout": 87,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -82397,10 +82462,10 @@
         ]
       },
       "trendParts": {
-        "growth": 94,
+        "growth": 64,
         "persistence": 100,
         "breakout": 61,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -82607,7 +82672,8 @@
           "reason": "howto 与 price 类搜索意图明确，内容可低成本承接流量并为代理产品导流。",
           "uncertainty": "免费渠道信息变化快，内容需高频更新才能维持搜索排名。"
         }
-      ]
+      ],
+      "variantOf": "api-deepseek"
     },
     {
       "slug": "prompt-evaluation-framework",
@@ -82664,10 +82730,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 25,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -82856,7 +82922,8 @@
           "reason": "搜索意图偏学习与问题解决，内容可低成本验证需求并导流。",
           "uncertainty": "相关搜索词有限，长尾规模需用实际发布后的搜索表现验证。"
         }
-      ]
+      ],
+      "variantOf": "ai-evaluation-framework"
     },
     {
       "slug": "local-copilot-vscode",
@@ -82916,7 +82983,7 @@
         "growth": 96,
         "persistence": 79,
         "breakout": 70,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -83106,7 +83173,8 @@
           "reason": "搜索者意图集中在怎么搭和替代谁，现有教程传播弱，内容成本低且能为产品导流",
           "uncertainty": "搜索热度波动大，峰值4.76倍可能含短期事件驱动，需观察能否持续"
         }
-      ]
+      ],
+      "variantOf": "local-llm-for-coding"
     },
     {
       "slug": "mcp-server-automation",
@@ -83163,10 +83231,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -83421,10 +83489,10 @@
         ]
       },
       "trendParts": {
-        "growth": 88,
+        "growth": 81,
         "persistence": 100,
         "breakout": 83,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -83671,10 +83739,10 @@
         ]
       },
       "trendParts": {
-        "growth": 94,
+        "growth": 87,
         "persistence": 100,
         "breakout": 78,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -83941,7 +84009,7 @@
         "growth": 71,
         "persistence": 93,
         "breakout": 73,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -84193,10 +84261,10 @@
         ]
       },
       "trendParts": {
-        "growth": 29,
+        "growth": 26,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -84468,7 +84536,7 @@
         "growth": 50,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -84718,10 +84786,10 @@
         ]
       },
       "trendParts": {
-        "growth": 90,
+        "growth": 45,
         "persistence": 86,
         "breakout": 69,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -84971,7 +85039,7 @@
         "growth": 94,
         "persistence": 29,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -85220,7 +85288,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -85474,10 +85542,10 @@
         ]
       },
       "trendParts": {
-        "growth": 85,
+        "growth": 27,
         "persistence": 79,
         "breakout": 66,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -85728,10 +85796,10 @@
         ]
       },
       "trendParts": {
-        "growth": 98,
+        "growth": 49,
         "persistence": 100,
         "breakout": 85,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -86002,7 +86070,7 @@
         "growth": 90,
         "persistence": 100,
         "breakout": 54,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -86213,7 +86281,8 @@
           "reason": "搜索意图中compare和howto占比高，内容可低成本验证需求并引流。",
           "uncertainty": "内容竞争程度未知，需观察自然搜索流量。"
         }
-      ]
+      ],
+      "variantOf": "ai-essay-grading"
     },
     {
       "slug": "ai-music-rights",
@@ -86273,7 +86342,7 @@
         "growth": 41,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -86521,7 +86590,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -86739,7 +86808,8 @@
           "reason": "相关搜索包含 detection、open source、best practices，内容可低成本验证需求并导流。",
           "uncertainty": "搜索量绝对值低，内容流量天花板有限。"
         }
-      ]
+      ],
+      "variantOf": "prompt-injection-detection"
     },
     {
       "slug": "ai-summarize-youtube",
@@ -86796,10 +86866,10 @@
         ]
       },
       "trendParts": {
-        "growth": 47,
+        "growth": 43,
         "persistence": 64,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -87061,7 +87131,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -87308,7 +87378,7 @@
         "growth": 100,
         "persistence": 29,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -87576,10 +87646,10 @@
         ]
       },
       "trendParts": {
-        "growth": 74,
+        "growth": 24,
         "persistence": 21,
         "breakout": 98,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -87835,7 +87905,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -88092,7 +88162,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -88332,10 +88402,10 @@
         ]
       },
       "trendParts": {
-        "growth": 93,
+        "growth": 63,
         "persistence": 93,
         "breakout": 59,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -88585,7 +88655,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -88863,7 +88933,7 @@
         "growth": 16,
         "persistence": 14,
         "breakout": 88,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -89134,7 +89204,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -89384,7 +89454,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -89643,7 +89713,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -89856,7 +89926,8 @@
           "reason": "搜索者意图偏方法而非直接购买，内容可低成本获客并导流到监测面板。",
           "uncertainty": "该关键词搜索量绝对值未知，内容流量上限不确定。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "llm-regression-testing",
@@ -89916,7 +89987,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -90174,7 +90245,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -90367,7 +90438,8 @@
           "reason": "内容成本低，可先验证搜索者是否真愿为评测集管理付费，再决定是否加码产品。",
           "uncertainty": "相关搜索词有限，SEO 流量规模不确定。"
         }
-      ]
+      ],
+      "variantOf": "ai-evaluation-framework"
     },
     {
       "slug": "chatgpt-brand-monitoring",
@@ -90424,10 +90496,10 @@
         ]
       },
       "trendParts": {
-        "growth": 66,
+        "growth": 60,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -90617,7 +90689,8 @@
           "reason": "搜索意图以 howto 和 problem 为主，内容可低成本验证需求。",
           "uncertainty": "搜索量绝对值未知，需观察转化。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "agents-md-best-practices",
@@ -90677,7 +90750,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -90934,7 +91007,7 @@
         "growth": 93,
         "persistence": 57,
         "breakout": 74,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -91209,10 +91282,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 34,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -91475,7 +91548,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -91735,10 +91808,10 @@
         ]
       },
       "trendParts": {
-        "growth": 99,
+        "growth": 32,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -92017,7 +92090,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -92285,10 +92358,10 @@
         ]
       },
       "trendParts": {
-        "growth": 100,
+        "growth": 32,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -92540,7 +92613,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -92738,7 +92811,8 @@
           "reason": "Ask HN明确在问缺什么工具，howto类搜索词具体，内容可与SDK互相导流",
           "uncertainty": "搜索量绝对值未知，内容转化需观察"
         }
-      ]
+      ],
+      "variantOf": "prompt-injection-detection"
     },
     {
       "slug": "chatgpt-sensitive-data",
@@ -92795,10 +92869,10 @@
         ]
       },
       "trendParts": {
-        "growth": 92,
+        "growth": 46,
         "persistence": 50,
         "breakout": 82,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -92992,7 +93066,8 @@
           "reason": "howto 和 problem 意图搜索词明确，内容可低成本获取早期用户",
           "uncertainty": "相关搜索词未提供具体量级，SEO 效果需实测"
         }
-      ]
+      ],
+      "variantOf": "chatgpt-privacy-mode"
     },
     {
       "slug": "agent-trace-dashboard",
@@ -93049,10 +93124,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -93298,10 +93373,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -93557,7 +93632,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -93813,7 +93888,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -94016,7 +94091,8 @@
           "reason": "搜索意图以 howto/learn 为主，教程能承接早期流量并验证使用场景。",
           "uncertainty": "教程流量能否转化为托管版付费用户尚不确定。"
         }
-      ]
+      ],
+      "variantOf": "ai-reddit-search"
     },
     {
       "slug": "chatgpt-citation-audit",
@@ -94076,7 +94152,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -94281,7 +94357,8 @@
           "reason": "需求被 HN 和 GitHub 项目验证，供给稀少，独立开发者可快速实现。",
           "uncertainty": "搜索热度近期下降，需验证是否为短期波动；大模型 API 成本与引用解析准确性待测试。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "send-email-mcp",
@@ -94341,7 +94418,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -94618,7 +94695,7 @@
         "growth": 86,
         "persistence": 64,
         "breakout": 71,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -94888,10 +94965,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 8,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -95109,7 +95186,8 @@
           "reason": "安装工具已有个人项目先发，但讨论量极低，需求规模未验证",
           "uncertainty": "无法从现有数据判断 skill 安装是长期需求还是一次性尝鲜"
         }
-      ]
+      ],
+      "variantOf": "claude-code-skills"
     },
     {
       "slug": "claude-code-skills-github",
@@ -95166,10 +95244,10 @@
         ]
       },
       "trendParts": {
-        "growth": 80,
+        "growth": 65,
         "persistence": 93,
         "breakout": 69,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -95379,7 +95457,8 @@
           "reason": "搜索意图集中在找仓库和装法，内容页可直接承接并验证需求。",
           "uncertainty": "Trends 不提供搜索量，无法判断长尾词绝对规模。"
         }
-      ]
+      ],
+      "variantOf": "claude-code-skills"
     },
     {
       "slug": "ai-agent-token-budget",
@@ -95439,7 +95518,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -95707,10 +95786,10 @@
         ]
       },
       "trendParts": {
-        "growth": 38,
+        "growth": 12,
         "persistence": 29,
         "breakout": 80,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -95909,7 +95988,8 @@
           "reason": "搜索意图集中在 howto 与 compare，内容成本低且能验证切口",
           "uncertainty": "内容竞争激烈，需用投放数据回流角度差异化"
         }
-      ]
+      ],
+      "variantOf": "ai-ugc-ads"
     },
     {
       "slug": "local-llm-code-editor",
@@ -95969,7 +96049,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -96194,10 +96274,10 @@
         ]
       },
       "trendParts": {
-        "growth": 88,
+        "growth": 44,
         "persistence": 86,
         "breakout": 63,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -96447,7 +96527,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -96677,7 +96757,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -96941,10 +97021,10 @@
         ]
       },
       "trendParts": {
-        "growth": 99,
+        "growth": 32,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -97201,7 +97281,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -97454,7 +97534,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -97643,7 +97723,8 @@
           "reason": "单次脉冲不足以支撑订阅制定价，需观察复现性",
           "uncertainty": "Trends 仅提供相对热度，无法确认实际搜索规模"
         }
-      ]
+      ],
+      "variantOf": "ai-ugc-ads"
     },
     {
       "slug": "ai-appointment-scheduling-agent",
@@ -97703,7 +97784,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -97966,7 +98047,7 @@
         "growth": 100,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -98215,7 +98296,7 @@
         "growth": 16,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -98465,7 +98546,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -98648,7 +98729,8 @@
           "reason": "搜索意图明确，内容站可承接；HN 相关帖子得分低，竞争小。",
           "uncertainty": "搜索量绝对值未知，Trends 仅显示相对热度。"
         }
-      ]
+      ],
+      "variantOf": "ai-wrapper-startup"
     },
     {
       "slug": "ai-wrapper-cost-estimation",
@@ -98705,10 +98787,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 46,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -98923,10 +99005,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 46,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -99164,7 +99246,7 @@
         "growth": 88,
         "persistence": 71,
         "breakout": 70,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -99409,10 +99491,10 @@
         ]
       },
       "trendParts": {
-        "growth": 63,
+        "growth": 58,
         "persistence": 29,
         "breakout": 91,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -99671,7 +99753,7 @@
         "growth": 95,
         "persistence": 50,
         "breakout": 86,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -99862,7 +99944,8 @@
           "reason": "搜索意图集中在免费替代品，内容页获客成本低于投放。",
           "uncertainty": "教育类关键词竞争可能被大站占据，需观察排名。"
         }
-      ]
+      ],
+      "variantOf": "ai-homework-help"
     },
     {
       "slug": "ai-tutor-for-math",
@@ -99922,7 +100005,7 @@
         "growth": 86,
         "persistence": 71,
         "breakout": 74,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -100172,7 +100255,7 @@
         "growth": 96,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -100416,10 +100499,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 5,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -100669,7 +100752,7 @@
         "growth": 72,
         "persistence": 36,
         "breakout": 79,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -100936,7 +101019,7 @@
         "growth": 100,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -101216,7 +101299,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -101435,7 +101518,8 @@
           "reason": "内容成本低，可验证搜索意图并引流到评测榜。",
           "uncertainty": "HN 相关讨论分数低，社区关注度可能有限。"
         }
-      ]
+      ],
+      "variantOf": "ai-coding-agent-benchmark"
     },
     {
       "slug": "open-source-agent-harness",
@@ -101492,10 +101576,10 @@
         ]
       },
       "trendParts": {
-        "growth": 100,
+        "growth": 50,
         "persistence": 50,
         "breakout": 93,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -101756,10 +101840,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 25,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -102042,7 +102126,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -102304,7 +102388,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -102560,7 +102644,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -102797,10 +102881,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -103002,7 +103086,8 @@
           "reason": "相关搜索词存在且内容供给少，可低成本获取关注。",
           "uncertainty": "搜索量极低，内容可能难以获得大量曝光。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "ai-agent-monitoring-tool",
@@ -103062,7 +103147,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -103251,7 +103336,8 @@
           "reason": "搜索者处于学习与选型阶段，长尾词明确，内容可低成本验证需求。",
           "uncertainty": "搜索热度绝对值不高，内容流量可能有限。"
         }
-      ]
+      ],
+      "variantOf": "ai-agent-monitoring"
     },
     {
       "slug": "n8n-ai-chatbot-workflow",
@@ -103311,7 +103397,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -103514,7 +103600,8 @@
           "reason": "搜索意图以学习为主，内容可低成本获取流量并验证需求。",
           "uncertainty": "教程竞争激烈，需突出垂直场景或评测特色。"
         }
-      ]
+      ],
+      "variantOf": "n8n-ai-workflow-examples"
     },
     {
       "slug": "ai-content-workflow-automation",
@@ -103574,7 +103661,7 @@
         "growth": 21,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -103839,7 +103926,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -104090,7 +104177,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -104359,7 +104446,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -104570,7 +104657,8 @@
           "reason": "搜索意图集中在 howto 与 problem，且相关搜索已出现具体工具名，内容可承接长尾流量。",
           "uncertainty": "该话题热度样本仅 30 天、近 7 天 14.3，绝对量级仍小，内容回报周期不确定。"
         }
-      ]
+      ],
+      "variantOf": "claude-code-subagents"
     },
     {
       "slug": "gemini-ocr-pdf-invoice",
@@ -104630,7 +104718,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -104824,7 +104912,8 @@
           "reason": "搜索者存在比较意图，HN 上确定性输出基准讨论获 60 分，评测内容可承接长尾搜索。",
           "uncertainty": "评测结论可能随模型版本快速变化，需持续更新。"
         }
-      ]
+      ],
+      "variantOf": "gemini-ocr"
     },
     {
       "slug": "brave-search-mcp-server",
@@ -104884,7 +104973,7 @@
         "growth": 90,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -105135,7 +105224,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -105435,7 +105524,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -105618,7 +105707,8 @@
           "reason": "搜索者处于找方案阶段，教程能低成本验证需求并导流到产品。",
           "uncertainty": "相关搜索词未返回，长尾词需用实际搜索验证。"
         }
-      ]
+      ],
+      "variantOf": "deepseek-api-proxy"
     },
     {
       "slug": "best-ai-email-assistant",
@@ -105675,10 +105765,10 @@
         ]
       },
       "trendParts": {
-        "growth": 80,
+        "growth": 40,
         "persistence": 93,
         "breakout": 61,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -105867,7 +105957,8 @@
           "reason": "搜索词以 best/compare 为主，对比内容成本低、能验证转化。",
           "uncertainty": "Trends 不提供搜索量，无法判断绝对流量规模。"
         }
-      ]
+      ],
+      "variantOf": "ai-email-assistant"
     },
     {
       "slug": "ai-email-triage-gmail",
@@ -105927,7 +106018,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -106131,7 +106222,8 @@
           "reason": "对比词已出现且缺少系统内容，内容成本低，可为插件导流。",
           "uncertainty": "相关搜索词样本少，长尾规模待验证。"
         }
-      ]
+      ],
+      "variantOf": "email-triage-ai"
     },
     {
       "slug": "ai-reply-draft-gmail",
@@ -106191,7 +106283,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -106441,7 +106533,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -106690,7 +106782,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -106945,10 +107037,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -107214,10 +107306,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -107421,7 +107513,8 @@
           "reason": "MCP 生态和 AI 搜索引用是新增量，但当前仓库星数极低，时机未到。",
           "uncertainty": "AI 搜索引用优化是否成为本地商家独立付费项尚不明确。"
         }
-      ]
+      ],
+      "variantOf": "local-business-ai-citation"
     },
     {
       "slug": "ai-local-seo-ranking",
@@ -107478,10 +107571,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 25,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -107684,7 +107777,8 @@
           "reason": "搜索意图明确，内容可低成本验证需求并收集线索。",
           "uncertainty": "内容竞争可能来自大型 SEO 博客。"
         }
-      ]
+      ],
+      "variantOf": "local-business-ai-citation"
     },
     {
       "slug": "iso-42001-ai-governance",
@@ -107744,7 +107838,7 @@
         "growth": 100,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -108001,7 +108095,7 @@
         "growth": 65,
         "persistence": 79,
         "breakout": 64,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -108256,10 +108350,10 @@
         ]
       },
       "trendParts": {
-        "growth": 100,
+        "growth": 32,
         "persistence": 21,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -108452,7 +108546,8 @@
           "reason": "相关搜索词尚未沉淀，内容竞争低，可低成本验证搜索意图。",
           "uncertainty": "法规名称与适用范围可能变化，内容需保持更新。"
         }
-      ]
+      ],
+      "variantOf": "ai-policy-management"
     },
     {
       "slug": "ielts-writing-ai-grader",
@@ -108512,7 +108607,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -108739,10 +108834,10 @@
         ]
       },
       "trendParts": {
-        "growth": 99,
+        "growth": 49,
         "persistence": 71,
         "breakout": 82,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -108917,7 +109012,8 @@
           "reason": "长尾搜索集中在 free、no sign up、step by step，内容可低成本验证需求。",
           "uncertainty": "内容竞争激烈，排名周期不确定。"
         }
-      ]
+      ],
+      "variantOf": "ai-homework-helper"
     },
     {
       "slug": "mcp-server-management-tool",
@@ -108977,7 +109073,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -109239,7 +109335,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -109488,7 +109584,7 @@
         "growth": 20,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -109734,7 +109830,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -109981,10 +110077,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -110173,7 +110269,8 @@
           "reason": "搜索者处于learn/howto阶段，内容成本低，可验证关键词真实需求。",
           "uncertainty": "相关搜索词少，内容流量可能有限。"
         }
-      ]
+      ],
+      "variantOf": "whatsapp-broadcast-automation"
     },
     {
       "slug": "whatsapp-business-api-automation",
@@ -110230,10 +110327,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 5,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -110429,7 +110526,8 @@
           "reason": "howto 与 problem 搜索意图明确，内容可低成本获客。",
           "uncertainty": "搜索量未公开，内容转化率未知。"
         }
-      ]
+      ],
+      "variantOf": "whatsapp-broadcast-automation"
     },
     {
       "slug": "claude-code-playwright-testing",
@@ -110486,10 +110584,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 41,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -110685,7 +110783,8 @@
           "reason": "相关搜索以 setup、mcp config、test failing 为主，内容供给零散，可用模板换早期用户。",
           "uncertainty": "内容竞争可能来自官方文档更新，需持续跟进。"
         }
-      ]
+      ],
+      "variantOf": "claude-code-api-testing"
     },
     {
       "slug": "claude-code-api-testing",
@@ -110745,7 +110844,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -110997,7 +111096,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -111268,7 +111367,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -111546,7 +111645,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -111787,10 +111886,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -111984,7 +112083,8 @@
           "reason": "相关搜索词显示工具意图，但公开深度内容少，内容可以低成本验证需求并导流。",
           "uncertainty": "搜索热度低，内容流量可能有限，需观察转化。"
         }
-      ]
+      ],
+      "variantOf": "ai-ugc-ads"
     },
     {
       "slug": "ai-ugc-video-factory",
@@ -112041,10 +112141,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -112235,7 +112335,8 @@
           "reason": "Show HN教程帖与相关搜索表明搜索者想学流程而非只找工具。",
           "uncertainty": "教程内容竞争可能快速增加，需靠批量实操细节建立差异。"
         }
-      ]
+      ],
+      "variantOf": "ai-ugc-ads"
     },
     {
       "slug": "video-to-prompt-ai",
@@ -112295,7 +112396,7 @@
         "growth": 64,
         "persistence": 100,
         "breakout": 65,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -112554,10 +112655,10 @@
         ]
       },
       "trendParts": {
-        "growth": 88,
+        "growth": 44,
         "persistence": 93,
         "breakout": 66,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -112821,7 +112922,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -113068,10 +113169,10 @@
         ]
       },
       "trendParts": {
-        "growth": 100,
+        "growth": 68,
         "persistence": 93,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -113268,7 +113369,8 @@
           "reason": "搜索意图偏向学习和操作，内容可低成本获取早期用户并导流至工具。",
           "uncertainty": "内容竞争可能随热度上升而加剧。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "ai-search-visibility-audit",
@@ -113328,7 +113430,7 @@
         "growth": 50,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -113540,7 +113642,8 @@
           "reason": "相关搜索出现report类长尾，现有内容多为工具落地页，缺少系统方法。",
           "uncertainty": "搜索热度绝对值仍低（近7天19.6），内容流量规模有限。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "ollama-docker-compose-chroma",
@@ -113600,7 +113703,7 @@
         "growth": 50,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -113860,10 +113963,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 16,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -114036,7 +114139,8 @@
           "reason": "搜索意图包含 learn 和 howto，内容可低成本获取早期用户。",
           "uncertainty": "内容竞争可能逐渐加剧，需持续更新。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "b2b-sales-ai-agent",
@@ -114096,7 +114200,7 @@
         "growth": 50,
         "persistence": 14,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -114370,10 +114474,10 @@
         ]
       },
       "trendParts": {
-        "growth": 100,
+        "growth": 50,
         "persistence": 64,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -114576,7 +114680,8 @@
           "reason": "howto和problem意图明确，内容可低成本获取早期用户并验证需求。",
           "uncertainty": "搜索热度基数仍低，内容流量规模有限。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "ai-seo-brand-mentions",
@@ -114636,7 +114741,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -114846,7 +114951,8 @@
           "reason": "相关搜索已出现 brand visibility in chatgpt，内容成本低且能反哺产品获客。",
           "uncertainty": "该关键词热度样本仅 30 天、近 7 天均值 14.3，绝对搜索规模仍小。"
         }
-      ]
+      ],
+      "variantOf": "ai-visibility-tracking"
     },
     {
       "slug": "agent-instructions-file-example",
@@ -114903,10 +115009,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 5,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -115117,7 +115223,8 @@
           "reason": "工具型产品需验证开发者是否愿意为指令文件管理付费，当前HN讨论热度较低（2-3分）。",
           "uncertainty": "HN讨论分数低，付费意愿不明；大厂可能内置指令文件生成功能。"
         }
-      ]
+      ],
+      "variantOf": "copilot-instructions-file"
     },
     {
       "slug": "ollama-docker-shared-volume",
@@ -115177,7 +115284,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -115380,7 +115487,7 @@
         "growth": 16,
         "persistence": 36,
         "breakout": 70,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -115632,7 +115739,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -115822,7 +115929,8 @@
           "reason": "工程需求真实、现有供给零散，且独立开发可行性高；但搜索热度脉冲式，需靠产品而非流量获客",
           "uncertainty": "近 7 天热度归零，无法判断是数据缺口还是关注退潮；付费意愿未经证据验证"
         }
-      ]
+      ],
+      "variantOf": "prompt-injection-detection"
     },
     {
       "slug": "chatgpt-local-proxy-privacy",
@@ -115882,7 +115990,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -116077,7 +116185,8 @@
           "reason": "搜索意图以 howto 和 problem 为主，内容可承接搜索流量并验证需求。",
           "uncertainty": "缺乏搜索量数据，无法判断内容流量规模。"
         }
-      ]
+      ],
+      "variantOf": "chatgpt-privacy-mode"
     },
     {
       "slug": "chatgpt-clear-all-history",
@@ -116137,7 +116246,7 @@
         "growth": 99,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -116378,7 +116487,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -116559,7 +116668,8 @@
           "reason": "对比类搜索意图明确，内容成本低，可顺带验证治理层需求",
           "uncertainty": "该词搜索量绝对值低，内容流量上限有限"
         }
-      ]
+      ],
+      "variantOf": "self-hosted-copilot"
     },
     {
       "slug": "reddit-api-mcp-server",
@@ -116619,7 +116729,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -116869,7 +116979,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -117137,7 +117247,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -117332,7 +117442,8 @@
           "reason": "搜索意图以 howto 和 problem 为主，内容可低成本获取早期用户并验证需求。",
           "uncertainty": "内容竞争可能来自现有博客和文档，需差异化聚焦 vibe coding 场景。"
         }
-      ]
+      ],
+      "variantOf": "vibe-coding"
     },
     {
       "slug": "vibe-coding-best-practices-deployment",
@@ -117392,7 +117503,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 85
       },
       "oppParts": {
@@ -117548,7 +117659,8 @@
           "reason": "工具层尚无共识，过早投入产品风险高",
           "uncertainty": "HN 样本仅 3 分，社区反馈量不足以判断方向"
         }
-      ]
+      ],
+      "variantOf": "vibe-coding"
     },
     {
       "slug": "ai-resume-builder-for-nurses",
@@ -117608,7 +117720,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 70
       },
       "oppParts": {
@@ -117745,7 +117857,8 @@
           "reason": "内容成本低，可承接搜索流量并验证真实需求。",
           "uncertainty": "搜索意图以信息型为主，工具转化率待测。"
         }
-      ]
+      ],
+      "variantOf": "ai-resume-builder"
     },
     {
       "slug": "no-code-ai-agent-whatsapp",
@@ -117805,7 +117918,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -118066,7 +118179,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -118347,7 +118460,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -118606,7 +118719,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -118864,7 +118977,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -119118,7 +119231,7 @@
         "growth": 100,
         "persistence": 29,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -119382,7 +119495,7 @@
         "growth": 16,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -119629,7 +119742,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -119896,10 +120009,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 46,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -120154,7 +120267,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -120415,7 +120528,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -120631,7 +120744,8 @@
           "reason": "HN 已有相关讨论但分数低，系统整理的内容稀缺，可用内容验证付费意愿。",
           "uncertainty": "榜单可能被 agent 厂商公关影响，需保持可复现的测试方法。"
         }
-      ]
+      ],
+      "variantOf": "ai-coding-agent-benchmark"
     },
     {
       "slug": "best-local-llm-for-coding",
@@ -120688,10 +120802,10 @@
         ]
       },
       "trendParts": {
-        "growth": 97,
+        "growth": 49,
         "persistence": 100,
         "breakout": 67,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -120878,7 +120992,8 @@
           "reason": "相关搜索词列表为空，需先补全长尾词再决定内容结构。",
           "uncertainty": "Trends 不提供意图份额，无法判断 compare 与 howto 哪类需求更大。"
         }
-      ]
+      ],
+      "variantOf": "local-llm-for-coding"
     },
     {
       "slug": "tiktok-ai-video-maker-free",
@@ -120935,10 +121050,10 @@
         ]
       },
       "trendParts": {
-        "growth": 98,
+        "growth": 31,
         "persistence": 14,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -121180,10 +121295,10 @@
         ]
       },
       "trendParts": {
-        "growth": 91,
+        "growth": 62,
         "persistence": 100,
         "breakout": 62,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -121446,10 +121561,10 @@
         ]
       },
       "trendParts": {
-        "growth": 88,
+        "growth": 44,
         "persistence": 93,
         "breakout": 60,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -121700,10 +121815,10 @@
         ]
       },
       "trendParts": {
-        "growth": 100,
+        "growth": 82,
         "persistence": 71,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -121962,10 +122077,10 @@
         ]
       },
       "trendParts": {
-        "growth": 50,
+        "growth": 25,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -122157,7 +122272,8 @@
           "reason": "搜索意图以 learn/howto 为主，内容成本低，可测试需求并积累早期用户。",
           "uncertainty": "该词热度峰值仅 18，内容流量可能有限，需扩展长尾词。"
         }
-      ]
+      ],
+      "variantOf": "local-business-ai-citation"
     },
     {
       "slug": "ai-homework-help-chrome-extension",
@@ -122214,10 +122330,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 5,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -122462,7 +122578,7 @@
         "growth": 98,
         "persistence": 57,
         "breakout": 78,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -122706,10 +122822,10 @@
         ]
       },
       "trendParts": {
-        "growth": 98,
+        "growth": 32,
         "persistence": 43,
         "breakout": 88,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -122956,10 +123072,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 13,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -123177,7 +123293,8 @@
           "reason": "配置类长尾搜索明确，内容成本低，可为产品导流",
           "uncertainty": "相关搜索量级未知，Trends 不提供绝对搜索量"
         }
-      ]
+      ],
+      "variantOf": "claude-code-hooks-configuration"
     },
     {
       "slug": "claude-code-hooks-security",
@@ -123237,7 +123354,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -123429,7 +123546,8 @@
           "reason": "相关搜索已出现配置类查询，但系统教程稀缺，内容可低成本获取搜索流量并导流到工具。",
           "uncertainty": "搜索量绝对值低，内容流量天花板有限，需靠社区传播补充。"
         }
-      ]
+      ],
+      "variantOf": "claude-code-hooks-configuration"
     },
     {
       "slug": "claude-code-subagents-parallel",
@@ -123489,7 +123607,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -123692,7 +123810,8 @@
           "reason": "搜索者 howto 意图明显，现有内容偏概念，教程可低成本验证需求并导流。",
           "uncertainty": "教程竞争可能随官方文档完善而加剧。"
         }
-      ]
+      ],
+      "variantOf": "claude-code-subagents"
     },
     {
       "slug": "claude-code-subagents-cost",
@@ -123752,7 +123871,7 @@
         "growth": 16,
         "persistence": 7,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -124001,7 +124120,7 @@
         "growth": 50,
         "persistence": 7,
         "breakout": 20,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -124256,7 +124375,7 @@
         "growth": 43,
         "persistence": 29,
         "breakout": 77,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -124512,7 +124631,7 @@
         "growth": 16,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {
@@ -124701,7 +124820,8 @@
           "reason": "搜索意图偏 howto 和 problem，内容可低成本获取长尾流量并验证需求。",
           "uncertainty": "相关搜索词未提供具体量级，内容流量上限不确定。"
         }
-      ]
+      ],
+      "variantOf": "openai-tools-api-streaming"
     },
     {
       "slug": "open-source-ai-code-editor",
@@ -124758,10 +124878,10 @@
         ]
       },
       "trendParts": {
-        "growth": 16,
+        "growth": 15,
         "persistence": 0,
         "breakout": 100,
-        "novelty": 100,
+        "novelty": 73,
         "reliability": 100
       },
       "oppParts": {

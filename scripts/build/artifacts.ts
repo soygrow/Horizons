@@ -364,8 +364,11 @@ async function main() {
   const toolRows = getToolsByScore().map((t, i) => toToolRow(t, i + 1));
 
   // 详情页只对「已进榜」的站生成：黑名单（大厂主站 / 非独立 AI 产品）与未达门槛的站
-  // 连详情页都不产出，避免从搜索、外链或相似推荐绕回榜单
-  const toolDetail = listedTools.map((t) => ({
+  // 连详情页都不产出，避免从搜索、外链或相似推荐绕回榜单。
+  // 用榜单口径（getToolsByScore，含 1000 条上限）而不是 listedTools，
+  // 保证「达标但被上限挤出」的站也不会产出详情页，两者条数始终一致。
+  const listedForDetail = getToolsByScore();
+  const toolDetail = listedForDetail.map((t) => ({
     rel: `tools/detail/${t.domain}.json`,
     data: { data: t, derived: toToolRow(t, 0) },
   }));
@@ -374,7 +377,8 @@ async function main() {
     generatedAt: GENERATED_AT,
     categories: allCategories.map((c) => ({
       value: c,
-      count: listedTools.filter((t) => t.categories.includes(c)).length,
+      // 与榜单同口径计数，避免筛选条数与实际行数不一致
+      count: listedForDetail.filter((t) => t.categories.includes(c)).length,
     })),
     sorts: [
       { value: "hot", label: "热度" },
@@ -420,7 +424,9 @@ async function main() {
 
   // ---------- AI 趋势词 ----------
   // 名次 = 综合得分 S 降序（同分先比 T，再按 slug 稳定排序），与浏览器端口径一致
-  const orderedTrends = [...trendKeywords].sort((a, b) => {
+  // 别名（variantOf）不进榜：同一需求只保留一个代表词，其余仍在 detail 里生成静态页
+  const listedTrends = trendKeywords.filter((t) => !t.variantOf);
+  const orderedTrends = [...listedTrends].sort((a, b) => {
     const sa = hasEnoughData(a) ? overallScore(a) : -1;
     const sb = hasEnoughData(b) ? overallScore(b) : -1;
     if (sb !== sa) return sb - sa;
@@ -529,6 +535,26 @@ async function main() {
     await readFile(path.join(ROOT, "content/opportunities.json"), "utf8"),
   ) as OpportunityFile;
 
+  // 证据里的趋势词如果是别名（variantOf），指向它的代表词：
+  // 别名不占名次，但详情页仍在，校验按榜单查会落空，重定向后链接也落到主页面
+  const aliasToRep = new Map(
+    trendKeywords.filter((t) => t.variantOf).map((t) => [t.slug, t.variantOf as string]),
+  );
+  if (aliasToRep.size) {
+    let redirected = 0;
+    for (const o of oppFile.opportunities ?? []) {
+      for (const e of o.evidence ?? []) {
+        if (e.board !== "trends") continue;
+        const rep = aliasToRep.get(e.ref);
+        if (rep) {
+          e.ref = rep;
+          redirected++;
+        }
+      }
+    }
+    if (redirected) console.log(`[artifacts] 机会榜证据重定向到代表词 ${redirected} 条`);
+  }
+
   const boardIndex: BoardIndex = { trendRows, toolRows, repoRows, modelRows };
   const oppErrors = validateOpportunities(oppFile, boardIndex);
   if (oppErrors.length) {
@@ -631,14 +657,15 @@ async function main() {
   await writeMany(modelDetail);
 
   // ---------- 校验（数据不丢的硬闸门）----------
-  // 注意：源文件保存全部候选（tools），只有达到收录门槛的 listedTools 才上榜
-  if (toolRows.length !== listedTools.length) {
-    fail(`tools 条数不一致：产物 ${toolRows.length} ≠ 达标 ${listedTools.length}（源 ${tools.length}）`);
+  // 注意：源文件保存全部候选（tools），只有达到收录门槛的 listedForDetail 才上榜；
+  // 达标数超过 MAX_LISTED_TOOLS 时，榜单按综合分截断到 1000 条
+  if (toolRows.length !== listedForDetail.length) {
+    fail(`tools 条数不一致：产物 ${toolRows.length} ≠ 上榜 ${listedForDetail.length}（源 ${tools.length}）`);
   }
   if (repoRows.length !== githubRepos.length) {
     fail(`github 条数不一致：产物 ${repoRows.length} ≠ 源 ${githubRepos.length}`);
   }
-  if (new Set(toolRows.map((r) => r.domain)).size !== listedTools.length) {
+  if (new Set(toolRows.map((r) => r.domain)).size !== listedForDetail.length) {
     fail("tools 存在重复 domain 主键");
   }
   if (new Set(repoRows.map((r) => r.fullName)).size !== githubRepos.length) {
@@ -646,10 +673,10 @@ async function main() {
   }
   if (toolRows.some((r) => !r.name || !r.domain)) fail("tools 存在缺失必填字段的行");
   if (repoRows.some((r) => !r.fullName || !r.name)) fail("github 存在缺失必填字段的行");
-  if (trendRows.length !== trendKeywords.length) {
-    fail(`trends 条数不一致：产物 ${trendRows.length} ≠ 源 ${trendKeywords.length}`);
+  if (trendRows.length !== listedTrends.length) {
+    fail(`trends 条数不一致：产物 ${trendRows.length} ≠ 代表词 ${listedTrends.length}`);
   }
-  if (new Set(trendRows.map((r) => r.slug)).size !== trendKeywords.length) {
+  if (new Set(trendRows.map((r) => r.slug)).size !== listedTrends.length) {
     fail("trends 存在重复 slug 主键");
   }
   if (trendRows.some((r) => !r.slug || !r.keyword)) fail("trends 存在缺失必填字段的行");

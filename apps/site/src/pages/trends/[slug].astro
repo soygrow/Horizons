@@ -52,6 +52,7 @@ const confidenceNote =
 <Base
   title={`${trend.normalizedName} 趋势分析`}
   description={`「${trend.keyword}」的搜索趋势证据、升温原因、搜索意图与可执行的机会方向。`}
+  canonicalPath={trend.variantOf ? `/trends/${trend.variantOf}` : undefined}
 >
   <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
     <div class="flex flex-wrap items-center gap-2 text-xs text-ink-muted">

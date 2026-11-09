@@ -50,8 +50,27 @@ function daysBetween(fromDate: string, toDate: string): number {
 }
 
 /**
+ * 量级系数：同样的增长率，词本身越小，可兑现的搜索量越少，分数要打折。
+ *
+ * 起因是榜单前 15 名里有一半峰值不到 35 —— 一个从 5 涨到 26 的词（+518%）
+ * 压在峰值 100 的词前面，因为原公式只看相对增长、不看基数。
+ *
+ * 用峰值而不是均值：Google Trends 序列里 401/487 个词的中位数是 0–4，
+ * 均值和中位数都会把小词压成一片，失去区分度；峰值分布是双峰的（229 个 =100，
+ * 176 个 <50），正好能分开"真起量"和"小基数抖动"。
+ */
+function volumeFactor(peak: number): number {
+  if (peak >= 80) return 1;
+  if (peak >= 50) return 0.92;
+  if (peak >= 30) return 0.82;
+  if (peak >= 20) return 0.68;
+  if (peak >= 10) return 0.5;
+  return 0.32;
+}
+
+/**
  * 五维映射（每维 0–100）：
- * - growth：tanh 压缩增长率，避免低基线爆出离谱数值
+ * - growth：tanh 压缩增长率 × 量级系数，避免低基线小词霸榜
  * - persistence：近 14 点中高于基线的比例
  * - breakout：峰值/基线 倍数的 log2 映射
  * - novelty：首次发现越近越高（随时间衰减）
@@ -65,7 +84,7 @@ export function computeTrendParts(
 ): TrendScoreParts {
   const m = seriesMetrics(series);
   const g = m.growth7 ?? 0;
-  const growth = clamp(50 + 50 * Math.tanh(g / 120));
+  const growth = clamp((50 + 50 * Math.tanh(g / 120)) * volumeFactor(m.peak));
 
   const persistence = clamp((m.aboveBaseline / Math.max(1, m.window)) * 100);
 

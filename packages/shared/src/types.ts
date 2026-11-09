@@ -560,6 +560,13 @@ export interface AITrend {
   competitors?: string[]; // 现有产品 / 竞品
   opportunities: TrendOpportunity[];
   actions: TrendNextAction[];
+  /**
+   * 同一搜索需求下的别名：指向代表词的 slug。
+   * 有值的词不进榜、不占名次，但详情页仍然生成（长尾 SEO 入口保留），
+   * 避免「brand mentions in chatgpt / track brand in chatgpt / chatgpt brand monitoring」
+   * 这类同一件事的十种说法把榜单刷满。
+   */
+  variantOf?: string;
 }
 
 /** 榜单数据集（content/trends.json） */
