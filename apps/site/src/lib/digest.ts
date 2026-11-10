@@ -63,7 +63,7 @@ export function digestByDate(date: string): Digest | null {
 export const MODULE_META: Record<ModuleKey, { no: string; name: string; desc: string }> = {
   headline: { no: "01", name: "今日头条", desc: "今天真正变了的事" },
   tools: { no: "02", name: "能直接用的", desc: "开源项目、可自部署工具、免费额度" },
-  money: { no: "03", name: "钱与机会", desc: "定价、成本、融资与真实变现" },
+  money: { no: "03", name: "成本与定价", desc: "定价、成本、融资与公开的商业化案例" },
   action: { no: "04", name: "今天就能做", desc: "半小时内可验证的下一步" },
 };
 
