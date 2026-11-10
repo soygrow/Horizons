@@ -228,6 +228,38 @@ async function fetchRelatedQueries(
   return [...out].slice(0, 12);
 }
 
+/**
+ * 只补「相关查询」。
+ *
+ * 采集阶段为了省配额走批量对比（2 次请求 4 个词），而批量接口不返回
+ * RELATED_QUERIES widget，所以候选池里的 relatedQueries 多是空的。
+ * 到富化阶段只对人工真正挑中的十几个词补这一次（explore + relatedsearches 两次请求），
+ * 让 LLM 有真实长尾可用，而不是全靠编。
+ *
+ * 失败返回空数组：相关查询是加分项，不该因此挡住富化。
+ */
+export async function fetchRelatedQueriesOnly(keyword: string, geo: string): Promise<string[]> {
+  try {
+    const req = {
+      comparisonItem: [{ keyword, geo, time: TIME_RANGE }],
+      category: 0,
+      property: "",
+    };
+    const explore = JSON.parse(
+      stripXssi(
+        await trendsGet("/trends/api/explore", {
+          hl: "en-US",
+          tz: "0",
+          req: JSON.stringify(req),
+        }),
+      ),
+    ) as { widgets?: ExploreWidget[] };
+    return await fetchRelatedQueries(explore.widgets ?? [], keyword);
+  } catch {
+    return [];
+  }
+}
+
 /** Trending now 官方 RSS：免费、无限流压力，用于发现新词 */
 export async function fetchTrendingRss(geo: string): Promise<TrendingRssItem[]> {
   const res = await proxyGet(`https://trends.google.com/trending/rss?geo=${geo}`, {

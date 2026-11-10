@@ -65,3 +65,6 @@ apps/site/public/data/
 .mcp.json
 .codebuddy/mcp.json
 .codebuddy/mcp.json*
+
+# D1 线上备份（含真实用户数据，绝不入库）
+apps/api/backup-*.sql

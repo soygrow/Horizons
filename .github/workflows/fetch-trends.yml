@@ -1,0 +1,94 @@
+name: Fetch Trends (staging)
+
+# 后台「拉取新词」按钮的落点。
+#
+# 只把采集结果写进 content/trends-staging.json 等人工审核，
+# **不碰** content/trends.json，所以线上榜单不会有任何变化。
+#
+# 需要的仓库 Secrets：
+#   DEEPSEEK_API_KEY   补全文案、判定准入原则
+#   TRENDS_PROXY       选填。Google Trends 对数据中心 IP 限流很凶，
+#                      runner 是 Azure 美国机房，不配代理大概率 429。
+#                      格式与本地一致："host:port" 或 "direct,host:port"。
+on:
+  workflow_dispatch:
+    inputs:
+      budget:
+        description: "本轮处理词数上限（10-200）"
+        required: false
+        default: "80"
+      geo:
+        description: "地区代码（US / GB / JP …）"
+        required: false
+        default: "US"
+      patient:
+        description: "被限流时长时间等待（慢但更容易跑完）"
+        type: boolean
+        default: true
+      job_id:
+        description: "后台任务 ID（仅回显，便于对日志）"
+        required: false
+        default: ""
+
+concurrency:
+  group: fetch-trends
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 记录后台任务号
+        if: inputs.job_id != ''
+        run: echo "::notice::后台任务 job_id=${{ inputs.job_id }}"
+
+      # 采集写得慢一点：Google Trends 是这里最容易失败的一环，
+      # 宁可跑 2 小时也别在中途被 429 打断。
+      # 两段式的第一段：只取曲线、趋势分和证据，不花富化的 token。
+      # 内容等后台点「富化选中」再补——采集 80 个词，人工通常只用得上十几个。
+      - name: 采集候选词（只写候选池，不富化）
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          TRENDS_PROXY: ${{ secrets.TRENDS_PROXY }}
+          TRENDS_DELAY_MIN: "5000"
+          TRENDS_DELAY_MAX: "13000"
+          LLM_TIMEOUT_MS: "120000"
+        run: |
+          pnpm exec tsx scripts/fetch/trends/run.ts \
+            --staging \
+            --no-enrich \
+            --limit "${{ inputs.budget }}" \
+            --geo "${{ inputs.geo }}" \
+            ${{ inputs.patient && '--patient' || '' }}
+
+      - name: 提交候选池
+        run: |
+          git config user.name "horizons-bot"
+          git config user.email "bot@horizons.tools"
+          git add content/trends-staging.json content/trends-skipped.json
+          if git diff --cached --quiet; then
+            echo "::notice::本轮没有产出候选词，未产生提交"
+            exit 0
+          fi
+          n=$(node -e "const s=require('./content/trends-staging.json');console.log(s.items.length)")
+          git commit -m "chore(trends): 采集候选词 ${n} 个（待审核）"
+          git push
+          echo "::notice::候选池已更新，共 ${n} 个待审核词"

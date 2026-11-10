@@ -1,0 +1,142 @@
+name: Publish GitHub Board
+
+# 后台「发布」按钮的落点：把候选池合并进 content/github.json，
+# 把「谁进榜、谁掉了几名」写回候选池供后台回看，补新条目的中文情报，最后触发站点重建。
+#
+# 这是整条链路里**唯一**会改正式榜的 workflow —— 必须由人点按钮触发。
+on:
+  workflow_dispatch:
+    inputs:
+      incoming:
+        description: "本次预计收录的候选数（仅回显）"
+        required: false
+        default: ""
+      expected_significant:
+        description: "发布前预览到的显著变动数（仅回显，用于对账）"
+        required: false
+        default: ""
+
+concurrency:
+  group: publish-github
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    # 合并本身很快，时间几乎都花在给新条目补中文情报上
+    timeout-minutes: 240
+    permissions:
+      contents: write
+      actions: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 合并候选池并输出位次变化
+        id: merge
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          # D1 冷备写入：灰度期失败不阻塞 JSON 发布，切流前改成 --strict-d1
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: |
+          out=$(pnpm exec tsx scripts/admin/publish-github.ts)
+          echo "$out"
+          summary=$(echo "$out" | grep '##GH_PUBLISH_RESULT##' | tail -1)
+          echo "summary=$summary" >> "$GITHUB_OUTPUT"
+
+      - name: 写入步骤摘要
+        run: |
+          {
+            echo "## 本次发布"
+            echo ""
+            echo "预计显著变动：${{ inputs.expected_significant }}"
+            echo ""
+            echo '```json'
+            echo '${{ steps.merge.outputs.summary }}'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # 新进榜的条目没有中文情报（采集阶段为了控制候选池体积没有生成），
+      # 这里补上，否则详情页是空模板。
+      #
+      # 只在新增 <= 120 条时自动补：日常维护每轮新增几十条，几分钟跑完；
+      # 首次把容量扩到 2000 时会一次涌入几百条，硬跑会撞上 4 小时超时，
+      # 那种情况先把榜发出去，之后再单独跑 enrich。
+      - name: 补中文情报（新增 <= 120 条时自动跑）
+        if: always()
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          if [ ! -f .gh-entered.txt ]; then
+            echo "::notice::没有新进榜条目，跳过"
+            exit 0
+          fi
+          n=$(grep -c . .gh-entered.txt || true)
+          echo "新进榜 ${n} 条"
+          if [ "${n}" -eq 0 ]; then
+            echo "::notice::没有新进榜条目，跳过"
+            exit 0
+          fi
+          if [ "${n}" -gt 120 ]; then
+            echo "::warning::新进榜 ${n} 条超过自动富化上限 120，本次先发布，情报请稍后单独补"
+            exit 0
+          fi
+          names=$(tr '\n' ' ' < .gh-entered.txt)
+          echo "::group::生成中文情报"
+          pnpm exec tsx scripts/fetch/enrich-github-insight.ts --only ${names} --limit 200 || \
+            echo "::warning::中文情报生成部分失败，可稍后重跑"
+          echo "::endgroup::"
+          echo "::group::判定加工空间"
+          pnpm exec tsx scripts/fetch/enrich-github-derivative.ts --only ${names} || \
+            echo "::warning::加工空间判定部分失败，可稍后重跑"
+          echo "::endgroup::"
+
+      - name: 清理临时文件
+        if: always()
+        run: rm -f .gh-entered.txt
+
+      - name: 提交榜单数据
+        id: commit
+        run: |
+          git config user.name "horizons-bot"
+          git config user.email "bot@horizons.tools"
+          git add content/github.json
+          # 候选池正常都在；万一被手工清理过，缺文件会让 git add 直接 fatal
+          if [ -f content/github-staging.json ]; then git add content/github-staging.json; fi
+          if git diff --cached --quiet; then
+            echo "::notice::没有可发布的变更，未产生提交"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          board=$(node -e "const d=require('./content/github.json');console.log(d.repos.length)")
+          git commit -m "feat(github): 发布榜单更新（${board} 条在榜）"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: 触发站点构建
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          BOT_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${BOT_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/deploy-site.yml/dispatches" \
+            -d '{"ref":"main"}' | head -c 400
+          echo
+          echo "::notice::已请求 Deploy Site（若未开始，请检查 ADMIN_BOT_TOKEN 权限）"

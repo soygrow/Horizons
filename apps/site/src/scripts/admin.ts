@@ -2,6 +2,10 @@
  * 后台管理页逻辑。所有数据来自 /api/admin/*，页面本身不含业务数据。
  * 渲染一律走 esc() 转义，避免把用户邮箱/昵称直接当 HTML 插进表格。
  */
+import { mountAdminBoards } from "./admin-boards";
+import { mountAdminGithub } from "./admin-github";
+import { mountAdminTools } from "./admin-tools";
+import { mountAdminTrends } from "./admin-trends";
 
 interface Stats {
   generatedAt: number;
@@ -109,11 +113,13 @@ const CSRF_HEADERS = {
 
 class ApiError extends Error {
   status: number;
+  code: string;
   retryAfter?: number;
 
   constructor(status: number, code: string, retryAfter?: number) {
     super(code);
     this.status = status;
+    this.code = code;
     this.retryAfter = retryAfter;
   }
 }
@@ -218,7 +224,15 @@ function badge(text: string, tone: "pro" | "free" | "warn" | "danger" | "ok"): s
 const state = {
   stats: null as Stats | null,
   chartCurrency: "",
-  tab: "overview" as "overview" | "users" | "payments" | "fields",
+  tab: "overview" as
+    | "overview"
+    | "users"
+    | "payments"
+    | "tools"
+    | "trends"
+    | "github"
+    | "boards"
+    | "fields",
   users: { page: 1, q: "", type: "all", loaded: false, data: null as Page<UserItem> | null },
   payments: {
     page: 1,
@@ -756,6 +770,10 @@ document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((btn) =
     $("tab-overview").hidden = tab !== "overview";
     $("tab-users").hidden = tab !== "users";
     $("tab-payments").hidden = tab !== "payments";
+    $("tab-tools").hidden = tab !== "tools";
+    $("tab-trends").hidden = tab !== "trends";
+    $("tab-github").hidden = tab !== "github";
+    $("tab-boards").hidden = tab !== "boards";
     $("tab-fields").hidden = tab !== "fields";
 
     if (tab === "users") void loadUsers();
@@ -763,6 +781,10 @@ document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((btn) =
       void loadPayments();
       loadPaywall();
     }
+    if (tab === "tools") mountAdminTools();
+    if (tab === "trends") mountAdminTrends();
+    if (tab === "github") mountAdminGithub();
+    if (tab === "boards") mountAdminBoards();
     if (tab === "fields" && !fieldHealth) void loadFieldHealth();
   });
 });

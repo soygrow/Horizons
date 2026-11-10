@@ -8,6 +8,7 @@ import { favorites } from "./routes/favorites";
 import { billing } from "./routes/billing";
 import { track } from "./routes/track";
 import { admin } from "./routes/admin";
+import { publicBoards } from "./routes/boards";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -17,6 +18,8 @@ app.route("/api/track", track);
 app.route("/api/ph", ph);
 // 后台管理独立挂载，必须排在 `/api` 通配挂载之前
 app.route("/api/admin", admin);
+// 榜单公开只读接口：只返回当前生效版本，不暴露历史与写入
+app.route("/api/boards", publicBoards);
 // 顺序无关：/doing/counts 与 /:slug/doing 不会互相吞掉（前者无 :slug 段）
 app.route("/api/opportunity", opportunity);
 app.route("/api/favorites", favorites);

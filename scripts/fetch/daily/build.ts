@@ -1,3 +1,5 @@
+import { execSync } from "node:child_process";
+import { resolve } from "node:path";
 import { composeDigest } from "./compose";
 import { todayInTimezone } from "./config";
 import { mergeEvents } from "./events";
@@ -134,6 +136,16 @@ function main(): void {
   }
   const file = saveDigest(digest);
   console.log(`\n写入：${file}`);
+
+  // 同步 D1（冷备）。失败只告警：文件已经写成功，站点读的是文件
+  try {
+    execSync(`pnpm tsx scripts/admin/publish-digest.ts --date ${digest.date}`, {
+      cwd: resolve(import.meta.dirname, "../../.."),
+      stdio: "inherit",
+    });
+  } catch {
+    console.log("\n[警告] D1 同步失败（digest），文件已写入，站点不受影响");
+  }
   console.log(
     `统计：候选 ${digest.stats.candidates} · 事件 ${digest.stats.merged} · 已核验 ${digest.stats.verified} · 采用 ${digest.stats.published}\n`,
   );

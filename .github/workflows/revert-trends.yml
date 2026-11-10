@@ -1,0 +1,62 @@
+name: Revert Trends
+
+# 后台「回滚上一版」按钮的落点：把候选池里刷新过的词退回旧内容。
+# 纯数据操作，不联网、不调 LLM，通常十几秒跑完。
+#
+# 与 enrich-trends 共用同一把并发锁：两者都写 content/trends-staging.json，
+# 同时跑会互相覆盖（后写的把先写的改动冲掉）。
+on:
+  workflow_dispatch:
+    inputs:
+      slugs:
+        description: "要回滚的候选 slug，逗号分隔（必填）"
+        required: true
+        default: ""
+      job_id:
+        description: "后台任务 ID（仅回显，便于对日志）"
+        required: false
+        default: ""
+
+concurrency:
+  group: enrich-trends
+  cancel-in-progress: false
+
+jobs:
+  revert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 回滚上一版内容
+        env:
+          SLUGS: ${{ inputs.slugs }}
+          JOB_ID: ${{ inputs.job_id }}
+        run: pnpm exec tsx scripts/admin/revert-trends.ts --slugs="$SLUGS" --job-id="$JOB_ID"
+
+      - name: 提交候选池
+        run: |
+          git config user.name "horizons-bot"
+          git config user.email "bot@horizons.tools"
+          git add content/trends-staging.json
+          if git diff --cached --quiet; then
+            echo "::notice::候选池没有变化，未产生提交"
+            exit 0
+          fi
+          git commit -m "fix(trends): 回滚候选词内容到上一版"
+          git push

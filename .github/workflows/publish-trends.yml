@@ -1,0 +1,104 @@
+name: Publish Trends
+
+# 后台「发布到榜单」按钮的落点：把候选池合并进 content/trends.json，
+# 再把「谁进榜、谁掉了几名」写回候选池供后台回看，最后触发站点重建。
+#
+# 用默认 GITHUB_TOKEN 提交时 push 不会触发其它 workflow，所以部署要显式 dispatch。
+# 需要的仓库 Secrets：
+#   ADMIN_BOT_TOKEN  选填；PAT（contents:write + actions:write）。配了才能自动构建上线。
+on:
+  workflow_dispatch:
+    inputs:
+      incoming:
+        description: "本次预计收录的候选数（仅回显）"
+        required: false
+        default: ""
+      note:
+        description: "发布说明（写进提交信息）"
+        required: false
+        default: ""
+      job_id:
+        description: "后台任务 ID（仅回显，便于对日志）"
+        required: false
+        default: ""
+
+concurrency:
+  group: publish-trends
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      actions: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 合并候选池并输出位次变化
+        id: merge
+        env:
+          # D1 冷备写入：灰度期失败不阻塞 JSON 发布
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: |
+          out=$(pnpm exec tsx scripts/admin/publish-trends.ts)
+          echo "$out"
+          summary=$(echo "$out" | tail -1)
+          echo "summary=$summary" >> "$GITHUB_OUTPUT"
+
+      - name: 写入步骤摘要
+        run: |
+          {
+            echo "## 本次发布"
+            echo ""
+            echo '```json'
+            echo '${{ steps.merge.outputs.summary }}'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 提交榜单数据
+        id: commit
+        run: |
+          git config user.name "horizons-bot"
+          git config user.email "bot@horizons.tools"
+          git add content/trends.json content/trends-staging.json
+          if git diff --cached --quiet; then
+            echo "::notice::没有可发布的变更，未产生提交"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          msg="${{ inputs.note }}"
+          board=$(node -e "const d=require('./content/trends.json');console.log(d.keywords.filter(t=>!t.variantOf).length)")
+          git commit -m "feat(trends): 发布候选词到榜单（${board} 条在榜）${msg:+（${msg}）}"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: 触发站点构建
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          BOT_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${BOT_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/deploy-site.yml/dispatches" \
+            -d '{"ref":"main"}' | head -c 400
+          echo
+          echo "::notice::已请求 Deploy Site（若未开始，请检查 ADMIN_BOT_TOKEN 权限）"

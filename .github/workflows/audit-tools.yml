@@ -1,0 +1,75 @@
+name: Audit Listed Tools
+
+# 后台「重判存量」按钮的落点，也是发布预览里「下榜清单」的数据来源。
+#
+# 为什么需要它：
+#   榜单只在发布时新增条目，从不重新判定已在榜上的老条目。站点挂掉、
+#   流量跌到 1000 以下的条目会永久留在榜上，而构建时的 tierOf 又会静默
+#   把它们过滤掉——后台看不到原因，线上却凭空少一条。
+#
+# 本工作流只重判、只产出清单（content/tools-audit.json），
+# **不删除** content/aitools.json 里的任何条目。真正的下架由发布环节决定。
+
+on:
+  workflow_dispatch:
+    inputs:
+      traffic:
+        description: "刷新 Similarweb 流量（0=只用现有数据，$0）"
+        required: false
+        default: "1"
+      probe:
+        description: "做 HTTP 存活探测（约 5 分钟）"
+        required: false
+        default: "1"
+      job_id:
+        description: "后台任务 ID（仅回显，便于对日志）"
+        required: false
+        default: ""
+
+concurrency:
+  group: audit-tools
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 重判已上榜条目
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: |
+          ARGS=""
+          if [ "${{ inputs.traffic }}" = "1" ]; then ARGS="$ARGS --traffic"; fi
+          if [ "${{ inputs.probe }}" = "1" ]; then ARGS="$ARGS --probe"; fi
+          pnpm tsx scripts/admin/audit-existing.ts $ARGS
+
+      - name: 提交审计结果
+        run: |
+          git config user.name "horizons-bot"
+          git config user.email "bot@horizons.tools"
+          git add content/tools-audit.json content/tools-stats.json
+          if git diff --cached --quiet; then
+            echo "::notice::本次没有产生变化"
+            exit 0
+          fi
+          git commit -m "chore(tools): 重判已上榜条目（后台）"
+          git push
+          echo "::notice::重判完成，请回后台查看下榜清单再决定是否发布"

@@ -59,4 +59,13 @@ export interface Env {
    */
   ADMIN_USERNAME?: string;
   ADMIN_PASSWORD_HASH?: string;
+
+  /**
+   * 工具榜后台的 GitHub 集成（可选，不配则后台只读、按钮给出配置指引）。
+   * - GITHUB_TOKEN：fine-grained PAT，权限 contents:read/write + actions:read/write，
+   *   用于读 content/*.json、触发 fetch-tools / publish-tools 两个 workflow、查询运行状态。
+   * - GITHUB_REPO：owner/repo，如 `yourname/horizons`。
+   */
+  GITHUB_TOKEN?: string;
+  GITHUB_REPO?: string;
 }

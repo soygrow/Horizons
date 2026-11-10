@@ -1,0 +1,98 @@
+name: Fetch GitHub Board (staging)
+
+# 后台「采集」按钮的落点。
+#
+# 只把候选写进 content/github-staging.json 等人工审核，
+# **不碰** content/github.json —— 线上榜单不会有任何变化。
+#
+# 为什么要用 PAT：全量采集要打 700+ 次搜索接口，再加上补 README 的请求，
+# 远超默认 GITHUB_TOKEN 的每小时 1000 次限额。ADMIN_BOT_TOKEN 是 5000/小时。
+# 只配 GITHUB_TOKEN 也能跑，但会因为限流跑到一半。
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "榜单容量（发布后保留多少条，500-3000）"
+        required: false
+        default: "2000"
+      refresh_cache:
+        description: "强制重搜（忽略 3 小时内的候选缓存，慢很多）"
+        required: false
+        default: "0"
+
+concurrency:
+  group: fetch-github
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    # 全量搜索约 50 分钟，补 README 视新增数量而定
+    timeout-minutes: 180
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 恢复搜索缓存
+        uses: actions/cache@v4
+        with:
+          # 候选池搜索缓存有 68MB，已在 .gitignore 里排除，不能靠 git 传递。
+          # 用固定前缀 + 唯一 key：本次命中上次的缓存，跑完再存一份新的。
+          path: content/cache/github-candidates.json
+          key: gh-candidates-${{ github.run_id }}
+          restore-keys: gh-candidates-
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 采集候选（只写候选池）
+        id: staging
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          TARGET: ${{ inputs.target }}
+          REFRESH_CACHE: ${{ inputs.refresh_cache }}
+        run: |
+          args=""
+          if [ "${REFRESH_CACHE}" = "1" ]; then
+            args="--refresh-cache"
+          fi
+          out=$(pnpm exec tsx scripts/admin/fetch-github-staging.ts ${args})
+          echo "$out"
+          summary=$(echo "$out" | grep '##GH_STAGING_RESULT##' | tail -1)
+          echo "summary=$summary" >> "$GITHUB_OUTPUT"
+
+      - name: 写入步骤摘要
+        run: |
+          {
+            echo "## 本次采集"
+            echo ""
+            echo '```json'
+            echo '${{ steps.staging.outputs.summary }}'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 提交候选池
+        run: |
+          git config user.name "horizons-bot"
+          git config user.email "bot@horizons.tools"
+          git add content/github-staging.json
+          if git diff --cached --quiet; then
+            echo "::notice::候选池没有变化，未产生提交"
+            exit 0
+          fi
+          n=$(node -e "const s=require('./content/github-staging.json');console.log(s.candidates.length)")
+          t=$(node -e "const s=require('./content/github-staging.json');console.log(s.lastRun?.qualified ?? s.target)")
+          git commit -m "chore(github): 采集待发布候选 ${n} 个（合格池 ${t} 条）"
+          git push
+          echo "::notice::候选池已更新：${n} 个待审核候选"

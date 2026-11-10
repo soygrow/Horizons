@@ -2,7 +2,8 @@ import {
   compareByScore,
   compareByToolScore,
   computeProductScore,
-  isBlockedDomain,
+  isListed,
+  tierOf,
 } from "@horizons/shared";
 import type { AITool, PricingModel, GitHubRepo, ProductScore } from "@horizons/shared";
 import toolsData from "@content/aitools.json";
@@ -10,43 +11,12 @@ import githubData from "@content/github-web.json";
 
 export const tools = toolsData as AITool[];
 
-/** 收录门槛（与 docs/15-AI工具榜收录原则.md 一致） */
-const MIN_VISITS_CORE = 10_000; // 主榜：月访问 ≥1 万
-const MIN_VISITS_WATCH = 1_000; // 观察区：1 千 ~ 1 万，且未明显下滑
-const WATCH_PH_UPVOTES = 300; // 无流量数据时，至少 PH 热度达标才保留
-
-/** 主榜 Core 与观察区 Watch（docs/15 第三节） */
-export type ToolTier = "core" | "watch";
-
 /**
- * 分层判定，null 表示不收录。
- *
- * 顺序：黑名单（A1/A2）→ A4 规模门槛 → 分层。
- * 无月访问的站只能靠 PH 热度进观察区，不允许占主榜名次；
- * 120 天新星窗口暂不校验（launchedAt 缺失率 23%，补齐后再启用）。
+ * 收录判定已收拢到 `@horizons/shared` 的 tool-tier。
+ * 这里重新导出，保持既有调用方（页面、脚本）不用改 import 路径。
  */
-export function tierOf(tool: AITool): ToolTier | null {
-  if (isBlockedDomain(tool.domain)) return null;
-  const v = getMonthlyVisits(tool);
-  if (v === undefined) {
-    return (tool.phUpvotes ?? 0) >= WATCH_PH_UPVOTES ? "watch" : null;
-  }
-  if (v >= MIN_VISITS_CORE) return "core";
-  if (v >= MIN_VISITS_WATCH) {
-    const g = getMoMGrowth(tool);
-    return typeof g === "number" && g < 0 ? "watch" : "core";
-  }
-  return null;
-}
-
-/**
- * 是否进入榜单展示。
- * 数据文件保留全部候选（便于后续复采与画像），但达不到门槛的站不上榜，
- * 避免「月访问 0」或「发布即死」的站混进主榜。
- */
-export function isListed(tool: AITool): boolean {
-  return tierOf(tool) !== null;
-}
+export { isListed, tierOf };
+export type { ToolTier } from "@horizons/shared";
 
 /** 达到收录门槛、可展示的工具（主榜 + 观察区） */
 export const listedTools = tools.filter(isListed);
@@ -82,15 +52,23 @@ export function getToolsSorted(): AITool[] {
 }
 
 /**
+ * 榜单条数上限（产品口径：榜单稳定维护 1000 条，新工具按综合分替换尾部）。
+ * 达标数不足 1000 时全部展示，因此对现有 200 余条数据不产生任何影响；
+ * 只有候选池扩大到达标数超过 1000 后才开始截断。
+ */
+export const MAX_LISTED_TOOLS = 1000;
+
+/**
  * 按综合得分降序（/tools 榜单默认顺序）。
  * 主榜 Core 在前、观察区 Watch 在后，各自按得分排序，
  * 保证 Watch 站不会插进主榜名次之间。
  */
 export function getToolsByScore(): AITool[] {
-  return [
+  const ranked = [
     ...[...coreTools].sort(compareByToolScore),
     ...[...watchTools].sort(compareByToolScore),
   ];
+  return ranked.length > MAX_LISTED_TOOLS ? ranked.slice(0, MAX_LISTED_TOOLS) : ranked;
 }
 
 /**

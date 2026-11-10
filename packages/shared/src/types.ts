@@ -534,6 +534,31 @@ export interface TrendSeries {
   values: number[]; // 0-100 归一化相对热度
 }
 
+/**
+ * 刷新前的旧内容快照。
+ *
+ * 只留内容字段：曲线、趋势分、来源每轮都会重算，回滚时也用不上；
+ * 把它们排除掉，候选池里的快照大约只有一份完整词条的三成体积。
+ */
+export type TrendContentSnapshot = Pick<
+  AITrend,
+  | "normalizedName"
+  | "category"
+  | "why"
+  | "intentSummary"
+  | "editorNote"
+  | "oppParts"
+  | "evidence"
+  | "intents"
+  | "relatedQueries"
+  | "competitors"
+  | "opportunities"
+  | "actions"
+> & {
+  /** 上一版内容的快照时间（取旧词条的 updatedAt） */
+  at: string;
+};
+
 /** 趋势词榜单条目 */
 export interface AITrend {
   slug: string;
@@ -567,6 +592,21 @@ export interface AITrend {
    * 这类同一件事的十种说法把榜单刷满。
    */
   variantOf?: string;
+  /**
+   * 采集分两段：先只取曲线与趋势分落盘，内容字段等人工确认后再富化。
+   *
+   * - `pending`：只有序列，内容字段是占位，**不能发布**
+   * - `failed`：富化失败，可重试
+   * - 缺省：已富化（榜单里的词都是这个状态）
+   */
+  enrichStatus?: "pending" | "failed";
+  /**
+   * 刷新在榜词前留下的上一版内容，只存在于候选池，发布时剥离。
+   *
+   * 重刷出来的内容可能比旧版更差（字段缺失、模板句、机会变空），
+   * 留一份就能在后台对比，必要时一键回滚，而不是让线上数据越刷越烂。
+   */
+  previousSnapshot?: TrendContentSnapshot;
 }
 
 /** 榜单数据集（content/trends.json） */

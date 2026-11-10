@@ -2,6 +2,7 @@ import "../config"; // 副作用导入：加载 .env.local
 import fs from "node:fs";
 import path from "node:path";
 import type { AITrend, TrendSeries, TrendSourceRef, ValueVerdict } from "@horizons/shared";
+import { toRankRow } from "@horizons/shared";
 import { hasLLM } from "../sources/llm";
 import { RateLimitError, sleep } from "./http";
 import {
@@ -20,6 +21,7 @@ import {
   isUsableKeyword,
   matchKeyword,
   normalizeKey,
+  type KeywordEvidence,
   type TrendCandidate,
 } from "./discovery";
 import { computeTrendParts, deriveConfidence, deriveStatus, rescore } from "./score";
@@ -34,12 +36,17 @@ import {
 } from "./policy";
 import { enrichKeyword } from "./enrich";
 import {
-  buildTrend,
+  STAGING_TTL_DAYS,
+  buildEnrichedTrend,
+  buildPendingTrend,
   indexByKey,
   loadDataset,
+  loadStaging,
   planBatch,
   primeSlugs,
+  pruneStaging,
   saveDataset,
+  saveStaging,
   upsert,
 } from "./store";
 
@@ -107,6 +114,16 @@ interface Args {
   policyAudit: boolean;
   /** 耐心模式：被限流就长睡等解封，适合无人值守慢慢扩量 */
   patient: boolean;
+  /**
+   * 候选池模式：结果写 content/trends-staging.json，不动榜单。
+   * 后台按钮 / GitHub Actions 走这条路径，人工审核后才发布。
+   */
+  staging: boolean;
+  /**
+   * 两段式：只采序列与趋势分，内容留到人工确认后再富化。
+   * 富化是唯一的大额 token 开销，砍在候选阶段能省掉大部分。
+   */
+  noEnrich: boolean;
 }
 
 function parseArgs(): Args {
@@ -129,6 +146,8 @@ function parseArgs(): Args {
     noRelated: process.argv.includes("--no-related"),
     policyAudit: process.argv.includes("--policy-audit"),
     patient: process.argv.includes("--patient"),
+    staging: process.argv.includes("--staging"),
+    noEnrich: process.argv.includes("--no-enrich"),
   };
 }
 
@@ -306,6 +325,12 @@ function mergeSources(existing: AITrend | undefined, next: TrendSourceRef[]): Tr
 
 async function main(): Promise<void> {
   const args = parseArgs();
+  // 未富化的词只有占位字段，直接写进榜单就会生成空详情页。
+  // 本地跑全流程不传 --no-enrich，这条只会在误用时拦住。
+  if (args.noEnrich && !args.staging) {
+    console.error("[trends] --no-enrich 必须配合 --staging：占位内容不能直接并入榜单");
+    process.exit(1);
+  }
   const now = new Date();
   const today = now.toISOString().slice(0, 10);
   const dataset = loadDataset();
@@ -377,7 +402,15 @@ async function main(): Promise<void> {
 
   // ---- 价值准入：先用便宜的 LLM 判「有没有创业切口」，再花宝贵的 Trends 配额 ----
   // 读者是创业者，收进来的词必须能回答「明天能拿它做什么」。
+  // 候选池要跨轮累积：拒绝名单、已富化未发布的词、判定缓存都得带过去。
+  const prevStaging = loadStaging();
   let policy = ensurePolicy(dataset.policy);
+  // 候选池模式不写 content/trends.json，判定结果没有别的落点；
+  // 不合并的话每轮都会把同一批候选重新判一遍，纯白烧钱
+  policy = {
+    ...policy,
+    verdicts: { ...(prevStaging.verdicts ?? {}), ...policy.verdicts },
+  };
   const gate = new Map<string, ValueVerdict>();
   const judgedNow: Array<{ keyword: string; verdict: ValueVerdict }> = [];
   const toJudge: string[] = [];
@@ -465,7 +498,8 @@ async function main(): Promise<void> {
     return;
   }
 
-  if (!hasLLM()) {
+  // --no-enrich 只采曲线与趋势分，本来就不花 token；没配 key 也该能跑
+  if (!args.noEnrich && !hasLLM()) {
     console.error("[trends] 未配置 DEEPSEEK_API_KEY，富化无法进行；可先用 --dry 查看排队结果");
     process.exit(1);
   }
@@ -474,6 +508,66 @@ async function main(): Promise<void> {
   let ok = 0;
   let failed = 0;
   let done = 0;
+  /** 本轮真正产出数据的词：候选池模式只把这批写进 staging */
+  const touched = new Set<string>();
+  /**
+   * 未富化词的富化输入（HN/GitHub 条目 + 相关查询）。
+   * 带上一轮的一起走：这一轮没碰到它时，富化仍能直接取用，不用重查。
+   */
+  const pendingEvidence: Record<string, { evidence: KeywordEvidence; relatedQueries: string[] }> = {
+    ...(prevStaging.pendingEvidence ?? {}),
+  };
+
+  /**
+   * 落盘：候选池模式写 staging（线上不动），默认模式直接改榜单。
+   * 进度落盘和最终落盘共用一份，避免两条路径逻辑漂移。
+   */
+  const persist = (): void => {
+    const stamp = new Date().toISOString();
+    if (args.staging) {
+      // 两段式下候选池跨轮累积：这一轮没碰到的词原样留下。
+      // 特别注意**已富化但还没发布**的词——之前只搬 enrichStatus 的词，
+      // 富化成功标记一删，下一轮采集就把它从池子里冲掉，等于白花一次富化的钱。
+      const carried = prevStaging.items.filter((t) => !touched.has(t.slug));
+      // 15 天没再出现的词清出池子：池子不能只涨不落，也避免陈年内容被误发布
+      const { kept: survived, dropped: expired } = pruneStaging(carried, now);
+      if (expired.length > 0) {
+        console.log(
+          `[trends] 候选池清理过期 ${expired.length} 个（超过 ${STAGING_TTL_DAYS} 天未再出现）`,
+        );
+      }
+      const items = [...keywords.filter((t) => touched.has(t.slug)), ...survived];
+      const keep = new Set(items.filter((t) => t.enrichStatus).map((t) => t.slug));
+      const evidenceFor = Object.fromEntries(
+        Object.entries(pendingEvidence).filter(([slug]) => keep.has(slug)),
+      );
+      saveStaging({
+        updatedAt: stamp,
+        runAt: now.toISOString(),
+        items,
+        rejected: prevStaging.rejected,
+        // 本轮判过的词写回候选池，下一轮直接命中缓存，不再花钱重判
+        // （裁剪到上限，候选池不能因为缓存越滚越大）
+        verdicts: pruneVerdicts(policy).verdicts,
+        ...(Object.keys(evidenceFor).length ? { pendingEvidence: evidenceFor } : {}),
+        // 基线取发布前的榜单，后台据此算「这批候选会让谁掉名次」
+        board: {
+          updatedAt: dataset.updatedAt,
+          rows: dataset.keywords.filter((t) => !t.variantOf).map(toRankRow),
+        },
+        lastRun: { ok, failed, total: batch.length, budget: args.limit, geo: args.geo },
+      });
+    } else {
+      saveDataset({
+        ...dataset,
+        keywords,
+        policy,
+        updatedAt: stamp,
+        mode: "live",
+        region: args.geo,
+      });
+    }
+  };
   const msgOf = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
   /** 拿到曲线后的完整流程：证据 → 评分 → LLM 富化 → 入库 */
@@ -514,50 +608,55 @@ async function main(): Promise<void> {
       const confidence = deriveConfidence(series, sources);
 
       const verdict = gate.get(normalizeKey(item.keyword));
-      const enrich = await enrichKeyword({
+      const editor = verdict
+        ? {
+            audience: verdict.audience,
+            ideaAngle: verdict.ideaAngle,
+            reason: verdict.reason,
+          }
+        : undefined;
+
+      // 两段式：--no-enrich 只落序列与趋势分，内容留到后台点「富化」时再花 token
+      const enrich = args.noEnrich
+        ? null
+        : await enrichKeyword({
+            keyword: item.keyword,
+            series,
+            relatedQueries,
+            evidence,
+            sources,
+            ...(editor ? { editor } : {}),
+          });
+
+      // 两个分支只差「有没有富化结果」，装配走 store 里同一份，避免字段清单漂移
+      const base = {
         keyword: item.keyword,
         series,
-        relatedQueries,
-        evidence,
+        trendParts,
+        status,
+        confidence,
         sources,
-        ...(verdict
+        ...(editor
           ? {
-              editor: {
-                audience: verdict.audience,
-                ideaAngle: verdict.ideaAngle,
-                reason: verdict.reason,
+              editorNote: {
+                audience: editor.audience,
+                entryAngle: editor.ideaAngle,
+                whyAccepted: editor.reason,
               },
             }
           : {}),
-      });
+        region: args.geo,
+        now,
+      };
+      const trend = enrich
+        ? buildEnrichedTrend(base, enrich, item.existing)
+        : buildPendingTrend(base, item.existing);
 
-      const trend = buildTrend(
-        {
-          keyword: item.keyword,
-          series,
-          trendParts,
-          oppParts: enrich.oppParts,
-          status,
-          confidence,
-          category: enrich.category,
-          normalizedName: enrich.normalizedName,
-          why: enrich.why,
-          intentSummary: enrich.intentSummary,
-          editorNote: enrich.editorNote,
-          sources,
-          evidence: enrich.evidence,
-          intents: enrich.intents,
-          relatedQueries: enrich.relatedQueries,
-          competitors: enrich.competitors,
-          opportunities: enrich.opportunities,
-          actions: enrich.actions,
-          region: args.geo,
-          now,
-        },
-        item.existing,
-      );
+      // 证据先存着，富化时直接复用，避免二次联网
+      if (!enrich) pendingEvidence[trend.slug] = { evidence, relatedQueries };
 
       keywords = upsert(keywords, trend);
+      touched.add(trend.slug);
       ok++;
       done++;
       console.log(
@@ -565,15 +664,10 @@ async function main(): Promise<void> {
       );
 
       if (ok % 10 === 0) {
-        saveDataset({
-          ...dataset,
-          keywords,
-          policy,
-          updatedAt: new Date().toISOString(),
-          mode: "live",
-          region: args.geo,
-        });
-        console.log(`[trends] 进度落盘：${keywords.length} 个词`);
+        persist();
+        console.log(
+          `[trends] 进度落盘：${keywords.length} 个词${args.staging ? `（候选 ${touched.size} 个 → content/trends-staging.json）` : ""}`,
+        );
       }
     }
   };
@@ -800,17 +894,12 @@ async function main(): Promise<void> {
     }
   }
 
-  saveDataset({
-    ...dataset,
-    keywords,
-    policy,
-    updatedAt: new Date().toISOString(),
-    mode: "live",
-    region: args.geo,
-  });
+  persist();
   saveSkips(skips);
   console.log(
-    `[trends] 完成：成功 ${ok}，失败 ${failed}，词库 ${keywords.length} 个，跳过表 ${skips.size} 条 → content/trends.json`,
+    args.staging
+      ? `[trends] 完成：成功 ${ok}，失败 ${failed}，本轮候选 ${touched.size} 个 → content/trends-staging.json（榜单未改动，等后台审核）`
+      : `[trends] 完成：成功 ${ok}，失败 ${failed}，词库 ${keywords.length} 个，跳过表 ${skips.size} 条 → content/trends.json`,
   );
 }
 

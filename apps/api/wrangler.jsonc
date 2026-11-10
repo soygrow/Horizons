@@ -22,5 +22,13 @@
       "database_id": "355e5cca-29ca-4b37-90a5-6c88d94e7a4b",
       "migrations_dir": "migrations"
     }
+  ],
+  // 对象存储：readme 全文 / 原始采集响应 / 每周 D1 导出
+  // 桶保持私有，只能通过 ARCHIVE binding 访问，不要开 Public Access
+  "r2_buckets": [
+    {
+      "binding": "ARCHIVE",
+      "bucket_name": "horizons-archive"
+    }
   ]
 }

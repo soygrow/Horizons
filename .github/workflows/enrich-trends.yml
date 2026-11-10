@@ -1,0 +1,66 @@
+name: Enrich Trends
+
+# 后台「富化选中」按钮的落点：只给候选池里挑中的词补内容。
+# 采集阶段已经存下了曲线、趋势分和证据，这里只花 LLM 的钱。
+#
+# 不触发站点构建——候选池变了，线上榜单没变。
+on:
+  workflow_dispatch:
+    inputs:
+      slugs:
+        description: "要富化的候选 slug，逗号分隔；留空=全部未富化"
+        required: false
+        default: ""
+      job_id:
+        description: "后台任务 ID（仅回显，便于对日志）"
+        required: false
+        default: ""
+
+concurrency:
+  group: enrich-trends
+  cancel-in-progress: false
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 富化选中词
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          SLUGS: ${{ inputs.slugs }}
+          JOB_ID: ${{ inputs.job_id }}
+        run: |
+          args=()
+          if [ -n "$SLUGS" ]; then args+=("--slugs=$SLUGS"); fi
+          pnpm exec tsx scripts/admin/enrich-trends.ts "${args[@]}" --job-id="$JOB_ID"
+
+      - name: 提交候选池
+        run: |
+          git config user.name "horizons-bot"
+          git config user.email "bot@horizons.tools"
+          git add content/trends-staging.json
+          if git diff --cached --quiet; then
+            echo "::notice::候选池没有变化，未产生提交"
+            exit 0
+          fi
+          ready=$(node -e "const d=require('./content/trends-staging.json');console.log(d.items.filter(t=>!t.enrichStatus).length)")
+          git commit -m "feat(trends): 富化候选词（已富化 ${ready} 个）"
+          git push

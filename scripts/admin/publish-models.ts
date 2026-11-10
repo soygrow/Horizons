@@ -1,0 +1,115 @@
+/**
+ * 模型榜 → D1。
+ *
+ * 数据源 `content/models.json` 由 `scripts/collect/index.mjs` 采集写入，
+ * 采集完调一次本脚本即可。
+ *
+ * 名次口径与站点页面完全一致：综合分 = 0.9 × 能力 + 0.1 × 性价比，
+ * 同分按名称字典序 —— 复用的是 `apps/site/src/lib/model-score.ts`，
+ * 不在这里重写一遍公式，避免页面和榜单排名对不上。
+ *
+ * 用法：
+ *   pnpm tsx scripts/admin/publish-models.ts
+ *   pnpm tsx scripts/admin/publish-models.ts --no-d1
+ */
+import fs from "node:fs";
+import path from "node:path";
+import { overallScore, valueScores } from "../../apps/site/src/lib/model-score";
+import { syncBoardToD1, versionOf } from "./board-sync";
+import type { PublishRow } from "./publish-board";
+
+const ROOT = path.resolve(import.meta.dirname, "../..");
+const MODELS_PATH = path.join(ROOT, "content/models.json");
+
+interface ModelPrice {
+  input?: number | null;
+  output?: number | null;
+  cachedInput?: number | null;
+}
+
+interface ModelRecord {
+  slug: string;
+  name: string;
+  provider: string;
+  capability: number;
+  tags?: string[];
+  price?: ModelPrice | null;
+  [key: string]: unknown;
+}
+
+interface ModelsFile {
+  updatedAt?: string;
+  models: ModelRecord[];
+}
+
+async function main(): Promise<void> {
+  if (!fs.existsSync(MODELS_PATH)) {
+    throw new Error(`找不到 ${MODELS_PATH}，先跑 pnpm collect`);
+  }
+  const file = JSON.parse(fs.readFileSync(MODELS_PATH, "utf-8")) as ModelsFile;
+  const models = file.models ?? [];
+  if (models.length === 0) throw new Error("models.json 里没有模型，拒绝发布空榜");
+
+  // 性价比在全库样本内归一，和页面用同一套函数
+  const valueMap = valueScores(
+    models.map((m) => ({
+      slug: m.slug,
+      capability: m.capability,
+      priceIn: m.price?.input ?? null,
+      priceOut: m.price?.output ?? null,
+    })),
+  );
+
+  const ordered = [...models].sort((a, b) => {
+    const sa = overallScore(a.capability, valueMap.get(a.slug) ?? 0);
+    const sb = overallScore(b.capability, valueMap.get(b.slug) ?? 0);
+    if (sb !== sa) return sb - sa;
+    return a.name.localeCompare(b.name);
+  });
+
+  const rows: PublishRow[] = ordered.map((model, i) => {
+    const rank = i + 1;
+    const value = valueMap.get(model.slug) ?? 0;
+    const score = overallScore(model.capability, value);
+    return {
+      key: model.slug,
+      rank,
+      score,
+      // 模型榜是公开榜，不分层
+      tier: "core",
+      name: model.name,
+      url: null,
+      cats: model.tags?.length ? model.tags : null,
+      // 单条最大 1KB，卡片直接带全量字段，不必剔除
+      card: { rank, score, value, ...model },
+      detail: { data: model, derived: { rank, score, value } },
+    };
+  });
+
+  console.log(
+    `[models] ${rows.length} 条，榜首 ${rows[0]?.name}（${rows[0]?.score}）` +
+      `，榜单更新于 ${file.updatedAt ?? "未知"}`,
+  );
+
+  const res = await syncBoardToD1({
+    board: "models",
+    rows,
+    actor: process.env.GITHUB_ACTOR ?? "manual",
+    /*
+     * 用当前时间，不用 file.updatedAt。
+     *
+     * updatedAt 是**采集脚本每次运行都会刷新**的字段，不是数据内容的时间，
+     * 拿它当版本号等于每次都产生新版本 —— 和 versionOf() 没区别，
+     * 反而多一处时区格式不一致的风险（文件里可能是本地时间）。
+     * 版本就是「这一次快照」，总量由 pruneVersions 控制。
+     */
+    version: versionOf(),
+  });
+
+  if (!res.ok && res.error !== "missing-credentials") process.exitCode = 1;
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exitCode = 1;
+});

@@ -47,6 +47,11 @@ const CLAIMS: ClaimType[] = ["fact", "inference", "hypothesis"];
 const OPP_TYPES: TrendOpportunityType[] = ["content", "product", "opensource", "feature"];
 const VERDICTS: TrendActionVerdict[] = ["research", "content", "mvp", "watch"];
 
+/**
+ * 注意：这段系统提示要保持逐字节稳定。
+ * DeepSeek 按请求前缀做上下文缓存，固定放在最前面的长提示命中缓存后
+ * 只按约 1/10 计价；往里拼时间戳、随机数或每轮变化的内容会让缓存全失效。
+ */
 const SYSTEM = `你是 AI 趋势榜单的资深分析师，服务对象是想找机会的独立开发者与内容创作者。
 根据给定的关键词、Google Trends 序列摘要、真实证据列表（编号从 0 开始）输出 JSON，字段：
 

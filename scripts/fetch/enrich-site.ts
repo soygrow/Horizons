@@ -40,7 +40,12 @@ import { fetchSimilarwebKeywords } from "./sources/apify";
  * 用法：pnpm tsx scripts/fetch/enrich-site.ts --domain picvo.ai [--dry]
  */
 
-const TOOLS_PATH = path.resolve(process.cwd(), "content/aitools.json");
+/** --staging：对后台待发布队列（content/tools-staging.json）做富化，不碰线上数据 */
+const USE_STAGING = process.argv.includes("--staging");
+const TOOLS_PATH = path.resolve(
+  process.cwd(),
+  USE_STAGING ? "content/tools-staging.json" : "content/aitools.json",
+);
 const CATEGORIES = [
   "AI Chat", "Image Gen", "Video", "Voice & Audio", "Writing", "Coding",
   "Automation", "Marketing", "Productivity", "Data & Analytics", "Other",
@@ -63,14 +68,24 @@ function parseDomain(): string {
 
 function loadTools(): AITool[] {
   try {
-    return JSON.parse(fs.readFileSync(TOOLS_PATH, "utf-8")) as AITool[];
+    const raw = JSON.parse(fs.readFileSync(TOOLS_PATH, "utf-8")) as
+      | AITool[]
+      | { items?: AITool[] };
+    return Array.isArray(raw) ? raw : (raw.items ?? []);
   } catch {
     return [];
   }
 }
 
 function saveTools(tools: AITool[]): void {
-  fs.writeFileSync(TOOLS_PATH, JSON.stringify(tools, null, 2) + "\n", "utf-8");
+  if (!USE_STAGING) {
+    fs.writeFileSync(TOOLS_PATH, JSON.stringify(tools, null, 2) + "\n", "utf-8");
+    return;
+  }
+  // 队列文件是对象结构（items / rejected / lastRun），只替换 items，其余原样保留
+  const raw = JSON.parse(fs.readFileSync(TOOLS_PATH, "utf-8")) as Record<string, unknown>;
+  const next = { ...raw, updatedAt: new Date().toISOString(), items: tools };
+  fs.writeFileSync(TOOLS_PATH, JSON.stringify(next, null, 2) + "\n", "utf-8");
 }
 
 /** PH 单站搜索（best-effort，失败返回 null） */

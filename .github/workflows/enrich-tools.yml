@@ -1,0 +1,92 @@
+name: Enrich Tools (staging)
+
+# 后台「开始富化」按钮的落点。
+# 只处理 stage=approved（人工已确认收录）的候选，补 DFS 关键词/外链/竞品/搜索流量
+# 与 LLM 解读，然后生成 content/tools-field-report.json 供后台看完整度。
+# **不碰** content/aitools.json，所以不会触发站点重建。
+#
+# 需要的仓库 Secrets：
+#   APIFY_TOKEN             流量补全（$0.00001/域）
+#   DATAFORSEO_LOGIN        DFS 关键词/搜索流量
+#   DATAFORSEO_PASSWORD
+#   DEEPSEEK_API_KEY        AI 解读
+# 配不全时可用「仅免费字段」模式（free_only=true）跳过付费项。
+
+on:
+  workflow_dispatch:
+    inputs:
+      domains:
+        description: "只富化这些域名（逗号分隔；留空=全部已确认收录）"
+        required: false
+        default: ""
+      limit:
+        description: "本次最多富化多少条（1-20）"
+        required: false
+        default: "10"
+      free_only:
+        description: "仅免费字段（跳过 DFS 与 LLM）"
+        type: boolean
+        default: false
+      job_id:
+        description: "后台任务 ID（仅回显，便于对日志）"
+        required: false
+        default: ""
+
+concurrency:
+  group: enrich-tools
+  cancel-in-progress: false
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 准备浏览器
+        run: |
+          pnpm exec playwright install --with-deps chromium
+          sudo apt-get install -y xvfb
+
+      - name: 富化已确认候选
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}
+          DATAFORSEO_PASSWORD: ${{ secrets.DATAFORSEO_PASSWORD }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          ARGS="--limit ${{ inputs.limit }}"
+          if [ -n "${{ inputs.domains }}" ]; then ARGS="$ARGS --domains ${{ inputs.domains }}"; fi
+          if [ "${{ inputs.free_only }}" = "true" ]; then ARGS="$ARGS --free-only"; fi
+          pnpm tsx scripts/admin/enrich-staging.ts $ARGS
+
+      - name: 提交富化结果
+        id: commit
+        run: |
+          git config user.name "horizons-bot"
+          git config user.email "bot@horizons.tools"
+          git add content/tools-staging.json content/tools-field-report.json
+          if git diff --cached --quiet; then
+            echo "::notice::本次没有产生变化"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "chore(tools): 富化已确认候选（后台）"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "::notice::富化完成，请到后台查看字段完整度后再选择发榜"

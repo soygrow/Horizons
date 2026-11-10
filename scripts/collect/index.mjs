@@ -15,6 +15,7 @@
  * 采集规则（对所有源一致）：
  *   付费文本模型 · 去重变体 / 日期快照 / 社区微调 · 同模型跨源合并 · 能力分按家族校准
  */
+import { execSync } from "node:child_process";
 import { mkdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import {
@@ -25,6 +26,7 @@ import {
   log,
   mergeRecords,
   OUT_PATH,
+  ROOT,
   sampleByProvider,
   warn,
 } from "./core.mjs";
@@ -97,6 +99,19 @@ const out = buildOutput({ records: picked, metas, stats });
 if (!DRY) {
   mkdirSync(dirname(OUT_PATH), { recursive: true });
   writeFileSync(OUT_PATH, `${JSON.stringify(out, null, 2)}\n`);
+
+  // ---------- 4.5 同步 D1 ----------
+  // 灰度期 D1 是冷备：写失败只告警，绝不能让一次同步故障丢掉采集结果
+  try {
+    execSync("pnpm tsx scripts/admin/publish-models.ts", {
+      // 必须是仓库根：用 OUT_PATH 往上推容易多退一级，退到仓库外面去了，
+      // 而这里的失败又只打一行告警，等于永远静默失败
+      cwd: ROOT,
+      stdio: "inherit",
+    });
+  } catch (e) {
+    warn("collect", `D1 同步失败（models），JSON 已落盘，站点不受影响：${e.message}`);
+  }
 }
 
 // ---------- 5. 报告 ----------

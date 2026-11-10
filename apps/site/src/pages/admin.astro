@@ -131,10 +131,14 @@ const meta = {
           </div>
         </div>
 
-        <nav class="mx-auto flex max-w-7xl gap-1 px-4 sm:px-6">
+        <nav class="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 sm:px-6">
           <button type="button" data-tab="overview" data-active="true" class="admin-tab">概览</button>
           <button type="button" data-tab="users" class="admin-tab">注册用户</button>
           <button type="button" data-tab="payments" class="admin-tab">付费记录</button>
+          <button type="button" data-tab="tools" class="admin-tab">工具榜</button>
+          <button type="button" data-tab="trends" class="admin-tab">趋势榜</button>
+          <button type="button" data-tab="github" class="admin-tab">GitHub 榜</button>
+          <button type="button" data-tab="boards" class="admin-tab">榜单版本</button>
           <button type="button" data-tab="fields" class="admin-tab">数据字段</button>
         </nav>
       </header>
@@ -372,6 +376,55 @@ const meta = {
           </div>
         </section>
 
+        <!-- 榜单版本 -->
+        <section id="tab-boards" hidden class="space-y-4">
+          <div class="rounded-2xl border border-border bg-surface p-4">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div class="min-w-0">
+                <h2 class="text-sm font-semibold">数据源</h2>
+                <p class="mt-1 text-xs leading-relaxed text-ink-secondary">
+                  file = 读仓库里的 JSON（当前线上口径）；d1 = 读数据库。切到 d1 之前先确认该榜在当前版本里真的有数据，否则页面会直接变空。
+                </p>
+              </div>
+              <button
+                type="button"
+                id="boards-refresh-sources"
+                class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-primary hover:text-primary"
+              >
+                刷新
+              </button>
+            </div>
+            <div id="boards-sources" class="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3"></div>
+          </div>
+
+          <div class="rounded-2xl border border-border bg-surface p-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h2 class="text-sm font-semibold">发布版本</h2>
+              <span id="boards-current" class="text-xs text-ink-muted">—</span>
+            </div>
+            <p class="mt-1 text-xs text-ink-secondary">
+              保留最近 <span id="boards-keep">3</span> 期已生效版本。回滚只切指针，不重写数据：历史版本是不可变的，改了就等于审计失效。
+            </p>
+            <div id="boards-releases" class="mt-3 space-y-2"></div>
+          </div>
+
+          <div id="boards-detail" class="rounded-2xl border border-border bg-surface p-4" hidden>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h2 id="boards-detail-title" class="text-sm font-semibold">—</h2>
+              <button
+                type="button"
+                id="boards-detail-close"
+                class="rounded-lg border border-border px-3 py-1.5 text-xs text-ink-secondary transition hover:border-primary hover:text-primary"
+              >
+                关闭
+              </button>
+            </div>
+            <div id="boards-detail-tabs" class="mt-3 flex flex-wrap gap-1.5"></div>
+            <div id="boards-detail-body" class="mt-3 text-xs text-ink-muted">选择一个榜查看本期条目</div>
+            <div id="boards-detail-changes" class="mt-4"></div>
+          </div>
+        </section>
+
         <!-- 数据字段 -->
         <section id="tab-fields" hidden class="space-y-4">
           <div class="rounded-2xl border border-border bg-surface">
@@ -402,7 +455,577 @@ const meta = {
 
           <div id="fields-body" class="space-y-4"></div>
         </section>
+
+        <!-- 工具榜：抓取 → 待发布审核 → 更新榜单。
+             所有动作都在 GitHub Actions 上执行，页面只负责触发与读结果，
+             因此这一步不需要改站点数据，线上榜单不会因为这个页签而变化。 -->
+        <section id="tab-tools" hidden class="space-y-4">
+          <div id="tools-setup" class="hidden rounded-2xl border border-border bg-surface p-4">
+            <h2 class="text-sm font-semibold">需要先配置 GitHub 集成</h2>
+            <p class="mt-1 text-xs leading-relaxed text-ink-secondary">
+              抓取要跑 Playwright、发布要写仓库文件，Worker 两件事都做不了，所以流程落在 GitHub Actions。
+              给 API Worker 配好下面两个 Secret 后本页就能用：
+            </p>
+            <pre class="mt-2 overflow-x-auto rounded-lg bg-surface-2 p-3 text-[11px] leading-relaxed text-ink-secondary">wrangler secret put GITHUB_TOKEN   # fine-grained PAT：contents 读写 + actions 读写
+wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
+            <p id="tools-setup-missing" class="mt-2 text-[11px] text-ink-muted"></p>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">榜单条数</div>
+              <div id="tool-kpi-listed" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="tool-kpi-listed-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">候选池</div>
+              <div id="tool-kpi-candidates" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="tool-kpi-candidates-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">待发布</div>
+              <div id="tool-kpi-pending" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="tool-kpi-pending-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">距目标缺口</div>
+              <div id="tool-kpi-gap" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="tool-kpi-gap-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+          </div>
+
+          <article class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+              <div>
+                <h2 class="text-sm font-semibold">获取新工具</h2>
+                <p class="mt-1 text-xs text-ink-muted">
+                  从 Product Hunt 抓取，结果先进入「待发布」，不会影响线上榜单
+                </p>
+              </div>
+              <button
+                id="tools-fetch-btn"
+                type="button"
+                class="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                开始抓取
+              </button>
+            </div>
+            <div class="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">
+              <label class="block text-xs font-medium text-ink-secondary">
+                数量
+                <select id="tools-fetch-count" class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
+                  <option value="20">20 个（约 3 分钟）</option>
+                  <option value="60" selected>60 个（约 8 分钟）</option>
+                  <option value="120">120 个（约 15 分钟）</option>
+                  <option value="200">200 个（约 25 分钟）</option>
+                </select>
+              </label>
+              <label class="block text-xs font-medium text-ink-secondary">
+                排序
+                <select id="tools-fetch-order" class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
+                  <option value="newest">最新发布</option>
+                  <option value="votes">按点赞</option>
+                </select>
+              </label>
+              <label class="block text-xs font-medium text-ink-secondary">
+                Topic
+                <input
+                  id="tools-fetch-topic"
+                  type="text"
+                  value="artificial-intelligence"
+                  spellcheck="false"
+                  class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
+                />
+              </label>
+              <label class="flex items-start gap-2 pt-5 text-xs text-ink-secondary">
+                <input id="tools-fetch-enrich" type="checkbox" checked class="mt-0.5 h-3.5 w-3.5 accent-[var(--c-primary)]" />
+                <span>补 Similarweb 流量<br /><span class="text-[11px] text-ink-muted">不补就进不了主榜</span></span>
+              </label>
+            </div>
+            <p id="tools-fetch-estimate" class="px-4 pb-4 text-[11px] leading-relaxed text-ink-muted">—</p>
+            <div id="tools-jobs" class="border-t border-border"></div>
+          </article>
+
+          <article class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+              <div class="min-w-0">
+                <h2 class="text-sm font-semibold">待发布</h2>
+                <p id="tools-staging-meta" class="mt-1 text-xs text-ink-muted">—</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <select id="tools-staging-tier" class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
+                  <option value="all">全部</option>
+                  <option value="qualified">达标（主榜/观察）</option>
+                  <option value="unqualified">不达标</option>
+                  <option value="approved">已确认待富化</option>
+                  <option value="enriched">已富化可发榜</option>
+                  <option value="rejected">已拒绝</option>
+                </select>
+                <input
+                  id="tools-staging-search"
+                  type="search"
+                  placeholder="搜索名称或域名"
+                  class="w-40 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary sm:w-52"
+                />
+                <button
+                  id="tools-staging-refresh"
+                  type="button"
+                  class="rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
+                >
+                  刷新
+                </button>
+                <button
+                  id="tools-approve-btn"
+                  type="button"
+                  class="rounded-lg border border-primary bg-primary-soft px-2.5 py-1.5 text-xs font-medium text-primary transition hover:bg-primary-soft/70 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  确认收录
+                </button>
+                <button
+                  id="tools-enrich-btn"
+                  type="button"
+                  class="rounded-lg border border-accent bg-accent-soft px-2.5 py-1.5 text-xs font-medium text-accent transition hover:bg-accent-soft/70 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  开始富化
+                </button>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[860px] text-left text-sm">
+                <thead class="bg-surface-2/60 text-xs text-ink-muted">
+                  <tr>
+                    <th class="w-8 px-2 py-2.5">
+                      <input id="tools-select-all" type="checkbox" class="h-3.5 w-3.5 rounded border-border" aria-label="全选当前页" />
+                    </th>
+                    <th class="px-4 py-2.5 font-medium">工具</th>
+                    <th class="px-4 py-2.5 font-medium">域名</th>
+                    <th class="px-4 py-2.5 text-right font-medium">PH 赞</th>
+                    <th class="px-4 py-2.5 text-right font-medium">月访问</th>
+                    <th class="px-4 py-2.5 font-medium">判定</th>
+                    <th class="px-4 py-2.5 font-medium">阶段</th>
+                    <th class="px-4 py-2.5 text-right font-medium">缺失</th>
+                    <th class="px-4 py-2.5 text-right font-medium">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="tools-staging-body" class="divide-y divide-border"></tbody>
+              </table>
+            </div>
+            <div id="tools-staging-pager" class="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-xs text-ink-muted"></div>
+          </article>
+
+          <article class="rounded-2xl border border-border bg-surface p-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="min-w-0">
+                <h2 class="text-sm font-semibold">更新榜单</h2>
+                <p id="tools-publish-preview" class="mt-1 text-xs text-ink-muted">—</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  id="tools-audit-btn"
+                  type="button"
+                  class="rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  重判存量
+                </button>
+                <button
+                  id="tools-publish-btn"
+                  type="button"
+                  class="rounded-lg border border-primary bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  更新榜单
+                </button>
+              </div>
+            </div>
+            <div id="tools-audit" class="mt-3 border-t border-border pt-3 text-xs text-ink-muted">
+              发布前先点「重判存量」，这里会列出在榜条目里站点失效或流量跌破门槛、应当下榜的条目。
+            </div>
+            <div id="tools-field-report" class="mt-3 border-t border-border pt-3 text-xs text-ink-muted">
+              富化完成后这里会显示各字段的空置与异常统计，你再决定发哪些。
+            </div>
+            <p class="mt-2 text-[11px] leading-relaxed text-ink-muted">
+              只发布「已富化」的条目：候选 → 确认收录 → 富化 → 按完整度挑选 → 发榜。
+              发布后合并进 <code class="rounded bg-surface-2 px-1 py-0.5">content/aitools.json</code> 并自动触发构建；
+              未选中的条目留在队列里继续处理。
+            </p>
+          </article>
+        </section>
+
+        <!-- 趋势榜：拉取 → 审核候选词 → 看位次变化再发布。
+             采集同样跑在 GitHub Actions 上，结果只写进 content/trends-staging.json，
+             线上榜单在点「发布」之前一句话都不会变。 -->
+        <section id="tab-trends" hidden class="space-y-4">
+          <div id="trends-setup" class="hidden rounded-2xl border border-border bg-surface p-4">
+            <h2 class="text-sm font-semibold">需要先配置 GitHub 集成</h2>
+            <p class="mt-1 text-xs leading-relaxed text-ink-secondary">
+              趋势词采集要调 Google Trends 和模型接口，Worker 跑不了长时间任务，所以流程放在 GitHub Actions。
+              给 API Worker 配好下面两个 Secret 后本页就能用：
+            </p>
+            <pre class="mt-2 overflow-x-auto rounded-lg bg-surface-2 p-3 text-[11px] leading-relaxed text-ink-secondary">wrangler secret put GITHUB_TOKEN   # fine-grained PAT：contents 读写 + actions 读写
+wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
+            <p id="trends-setup-missing" class="mt-2 text-[11px] text-ink-muted"></p>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">线上榜单</div>
+              <div id="trend-kpi-board" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="trend-kpi-board-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">候选池</div>
+              <div id="trend-kpi-candidates" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="trend-kpi-candidates-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">待发布</div>
+              <div id="trend-kpi-pending" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="trend-kpi-pending-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">显著位次变动</div>
+              <div id="trend-kpi-changes" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="trend-kpi-changes-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+          </div>
+
+          <article class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+              <div>
+                <h2 class="text-sm font-semibold">拉取新词</h2>
+                <p class="mt-1 text-xs text-ink-muted">
+                  采集结果先进入候选池，不会改动线上榜单
+                </p>
+              </div>
+              <button
+                id="trends-fetch-btn"
+                type="button"
+                class="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                拉取新词
+              </button>
+            </div>
+            <div class="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
+              <label class="block text-xs font-medium text-ink-secondary">
+                采集量
+                <select id="trends-fetch-budget" class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
+                  <option value="20">20 个（快速验证）</option>
+                  <option value="50">50 个</option>
+                  <option value="80" selected>80 个（推荐）</option>
+                  <option value="120">120 个（约 15 分钟）</option>
+                  <option value="200">200 个（约 25 分钟）</option>
+                </select>
+              </label>
+              <label class="block text-xs font-medium text-ink-secondary">
+                地区
+                <select id="trends-fetch-geo" class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
+                  <option value="US" selected>US 美国</option>
+                  <option value="GB">GB 英国</option>
+                  <option value="CA">CA 加拿大</option>
+                  <option value="AU">AU 澳大利亚</option>
+                  <option value="DE">DE 德国</option>
+                  <option value="JP">JP 日本</option>
+                </select>
+              </label>
+              <p id="trends-fetch-hint" class="self-end pb-1.5 text-[11px] leading-relaxed text-ink-muted">—</p>
+            </div>
+            <div id="trends-jobs" class="border-t border-border"></div>
+          </article>
+
+          <article class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+              <div class="min-w-0">
+                <h2 class="text-sm font-semibold">候选词</h2>
+                <p id="trends-staging-meta" class="mt-1 text-xs text-ink-muted">—</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <select id="trends-staging-filter" class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
+                  <option value="all">全部</option>
+                  <option value="pending">待富化</option>
+                  <option value="ready">已富化</option>
+                  <option value="new">新词</option>
+                  <option value="board">在榜更新</option>
+                  <option value="blocked">数据不足</option>
+                  <option value="rejected">已拒绝</option>
+                </select>
+                <input
+                  id="trends-staging-search"
+                  type="search"
+                  placeholder="搜索关键词"
+                  class="w-40 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary sm:w-52"
+                />
+                <button
+                  id="trends-enrich-btn"
+                  type="button"
+                  class="rounded-lg bg-primary px-2.5 py-1.5 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                  disabled
+                >
+                  富化选中
+                </button>
+                <button
+                  id="trends-staging-refresh"
+                  type="button"
+                  class="rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
+                >
+                  刷新
+                </button>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[900px] text-left text-sm">
+                <thead class="bg-surface-2/60 text-xs text-ink-muted">
+                  <tr>
+                    <th class="w-10 px-3 py-2.5">
+                      <input id="trends-select-all" type="checkbox" class="h-3.5 w-3.5 accent-primary" title="全选本页可富化的词" />
+                    </th>
+                    <th class="px-4 py-2.5 font-medium">关键词</th>
+                    <th class="px-4 py-2.5 text-right font-medium">趋势分</th>
+                    <th class="px-4 py-2.5 text-right font-medium">机会分</th>
+                    <th class="px-4 py-2.5 text-right font-medium">综合分</th>
+                    <th class="px-4 py-2.5 text-right font-medium">峰值</th>
+                    <th class="px-4 py-2.5 text-right font-medium">名次</th>
+                    <th class="px-4 py-2.5 font-medium">状态</th>
+                    <th class="px-4 py-2.5 text-right font-medium">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="trends-staging-body" class="divide-y divide-border"></tbody>
+              </table>
+            </div>
+            <div id="trends-staging-pager" class="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-xs text-ink-muted"></div>
+          </article>
+
+          <article class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+              <div class="min-w-0">
+                <h2 class="text-sm font-semibold">发布预览</h2>
+                <p id="trends-publish-summary" class="mt-1 text-xs text-ink-muted">—</p>
+              </div>
+              <button
+                id="trends-publish-btn"
+                type="button"
+                class="rounded-lg border border-primary bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                更新榜单
+              </button>
+            </div>
+            <div id="trends-publish-changes" class="px-4 py-3"></div>
+            <p class="px-4 pb-4 text-[11px] leading-relaxed text-ink-muted">
+              发布后把候选词合并进 <code class="rounded bg-surface-2 px-1 py-0.5">content/trends.json</code>，
+              并自动触发站点构建。别名（<code class="rounded bg-surface-2 px-1 py-0.5">variantOf</code>）不占名次；
+              拒绝某词会连它的别名一起下架，避免代表词没了还留着死链。
+              榜单上限 1000 条代表词，超出按综合分淘汰尾部（别名随代表词一起下架）；
+              候选表里「预计名次」为 — 表示数据点不足 14 个，或合并后进不了前 1000。
+            </p>
+          </article>
+        </section>
+
+        <!-- GitHub 榜：采集 → 审核候选仓库 → 看位次变化再发布。
+             采集跑在 GitHub Actions 上，结果只写进 content/github-staging.json，
+             线上榜单在点「发布」之前一个字都不会变。
+             榜单容量固定 2000 条，插入高分项目会把末尾的挤出去，所以预览里进榜/出榜成对展示。 -->
+        <section id="tab-github" hidden class="space-y-4">
+          <div id="gh-setup" class="hidden rounded-2xl border border-border bg-surface p-4">
+            <h2 class="text-sm font-semibold">需要先配置 GitHub 集成</h2>
+            <p class="mt-1 text-xs leading-relaxed text-ink-secondary">
+              GitHub 榜要打几百次接口、还要读写几十 MB 的 <code class="rounded bg-surface-2 px-1 py-0.5">content/github.json</code>，
+              Worker 跑不了这种任务，所以流程放在 GitHub Actions。给 API Worker 配好下面两个 Secret 后本页就能用：
+            </p>
+            <pre class="mt-2 overflow-x-auto rounded-lg bg-surface-2 p-3 text-[11px] leading-relaxed text-ink-secondary">wrangler secret put GITHUB_TOKEN   # fine-grained PAT：contents 读写 + actions 读写
+wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
+            <p id="gh-setup-missing" class="mt-2 text-[11px] text-ink-muted"></p>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">线上榜单</div>
+              <div id="gh-kpi-board" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="gh-kpi-board-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">候选池</div>
+              <div id="gh-kpi-candidates" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="gh-kpi-candidates-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">待发布</div>
+              <div id="gh-kpi-pending" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="gh-kpi-pending-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">显著位次变动</div>
+              <div id="gh-kpi-changes" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="gh-kpi-changes-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+          </div>
+
+          <article class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+              <div>
+                <h2 class="text-sm font-semibold">采集榜单</h2>
+                <p class="mt-1 text-xs text-ink-muted">
+                  重算现榜数值并搜索新项目，结果先进入候选池，不会改动线上榜单
+                </p>
+              </div>
+              <button
+                id="gh-fetch-btn"
+                type="button"
+                class="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                采集榜单
+              </button>
+            </div>
+            <div class="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
+              <label class="block text-xs font-medium text-ink-secondary">
+                榜单容量
+                <input
+                  id="gh-fetch-target"
+                  type="number"
+                  min="500"
+                  max="3000"
+                  step="100"
+                  value="2000"
+                  class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs tabular-nums text-ink outline-none focus:border-primary"
+                />
+              </label>
+              <label class="flex items-start gap-2 self-end pb-1.5 text-xs font-medium text-ink-secondary">
+                <input id="gh-fetch-refresh" type="checkbox" class="mt-0.5 h-3.5 w-3.5 accent-[var(--c-primary)]" />
+                <span>
+                  强制重搜
+                  <span class="block text-[11px] font-normal text-ink-muted">忽略 3 小时缓存，重新打一遍搜索接口</span>
+                </span>
+              </label>
+              <p id="gh-fetch-hint" class="self-end pb-1.5 text-[11px] leading-relaxed text-ink-muted">—</p>
+            </div>
+            <div id="gh-jobs" class="border-t border-border"></div>
+          </article>
+
+          <article class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+              <div class="min-w-0">
+                <h2 class="text-sm font-semibold">候选仓库</h2>
+                <p id="gh-staging-meta" class="mt-1 text-xs text-ink-muted">—</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <select id="gh-staging-filter" class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
+                  <option value="all">全部</option>
+                  <option value="new">新候选</option>
+                  <option value="board">在榜刷新</option>
+                  <option value="rejected">已拒绝</option>
+                </select>
+                <input
+                  id="gh-staging-search"
+                  type="search"
+                  placeholder="搜索仓库或简介"
+                  class="w-40 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary sm:w-52"
+                />
+                <button
+                  id="gh-staging-refresh"
+                  type="button"
+                  class="rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
+                >
+                  刷新
+                </button>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[980px] text-left text-sm">
+                <thead class="bg-surface-2/60 text-xs text-ink-muted">
+                  <tr>
+                    <th class="px-4 py-2.5 font-medium">仓库</th>
+                    <th class="px-4 py-2.5 text-right font-medium">星标</th>
+                    <th class="px-4 py-2.5 text-right font-medium">综合分</th>
+                    <th class="px-4 py-2.5 text-right font-medium">等级</th>
+                    <th class="px-4 py-2.5 text-right font-medium">加工空间</th>
+                    <th class="px-4 py-2.5 font-medium">名次（现 → 预计）</th>
+                    <th class="px-4 py-2.5 font-medium">状态</th>
+                    <th class="px-4 py-2.5 text-right font-medium">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="gh-staging-body" class="divide-y divide-border"></tbody>
+              </table>
+            </div>
+            <div id="gh-staging-pager" class="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-xs text-ink-muted"></div>
+          </article>
+
+          <article class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+              <div class="min-w-0">
+                <h2 class="text-sm font-semibold">发布预览</h2>
+                <p id="gh-publish-summary" class="mt-1 text-xs text-ink-muted">—</p>
+              </div>
+              <button
+                id="gh-publish-btn"
+                type="button"
+                class="rounded-lg border border-primary bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                更新榜单
+              </button>
+            </div>
+            <div id="gh-publish-changes" class="px-4 py-3"></div>
+            <p class="px-4 pb-4 text-[11px] leading-relaxed text-ink-muted">
+              发布后把候选合并进 <code class="rounded bg-surface-2 px-1 py-0.5">content/github.json</code>，按综合分重新排名并截断到容量上限，
+              随后自动触发站点构建。新进榜的项目会顺带补齐中文情报与加工空间评分。
+            </p>
+          </article>
+        </section>
       </main>
+    </div>
+
+    <!-- 待发布工具详情（抽屉） -->
+    <div id="tools-detail" class="hidden fixed inset-0 z-40 items-end justify-center bg-black/40 p-0 sm:items-center sm:p-6">
+      <div class="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-2xl border border-border bg-surface sm:rounded-2xl">
+        <div class="sticky top-0 flex items-start justify-between gap-3 border-b border-border bg-surface px-5 py-4">
+          <div class="min-w-0">
+            <h3 id="tools-detail-name" class="truncate text-sm font-semibold">—</h3>
+            <p id="tools-detail-domain" class="mt-1 truncate text-xs text-ink-muted">—</p>
+          </div>
+          <button
+            id="tools-detail-close"
+            type="button"
+            class="shrink-0 rounded-lg border border-border px-2.5 py-1.5 text-xs text-ink-secondary transition hover:border-border-strong hover:text-ink"
+          >
+            关闭
+          </button>
+        </div>
+        <div id="tools-detail-body" class="space-y-4 px-5 py-4 text-sm"></div>
+        <div class="flex flex-wrap items-center justify-end gap-2 border-t border-border px-5 py-3">
+          <button
+            id="tools-detail-reject"
+            type="button"
+            class="rounded-lg border border-border px-3 py-1.5 text-xs text-ink-secondary transition hover:border-danger hover:text-danger"
+          >
+            拒绝这个工具
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 候选趋势词详情（抽屉） -->
+    <div id="trends-detail" class="hidden fixed inset-0 z-40 items-end justify-center bg-black/40 p-0 sm:items-center sm:p-6">
+      <div class="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-2xl border border-border bg-surface sm:rounded-2xl">
+        <div class="sticky top-0 flex items-start justify-between gap-3 border-b border-border bg-surface px-5 py-4">
+          <div class="min-w-0">
+            <h3 id="trends-detail-keyword" class="truncate text-sm font-semibold">—</h3>
+            <p id="trends-detail-slug" class="mt-1 truncate text-xs text-ink-muted">—</p>
+          </div>
+          <button
+            id="trends-detail-close"
+            type="button"
+            class="shrink-0 rounded-lg border border-border px-2.5 py-1.5 text-xs text-ink-secondary transition hover:border-border-strong hover:text-ink"
+          >
+            关闭
+          </button>
+        </div>
+        <div id="trends-detail-body" class="space-y-4 px-5 py-4 text-sm"></div>
+        <div class="flex flex-wrap items-center justify-end gap-2 border-t border-border px-5 py-3">
+          <button
+            id="trends-detail-reject"
+            type="button"
+            class="rounded-lg border border-border px-3 py-1.5 text-xs text-ink-secondary transition hover:border-danger hover:text-danger"
+          >
+            拒绝这个词
+          </button>
+        </div>
+      </div>
     </div>
 
     <script>

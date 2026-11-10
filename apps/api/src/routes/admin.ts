@@ -17,6 +17,10 @@ import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import type { Env } from "../env";
 import { base64UrlDecode, randomBytesBase64 } from "../lib/crypto";
 import { PAYWALL_BUTTONS, paywallButtonLabel } from "../lib/paywall";
+import { adminBoards } from "./admin-boards";
+import { github as adminGithub } from "./admin-github";
+import { adminTools } from "./admin-tools";
+import { trends as adminTrends } from "./admin-trends";
 
 export const admin = new Hono<{ Bindings: Env }>();
 
@@ -313,6 +317,16 @@ admin.use("*", async (c, next) => {
 });
 
 admin.get("/me", (c) => c.json({ ok: true, username: c.env.ADMIN_USERNAME ?? "" }));
+
+/** 工具榜后台：抓取 / 审核 / 发布（数据仍在仓库 JSON，这里只做触发与读取） */
+admin.route("/tools", adminTools);
+
+/** 趋势榜后台：采集 / 审核 / 发布，发布前给位次变化预览 */
+admin.route("/trends", adminTrends);
+admin.route("/github", adminGithub);
+
+/** 榜单版本与数据源开关：六个榜发布到 D1 之后的观察与回滚入口 */
+admin.route("/boards", adminBoards);
 
 admin.post("/logout", async (c) => {
   const token = getCookie(c, ADMIN_COOKIE);

@@ -14,6 +14,8 @@ type Row = {
   priceOut: number | null;
   priceCached: number | null;
   hasFree: boolean;
+  /** 能力分（0–100），用于「能力」排序 */
+  capability: number;
   value: number;
   score: number;
   releasedAt: string | null;

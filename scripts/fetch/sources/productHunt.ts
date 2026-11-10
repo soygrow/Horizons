@@ -2,52 +2,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { chromium, type Browser } from "playwright";
 import { getDomain } from "tldts";
-import { isBlockedDomain, type AITool } from "@horizons/shared";
+import type { AITool } from "@horizons/shared";
 import { getProductHuntToken, config } from "../config";
+import { isExcludedHost } from "../../admin/verdict";
 
-// 大厂 / 平台域名：通常是模型发布或官方公告，不是独立 AI 工具产品
-const EXCLUDED_DOMAINS = new Set([
-  "openai.com",
-  "anthropic.com",
-  "google.com",
-  "blog.google",
-  "deepmind.google",
-  "chatgpt.com",
-  "microsoft.com",
-  "meta.com",
-  "apple.com",
-  "github.com",
-  "huggingface.co",
-  "producthunt.com",
-  "twitter.com",
-  "x.com",
-  "linkedin.com",
-  "medium.com",
-  "youtube.com",
-  "behance.net",
-]);
-
-// 建站平台 / 应用商店子域：多为学生项目与非 Web 产品
-const EXCLUDED_SUFFIXES = [
-  "vercel.app",
-  "netlify.app",
-  "github.io",
-  "pages.dev",
-  "workers.dev",
-  "webflow.io",
-  "wixsite.com",
-  "weebly.com",
-  "blogspot.com",
-  "wordpress.com",
-  "gumroad.com",
-  "play.google.com",
-  "apps.apple.com",
-];
-
+/** 名单唯一真源在 scripts/admin/verdict.ts，与后台判定/发布共用 */
 function isExcludedDomain(domain: string): boolean {
-  if (isBlockedDomain(domain)) return true;
-  if (EXCLUDED_DOMAINS.has(domain)) return true;
-  return EXCLUDED_SUFFIXES.some((s) => domain === s || domain.endsWith("." + s));
+  return isExcludedHost(domain);
 }
 
 // PH 的 website/url/productLinks 全是 /r/ 跳转，且被 Cloudflare 防护（服务端 403、

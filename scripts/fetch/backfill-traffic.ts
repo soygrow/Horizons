@@ -1,33 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
-import { isBlockedDomain } from "@horizons/shared";
+import { tierOf, visitsOf } from "@horizons/shared";
 import type { AITool } from "@horizons/shared";
 import "./config"; // 加载 .env.local
 import { extractTrafficMetrics, fetchLergassyMulti } from "./sources/apify";
 import type { SimilarwebRawItem } from "./sources/apify";
 import { applyTraffic } from "./apply-traffic";
 
-/* --------------------------- 榜单判定（与 web 侧一致） --------------------------- */
-// 与 apps/site/src/lib/data.ts 的 tierOf 保持同步，避免「榜内」口径漂移。
-const MIN_VISITS_CORE = 10_000;
-const MIN_VISITS_WATCH = 1_000;
-const WATCH_PH_UPVOTES = 300;
-
-function visitsOf(t: AITool): number | undefined {
-  return t.trafficMetrics?.monthlyVisits ?? t.metrics?.monthlyVisits;
-}
-
-function tierOf(t: AITool): "core" | "watch" | null {
-  if (isBlockedDomain(t.domain)) return null;
-  const v = visitsOf(t);
-  if (v === undefined) return (t.phUpvotes ?? 0) >= WATCH_PH_UPVOTES ? "watch" : null;
-  if (v >= MIN_VISITS_CORE) return "core";
-  if (v >= MIN_VISITS_WATCH) {
-    const g = t.trafficMetrics?.monthlyVisitsGrowth ?? t.metrics?.momGrowth;
-    return typeof g === "number" && g < 0 ? "watch" : "core";
-  }
-  return null;
-}
+/* --------------------------- 榜单判定（来自 shared） --------------------------- */
+// 统一实现见 packages/shared/src/tool-tier.ts
 
 /**
  * 批量补齐「缺月访问量」的站。

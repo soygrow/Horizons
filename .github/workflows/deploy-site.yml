@@ -11,6 +11,11 @@ on:
     branches: [main]
     paths:
       - "content/**"
+      # 候选池与采集统计只给后台看，不参与页面生成。不排除的话，每点一次
+      # 「采集」都会白跑一次整站构建（20 分钟）——而它一个字都不会改到页面上。
+      - "!content/*-staging.json"
+      - "!content/*-stats.json"
+      - "!content/*-skipped.json"
       - "apps/site/**"
       - "packages/shared/**"
       - "scripts/build/**"

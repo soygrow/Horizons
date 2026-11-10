@@ -8,6 +8,7 @@ import type {
   TrendScoreParts,
   TrendStatus,
 } from "@horizons/shared";
+import { OPP_WEIGHT_MAP, OVERALL_WEIGHT_MAP, TREND_WEIGHT_MAP } from "@horizons/shared";
 import trendsData from "@content/trends.json";
 
 const ds = trendsData as unknown as TrendDataset;
@@ -320,13 +321,18 @@ export function trendSparkline(t: AITrend, maxPoints = 30): number[] | null {
 
 /* ------------------------------- 评分 ------------------------------- */
 
-/** 趋势强度分权重：增长 30 / 持续 25 / 爆发 20 / 新颖 15 / 可靠 10 */
+/**
+ * 趋势强度分权重：增长 30 / 持续 25 / 爆发 20 / 新颖 15 / 可靠 10
+ *
+ * 数值取自 @horizons/shared 的 TREND_WEIGHT_MAP —— 后台发布预览、发布脚本、
+ * 站点排序必须同一套权重，否则预览说升 3 名、发布却升 5 名。这里只补 UI 要用的 label。
+ */
 export const TREND_WEIGHTS: { key: keyof TrendScoreParts; label: string; weight: number }[] = [
-  { key: "growth", label: "增长幅度", weight: 0.3 },
-  { key: "persistence", label: "持续性", weight: 0.25 },
-  { key: "breakout", label: "爆发强度", weight: 0.2 },
-  { key: "novelty", label: "新颖度", weight: 0.15 },
-  { key: "reliability", label: "数据可靠性", weight: 0.1 },
+  { key: "growth", label: "增长幅度", weight: TREND_WEIGHT_MAP.growth },
+  { key: "persistence", label: "持续性", weight: TREND_WEIGHT_MAP.persistence },
+  { key: "breakout", label: "爆发强度", weight: TREND_WEIGHT_MAP.breakout },
+  { key: "novelty", label: "新颖度", weight: TREND_WEIGHT_MAP.novelty },
+  { key: "reliability", label: "数据可靠性", weight: TREND_WEIGHT_MAP.reliability },
 ];
 
 /** 机会潜力分权重：需求 30 / 切入 25 / SEO 20 / 可行 15 / 时机 10 */
@@ -335,11 +341,11 @@ export const OPPORTUNITY_WEIGHTS: {
   label: string;
   weight: number;
 }[] = [
-  { key: "demand", label: "用户需求证据", weight: 0.3 },
-  { key: "wedge", label: "可切入空间", weight: 0.25 },
-  { key: "seo", label: "搜索与内容机会", weight: 0.2 },
-  { key: "feasibility", label: "独立开发可行性", weight: 0.15 },
-  { key: "timing", label: "趋势时机", weight: 0.1 },
+  { key: "demand", label: "用户需求证据", weight: OPP_WEIGHT_MAP.demand },
+  { key: "wedge", label: "可切入空间", weight: OPP_WEIGHT_MAP.wedge },
+  { key: "seo", label: "搜索与内容机会", weight: OPP_WEIGHT_MAP.seo },
+  { key: "feasibility", label: "独立开发可行性", weight: OPP_WEIGHT_MAP.feasibility },
+  { key: "timing", label: "趋势时机", weight: OPP_WEIGHT_MAP.timing },
 ];
 
 /** T = 0.30G + 0.25P + 0.20B + 0.15N + 0.10R */
@@ -361,7 +367,7 @@ export function opportunityScore(t: AITrend): number {
  * 两者都是 0–100，所以综合分同样是 0–100，可直接用于全站排名。
  * 趋势权重更高，因为榜单首先回答「什么正在升温」，机会是二级判断。
  */
-export const OVERALL_WEIGHTS = { trend: 0.6, opportunity: 0.4 } as const;
+export const OVERALL_WEIGHTS = OVERALL_WEIGHT_MAP;
 
 /** S = 0.6T + 0.4O */
 export function overallScore(t: AITrend): number {

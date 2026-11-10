@@ -4,25 +4,8 @@ import { config } from "./config";
 import { detectTechStack } from "./sources/techstack";
 import { extractContact } from "./sources/contact";
 import { detectPricing } from "./sources/pricing";
-import { isBlockedDomain } from "@horizons/shared";
+import { tierOf } from "@horizons/shared";
 import type { AITool } from "@horizons/shared";
-
-/* 榜单判定，与 apps/site/src/lib/data.ts 的 tierOf 保持同步 */
-const MIN_VISITS_CORE = 10_000;
-const MIN_VISITS_WATCH = 1_000;
-const WATCH_PH_UPVOTES = 300;
-
-function tierOf(t: AITool): "core" | "watch" | null {
-  if (isBlockedDomain(t.domain)) return null;
-  const v = t.trafficMetrics?.monthlyVisits ?? t.metrics?.monthlyVisits;
-  if (v === undefined) return (t.phUpvotes ?? 0) >= WATCH_PH_UPVOTES ? "watch" : null;
-  if (v >= MIN_VISITS_CORE) return "core";
-  if (v >= MIN_VISITS_WATCH) {
-    const g = t.trafficMetrics?.monthlyVisitsGrowth ?? t.metrics?.momGrowth;
-    return typeof g === "number" && g < 0 ? "watch" : "core";
-  }
-  return null;
-}
 
 const TOOLS_PATH = path.resolve(process.cwd(), "content/aitools.json");
 

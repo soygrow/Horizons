@@ -1,0 +1,96 @@
+name: Fetch Tools (staging)
+
+# 后台「获取新工具」按钮的落点。
+#
+# 只在 GitHub 的机器上跑现有 Node/Playwright 抓取逻辑，结果写进
+# content/tools-staging.json 等待人工审核，**不直接改** content/aitools.json，
+# 因此不会触发站点重新构建，线上不会有任何变化。
+#
+# 需要的仓库 Secrets：
+#   PH_TOKEN        Product Hunt GraphQL token（本地 .env.local 里的同名变量）
+#   APIFY_TOKEN     选填；不配则跳过 Similarweb 流量富化
+#
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: "抓取数量（1-200）"
+        required: false
+        default: "60"
+      order:
+        description: "Product Hunt 排序"
+        type: choice
+        options: [newest, votes]
+        default: newest
+      topic:
+        description: "Product Hunt topic"
+        required: false
+        default: "artificial-intelligence"
+      enrich:
+        description: "补 Similarweb 流量（成本近乎为 0）"
+        type: boolean
+        default: true
+      job_id:
+        description: "后台任务 ID（仅回显，便于对日志）"
+        required: false
+        default: ""
+
+concurrency:
+  group: fetch-tools
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      # PH 的 website 字段是 /r/ 跳转，被 Cloudflare 防护挡服务端请求，
+      # 只能靠有头 Chrome 解析真实域名；runner 已预装 Chrome，这里补系统依赖 + xvfb。
+      - name: 准备浏览器
+        run: |
+          pnpm exec playwright install --with-deps chromium
+          sudo apt-get install -y xvfb
+
+      - name: 抓取新工具（写入待发布队列）
+        env:
+          PH_TOKEN: ${{ secrets.PH_TOKEN }}
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: |
+          xvfb-run -a pnpm tsx scripts/admin/fetch-staging.ts \
+            --count "${{ inputs.count }}" \
+            --order "${{ inputs.order }}" \
+            --topic "${{ inputs.topic }}" \
+            ${{ inputs.enrich && '--enrich' || '--no-enrich' }}
+
+      - name: 刷新概览快照
+        run: pnpm tsx scripts/admin/tool-stats.ts
+
+      - name: 提交待发布队列
+        run: |
+          git config user.name "horizons-bot"
+          git config user.email "bot@horizons.tools"
+          git add content/tools-staging.json content/tools-stats.json
+          if git diff --cached --quiet; then
+            echo "::notice::没有新工具，未产生提交"
+            exit 0
+          fi
+          added=$(node -e "const s=require('./content/tools-staging.json');console.log(s.lastRun?.added ?? s.items.length)")
+          git commit -m "chore(tools): 抓取新工具进入待发布队列（+${added}）"
+          git push
