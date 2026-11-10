@@ -6,10 +6,12 @@
  * 这三个是独立脚本，所以把重复的部分收在这里。
  *
  * 灰度期 JSON 仍是线上数据源（data_source.* = file），D1 是冷备：
- * 写失败默认只告警，不阻塞文件发布。切流前加 --strict-d1 改成硬失败。
+ * 写失败默认只告警，不阻塞文件发布。
+ *
+ * 一旦某个榜切流到 D1，写失败就必须硬失败 —— 见 d1IsLive 的说明。
  */
 import type { Board } from "@horizons/shared";
-import { createD1Client, d1Configured } from "./d1-client";
+import { createD1Client, d1Configured, type D1Client } from "./d1-client";
 import { lastReleaseRanks, pruneVersions, publishBoard, type PublishRow } from "./publish-board";
 
 export interface SyncOptions {
@@ -45,6 +47,28 @@ export function versionOf(date = new Date()): string {
   return date.toISOString().slice(0, 19);
 }
 
+/**
+ * 这个榜的线上数据源是否已切到 D1。
+ *
+ * 切流之后 D1 就是唯一数据源：写失败若只告警，文件链路会照常发版，
+ * 站点却按 `data_source=<board>` = d1 去读一个没写进去的库 —— 线上直接空榜。
+ * 所以 strict 不能靠人记得传 --strict-d1，必须由「已切流」这个事实自动推出。
+ *
+ * 读不到配置时返回 false：灰度期读失败是常态，不该擅自把发布改成硬失败。
+ */
+async function d1IsLive(client: D1Client, board: Board): Promise<boolean> {
+  try {
+    const res = await client.query<{ value: string }>(
+      "SELECT value FROM app_config WHERE key = ?",
+      [`data_source.${board}`],
+    );
+    return res.results[0]?.value === "d1";
+  } catch (e) {
+    console.warn(`[sync] 读 data_source.${board} 失败，按未切流处理：`, e);
+    return false;
+  }
+}
+
 export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
   const { board, rows, actor } = opts;
 
@@ -52,18 +76,31 @@ export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
     console.log("[sync] --no-d1：跳过 D1 写入");
     return { ok: true };
   }
+
+  /** 显式参数只是兜底，主力是下面的「已切流」判定 */
+  let strict = process.argv.includes("--strict-d1");
+
   if (!d1Configured()) {
     const msg =
       "没有可用的 D1 通道（既无 CLOUDFLARE_API_TOKEN / ACCOUNT_ID，本机也未 wrangler login）";
-    if (process.argv.includes("--strict-d1")) throw new Error(`--strict-d1 但${msg}`);
-    console.warn(`[sync] ${msg}，跳过 D1 写入（JSON 链路不受影响）`);
+    if (strict) throw new Error(`--strict-d1 但${msg}`);
+    console.warn(
+      `[sync] ${msg}，跳过 D1 写入（JSON 链路不受影响）。` +
+        `注意：若 ${board} 已切流到 D1，本次发布会让线上读到空库。`,
+    );
     return { ok: false, error: "missing-credentials" };
+  }
+
+  const client = createD1Client();
+
+  if (await d1IsLive(client, board)) {
+    strict = true;
+    console.log(`[sync] ${board} 已切流到 D1，本次写入失败将中止发布`);
   }
 
   const version = opts.version ?? versionOf();
 
   try {
-    const client = createD1Client();
     // 上期名次从库里取，不依赖 JSON 的历史顺序
     const previous = await lastReleaseRanks(client, board);
 
@@ -92,7 +129,7 @@ export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
       pruned,
     };
   } catch (e) {
-    if (process.argv.includes("--strict-d1")) throw e;
+    if (strict) throw e;
     console.error(`[sync] ${board} 写入失败，JSON 链路继续：`, e);
     return { ok: false, version, error: String(e) };
   }

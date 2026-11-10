@@ -65,13 +65,19 @@ export async function collectRss(sources: RssSource[] = dailyConfig.rss): Promis
     const t0 = Date.now();
     try {
       // 不可达的源会拖慢整轮：只重试 1 次，超时压到 12s
-      const xml = await getText(src.url, { timeoutMs: 12_000, retries: 1 });
+      const xml = await getText(src.url, {
+        timeoutMs: 12_000,
+        retries: 1,
+        ...(src.userAgent ? { headers: { "user-agent": src.userAgent } } : {}),
+      });
       // 有些站点的 feed 地址会返回 HTML（404 页 / 反爬页），先确认根节点
       if (!/<rss\b|<feed\b|<rdf:RDF\b/i.test(xml)) {
         notes.push(`${src.name} 非 feed（返回了 HTML 或错误页）`);
         continue;
       }
-      const entries = parseFeed(xml);
+      const all = parseFeed(xml);
+      // 论文/社区源的日更量远大于媒体，先截断再过滤，避免把候选池挤满
+      const entries = src.maxItems ? all.slice(0, src.maxItems) : all;
       let kept = 0;
       let relevant = 0;
       for (const e of entries) {
@@ -93,7 +99,9 @@ export async function collectRss(sources: RssSource[] = dailyConfig.rss): Promis
         items.push(item);
         kept++;
       }
-      notes.push(`${src.name} ${kept}/${entries.length}（AI 相关 ${relevant}）`);
+      notes.push(
+        `${src.name} ${kept}/${all.length}${src.maxItems ? `（只看前 ${src.maxItems}）` : ""}（AI 相关 ${relevant}）`,
+      );
     } catch (e) {
       notes.push(`${src.name} 失败（${e instanceof Error ? e.message : String(e)}）`);
     }

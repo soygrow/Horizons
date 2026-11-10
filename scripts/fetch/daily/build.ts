@@ -29,6 +29,7 @@ function argValue(name: string): string | undefined {
 
 /** 未采用的原因：先给结构性否决，再给分数与配额，避免把「配额满」误读成「不重要」 */
 function dropReason(s: Scored): string {
+  if (!s.onTopic) return "与 AI 主题无关";
   if (s.evidence === "rumor") return "未证实，不发布";
   if (s.ev.items[0].repeat) return "旧闻，此前已出现过";
   if (s.score < 45) return `分数 ${s.score} < 45`;
@@ -93,7 +94,9 @@ function main(): void {
     }
   }
 
-  console.log(`\n采用 ${total} 条，未采用 ${allocation.dropped} 条（分数不足 / 今日重复出现）`);
+  console.log(
+    `\n采用 ${total} 条，未采用 ${allocation.dropped} 条（分数不足 / 今日重复 / 非 AI 内容 ${allocation.offTopic} 条）`,
+  );
   if (process.argv.includes("--review")) {
     const n = Number(argValue("--review") ?? 20) || 20;
     printDropped(scored, allocation, n);
@@ -122,8 +125,10 @@ function main(): void {
       }
     }
   }
-  const headlineCount = digest.modules.find((m) => m.key === "headline")?.items.length ?? 0;
-  if (headlineCount < 3) warnings.push(`头条只有 ${headlineCount} 条，可能当天信号不足`);
+  // 席位没凑满只提示，不拦发布：宁可某天少一条，也不放低准入线凑数
+  for (const s of allocation.shortfall) {
+    warnings.push(`${MODULE_NAME[s.key]}只凑到 ${s.got}/${s.want} 条，当天信号不足`);
+  }
   if (total < 10) warnings.push(`本期仅 ${total} 条，低于 10 条下限（不凑数，照实发）`);
   console.log(
     warnings.length === 0

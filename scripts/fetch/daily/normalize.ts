@@ -179,7 +179,22 @@ export function makeItem(input: {
 }): RawItem {
   const title = cleanTitle(input.title) || "(无标题)";
   const url = canonicalUrl(input.url);
-  const matched = matchKeywords(`${title} ${input.categoryText ?? ""}`);
+  /**
+   * 分类只看标题；GitHub 例外，因为它没有语义标题。
+   *
+   * 摘要里出现「model」「workflow」这类词太容易了 —— AWS 的
+   * 「How CrossnoKaye grounds physical AI with Bedrock AgentCore」是客户案例，
+   * 却因为正文提到 model 被归进 model_release，拿到了模型发布的分类权重；
+   * Simon Willison 的随笔「Yonkers Rises」也因摘要提到模型名被判成模型发布。
+   *
+   * 标题判不出来就归 other —— 退回摘要的代价是「凡是正文聊到模型都能蹭到
+   * 分类权重」，那等于没有分类。仓库名（nace-ai/kapitsa）本身不含语义，
+   * 只能靠 description + topics。
+   */
+  const matched =
+    input.source === "github"
+      ? matchKeywords(`${title} ${input.categoryText ?? ""}`)
+      : matchKeywords(title);
   return {
     id: `${input.source}:${input.sourceItemId}`,
     source: input.source,

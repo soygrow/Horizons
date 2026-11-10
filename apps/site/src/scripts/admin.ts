@@ -3,6 +3,7 @@
  * 渲染一律走 esc() 转义，避免把用户邮箱/昵称直接当 HTML 插进表格。
  */
 import { mountAdminBoards } from "./admin-boards";
+import { mountAdminDaily } from "./admin-daily";
 import { mountAdminGithub } from "./admin-github";
 import { mountAdminTools } from "./admin-tools";
 import { mountAdminTrends } from "./admin-trends";
@@ -232,6 +233,7 @@ const state = {
     | "trends"
     | "github"
     | "boards"
+    | "daily"
     | "fields",
   users: { page: 1, q: "", type: "all", loaded: false, data: null as Page<UserItem> | null },
   payments: {
@@ -774,6 +776,7 @@ document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((btn) =
     $("tab-trends").hidden = tab !== "trends";
     $("tab-github").hidden = tab !== "github";
     $("tab-boards").hidden = tab !== "boards";
+    $("tab-daily").hidden = tab !== "daily";
     $("tab-fields").hidden = tab !== "fields";
 
     if (tab === "users") void loadUsers();
@@ -785,6 +788,7 @@ document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((btn) =
     if (tab === "trends") mountAdminTrends();
     if (tab === "github") mountAdminGithub();
     if (tab === "boards") mountAdminBoards();
+    if (tab === "daily") mountAdminDaily();
     if (tab === "fields" && !fieldHealth) void loadFieldHealth();
   });
 });

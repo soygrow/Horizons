@@ -18,6 +18,7 @@ import type { Env } from "../env";
 import { base64UrlDecode, randomBytesBase64 } from "../lib/crypto";
 import { PAYWALL_BUTTONS, paywallButtonLabel } from "../lib/paywall";
 import { adminBoards } from "./admin-boards";
+import { adminDaily } from "./admin-daily";
 import { github as adminGithub } from "./admin-github";
 import { adminTools } from "./admin-tools";
 import { trends as adminTrends } from "./admin-trends";
@@ -327,6 +328,9 @@ admin.route("/github", adminGithub);
 
 /** 榜单版本与数据源开关：六个榜发布到 D1 之后的观察与回滚入口 */
 admin.route("/boards", adminBoards);
+
+// /daily 挂在登录中间件之后，自动受鉴权保护
+admin.route("/daily", adminDaily);
 
 admin.post("/logout", async (c) => {
   const token = getCookie(c, ADMIN_COOKIE);

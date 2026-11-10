@@ -98,6 +98,23 @@ export async function writeRepoJson(
   return res.ok;
 }
 
+export interface RepoEntry {
+  name: string;
+  path: string;
+  sha: string;
+  size: number;
+  type: string;
+}
+
+/** 列出目录；不存在时返回空数组（首期情报还没有目录，不该 500） */
+export async function listRepoDir(cfg: GhConfig, path: string): Promise<RepoEntry[]> {
+  const res = await ghFetch(cfg, `/repos/${cfg.repo}/contents/${path}?ref=main`);
+  if (res.status === 404) return [];
+  if (!res.ok) throw new Error(`github_list_${res.status}`);
+  const body = (await res.json()) as unknown;
+  return Array.isArray(body) ? (body as RepoEntry[]) : [];
+}
+
 export interface WorkflowRun {
   id: number;
   status: string;
