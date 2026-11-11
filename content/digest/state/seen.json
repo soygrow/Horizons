@@ -1518,5 +1518,393 @@
   "https://github.com/amontlabs/lcu": {
     "firstSeenAt": "2026-11-10T11:27:55.817Z",
     "date": "2026-11-10"
+  },
+  "https://evanxmerz.com/post/ai-usage-generates-a-fragile-codebase": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://openai.com/index/gilbert-tobin-sam-nickless": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://aws.amazon.com/blogs/machine-learning/introducing-kimi-k3-1-pro-on-amazon-bedrock": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://theverge.com/tech/1031446/microsoft-automatic-super-resolution-auto-sr-upscaling": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xt3hjd/i_built_a_zerodependency_streaming_markdown": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xt2mjk/xemaya_an_intel_arc_inference_engine_to_run": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://arstechnica.com/ai/2026/11/ring-cameras-go-mobile-as-amazon-debuts-ai-powered-security-drone-and-robot": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xt0ah5/what_tasks_have_you_moved_from_cloud_models_to": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xt059z/we_got_custom_inference_per_model_per_hardware": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://theverge.com/gadgets/1031284/oura-counsel-health-acquisition": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xszbe7/apple_has_new_mac_app_coming_to_make_running": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://arstechnica.com/security/2026/11/grok-build-coding-agent-leaks-oodles-of-confidential-info-some-belonging-to-spacexsi": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xsytlk/my_ai_is_lazier_than_me": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/openai-acquires-odessia-travel-startup-created-by-sonder-founder": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://microsoft.com/en-us/research/blog/lazare-veni-foras-reprogramming-dormant-neurons-to-backdoor-ai-agents": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/openai-anthropic-face-new-oversight-as-new-yorks-ai-safety-law-takes-effect": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://arstechnica.com/science/2026/11/what-happens-to-mathematics-when-ai-becames-an-oracle": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://the-decoder.com/openai-turns-chatgpt-into-a-business-directory-with-ai-agents-that-handle-customer-questions": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://simonwillison.net/2026/Nov/10/llm-gemini": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://latent.space/p/resend": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/all-7-anthropic-founders-will-each-cash-out-about-250m-in-ipo": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://the-decoder.com/anthropic-turns-claude-into-a-full-workspace-with-plugins-spreadsheets-whiteboards-and-soon-meeting-notes": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xswmb7/the_surprising_effectiveness_of_deleting_weights": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/oura-to-acquire-ai-native-primary-care-startup-counsel-health-for-625m": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://theverge.com/ai-artificial-intelligence/1031063/jensen-huang-ai-race-us-china-spy": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/psi-is-trying-to-make-a-business-out-of-ai-driven-scientific-discovery": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://arstechnica.com/gadgets/2026/11/november-pixel-drop-brings-gemini-intelligence-to-pixel-10-family": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://blog.google/products-and-platforms/platforms/android/gemini-intelligence-november-features-devices": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://latent.space/p/naiveai": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/openai-rolls-out-new-business-profiles-making-chatgpt-just-a-little-bit-more-like-google": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://the-decoder.com/nvidias-model-gr00t-2-watches-humans-on-video-then-imagines-itself-as-the-robot": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://the-decoder.com/gemini-4-carbon-arrives-just-in-time-to-feel-like-yesterdays-news-in-the-fastest-model-cycle-yet": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xsub9f/trending_on_huggingface2d_to_3d": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://aws.amazon.com/blogs/machine-learning/autonomous-treasury-agents-how-trovata-built-an-ai-native-solution-on-amazon-bedrock-and-agentcore": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://bbc.co.uk/news/articles/crpdgd723x2zo?at_medium=RSS&at_campaign=rss": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/anthropic-launches-claude-meetings-to-turn-workplace-discussions-into-plans-and-tasks": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xsswud/amd_epyc_9686f_linux_benchmarks_96_zen_6_cores_at": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xssj9q/i_trained_a_348mactive_moe_on_11b_tokens_it": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://the-decoder.com/google-deepminds-gemini-robotics-2-5-scores-96-percent-sorting-metal-parts-in-a-mercedes-benz-assembly-pilot": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/nvidia-ceo-jensen-huangs-affair-with-alleged-chinese-spy-a-timeline": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://engineering.fb.com/2026/11/10/ml-applications/your-algorithm-giving-people-more-ways-to-personalize-facebook-recommendations": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://engineering.fb.com/2026/11/10/open-source/tlx-a-hardware-native-gpu-compiler-for-production-ml": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xsrg0l/speakleashbielik11bv31instruct_hugging_face": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xsqv86/tts_bench_91_open_tts_models_and_28_paid_tts_apis": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://deepmind.google/blog/gemini-4-carbon-is-now-available": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://blogs.nvidia.com/blog/open-source-openshell-infrastructure": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/google-broadens-its-ai-hardware-portfolio-with-two-new-specialized-chips": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/metas-ai-agent-muse-lands-on-apple-watch-and-wear-os": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xsp3xt/minimaxaiminimaxh3image_hugging_face": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://arstechnica.com/google/2026/11/deepmind-reveals-gemini-robotics-2-5-and-open-safety-benchmark-asimov-jailbreak": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xsorsx/we_tested_qwen36_27b_qwen38_27b_and_glm53_flash": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xsocrj/my_08b_finetune_proofreads_spanish_at_138_ms_per": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xso32l/adventistsaisophonrealtimev1_hugging_face": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xso1ie/minimax_h3image_released_an_openweight_image": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://the-decoder.com/anthropics-fable-5-2-completes-41-percent-of-real-freelance-jobs-up-from-2-5-percent-a-year-ago": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/adobe-adds-more-ai-to-its-products-and-launches-an-mcp": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/anthropic-sets-ipo-price-range-of-70-to-78-per-share-to-reach-an-implied-valuation-of-1-404-trillion": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/after-challenging-googles-android-with-cyanogen-its-co-founder-takes-aim-at-windows-for-ai-era": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/spotifys-ai-dj-gets-new-voices-personalities-and-an-option-for-less-chatter": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://blog.google/company-news/inside-google/company-announcements/adobe-google-partnership-integration": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://the-decoder.com/eight-countries-and-top-ai-labs-agree-to-shutdown-mechanisms-in-new-paris-declaration": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://techcrunch.com/2026/11/10/cyberattacks-threaten-to-make-open-source-ai-a-little-less-open-hugging-face-exec-warns": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/gemini-for-healthcare": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xsljn6/nobody_wondering_why_the_us_takes_nvidia_ceo": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://arstechnica.com/gadgets/2026/11/ukraines-fiber-optic-drones-get-squeezed-by-ai-data-center-demand": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://the-decoder.com/anthropic-kicks-off-ipo-roadshow-offering-shares-at-70-to-78-and-targeting-a-trillion-dollar-valuation": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xsl8w7/strata_after_heavy_optimizations": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xsl4qt/paper_exploring_weightspace_programming": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://openai.com/index/helping-caregivers-use-ai-in-everyday-life": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xskr0m/xiangjuntangjovox64_hugging_face_imageto3d": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xski9d/decision_model_to_edit_llm_weight_directly_no": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xsjfwo/fable_52_not_only_has_guardrails_against_ai": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://bbc.co.uk/news/articles/cmp3g37l566po?at_medium=RSS&at_campaign=rss": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://huggingface.co/blog/hub-gcp-marketplace": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://huggingface.co/blog/decision": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xs5pkl/is_artificialanalysis_biased_against_open_weight": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://reddit.com/r/LocalLLaMA/comments/1xs3y17/got_another_good_reminder_why_local_matters_today": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://claude.com/resources/articles/sheets-whiteboards-data": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://9to5mac.com/2026/11/10/apple-has-new-mac-app-coming-to-make-running-local-ai-models-easy": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://wsj.com/finance/stocks/anthropic-to-seek-1-3-trillion-valuation-in-ipo-8337b669": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://babuschk.in/posts/2026-01-25-life-on-claude-nine.html": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://anthropic.com/news/roadshow-launch": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://neuracryption.com/research": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://openai.com/index/ai-effect-on-freelance-work": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://activtrak.com/news/productivity-lab-ai-users-longer-workdays": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://github.com/ai-dynamo/dynamo": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://stoppels.ch/2026/10/03/wake-me-up-when-ai-can.html": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://github.com/expo/exact": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://openai.com/index/introducing-businesses-chatgpt": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://github.com/slow-stack/mneme": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://github.com/kydlikebtc/awesome-jev": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://github.com/basicmachines-co/basic-memory": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://github.com/HarnessRouter/harnessrouter": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://github.com/EgoAlpha/prompt-in-context-learning": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
+  },
+  "https://github.com/gokayfem/ComfyUI-fal-API": {
+    "firstSeenAt": "2026-11-11T01:10:21.507Z",
+    "date": "2026-11-11"
   }
 }
