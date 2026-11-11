@@ -1,0 +1,57 @@
+name: Publish Models
+
+# 模型榜的数据源是 content/models.json，由 `pnpm collect` 采集写入。
+# 这里只做一件事：把仓库里当前这份 JSON 同步进 D1。
+#
+# 日常用法：采集完提交 JSON 后，点一次 Run workflow（或从后台「模型榜」页触发）。
+# 不配 D1 凭据也能跑，会跳过写入并打印告警。
+#
+# 需要的仓库 Secrets：
+#   CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID / D1_DATABASE_ID
+
+on:
+  workflow_dispatch:
+    inputs:
+      strict_d1:
+        description: "D1 写入失败时让本次任务失败（切流后打开）"
+        type: boolean
+        default: false
+
+concurrency:
+  group: publish-models
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 同步模型榜到 D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          if [ "${{ inputs.strict_d1 }}" = "true" ]; then
+            pnpm tsx scripts/admin/publish-models.ts --strict-d1
+          else
+            pnpm tsx scripts/admin/publish-models.ts
+          fi

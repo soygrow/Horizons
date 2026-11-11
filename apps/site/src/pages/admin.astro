@@ -138,6 +138,8 @@ const meta = {
           <button type="button" data-tab="tools" class="admin-tab">工具榜</button>
           <button type="button" data-tab="trends" class="admin-tab">趋势榜</button>
           <button type="button" data-tab="github" class="admin-tab">GitHub 榜</button>
+          <button type="button" data-tab="models" class="admin-tab">模型榜</button>
+          <button type="button" data-tab="opps" class="admin-tab">机会榜</button>
           <button type="button" data-tab="boards" class="admin-tab">榜单版本</button>
           <button type="button" data-tab="daily" class="admin-tab">每日情报</button>
           <button type="button" data-tab="fields" class="admin-tab">数据字段</button>
@@ -1014,6 +1016,158 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
             </p>
           </article>
         </section>
+        <!-- 模型榜：采集完整榜发布，没有候选池，只有线上明细 + 触发同步 -->
+        <section id="tab-models" hidden class="space-y-4">
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">线上模型</div>
+              <div id="mdl-kpi-total" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="mdl-kpi-total-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">最近更新</div>
+              <div id="mdl-kpi-updated" class="mt-2 text-2xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="mdl-kpi-updated-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">当前版本</div>
+              <div id="mdl-kpi-version" class="mt-2 truncate font-mono text-sm font-medium">—</div>
+              <div id="mdl-kpi-version-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+          </div>
+
+          <div class="rounded-2xl border border-border bg-surface p-5">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 class="text-sm font-semibold">同步到线上</h2>
+                <p class="mt-1 text-xs text-ink-muted">
+                  把仓库里的 <code class="font-mono">content/models.json</code> 写进 D1。模型榜是整榜发布，没有候选池，采集完成后跑一次即可。
+                </p>
+              </div>
+              <div class="flex shrink-0 gap-2">
+                <button
+                  id="mdl-refresh"
+                  type="button"
+                  class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
+                >
+                  刷新
+                </button>
+                <button
+                  id="mdl-publish-btn"
+                  type="button"
+                  class="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  同步到线上
+                </button>
+              </div>
+            </div>
+            <div id="mdl-status" class="mt-3 text-xs text-ink-muted"></div>
+          </div>
+
+          <div class="overflow-hidden rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
+              <div>
+                <h2 class="text-sm font-semibold">线上模型</h2>
+                <p class="mt-1 text-xs text-ink-muted">读的是当前生效版本，与前台榜单一致</p>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[760px] text-left text-sm">
+                <thead class="bg-surface-2/60 text-[11px] uppercase tracking-wide text-ink-muted">
+                  <tr>
+                    <th class="px-3 py-2 text-right font-medium">#</th>
+                    <th class="px-3 py-2 font-medium">模型</th>
+                    <th class="px-3 py-2 font-medium">厂商</th>
+                    <th class="px-3 py-2 text-right font-medium">能力分</th>
+                    <th class="px-3 py-2 text-right font-medium">综合分</th>
+                    <th class="px-3 py-2 font-medium">标签</th>
+                  </tr>
+                </thead>
+                <tbody id="mdl-list"></tbody>
+              </table>
+            </div>
+            <div id="mdl-pager" class="flex items-center justify-between gap-3 border-t border-border px-5 py-3 text-xs text-ink-muted"></div>
+          </div>
+        </section>
+
+        <!-- 机会榜：人工策展，改完文件点一次同步 -->
+        <section id="tab-opps" hidden class="space-y-4">
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">线上机会</div>
+              <div id="opp-kpi-total" class="mt-2 text-3xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="opp-kpi-total-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">最近更新</div>
+              <div id="opp-kpi-updated" class="mt-2 text-2xl font-semibold tabular-nums tracking-tight">—</div>
+              <div id="opp-kpi-updated-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+
+            <article class="rounded-2xl border border-border bg-surface p-5">
+              <div class="text-xs font-medium text-ink-muted">当前版本</div>
+              <div id="opp-kpi-version" class="mt-2 truncate font-mono text-sm font-medium">—</div>
+              <div id="opp-kpi-version-sub" class="mt-2 text-xs text-ink-secondary">—</div>
+            </article>
+          </div>
+
+          <div class="rounded-2xl border border-border bg-surface p-5">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 class="text-sm font-semibold">同步到线上</h2>
+                <p class="mt-1 text-xs text-ink-muted">
+                  把仓库里的 <code class="font-mono">content/opportunities.json</code> 写进 D1。机会是人工策展的，改完文件点这里即可。
+                </p>
+              </div>
+              <div class="flex shrink-0 gap-2">
+                <button
+                  id="opp-refresh"
+                  type="button"
+                  class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
+                >
+                  刷新
+                </button>
+                <button
+                  id="opp-publish-btn"
+                  type="button"
+                  class="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  同步到线上
+                </button>
+              </div>
+            </div>
+            <div id="opp-status" class="mt-3 text-xs text-ink-muted"></div>
+          </div>
+
+          <div class="overflow-hidden rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
+              <div>
+                <h2 class="text-sm font-semibold">线上机会</h2>
+                <p class="mt-1 text-xs text-ink-muted">读的是当前生效版本，与前台榜单一致</p>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[760px] text-left text-sm">
+                <thead class="bg-surface-2/60 text-[11px] uppercase tracking-wide text-ink-muted">
+                  <tr>
+                    <th class="px-3 py-2 text-right font-medium">#</th>
+                    <th class="px-3 py-2 font-medium">标题</th>
+                    <th class="px-3 py-2 font-medium">批次</th>
+                    <th class="px-3 py-2 text-right font-medium">需求分</th>
+                    <th class="px-3 py-2 text-right font-medium">综合分</th>
+                    <th class="px-3 py-2 font-medium">受众</th>
+                  </tr>
+                </thead>
+                <tbody id="opp-list"></tbody>
+              </table>
+            </div>
+            <div id="opp-pager" class="flex items-center justify-between gap-3 border-t border-border px-5 py-3 text-xs text-ink-muted"></div>
+          </div>
+        </section>
+
       </main>
     </div>
 

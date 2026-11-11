@@ -20,6 +20,7 @@ import { PAYWALL_BUTTONS, paywallButtonLabel } from "../lib/paywall";
 import { adminBoards } from "./admin-boards";
 import { adminDaily } from "./admin-daily";
 import { github as adminGithub } from "./admin-github";
+import { models as adminModels, opps as adminOpps } from "./admin-simple-boards";
 import { adminTools } from "./admin-tools";
 import { trends as adminTrends } from "./admin-trends";
 
@@ -325,6 +326,10 @@ admin.route("/tools", adminTools);
 /** 趋势榜后台：采集 / 审核 / 发布，发布前给位次变化预览 */
 admin.route("/trends", adminTrends);
 admin.route("/github", adminGithub);
+
+/** 模型榜 / 机会榜：没有候选池，只有线上明细 + 触发同步 */
+admin.route("/models", adminModels);
+admin.route("/opps", adminOpps);
 
 /** 榜单版本与数据源开关：六个榜发布到 D1 之后的观察与回滚入口 */
 admin.route("/boards", adminBoards);

@@ -5,6 +5,7 @@
 import { mountAdminBoards } from "./admin-boards";
 import { mountAdminDaily } from "./admin-daily";
 import { mountAdminGithub } from "./admin-github";
+import { mountAdminModels, mountAdminOpps } from "./admin-simple-boards";
 import { mountAdminTools } from "./admin-tools";
 import { mountAdminTrends } from "./admin-trends";
 
@@ -775,6 +776,8 @@ document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((btn) =
     $("tab-tools").hidden = tab !== "tools";
     $("tab-trends").hidden = tab !== "trends";
     $("tab-github").hidden = tab !== "github";
+    $("tab-models").hidden = tab !== "models";
+    $("tab-opps").hidden = tab !== "opps";
     $("tab-boards").hidden = tab !== "boards";
     $("tab-daily").hidden = tab !== "daily";
     $("tab-fields").hidden = tab !== "fields";
@@ -787,6 +790,8 @@ document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((btn) =
     if (tab === "tools") mountAdminTools();
     if (tab === "trends") mountAdminTrends();
     if (tab === "github") mountAdminGithub();
+    if (tab === "models") mountAdminModels();
+    if (tab === "opps") mountAdminOpps();
     if (tab === "boards") mountAdminBoards();
     if (tab === "daily") mountAdminDaily();
     if (tab === "fields" && !fieldHealth) void loadFieldHealth();
