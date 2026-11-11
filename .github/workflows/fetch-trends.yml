@@ -71,6 +71,10 @@ jobs:
           TRENDS_DELAY_MIN: "5000"
           TRENDS_DELAY_MAX: "13000"
           LLM_TIMEOUT_MS: "120000"
+          # 候选池落 D1（后台只读库）；失败只告警，不阻塞候选池提交
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: |
           pnpm exec tsx scripts/fetch/trends/run.ts \
             --staging \

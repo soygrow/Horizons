@@ -6,7 +6,7 @@
  *   2. 读候选池，逐词查看数据、决定收还是拒；
  *   3. 点「发布」前先算一遍位次变化，让人知道会挤掉谁、谁要往下掉。
  *
- * 候选池里自带一份「榜单计分快照」（staging.board），所以预览不用拉 5MB 的 trends.json。
+ * 数据全部来自 D1：候选池读 board_items，位次快照读 board_reports:trends-meta。
  * 鉴权与 CSRF 由 admin.ts 的 `admin.use("*")` 统一兜住。
  */
 import { Hono, type Context } from "hono";
@@ -32,15 +32,17 @@ import {
   ghConfig,
   mapStatus,
   missingSecrets,
-  readRepoJson,
-  writeRepoJson,
   type WorkflowRun,
 } from "../lib/github";
+import { readBoardStats, type BoardStats } from "../lib/board-stats";
+import { listWorkspace, setItemsStatus } from "../lib/board-items";
+import { readReport } from "../lib/reports";
 
 const trends = new Hono<{ Bindings: Env }>();
 type Ctx = Context<{ Bindings: Env }>;
 
-const STAGING_PATH = "content/trends-staging.json";
+/** 采集期快照（当前榜位次 + 上次采集/发布摘要）在 board_reports 里的 key */
+const META_KEY = "trends-meta";
 const FETCH_WORKFLOW = "fetch-trends.yml";
 const ENRICH_WORKFLOW = "enrich-trends.yml";
 const REVERT_WORKFLOW = "revert-trends.yml";
@@ -237,6 +239,42 @@ function growth7Of(t: AITrend): number | null {
   return Math.round(((recentMean - base) / base) * 1000) / 10;
 }
 
+/** board_reports:trends-meta 的结构（采集/发布脚本写入） */
+type TrendsMeta = {
+  updatedAt?: string;
+  runAt?: string;
+  board?: NonNullable<StagingFile["board"]>;
+  lastRun?: NonNullable<StagingFile["lastRun"]>;
+  lastPublish?: NonNullable<StagingFile["lastPublish"]>;
+};
+
+/**
+ * 候选池与发布期快照都来自 D1：
+ *   - 候选 / 拒绝名单 → board_items
+ *   - 当前榜位次 / 上次采集 / 上次发布 → board_reports:trends-meta
+ * 位次快照是采集时用完整 series 算出来的，库里没有可还原的原料，
+ * 所以脚本随文件一起存一份，后台只读不改。
+ */
+async function loadStaging(env: Env): Promise<StagingFile | null> {
+  const [ws, meta] = await Promise.all([
+    listWorkspace<AITrend>(env.DB, "trends"),
+    readReport<TrendsMeta>(env.DB, META_KEY),
+  ]);
+
+  if (!meta && ws.items.length === 0 && ws.rejected.length === 0) return null;
+
+  const m = meta?.data;
+  return {
+    updatedAt: ws.updatedAt ?? m?.updatedAt ?? new Date(0).toISOString(),
+    runAt: m?.runAt ?? ws.updatedAt ?? new Date(0).toISOString(),
+    items: ws.items,
+    rejected: ws.rejected,
+    ...(m?.board ? { board: m.board } : {}),
+    ...(m?.lastRun ? { lastRun: m.lastRun } : {}),
+    ...(m?.lastPublish ? { lastPublish: m.lastPublish } : {}),
+  };
+}
+
 function buildView(file: StagingFile): {
   candidates: CandidateView[];
   report: ReturnType<typeof diffRankRows>;
@@ -327,36 +365,44 @@ function buildView(file: StagingFile): {
 
 /** 概览：候选数、上次采集/发布结果、最近任务 */
 trends.get("/overview", async (c) => {
-  const cfg = ghConfig(c.env);
+  // configured 只表示「能派发流水线」，数据本身不需要 GitHub 凭据
+  const configured = Boolean(ghConfig(c.env));
   const missing = missingSecrets(c.env);
   const jobs = await listJobs(c.env, 5);
-  if (!cfg) return c.json({ configured: false, missing, staging: null, jobs });
 
   try {
-    const file = await readRepoJson<StagingFile>(cfg, STAGING_PATH);
+    const [file, boardStats] = await Promise.all([
+      loadStaging(c.env),
+      // 在榜数字查库；失败只影响这一个数字，不能拖垮整页
+      readBoardStats(c.env.DB).catch(() => ({}) as BoardStats),
+    ]);
+    const board = boardStats.trends ?? null;
     if (!file) {
-      return c.json({ configured: true, missing, staging: null, jobs, empty: true });
+      return c.json({ configured, missing, staging: null, jobs, empty: true, board });
     }
-    const { candidates, report, stats, quality } = buildView(file.data);
+    const { candidates, report, stats, quality } = buildView(file);
     return c.json({
-      configured: true,
+      configured,
       missing,
       jobs,
+      board,
       boardLimit: MAX_BOARD_SIZE,
       staging: {
-        updatedAt: file.data.updatedAt,
-        runAt: file.data.runAt,
+        updatedAt: file.updatedAt,
+        runAt: file.runAt,
         candidates: candidates.length,
         // 三段：可发布 / 等富化 / 数据不足被挡
         ready: stats.ready,
         pending: stats.pending,
         blocked: stats.blocked,
         quality,
-        rejected: file.data.rejected.length,
-        boardRows: file.data.board?.rows.length ?? 0,
-        boardUpdatedAt: file.data.board?.updatedAt ?? null,
-        lastRun: file.data.lastRun ?? null,
-        lastPublish: file.data.lastPublish ?? null,
+        rejected: file.rejected.length,
+        // 候选池的 board 快照在发布后会被清掉，此时回退到上次发布的在榜数，
+        // 再不行才用正式榜统计快照 —— 保证后台不显示 0
+        boardRows: file.board?.rows.length ?? file.lastPublish?.boardAfter ?? board?.total ?? 0,
+        boardUpdatedAt: file.board?.updatedAt ?? file.lastPublish?.at ?? board?.updatedAt ?? null,
+        lastRun: file.lastRun ?? null,
+        lastPublish: file.lastPublish ?? null,
         // 概览只给数字，明细走 /staging
         entered: report.entered.length,
         significant: report.significant.length,
@@ -364,7 +410,7 @@ trends.get("/overview", async (c) => {
     });
   } catch (e) {
     return c.json({
-      configured: true,
+      configured,
       missing,
       staging: null,
       jobs,
@@ -375,18 +421,18 @@ trends.get("/overview", async (c) => {
 
 /** 候选池明细：每词分数、是否在榜、预计名次 */
 trends.get("/staging", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 400);
+  const staging = await loadStaging(c.env);
+  if (!staging) {
+    // 库里没有数据就是没采集过，直接给空态，不再要求 GitHub 凭据
+    return c.json({ empty: true, candidates: [], report: null });
+  }
 
-  const file = await readRepoJson<StagingFile>(cfg, STAGING_PATH);
-  if (!file) return c.json({ empty: true, candidates: [], report: null });
-
-  const { candidates, report, stats, quality } = buildView(file.data);
+  const { candidates, report, stats, quality } = buildView(staging);
   return c.json({
-    updatedAt: file.data.updatedAt,
-    runAt: file.data.runAt,
-    lastRun: file.data.lastRun ?? null,
-    lastPublish: file.data.lastPublish ?? null,
+    updatedAt: staging.updatedAt,
+    runAt: staging.runAt,
+    lastRun: staging.lastRun ?? null,
+    lastPublish: staging.lastPublish ?? null,
     candidates,
     stats,
     quality,
@@ -405,57 +451,33 @@ trends.get("/staging", async (c) => {
 
 /** 单个候选词的全部数据 */
 trends.get("/staging/:slug", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json({ error: "github_not_configured" }, 400);
-
   const slug = c.req.param("slug");
-  const file = await readRepoJson<StagingFile>(cfg, STAGING_PATH);
-  if (!file) return c.json({ error: "staging_empty" }, 404);
+  const staging = await loadStaging(c.env);
+  if (!staging) return c.json({ error: "staging_empty" }, 404);
 
-  const item = file.data.items.find((t) => t.slug === slug);
+  const item = staging.items.find((t) => t.slug === slug);
   if (!item) return c.json({ error: "not_found" }, 404);
 
-  const { candidates } = buildView(file.data);
+  const { candidates } = buildView(staging);
   const view = candidates.find((x) => x.slug === slug) ?? null;
-  const boardRow = file.data.board?.rows.find((r) => r.slug === slug) ?? null;
+  const boardRow = staging.board?.rows.find((r) => r.slug === slug) ?? null;
 
   return c.json({ item, view, boardRow });
 });
 
-/** 收录 / 拒绝（writeRepoJson 需要 sha，所以整份文件读出来改再写回） */
+/** 收录 / 拒绝：只改 board_items.status，采集脚本读库里的黑名单 */
 trends.post("/staging/:slug/reject", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json({ error: "github_not_configured" }, 400);
-
   const slug = c.req.param("slug");
   const body = await c.req.json<{ rejected?: boolean }>().catch(() => ({}) as { rejected?: boolean });
   const wantReject = body.rejected !== false;
 
-  const file = await readRepoJson<StagingFile>(cfg, STAGING_PATH);
-  if (!file) return c.json({ error: "staging_empty" }, 404);
+  // 库里的主键是 keyword（黑名单口径），路由参数是 slug，先换回来
+  const ws = await listWorkspace<AITrend>(c.env.DB, "trends");
+  const key = (ws.items.find((t) => t.slug === slug)?.keyword ?? slug).toLowerCase();
+  const ok = await setItemsStatus(c.env.DB, "trends", [key], wantReject ? "rejected" : "candidate");
+  if (!ok) return c.json({ error: "not_found" }, 404);
 
-  const item = file.data.items.find((t) => t.slug === slug);
-  const boardRow = file.data.board?.rows.find((r) => r.slug === slug);
-  const keyword = item?.keyword ?? boardRow?.keyword;
-  if (!keyword) return c.json({ error: "not_found" }, 404);
-
-  const rejected = new Set(file.data.rejected);
-  const key = keyword.toLowerCase();
-  const existing = [...rejected].find((k) => k.toLowerCase() === key);
-
-  if (wantReject) rejected.add(keyword);
-  else if (existing) rejected.delete(existing);
-
-  const ok = await writeRepoJson(
-    cfg,
-    STAGING_PATH,
-    { ...file.data, rejected: [...rejected] },
-    file.sha,
-    `chore(trends): ${wantReject ? "拒绝" : "恢复"}候选词 ${keyword}`,
-  );
-  if (!ok) return c.json({ error: "write_failed" }, 502);
-
-  return c.json({ ok: true, keyword, rejected: wantReject });
+  return c.json({ ok: true, slug, rejected: wantReject });
 });
 
 /** 发布预览：谁进榜、谁掉名次。所有变动都按「显著 / 仅顺延」分好组 */
@@ -463,15 +485,15 @@ trends.get("/publish/preview", async (c) => {
   const cfg = ghConfig(c.env);
   if (!cfg) return c.json({ error: "github_not_configured" }, 400);
 
-  const file = await readRepoJson<StagingFile>(cfg, STAGING_PATH);
+  const file = await loadStaging(c.env);
   if (!file) return c.json({ empty: true, preview: null });
 
-  const { candidates, report, trimmed } = buildView(file.data);
+  const { candidates, report, trimmed } = buildView(file);
   const active = candidates.filter((x) => !x.rejected);
 
   return c.json({
     preview: {
-      updatedAt: file.data.updatedAt,
+      updatedAt: file.updatedAt,
       boardLimit: MAX_BOARD_SIZE,
       trimmed,
       incoming: active.length,
@@ -489,7 +511,7 @@ trends.get("/publish/preview", async (c) => {
       named: report.significant.slice(0, 60),
       candidates: active,
       /** 发布后候选池会被清空，这里带上一次发布的记录，方便回答「刚才动了谁」 */
-      lastPublish: file.data.lastPublish ?? null,
+      lastPublish: file.lastPublish ?? null,
     },
   });
 });
@@ -537,15 +559,15 @@ trends.post("/enrich", async (c) => {
     .json<{ slugs?: unknown }>()
     .catch(() => ({}) as { slugs?: unknown });
 
-  const file = await readRepoJson<StagingFile>(cfg, STAGING_PATH);
+  const file = await loadStaging(c.env);
   if (!file) return c.json({ error: "staging_empty" }, 400);
 
-  const rejected = new Set(file.data.rejected.map((k) => k.toLowerCase()));
+  const rejected = new Set(file.rejected.map((k) => k.toLowerCase()));
   // 在榜词也要留有富化入口：它进候选池时没有 enrichStatus（未勾选=不刷新内容），
   // 但用户想更新内容时必须能点。是否在榜以采集时写下的 board 快照为准。
-  const inBoard = new Set((file.data.board?.rows ?? []).map((r) => r.keyword.toLowerCase()));
+  const inBoard = new Set((file.board?.rows ?? []).map((r) => r.keyword.toLowerCase()));
   const eligible = new Map(
-    file.data.items
+    file.items
       .filter((t) => {
         if (rejected.has(t.keyword.toLowerCase()) || !hasEnoughTrendData(t)) return false;
         return Boolean(t.enrichStatus) || inBoard.has(t.keyword.toLowerCase());
@@ -554,7 +576,7 @@ trends.post("/enrich", async (c) => {
   );
   // 不传 slugs（脚本直跑）时只补未富化的词：在榜刷新必须显式勾选，
   // 否则一次「全部富化」就把整个榜单重刷一遍
-  const pendingOnly = new Set(file.data.items.filter((t) => t.enrichStatus).map((t) => t.slug));
+  const pendingOnly = new Set(file.items.filter((t) => t.enrichStatus).map((t) => t.slug));
 
   const requested = Array.isArray(body.slugs)
     ? body.slugs.filter((s): s is string => typeof s === "string")
@@ -604,12 +626,10 @@ trends.post("/revert", async (c) => {
     return c.json({ error: "slugs_required", detail: "回滚必须明确指定词，不做整池回滚" }, 400);
   }
 
-  const file = await readRepoJson<StagingFile>(cfg, STAGING_PATH);
+  const file = await loadStaging(c.env);
   if (!file) return c.json({ error: "staging_empty" }, 400);
 
-  const withSnapshot = new Set(
-    file.data.items.filter((t) => t.previousSnapshot).map((t) => t.slug),
-  );
+  const withSnapshot = new Set(file.items.filter((t) => t.previousSnapshot).map((t) => t.slug));
   const slugs = body.slugs
     .filter((s): s is string => typeof s === "string")
     // slug 只允许小写字母数字与连字符：它会拼进 workflow input
@@ -642,18 +662,18 @@ trends.post("/publish", async (c) => {
   const cfg = ghConfig(c.env);
   if (!cfg) return c.json({ error: "github_not_configured" }, 400);
 
-  const file = await readRepoJson<StagingFile>(cfg, STAGING_PATH);
+  const file = await loadStaging(c.env);
   if (!file) return c.json({ error: "staging_empty" }, 400);
 
-  const rejected = new Set(file.data.rejected.map((k) => k.toLowerCase()));
+  const rejected = new Set(file.rejected.map((k) => k.toLowerCase()));
   // 未富化的词不能发布：内容字段还是占位，发上去就是空详情页
-  const pending = file.data.items.filter(
+  const pending = file.items.filter(
     (t) => !rejected.has(t.keyword.toLowerCase()) && !t.enrichStatus,
   );
-  const skipped = file.data.items.filter(
+  const skipped = file.items.filter(
     (t) => !rejected.has(t.keyword.toLowerCase()) && Boolean(t.enrichStatus),
   ).length;
-  if (pending.length === 0 && file.data.rejected.length === 0) {
+  if (pending.length === 0 && file.rejected.length === 0) {
     return c.json(
       { error: "nothing_to_publish", detail: skipped > 0 ? `${skipped} 个候选还没富化` : "" },
       400,

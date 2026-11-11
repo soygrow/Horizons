@@ -72,6 +72,10 @@ jobs:
         env:
           PH_TOKEN: ${{ secrets.PH_TOKEN }}
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          # 候选池落 D1（后台只读库）；失败只告警，不阻塞产物提交
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: |
           xvfb-run -a pnpm tsx scripts/admin/fetch-staging.ts \
             --count "${{ inputs.count }}" \
@@ -80,6 +84,11 @@ jobs:
             ${{ inputs.enrich && '--enrich' || '--no-enrich' }}
 
       - name: 刷新概览快照
+        env:
+          # 统计快照写库，后台概览不再读仓库文件
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: pnpm tsx scripts/admin/tool-stats.ts
 
       - name: 提交待发布队列

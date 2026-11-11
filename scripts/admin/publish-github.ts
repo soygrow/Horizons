@@ -20,11 +20,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { computeProductScore, diffRepoRanks, toRepoRankRow } from "@horizons/shared";
-import type { GitHubRepo, RepoRankRow, RepoStagingFile } from "@horizons/shared";
+import type { GitHubRepo, RepoRankRow, RepoStagingFile, StagingCandidate } from "@horizons/shared";
 import { config } from "../fetch/config"; // 顺带加载 .env.local
 import { RANKING_RULE_VERSION } from "../fetch/github-ranking-rules";
+import { clearCandidates, listCandidates, syncCandidates } from "./board-items";
 import { syncBoardToD1 } from "./board-sync";
 import type { PublishRow } from "./publish-board";
+import { saveReport } from "./reports";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const GITHUB_PATH = path.join(ROOT, "content/github.json");
@@ -134,6 +136,16 @@ async function main(): Promise<void> {
     repos: GitHubRepo[];
   };
   const staging = JSON.parse(fs.readFileSync(STAGING_PATH, "utf-8")) as RepoStagingFile;
+
+  /* 后台的审核只写 D1：候选与拒绝名单以库为准，库里空了才回落到文件 */
+  const dbItems = await listCandidates<StagingCandidate>("github");
+  if (dbItems.length > 0) {
+    staging.candidates = dbItems
+      .filter((r) => r.status !== "rejected" && r.card)
+      .map((r) => r.card as StagingCandidate);
+    const dbRejected = dbItems.filter((r) => r.status === "rejected").map((r) => r.itemKey);
+    staging.rejected = [...new Set([...(staging.rejected ?? []), ...dbRejected])];
+  }
 
   const beforeRepos = board.repos ?? [];
   const target = staging.target || 2000;
@@ -256,6 +268,34 @@ async function main(): Promise<void> {
     };
     fs.writeFileSync(STAGING_PATH, JSON.stringify(nextStaging, null, 2) + "\n", "utf-8");
     console.log(`[publish] 候选池已清空，发布摘要已记录`);
+
+    /* 后台只读库：发布后的榜快照与摘要同步一份 */
+    await saveReport(
+      "github-meta",
+      {
+        updatedAt: nextStaging.updatedAt,
+        ruleVersion: nextStaging.ruleVersion,
+        scoreModel: nextStaging.scoreModel,
+        target: nextStaging.target,
+        board: nextStaging.board,
+        lastRun: nextStaging.lastRun ?? null,
+        lastPublish: nextStaging.lastPublish ?? null,
+        preview: null,
+      },
+      "publish-github",
+    );
+
+    /* 库里同步清空，只保留拒绝名单 —— 后台刷新后不该再看到已发布的候选 */
+    await clearCandidates("github");
+    const n = await syncCandidates(
+      "github",
+      (nextStaging.rejected ?? []).map((key) => ({
+        itemKey: key,
+        name: key,
+        status: "rejected" as const,
+      })),
+    );
+    if (n > 0) console.log(`[publish] D1 候选池已清空，保留拒绝名单 ${n} 条`);
   } else {
     console.log("\n[publish] --dry：未写入文件");
   }

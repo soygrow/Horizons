@@ -55,6 +55,10 @@ jobs:
       - name: 重判已上榜条目
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          # 审计报告与统计快照写库（后台只读库）
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: |
           ARGS=""
           if [ "${{ inputs.traffic }}" = "1" ]; then ARGS="$ARGS --traffic"; fi

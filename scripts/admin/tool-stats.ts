@@ -13,6 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { tierOf, visitsOf } from "@horizons/shared";
 import type { AITool, ToolTier } from "@horizons/shared";
+import { saveReport } from "./reports";
 import type { StagingItem } from "./verdict";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
@@ -95,7 +96,7 @@ function readJson<T>(file: string, fallback: T): T {
   }
 }
 
-export function writeToolStats(): ToolStats {
+export async function writeToolStats(): Promise<ToolStats> {
   const tools = readJson<AITool[]>(TOOLS_PATH, []);
   const staging = readJson<{ items?: StagingItem[]; rejected?: string[] }>(STAGING_PATH, {});
   const stats = computeToolStats(tools, staging.items ?? [], staging.rejected ?? []);
@@ -103,6 +104,9 @@ export function writeToolStats(): ToolStats {
   const tmp = `${STATS_PATH}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify(stats, null, 2) + "\n", "utf-8");
   fs.renameSync(tmp, STATS_PATH);
+
+  /* 后台只读 D1：文件照写，同一份快照再落一次库 */
+  await saveReport("tools-stats", stats, "tool-stats");
   return stats;
 }
 
@@ -117,7 +121,13 @@ export function statsLine(stats: ToolStats): string {
 
 // 直接执行时刷新快照；被 publish-tools.ts import 时不自动跑
 if (process.argv[1]?.endsWith("tool-stats.ts")) {
-  const stats = writeToolStats();
-  console.log(`[stats] ${statsLine(stats)}`);
-  console.log(`[stats] 已写入 content/tools-stats.json`);
+  writeToolStats()
+    .then((stats) => {
+      console.log(`[stats] ${statsLine(stats)}`);
+      console.log(`[stats] 已写入 content/tools-stats.json`);
+    })
+    .catch((e: unknown) => {
+      console.error("[stats] 失败：", e);
+      process.exitCode = 1;
+    });
 }

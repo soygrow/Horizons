@@ -47,6 +47,10 @@ jobs:
         env:
           SLUGS: ${{ inputs.slugs }}
           JOB_ID: ${{ inputs.job_id }}
+          # 回滚结果写库（后台只读库）
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: pnpm exec tsx scripts/admin/revert-trends.ts --slugs="$SLUGS" --job-id="$JOB_ID"
 
       - name: 提交候选池

@@ -8,7 +8,7 @@
  *   3. 点「发布」前先算一遍位次变化 —— 谁进榜、谁被挤出去、前 50 谁动了；
  *   4. 确认后触发 publish-github.yml，那边才真正写 content/github.json。
  *
- * 候选池里自带一份「榜单计分快照」（staging.board），所以预览不用拉 59MB 的正式榜。
+ * 数据全部来自 D1：候选池读 board_items，发布期快照读 board_reports:github-meta。
  * 鉴权与 CSRF 由 admin.ts 的 `admin.use("*")` 统一兜住。
  */
 import { Hono } from "hono";
@@ -21,16 +21,18 @@ import {
   ghConfig,
   mapStatus,
   missingSecrets,
-  readRepoJson,
-  writeRepoJson,
   type WorkflowRun,
 } from "../lib/github";
+import { readBoardStats, type BoardStats } from "../lib/board-stats";
+import { listWorkspace, setItemStatus } from "../lib/board-items";
+import { readReport } from "../lib/reports";
 
 const github = new Hono<{ Bindings: Env }>();
 
-const STAGING_PATH = "content/github-staging.json";
 const FETCH_WORKFLOW = "fetch-github.yml";
 const PUBLISH_WORKFLOW = "publish-github.yml";
+/** 发布期快照（当前榜 1500 行 + 上次采集/发布摘要）在 board_reports 里的 key */
+const META_KEY = "github-meta";
 
 /** 与实际写文件的脚本保持同一默认值 */
 const DEFAULT_TARGET = 2000;
@@ -216,44 +218,95 @@ function reportSummary(report: RepoRankReport): {
   };
 }
 
-async function loadStaging(env: Env): Promise<{ file: RepoStagingFile | null; sha?: string }> {
-  const cfg = ghConfig(env);
-  if (!cfg) return { file: null };
-  const res = await readRepoJson<RepoStagingFile>(cfg, STAGING_PATH);
-  return res ? { file: res.data, sha: res.sha } : { file: null };
+/** board_reports:github-meta 的结构（采集/发布脚本写入） */
+type GithubMeta = {
+  updatedAt?: string;
+  ruleVersion?: string;
+  scoreModel?: string;
+  target?: number;
+  board?: NonNullable<RepoStagingFile["board"]>;
+  /** updates 是 repo 元数据刷新队列，476KB 不进库，后台只需要条数 */
+  updatesCount?: number;
+  lastRun?: NonNullable<RepoStagingFile["lastRun"]>;
+  lastPublish?: NonNullable<RepoStagingFile["lastPublish"]>;
+};
+
+/**
+ * 候选池与发布期快照都来自 D1：
+ *   - 候选 / 拒绝名单 → board_items（后台会改，库就是真相）
+ *   - 当前榜快照 / 上次采集 / 上次发布 → board_reports:github-meta（脚本只写）
+ * 两者都没有才算「还没采集过」，返回 null 让页面显示空态。
+ */
+async function loadStaging(
+  env: Env,
+): Promise<{ file: RepoStagingFile | null; updatesCount: number }> {
+  const [ws, meta] = await Promise.all([
+    listWorkspace<StagingCandidate>(env.DB, "github"),
+    readReport<GithubMeta>(env.DB, META_KEY),
+  ]);
+
+  if (!meta && ws.items.length === 0 && ws.rejected.length === 0) {
+    return { file: null, updatesCount: 0 };
+  }
+
+  const m = meta?.data;
+  return {
+    updatesCount: m?.updatesCount ?? 0,
+    file: {
+      updatedAt: ws.updatedAt ?? m?.updatedAt ?? new Date(0).toISOString(),
+      ruleVersion: m?.ruleVersion ?? "",
+      scoreModel: m?.scoreModel ?? "",
+      target: m?.target ?? DEFAULT_TARGET,
+      board: m?.board ?? { rows: [] },
+      candidates: ws.items,
+      updates: [],
+      rejected: ws.rejected,
+      preview: null,
+      ...(m?.lastRun ? { lastRun: m.lastRun } : {}),
+      ...(m?.lastPublish ? { lastPublish: m.lastPublish } : {}),
+    },
+  };
 }
 
 /* ---------------------------------- 路由 ---------------------------------- */
 
 /** 概览：候选数、容量缺口、上次采集/发布结果、最近任务 */
 github.get("/overview", async (c) => {
-  const cfg = ghConfig(c.env);
+  // configured 只表示「能派发流水线」，数据本身不需要 GitHub 凭据就能读
+  const configured = Boolean(ghConfig(c.env));
   const missing = missingSecrets(c.env);
   const jobs = await listJobs(c.env, 5);
-  if (!cfg) return c.json({ configured: false, missing, staging: null, jobs });
 
   try {
-    const { file } = await loadStaging(c.env);
+    const [{ file, updatesCount }, boardStats] = await Promise.all([
+      loadStaging(c.env),
+      // 在榜数字查库；失败只影响这一个数字，不能拖垮整页
+      readBoardStats(c.env.DB).catch(() => ({}) as BoardStats),
+    ]);
+    const board = boardStats.github ?? null;
     if (!file) {
-      return c.json({ configured: true, missing, staging: null, jobs, empty: true });
+      return c.json({ configured, missing, staging: null, jobs, empty: true, board });
     }
     const { candidates, report, afterRows } = buildView(file);
     const target = file.target || DEFAULT_TARGET;
     return c.json({
-      configured: true,
+      configured,
       missing,
       jobs,
+      board,
       staging: {
         updatedAt: file.updatedAt,
         ruleVersion: file.ruleVersion,
         scoreModel: file.scoreModel,
         target,
-        boardRows: file.board?.rows.length ?? 0,
-        boardUpdatedAt: file.board?.updatedAt ?? null,
+        // 候选池的 board 快照缺失时，回退到上次发布记录，最后才用正式榜统计快照
+        boardRows: file.board?.rows.length ?? file.lastPublish?.total ?? board?.total ?? 0,
+        boardUpdatedAt:
+          file.board?.updatedAt ?? file.lastPublish?.at ?? board?.updatedAt ?? null,
         candidates: candidates.length,
         pending: candidates.filter((x) => !x.rejected).length,
         rejected: file.rejected?.length ?? 0,
-        updates: file.updates?.length ?? 0,
+        updates: updatesCount,
         lastRun: file.lastRun ?? null,
         lastPublish: file.lastPublish ?? null,
         /** 发布后预计能凑到多少条；< target 说明候选池不够，得先扩池 */
@@ -264,7 +317,7 @@ github.get("/overview", async (c) => {
     });
   } catch (e) {
     return c.json({
-      configured: true,
+      configured,
       missing,
       staging: null,
       jobs,
@@ -275,9 +328,6 @@ github.get("/overview", async (c) => {
 
 /** 候选明细：每个仓库的分数、星标、当前名次与预计名次 */
 github.get("/staging", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 400);
-
   const { file } = await loadStaging(c.env);
   if (!file) return c.json({ empty: true, candidates: [], report: null });
 
@@ -299,47 +349,28 @@ github.get("/staging", async (c) => {
  * 放路径里要编码成 %2F，Hono 的 :param 默认不匹配斜杠，容易踩坑。
  */
 github.post("/staging/reject", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json({ error: "github_not_configured" }, 400);
-
   const body = await c.req
     .json<{ fullName?: string; rejected?: boolean }>()
     .catch(() => ({}) as { fullName?: string; rejected?: boolean });
   const fullName = String(body.fullName ?? "").trim();
   if (!fullName) return c.json({ error: "full_name_required" }, 400);
   const wantReject = body.rejected !== false;
-
-  const { file, sha } = await loadStaging(c.env);
-  if (!file || !sha) return c.json({ error: "staging_empty" }, 404);
-
   const key = fullName.toLowerCase();
-  const known =
-    (file.candidates ?? []).some((x) => x.repo.fullName.toLowerCase() === key) ||
-    (file.board?.rows ?? []).some((r) => r.fullName.toLowerCase() === key);
-  if (!known) return c.json({ error: "not_found" }, 404);
 
-  const rejected = new Set((file.rejected ?? []).map((k) => k.toLowerCase()));
-  const existing = [...rejected].find((k) => k === key);
-  if (wantReject) rejected.add(key);
-  else if (existing) rejected.delete(existing);
-
-  const ok = await writeRepoJson(
-    cfg,
-    STAGING_PATH,
-    { ...file, rejected: [...rejected] },
-    sha,
-    `chore(github): ${wantReject ? "拒绝" : "恢复"}候选 ${fullName}`,
+  // 只改库：采集脚本读库里的 rejected 名单，下次抓取自动跳过
+  const changed = await setItemStatus(
+    c.env.DB,
+    "github",
+    key,
+    wantReject ? "rejected" : "candidate",
   );
-  if (!ok) return c.json({ error: "write_failed" }, 502);
+  if (!changed) return c.json({ error: "not_found" }, 404);
 
   return c.json({ ok: true, fullName, rejected: wantReject });
 });
 
 /** 发布预览：谁进榜、谁被挤出去、前 50 谁动了 */
 github.get("/publish/preview", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json({ error: "github_not_configured" }, 400);
-
   const { file } = await loadStaging(c.env);
   if (!file) return c.json({ empty: true, preview: null });
 
@@ -400,14 +431,13 @@ github.post("/publish", async (c) => {
   const cfg = ghConfig(c.env);
   if (!cfg) return c.json({ error: "github_not_configured" }, 400);
 
-  const { file } = await loadStaging(c.env);
+  const { file, updatesCount } = await loadStaging(c.env);
   if (!file) return c.json({ error: "staging_empty" }, 400);
 
   const rejected = new Set((file.rejected ?? []).map((k) => k.toLowerCase()));
   const pending = (file.candidates ?? []).filter(
     (x) => !rejected.has(x.repo.fullName.toLowerCase()),
   );
-  const updates = file.updates ?? [];
   if (pending.length === 0) {
     return c.json({ error: "nothing_to_publish" }, 400);
   }
@@ -423,7 +453,7 @@ github.post("/publish", async (c) => {
     await insertJob(
       c.env,
       "publish",
-      { incoming: pending.length, updates: updates.length },
+      { incoming: pending.length, updates: updatesCount },
       run,
       null,
     );
@@ -431,7 +461,7 @@ github.post("/publish", async (c) => {
       ok: true,
       run,
       incoming: pending.length,
-      updates: updates.length,
+      updates: updatesCount,
       /** 发布前的预计变化，方便用户核对 */
       expected: reportSummary(report),
     });

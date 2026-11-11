@@ -62,6 +62,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
           TARGET: ${{ inputs.target }}
           REFRESH_CACHE: ${{ inputs.refresh_cache }}
+          # 候选池落 D1（后台只读库）；失败只告警，不阻塞候选池提交
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: |
           args=""
           if [ "${REFRESH_CACHE}" = "1" ]; then

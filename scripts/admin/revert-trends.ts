@@ -1,6 +1,6 @@
 import "../fetch/config"; // 副作用导入：加载 .env.local
 import type { AITrend } from "@horizons/shared";
-import { loadStaging, saveStaging } from "../fetch/trends/store";
+import { loadStaging, saveStaging, syncStagingToD1 } from "../fetch/trends/store";
 import { arg, hasFlag, msgOf, parseSlugs } from "./cli";
 
 /**
@@ -94,7 +94,12 @@ async function main(): Promise<void> {
     return;
   }
   if (done.length > 0) {
-    saveStaging({ ...staging, updatedAt: new Date().toISOString(), items: next });
+    const nextStaging = saveStaging({
+      ...staging,
+      updatedAt: new Date().toISOString(),
+      items: next,
+    });
+    await syncStagingToD1(nextStaging);
     console.log("[revert] 已写入 content/trends-staging.json");
   }
 

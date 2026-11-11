@@ -19,6 +19,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { syncBoardToD1 } from "./board-sync";
+import { saveDigestIssue, type DigestIssueLike } from "./digest-issues";
 import type { PublishRow } from "./publish-board";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
@@ -111,6 +112,9 @@ async function main(): Promise<void> {
      */
     version: `${date}T00:00:00`,
   });
+
+  // 后台看往期列表/全文读这张表，不再走 GitHub Contents API
+  await saveDigestIssue(digest as unknown as DigestIssueLike);
 
   if (!res.ok && res.error !== "missing-credentials") process.exitCode = 1;
 }

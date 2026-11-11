@@ -1,0 +1,18 @@
+{
+  "generatedAt": "2026-11-11T03:10:18.226Z",
+  "refreshedTraffic": false,
+  "probed": false,
+  "total": 316,
+  "before": {
+    "core": 185,
+    "watch": 24,
+    "qualified": 209
+  },
+  "after": {
+    "core": 185,
+    "watch": 24,
+    "qualified": 209
+  },
+  "dropped": [],
+  "degraded": []
+}

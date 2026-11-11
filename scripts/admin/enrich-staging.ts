@@ -28,6 +28,8 @@ import {
   type StagingFile,
   type StagingItem,
 } from "./verdict";
+import { syncCandidates, type ItemStatus } from "./board-items";
+import { saveReport } from "./reports";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const STAGING_PATH = path.join(ROOT, "content/tools-staging.json");
@@ -173,7 +175,7 @@ export function buildFieldReport(items: StagingItem[]): FieldReport {
   };
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const dry = process.argv.includes("--dry");
   const freeOnly = process.argv.includes("--free-only");
   const only = parseDomains();
@@ -244,6 +246,19 @@ function main(): void {
 
   const report = buildFieldReport(items);
   writeJson(REPORT_PATH, report);
+  /* 后台只读 D1：富化后的状态与体检报告都要落库 */
+  await syncCandidates(
+    "tools",
+    items.map((i) => ({
+      itemKey: i.domain.toLowerCase(),
+      name: i.name,
+      url: i.url ?? `https://${i.domain}`,
+      status: (i.stage ?? "candidate") as ItemStatus,
+      judge: i.verdict,
+      card: i,
+    })),
+  );
+  await saveReport("tools-field", report, "enrich-staging");
 
   console.log(`\n[enrich-staging] 完成 ${ok}/${picked.length}${failed.length ? `｜失败 ${failed.length}` : ""}`);
   if (report.total > 0) {
@@ -265,4 +280,7 @@ function main(): void {
   console.log(JSON.stringify({ processed: picked.length, ok, failed: failed.length, report: REPORT_PATH }));
 }
 
-main();
+main().catch((e: unknown) => {
+  console.error("[enrich-staging] 失败：", e);
+  process.exitCode = 1;
+});

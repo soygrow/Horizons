@@ -119,11 +119,20 @@ interface StagingInfo {
   significant: number;
 }
 
+/** 正式榜统计快照，候选池为空时也能显示真实在榜条数 */
+interface BoardStat {
+  total: number;
+  updatedAt: string | null;
+  source: string;
+}
+
 interface Overview {
   configured: boolean;
   missing: string[];
   staging: StagingInfo | null;
   jobs: Job[];
+  /** 正式榜快照；候选池被清空或不存在时仍然有值 */
+  board?: BoardStat | null;
   /** 榜单代表词上限 */
   boardLimit?: number;
   empty?: boolean;
@@ -332,8 +341,13 @@ function renderOverview(data: Overview): void {
   $("trends-fetch-btn").removeAttribute("disabled");
   const s = data.staging;
   if (!s) {
-    $("trend-kpi-board").textContent = "—";
-    $("trend-kpi-board-sub").textContent = data.error ? `快照读取失败：${data.error}` : "还没有计分快照";
+    // 候选池为空不代表榜单为空：正式榜还在线上跑，用统计快照显示真实条数
+    $("trend-kpi-board").textContent = data.board ? fmtNum(data.board.total) : "—";
+    $("trend-kpi-board-sub").textContent = data.board
+      ? `正式榜 ${fmtNum(data.board.total)} 条${data.board.updatedAt ? ` · ${fmtTime(data.board.updatedAt)}` : ""}`
+      : data.error
+        ? `快照读取失败：${data.error}`
+        : "还没有计分快照";
     $("trend-kpi-candidates").textContent = "—";
     $("trend-kpi-candidates-sub").textContent = "拉取一次后生成候选池";
     $("trend-kpi-pending").textContent = "—";

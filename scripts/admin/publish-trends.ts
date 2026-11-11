@@ -12,7 +12,14 @@ import {
   toRankRow,
   trimBoard,
 } from "@horizons/shared";
-import { loadDataset, loadStaging, saveDataset, saveStaging } from "../fetch/trends/store";
+import {
+  loadDataset,
+  loadStaging,
+  saveDataset,
+  saveStaging,
+  syncStagingToD1,
+} from "../fetch/trends/store";
+import { clearCandidates } from "./board-items";
 import { syncBoardToD1 } from "./board-sync";
 import type { PublishRow } from "./publish-board";
 
@@ -162,11 +169,17 @@ async function main(): Promise<void> {
       actor: process.env.GITHUB_ACTOR ?? "manual",
     });
     // 候选池清空、拒绝名单保留：下次采集直接跳过被否的词
-    saveStaging({
-      updatedAt: new Date().toISOString(),
+    const publishedAt = new Date().toISOString();
+    const nextStaging = saveStaging({
+      updatedAt: publishedAt,
       runAt: staging.runAt,
       items: [],
       rejected: staging.rejected,
+      /* 基线换成发布后的榜：下次采集比对的「发布前名次」就是现在这份 */
+      board: {
+        updatedAt: publishedAt,
+        rows: kept.filter((t) => !t.variantOf).map(toRankRow),
+      },
       ...(staging.lastRun ? { lastRun: staging.lastRun } : {}),
       // 发布后 items 清空，变动摘要得留下来，否则后台回看不到「刚才动了谁」
       lastPublish: {
@@ -189,6 +202,9 @@ async function main(): Promise<void> {
         })),
       },
     });
+    // 库里同步成发布后的样子：候选清空，黑名单保留
+    await clearCandidates("trends");
+    await syncStagingToD1(nextStaging);
     console.log(`\n[publish] 已写入 content/trends.json（${kept.length} 个词，其中 ${kept.filter((t) => t.variantOf).length} 个别名）`);
   }
 

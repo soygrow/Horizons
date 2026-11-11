@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-11-11T02:34:14.426Z",
+  "boards": {
+    "tools": {
+      "total": 209,
+      "updatedAt": "2026-11-09T02:21:49.822Z",
+      "source": "content/tools-stats.json"
+    },
+    "trends": {
+      "total": 367,
+      "updatedAt": "2026-11-10T06:53:17.023Z",
+      "source": "content/trends.json"
+    },
+    "models": {
+      "total": 366,
+      "updatedAt": "2026-10-30",
+      "source": "content/models.json"
+    },
+    "github": {
+      "total": 1500,
+      "updatedAt": "2026-11-03T10:57:11.980Z",
+      "source": "content/github.json"
+    },
+    "opps": {
+      "total": 5,
+      "updatedAt": "2026-10-30",
+      "source": "content/opportunities.json"
+    }
+  }
+}

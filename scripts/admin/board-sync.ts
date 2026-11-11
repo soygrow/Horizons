@@ -69,6 +69,37 @@ async function d1IsLive(client: D1Client, board: Board): Promise<boolean> {
   }
 }
 
+/**
+ * 记录该榜当前在榜条数，供后台概览查询。
+ *
+ * 后台读不了正式榜文件（github.json 59MB，超出 Contents API 单文件上限），
+ * 而发布链路本来就要写 D1，顺手落一行即可，后台一次 SELECT 全取。
+ *
+ * 失败只告警：这是展示用副本，缺了顶多概览停在上一期的数字，
+ * 不能因为它把一次成功的发布变成失败。
+ */
+async function recordBoardStat(
+  client: D1Client,
+  board: Board,
+  total: number,
+  at: string,
+): Promise<void> {
+  try {
+    await client.query(
+      `INSERT INTO board_stats (board, total, updated_at, generated_at, source)
+       VALUES (?, ?, ?, ?, 'publish')
+       ON CONFLICT (board) DO UPDATE SET
+         total = excluded.total,
+         updated_at = excluded.updated_at,
+         generated_at = excluded.generated_at,
+         source = excluded.source`,
+      [board, total, at, Date.now()],
+    );
+  } catch (e) {
+    console.warn("[stats] 写入 board_stats 失败（不影响发布）：", e);
+  }
+}
+
 export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
   const { board, rows, actor } = opts;
 
@@ -113,6 +144,9 @@ export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
     }
 
     const pruned = await pruneVersions(client);
+
+    // 顺带记下在榜条数：后台概览只查 board_stats，不再读仓库里的榜文件
+    await recordBoardStat(client, board, res.listed, res.version);
 
     console.log(
       `[sync] ${board} 已写入 ${res.version}：${res.listed} 条` +

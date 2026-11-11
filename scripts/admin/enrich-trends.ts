@@ -4,7 +4,12 @@ import { hasEnoughTrendData } from "@horizons/shared";
 import { collectEvidence } from "../fetch/trends/discovery";
 import { enrichKeyword } from "../fetch/trends/enrich";
 import { fetchRelatedQueriesOnly } from "../fetch/trends/sources/google-trends";
-import { buildEnrichedTrend, loadStaging, saveStaging } from "../fetch/trends/store";
+import {
+  buildEnrichedTrend,
+  loadStaging,
+  saveStaging,
+  syncStagingToD1,
+} from "../fetch/trends/store";
 import { arg, hasFlag, msgOf, parseSlugs } from "./cli";
 
 /**
@@ -142,7 +147,7 @@ async function main(): Promise<void> {
 
   if (!dry) {
     const { pendingEvidence, ...rest } = staging;
-    saveStaging({
+    const nextStaging = saveStaging({
       ...rest,
       updatedAt: new Date().toISOString(),
       items: next,
@@ -150,6 +155,7 @@ async function main(): Promise<void> {
         ? { pendingEvidence }
         : {}),
     });
+    await syncStagingToD1(nextStaging);
   }
 
   console.log(

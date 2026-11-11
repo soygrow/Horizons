@@ -20,6 +20,7 @@ import { loadExisting } from "../fetch/dedupe";
 import { extractTrafficMetrics, fetchLergassyMulti, hasApify } from "../fetch/sources/apify";
 import { applyTraffic } from "../fetch/apply-traffic";
 import { probeAll } from "./probe";
+import { syncCandidates } from "./board-items";
 import {
   judge,
   visitsOf,
@@ -221,6 +222,21 @@ async function main(): Promise<void> {
   console.log(
     `[staging] 已写入 content/tools-staging.json｜待发布 ${merged.items.length} 条（本次 +${fresh.length}）`,
   );
+
+  // 同时落库：后台只读 D1，文件仅作发布脚本的兜底输入
+  const saved = await syncCandidates(
+    "tools",
+    merged.items.map((t) => ({
+      itemKey: t.domain,
+      name: t.name,
+      url: t.url ?? null,
+      cats: t.categories ?? null,
+      status: t.stage === "rejected" ? "rejected" : "candidate",
+      judge: t.verdict,
+      card: t,
+    })),
+  );
+  if (saved > 0) console.log(`[staging] 已同步 ${saved} 条到 D1 board_items`);
   // Actions 日志里以单行 JSON 结尾，方便人工与脚本解析
   console.log(
     JSON.stringify({

@@ -11,6 +11,8 @@ import type {
 import type { Enrichment } from "./enrich";
 import type { KeywordEvidence, TrendCandidate } from "./discovery";
 import { normalizeKey, slugify } from "./discovery";
+import { syncCandidates } from "../../admin/board-items";
+import { saveReport } from "../../admin/reports";
 
 export const DATASET_PATH = path.resolve(process.cwd(), "content/trends.json");
 /**
@@ -104,7 +106,8 @@ export function loadStaging(): TrendStaging {
   }
 }
 
-export function saveStaging(payload: TrendStaging): void {
+/** 写盘并返回实际写入的内容，方便调用方接着同步到 D1 */
+export function saveStaging(payload: TrendStaging): TrendStaging {
   const seen = new Set<string>();
   const items: AITrend[] = [];
   for (const t of payload.items) {
@@ -114,9 +117,55 @@ export function saveStaging(payload: TrendStaging): void {
     seen.add(t.slug);
     items.push(t);
   }
+  const normalized: TrendStaging = { ...payload, items };
   const tmp = `${STAGING_PATH}.tmp`;
-  fs.writeFileSync(tmp, `${JSON.stringify({ ...payload, items }, null, 2)}\n`, "utf-8");
+  fs.writeFileSync(tmp, `${JSON.stringify(normalized, null, 2)}\n`, "utf-8");
   fs.renameSync(tmp, STAGING_PATH);
+  return normalized;
+}
+
+/**
+ * 把候选池同步进 D1，供后台读取。
+ *
+ * item_key 用 keyword 小写而不是 slug：趋势的黑名单一直按 keyword 记录，
+ * 后台「拒绝」必须和这份名单对齐，否则同一个词换个 slug 就能绕过。
+ *
+ * 落库失败只告警，不打断采集 —— 文件里还有完整数据。
+ */
+export async function syncStagingToD1(staging: TrendStaging): Promise<void> {
+  const rows = [
+    ...staging.items.map((t) => ({
+      itemKey: t.keyword.toLowerCase(),
+      name: t.keyword,
+      cats: null,
+      status: "candidate" as const,
+      card: t,
+    })),
+    // 历史黑名单也落库，后台「已拒绝」列表才不会只剩本次采集的词
+    ...staging.rejected.map((k) => ({
+      itemKey: k.toLowerCase(),
+      name: k,
+      status: "rejected" as const,
+    })),
+  ];
+
+  const saved = await syncCandidates("trends", rows);
+  if (saved > 0) console.log(`[trends] 已同步 ${saved} 条到 D1 board_items`);
+
+  /* 发布期快照（当前榜位次 / 上次采集 / 上次发布摘要）也进库：
+     后台算「这批候选会让谁掉名次」要用它，而它是采集时算出来的结果，
+     库里没有原始分数可还原，只能随文件一起存一份。 */
+  await saveReport(
+    "trends-meta",
+    {
+      updatedAt: staging.updatedAt,
+      runAt: staging.runAt,
+      board: staging.board ?? null,
+      lastRun: staging.lastRun ?? null,
+      lastPublish: staging.lastPublish ?? null,
+    },
+    "trends-staging",
+  );
 }
 
 export function loadDataset(): TrendDataset {

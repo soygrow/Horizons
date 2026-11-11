@@ -45,6 +45,8 @@ import {
   checkRankable,
   type RankItem,
 } from "../fetch/github-ranking-rules";
+import { clearCandidates, listCandidates, syncCandidates, type BoardItemInput } from "./board-items";
+import { saveReport } from "./reports";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const GITHUB_PATH = path.join(ROOT, "content/github.json");
@@ -328,11 +330,58 @@ function loadStaging(): RepoStagingFile | null {
   }
 }
 
+/**
+ * 候选池落库 —— 后台只读 D1，所以文件写完后必须同步一份进 board_items。
+ *
+ * 整榜覆盖：候选在库里是「本次采集的结果」，累积旧数据只会让后台和下一次发布对不上。
+ * 拒绝名单也一并写进 status='rejected' 的行，后台才能把它当唯一真相读出来。
+ */
+async function syncStagingToD1(staging: RepoStagingFile): Promise<void> {
+  await clearCandidates("github");
+  const items: BoardItemInput[] = [
+    ...staging.candidates.map((c) => ({
+      itemKey: c.repo.fullName.toLowerCase(),
+      name: c.repo.fullName,
+      url: c.repo.htmlUrl ?? null,
+      status: "candidate" as const,
+      judge: { score: c.score, grade: c.grade, estimatedRank: c.estimatedRank, check: c.check },
+      card: c,
+    })),
+    ...staging.rejected.map((key) => ({
+      itemKey: key,
+      name: key,
+      status: "rejected" as const,
+    })),
+  ];
+  const n = await syncCandidates("github", items);
+  if (n > 0) console.log(`[staging] 候选池已同步 D1（${n} 条）`);
+
+  /* 发布期快照也进库：后台要拿当前榜的 1500 条算「谁会被挤出去」，
+     这份快照是采集时算好的（含 repo 元信息），库里没有逐条可还原的来源。 */
+  await saveReport(
+    "github-meta",
+    {
+      updatedAt: staging.updatedAt,
+      ruleVersion: staging.ruleVersion,
+      scoreModel: staging.scoreModel,
+      target: staging.target,
+      board: staging.board,
+      lastRun: staging.lastRun ?? null,
+      lastPublish: staging.lastPublish ?? null,
+      preview: staging.preview ?? null,
+    },
+    "fetch-github-staging",
+  );
+}
+
 async function main(): Promise<void> {
   const startedAt = Date.now();
   const board = loadBoard();
   const prevStaging = loadStaging();
   const rejected = new Set(prevStaging?.rejected ?? []);
+
+  /* 后台点的「拒绝」只写库，这里把库里的拒绝名单并进来，避免下次采集又抓一遍 */
+  for (const row of await listCandidates("github", "rejected")) rejected.add(row.itemKey);
 
   console.log(
     `[staging] 当前榜 ${board.repos.length} 条，目标 ${TARGET} 条，商品页数据不动`,
@@ -511,6 +560,7 @@ async function main(): Promise<void> {
   } else {
     fs.writeFileSync(STAGING_PATH, JSON.stringify(staging, null, 2) + "\n", "utf-8");
     console.log(`[staging] 已写入 ${STAGING_PATH}`);
+    await syncStagingToD1(staging);
   }
 
   console.log(

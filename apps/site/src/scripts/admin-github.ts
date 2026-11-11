@@ -101,11 +101,20 @@ interface StagingInfo {
   shifted: number;
 }
 
+/** 正式榜统计快照，候选池为空时也能显示真实在榜条数 */
+interface BoardStat {
+  total: number;
+  updatedAt: string | null;
+  source: string;
+}
+
 interface Overview {
   configured: boolean;
   missing: string[];
   staging: StagingInfo | null;
   jobs: Job[];
+  /** 正式榜快照；候选池被清空或不存在时仍然有值 */
+  board?: BoardStat | null;
   empty?: boolean;
   error?: string;
 }
@@ -235,8 +244,13 @@ function renderOverview(data: Overview): void {
   const s = data.staging;
 
   if (!s) {
-    $("gh-kpi-board").textContent = "—";
-    $("gh-kpi-board-sub").textContent = data.error ? `快照读取失败：${data.error}` : "还没有采集过";
+    // 候选池为空不代表榜单为空：正式榜还在线上跑，用统计快照显示真实条数
+    $("gh-kpi-board").textContent = data.board ? fmtNum(data.board.total) : "—";
+    $("gh-kpi-board-sub").textContent = data.board
+      ? `正式榜 ${fmtNum(data.board.total)} 条${data.board.updatedAt ? ` · ${fmtTime(data.board.updatedAt)}` : ""}`
+      : data.error
+        ? `快照读取失败：${data.error}`
+        : "还没有采集过";
     $("gh-kpi-candidates").textContent = "—";
     $("gh-kpi-candidates-sub").textContent = "点「采集」生成候选池";
     $("gh-kpi-pending").textContent = "—";

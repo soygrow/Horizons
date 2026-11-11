@@ -47,6 +47,10 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           SLUGS: ${{ inputs.slugs }}
           JOB_ID: ${{ inputs.job_id }}
+          # 富化结果写库（后台只读库）
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: |
           args=()
           if [ -n "$SLUGS" ]; then args+=("--slugs=$SLUGS"); fi

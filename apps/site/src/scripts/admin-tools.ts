@@ -44,6 +44,8 @@ interface Overview {
   configured: boolean;
   missing: string[];
   stats: ToolStats | null;
+  /** 数据库里的在榜条数，统计快照缺失时仍然有值 */
+  board?: { total: number; updatedAt: string | null } | null;
   jobs: Job[];
   error?: string;
 }
@@ -231,8 +233,11 @@ function renderOverview(data: Overview): void {
   state.stats = s;
   updateFetchEstimate();
   if (!s) {
-    $("tool-kpi-listed").textContent = "—";
-    $("tool-kpi-listed-sub").textContent = "还没有快照，抓取或发布一次后生成";
+    // 统计快照缺失不代表榜单为空：正式榜还在线上跑，用库里的条数兜底
+    $("tool-kpi-listed").textContent = data.board ? fmtNum(data.board.total) : "—";
+    $("tool-kpi-listed-sub").textContent = data.board
+      ? `正式榜 ${fmtNum(data.board.total)} 条${data.board.updatedAt ? ` · ${fmtTime(data.board.updatedAt)}` : ""}`
+      : "还没有快照，抓取或发布一次后生成";
     return;
   }
 

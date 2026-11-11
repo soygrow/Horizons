@@ -47,6 +47,7 @@ import {
   pruneStaging,
   saveDataset,
   saveStaging,
+  syncStagingToD1,
   upsert,
 } from "./store";
 
@@ -541,7 +542,7 @@ async function main(): Promise<void> {
       const evidenceFor = Object.fromEntries(
         Object.entries(pendingEvidence).filter(([slug]) => keep.has(slug)),
       );
-      saveStaging({
+      const nextStaging = saveStaging({
         updatedAt: stamp,
         runAt: now.toISOString(),
         items,
@@ -557,6 +558,7 @@ async function main(): Promise<void> {
         },
         lastRun: { ok, failed, total: batch.length, budget: args.limit, geo: args.geo },
       });
+      await syncStagingToD1(nextStaging);
     } else {
       saveDataset({
         ...dataset,

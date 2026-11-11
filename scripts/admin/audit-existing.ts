@@ -27,6 +27,7 @@ import { extractTrafficMetrics, fetchLergassyMulti, hasApify } from "../fetch/so
 import { applyTraffic } from "../fetch/apply-traffic";
 import { probeAll } from "./probe";
 import { judge, visitsOf, type VerdictTier } from "./verdict";
+import { saveReport } from "./reports";
 import { statsLine, writeToolStats } from "./tool-stats";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
@@ -213,12 +214,13 @@ async function main(): Promise<void> {
       tools.filter((t) => !dropSet.has(t.domain)),
     );
     console.log(`[audit] 已从 content/aitools.json 移除 ${dropSet.size} 条下榜条目`);
-    console.log(`[audit] ${statsLine(writeToolStats())}`);
+    console.log(`[audit] ${statsLine(await writeToolStats())}`);
   } else if (dropped.length) {
     console.log("[audit] 未加 --apply-drops，aitools.json 未改动（仅生成下榜清单）");
   }
 
   writeJson(AUDIT_PATH, report);
+  await saveReport("tools-audit", report, "audit-existing");
   console.log(`[audit] 已写入 content/tools-audit.json`);
   console.log(JSON.stringify({ total: tools.length, dropped: dropped.length, report: AUDIT_PATH }));
 }

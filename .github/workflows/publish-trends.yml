@@ -77,7 +77,8 @@ jobs:
         run: |
           git config user.name "horizons-bot"
           git config user.email "bot@horizons.tools"
-          git add content/trends.json content/trends-staging.json
+          pnpm exec tsx scripts/admin/board-stats.ts
+          git add content/trends.json content/trends-staging.json content/board-stats.json
           if git diff --cached --quiet; then
             echo "::notice::没有可发布的变更，未产生提交"
             echo "changed=false" >> "$GITHUB_OUTPUT"

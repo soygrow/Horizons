@@ -3,10 +3,12 @@
  *
  * Worker 跑不了 Playwright，也写不了仓库文件，所以这里只做三件事：
  *   1. 通过 GitHub API 触发 fetch-tools.yml / publish-tools.yml；
- *   2. 读仓库里的 content/tools-staging.json 做审核界面；
+ *   2. 候选池与各类报告只读 D1（board_items / board_reports）；
  *   3. 把每次点击记到 D1 的 tool_jobs，便于回看结果。
  *
- * 候选数据不进 D1：仓库 JSON 是唯一事实来源，避免双写不一致。
+ * 后台只有一个人看，所以数据源必须是单一的：库里没有就是没有，
+ * 不再回落仓库 JSON —— 两份数据一旦分叉，先改哪份、以谁为准都说不清。
+ *
  * 鉴权与 CSRF 由 admin.ts 的 `admin.use("*")` 统一兜住。
  */
 import { type TierInput, tierOf } from "@horizons/shared";
@@ -20,20 +22,17 @@ import {
   latestRun,
   mapStatus,
   missingSecrets,
-  readRepoJson,
   type WorkflowRun,
-  writeRepoJson,
 } from "../lib/github";
+import { readBoardStats, type BoardStats } from "../lib/board-stats";
+import { hasWorkspace, listWorkspace, setItemsStatus } from "../lib/board-items";
+import { readReport } from "../lib/reports";
 
 const tools = new Hono<{ Bindings: Env }>();
 
 type Ctx = Context<{ Bindings: Env }>;
 
 const GH_API = "https://api.github.com";
-const STAGING_PATH = "content/tools-staging.json";
-const STATS_PATH = "content/tools-stats.json";
-const FIELD_REPORT_PATH = "content/tools-field-report.json";
-const AUDIT_PATH = "content/tools-audit.json";
 const FETCH_WORKFLOW = "fetch-tools.yml";
 const ENRICH_WORKFLOW = "enrich-tools.yml";
 const PUBLISH_WORKFLOW = "publish-tools.yml";
@@ -51,6 +50,18 @@ const MAX_PAGE_SIZE = 100;
  */
 
 /* GitHub 封装见 ../lib/github：与趋势榜后台共用一份 */
+
+/**
+ * 报告类数据（统计快照 / 字段体检 / 存量重判）只读 D1。
+ *
+ * 这些产物由脚本生成，脚本写文件时顺手 upsert 进 board_reports。
+ * 库里没有就是脚本没跑过或落库失败 —— 后台显示「暂无数据」，
+ * 让人去看流水线日志，比拿一份可能过期的文件顶上更可信。
+ */
+async function loadReport<T>(env: Env, key: string): Promise<T | null> {
+  const row = await readReport<T>(env.DB, key);
+  return row?.data ?? null;
+}
 
 /* -------------------------------- 任务记录 -------------------------------- */
 
@@ -100,16 +111,19 @@ tools.get("/overview", async (c) => {
   const cfg = ghConfig(c.env);
   const missing = missingSecrets(c.env);
   const jobs = await listJobs(c.env, 5);
-  if (!cfg) return c.json({ configured: false, missing, stats: null, jobs });
+  // 在榜条数走 D1：即使 GitHub 未配置、快照读不到，这个数字依然可用
+  const board = (await readBoardStats(c.env.DB).catch(() => ({}) as BoardStats)).tools ?? null;
 
+  // 统计快照也走 D1：脚本生成快照时已落库，不再为了几个数字去读仓库
   try {
-    const stats = await readRepoJson<Record<string, unknown>>(cfg, STATS_PATH);
-    return c.json({ configured: true, missing, stats: stats?.data ?? null, jobs });
+    const stats = await loadReport<Record<string, unknown>>(c.env, "tools-stats");
+    return c.json({ configured: Boolean(cfg), missing, stats, board, jobs });
   } catch (e) {
     return c.json({
-      configured: true,
+      configured: Boolean(cfg),
       missing,
       stats: null,
+      board,
       jobs,
       error: e instanceof Error ? e.message : String(e),
     });
@@ -193,29 +207,19 @@ tools.get("/jobs/:id", async (c) => {
   return c.json({ job: await refreshJob(c.env, ghConfig(c.env), row) });
 });
 
-/** 待发布队列：读 staging 文件，返回列表页需要的精简字段 */
+/** 待发布队列：只读 board_items，返回列表页需要的精简字段 */
 tools.get("/staging", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 503);
-
-  const file = await readRepoJson<{
-    updatedAt: string;
-    items: Array<Record<string, unknown> & TierInput>;
-    rejected: string[];
-    lastRun?: unknown;
-  }>(cfg, STAGING_PATH);
-
-  if (!file) {
-    return c.json({ updatedAt: null, total: 0, pending: 0, rejected: 0, items: [], lastRun: null });
-  }
+  const ws = await listWorkspace<Record<string, unknown> & TierInput>(c.env.DB, "tools");
+  const { updatedAt } = ws;
+  const all = ws.items;
+  const rejectedList = ws.rejected;
 
   const q = (c.req.query("q") ?? "").trim().toLowerCase();
   const tierFilter = c.req.query("tier") ?? "all";
   const page = Math.max(1, Number(c.req.query("page") ?? 1) || 1);
   const pageSize = Math.min(Math.max(1, Number(c.req.query("pageSize") ?? 50) || 50), MAX_PAGE_SIZE);
 
-  const rejectedSet = new Set((file.data.rejected ?? []).map((d) => d.toLowerCase()));
-  const all = file.data.items ?? [];
+  const rejectedSet = new Set(rejectedList.map((d) => d.toLowerCase()));
 
   const stageOf = (t: Record<string, unknown>): string => (t.stage as string) ?? "candidate";
 
@@ -252,15 +256,16 @@ tools.get("/staging", async (c) => {
 
   const start = (page - 1) * pageSize;
   return c.json({
-    updatedAt: file.data.updatedAt ?? null,
-    lastRun: file.data.lastRun ?? null,
-    lastEnrich: (file.data as { lastEnrich?: unknown }).lastEnrich ?? null,
+    updatedAt,
+    // 库里没有「上次采集耗时」这类元信息，updatedAt 就是最近一次落库时间
+    lastRun: null,
+    lastEnrich: null,
     total: rows.length,
     // pending = 还没确认收录的（含判定为 reject 的）
     pending: all.filter((t) => stageOf(t) === "candidate").length,
     approved: all.filter((t) => stageOf(t) === "approved").length,
     enriched: all.filter((t) => stageOf(t) === "enriched").length,
-    rejected: (file.data.rejected ?? []).length,
+    rejected: rejectedList.length,
     page,
     pageSize,
     items: rows.slice(start, start + pageSize),
@@ -269,34 +274,27 @@ tools.get("/staging", async (c) => {
 
 /** 单条详情：完整 AITool（含流量明细、分类、原始链接等） */
 tools.get("/staging/:domain", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 503);
-
   const domain = c.req.param("domain").toLowerCase();
-  const file = await readRepoJson<{ items: Array<Record<string, unknown>>; rejected: string[] }>(
-    cfg,
-    STAGING_PATH,
-  );
-  if (!file) return c.json({ error: "not_found" }, 404);
 
-  const tool = (file.data.items ?? []).find((t) => String(t.domain).toLowerCase() === domain);
+  const ws = await listWorkspace<Record<string, unknown>>(c.env.DB, "tools");
+  const items = ws.items;
+  const rejectedList = ws.rejected;
+
+  const tool = items.find((t) => String(t.domain).toLowerCase() === domain);
   if (!tool) return c.json({ error: "not_found" }, 404);
 
   return c.json({
     tool,
     tier: tierOf(tool as unknown as TierInput),
-    rejected: (file.data.rejected ?? []).includes(domain),
+    rejected: rejectedList.includes(domain),
   });
 });
 
 /**
- * 拒绝 / 恢复：直接改 staging 文件。
- * 拒绝的域名进入 rejected 名单，下次抓取跳过、发布时过滤。
+ * 拒绝 / 恢复：只改 board_items.status。
+ * 拒绝的域名 status='rejected'，采集脚本读库把它并进拒绝名单，下次抓取跳过。
  */
 tools.post("/staging/reject", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 503);
-
   let body: { domains?: unknown; reject?: unknown };
   try {
     body = (await c.req.json()) as { domains?: unknown; reject?: unknown };
@@ -312,39 +310,17 @@ tools.post("/staging/reject", async (c) => {
   if (domains.length === 0) return c.json({ error: "empty_domains" }, 400);
 
   const reject = body.reject !== false;
-  const file = await readRepoJson<{
-    updatedAt: string;
-    items: Array<Record<string, unknown>>;
-    rejected: string[];
-    lastRun?: unknown;
-  }>(cfg, STAGING_PATH);
-  if (!file) return c.json({ error: "not_found" }, 404);
 
-  const rejectedSet = new Set((file.data.rejected ?? []).map((d) => d.toLowerCase()));
-  for (const d of domains) {
-    if (reject) rejectedSet.add(d);
-    else rejectedSet.delete(d);
-  }
-
-  const next = {
-    ...file.data,
-    updatedAt: new Date().toISOString(),
-    items: reject
-      ? (file.data.items ?? []).filter((t) => !rejectedSet.has(String(t.domain).toLowerCase()))
-      : file.data.items,
-    rejected: [...rejectedSet].sort(),
-  };
-
-  const ok = await writeRepoJson(
-    cfg,
-    STAGING_PATH,
-    next,
-    file.sha,
-    `chore(tools): ${reject ? "拒绝" : "恢复"} ${domains.length} 个候选（后台）`,
+  const changed = await setItemsStatus(
+    c.env.DB,
+    "tools",
+    domains,
+    reject ? "rejected" : "candidate",
   );
-  if (!ok) return c.json({ error: "write_conflict" }, 409);
+  if (changed === 0) return c.json({ error: "not_found" }, 404);
 
-  return c.json({ ok: true, rejected: next.rejected.length, pending: next.items.length });
+  const ws = await listWorkspace(c.env.DB, "tools");
+  return c.json({ ok: true, rejected: ws.rejected.length, pending: ws.items.length });
 });
 
 /**
@@ -352,9 +328,6 @@ tools.post("/staging/reject", async (c) => {
  * 只有 approved 的条目会被 enrich-staging.ts 选中。
  */
 tools.post("/staging/approve", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 503);
-
   let body: { domains?: unknown; approve?: unknown };
   try {
     body = (await c.req.json()) as { domains?: unknown; approve?: unknown };
@@ -370,39 +343,21 @@ tools.post("/staging/approve", async (c) => {
   if (domains.length === 0) return c.json({ error: "empty_domains" }, 400);
 
   const approve = body.approve !== false;
-  const wanted = new Set(domains);
-  const file = await readRepoJson<{
-    updatedAt: string;
-    items: Array<Record<string, unknown>>;
-    rejected: string[];
-    lastRun?: unknown;
-  }>(cfg, STAGING_PATH);
-  if (!file) return c.json({ error: "not_found" }, 404);
 
-  const rejectedSet = new Set((file.data.rejected ?? []).map((d) => d.toLowerCase()));
-  let changed = 0;
-  const items = (file.data.items ?? []).map((t) => {
-    const d = String(t.domain).toLowerCase();
-    if (!wanted.has(d) || rejectedSet.has(d)) return t;
-    changed++;
-    return { ...t, stage: approve ? "approved" : "candidate" };
-  });
-
-  const next = { ...file.data, updatedAt: new Date().toISOString(), items };
-  const ok = await writeRepoJson(
-    cfg,
-    STAGING_PATH,
-    next,
-    file.sha,
-    `chore(tools): ${approve ? "确认收录" : "取消确认"} ${changed} 个候选（后台）`,
+  const changed = await setItemsStatus(
+    c.env.DB,
+    "tools",
+    domains,
+    approve ? "approved" : "candidate",
   );
-  if (!ok) return c.json({ error: "write_conflict" }, 409);
+  if (changed === 0) return c.json({ error: "not_found" }, 404);
 
+  const ws = await listWorkspace<Record<string, unknown>>(c.env.DB, "tools");
   return c.json({
     ok: true,
     changed,
-    approved: items.filter((t) => t.stage === "approved").length,
-    enriched: items.filter((t) => t.stage === "enriched").length,
+    approved: ws.items.filter((t) => t.stage === "approved").length,
+    enriched: ws.items.filter((t) => t.stage === "enriched").length,
   });
 });
 
@@ -522,12 +477,10 @@ tools.post("/audit", async (c) => {
   return c.json({ job: results?.[0] ?? null });
 });
 
-/** 富化后的字段完整度报告（enrich-staging.ts 生成，后台只读） */
+/** 富化后的字段完整度报告（enrich-staging.ts 生成并落库，后台只读） */
 tools.get("/field-report", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 503);
-  const file = await readRepoJson<Record<string, unknown>>(cfg, FIELD_REPORT_PATH);
-  return c.json({ report: file?.data ?? null });
+  const report = await loadReport<Record<string, unknown>>(c.env, "tools-field");
+  return c.json({ report });
 });
 
 /**
@@ -535,25 +488,25 @@ tools.get("/field-report", async (c) => {
  * 三块内容——新增（enriched 待发）、下榜（存量重判结果）、榜单前后条数。
  */
 tools.get("/publish/preview", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 503);
-
-  const [staging, stats, audit] = await Promise.all([
-    readRepoJson<{ items: Array<Record<string, unknown>>; rejected: string[] }>(cfg, STAGING_PATH),
-    readRepoJson<Record<string, unknown>>(cfg, STATS_PATH),
-    readRepoJson<Record<string, unknown>>(cfg, AUDIT_PATH),
+  // 候选池与两份报告都读库：不依赖 GitHub 凭据，也不会读到过期的文件
+  const ws = await listWorkspace<Record<string, unknown>>(c.env.DB, "tools");
+  const [stats, audit] = await Promise.all([
+    loadReport<Record<string, unknown>>(c.env, "tools-stats"),
+    loadReport<Record<string, unknown>>(c.env, "tools-audit"),
   ]);
 
-  const items = staging?.data.items ?? [];
+  const items = ws.items;
   const stageOf = (t: Record<string, unknown>): string => (t.stage as string) ?? "candidate";
   const enriched = items.filter((t) => stageOf(t) === "enriched").length;
   const approved = items.filter((t) => stageOf(t) === "approved").length;
   const candidates = items.filter((t) => stageOf(t) === "candidate").length;
   // 只有已富化的条目才会被 publish-tools.ts 合并进榜单
   const pending = enriched;
-  const s = stats?.data as { candidates?: number; listed?: number; qualified?: number; target?: number } | undefined;
+  const s = (stats ?? undefined) as
+    | { candidates?: number; listed?: number; qualified?: number; target?: number }
+    | undefined;
 
-  const a = audit?.data as
+  const a = (audit ?? undefined) as
     | {
         generatedAt?: string;
         total?: number;
@@ -574,8 +527,8 @@ tools.get("/publish/preview", async (c) => {
     approved,
     enriched,
     candidates,
-    rejected: (staging?.data.rejected ?? []).length,
-    stats: stats?.data ?? null,
+    rejected: ws.rejected.length,
+    stats,
     estimate: s
       ? {
           candidatesAfter: (s.candidates ?? 0) + pending,

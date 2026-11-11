@@ -40,7 +40,9 @@
     "digest:daily": "tsx scripts/fetch/daily/build.ts",
     "digest:daily:dry": "tsx scripts/fetch/daily/build.ts --dry",
     "trends:enrich": "tsx scripts/admin/enrich-trends.ts",
-    "trends:revert": "tsx scripts/admin/revert-trends.ts"
+    "trends:revert": "tsx scripts/admin/revert-trends.ts",
+    "board:stats": "tsx scripts/admin/board-stats.ts",
+    "board:stats:d1": "tsx scripts/admin/board-stats.ts --d1"
   },
   "devDependencies": {
     "@horizons/shared": "workspace:*",

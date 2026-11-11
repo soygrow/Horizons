@@ -23,6 +23,7 @@ import path from "node:path";
 import { compareByToolScore, computeToolScore, tierOf } from "@horizons/shared";
 import type { AITool } from "@horizons/shared";
 import { syncBoardToD1 } from "./board-sync";
+import { clearCandidates, listCandidates, syncCandidates, type ItemStatus } from "./board-items";
 import type { PublishRow } from "./publish-board";
 import { statsLine, writeToolStats } from "./tool-stats";
 import type { StagingFile, StagingItem } from "./verdict";
@@ -129,11 +130,30 @@ async function main(): Promise<void> {
   const only = parseDomains();
 
   const tools = readJson<AITool[]>(TOOLS_PATH, []);
-  const staging = readJson<StagingFile>(STAGING_PATH, {
-    updatedAt: new Date(0).toISOString(),
-    items: [],
-    rejected: [],
-  });
+
+  /*
+   * 候选池优先读 D1。
+   *
+   * 后台的「确认收录 / 拒绝」现在直接写 board_items，文件里的 stage 可能已经落后；
+   * 库里没有数据（采集还没落库）时才读文件，保证流水线不断。
+   */
+  const dbItems = await listCandidates<StagingItem>("tools");
+  const staging: StagingFile =
+    dbItems.length > 0
+      ? {
+          updatedAt: new Date().toISOString(),
+          // status 列才是真相：卡片里的 stage 是采集时的旧值
+          items: dbItems
+            .filter((d) => d.status !== "rejected")
+            .map((d) => (d.card ? { ...d.card, stage: d.status as StagingItem["stage"] } : null))
+            .filter((c): c is StagingItem => Boolean(c)),
+          rejected: dbItems.filter((d) => d.status === "rejected").map((d) => d.itemKey),
+        }
+      : readJson<StagingFile>(STAGING_PATH, {
+          updatedAt: new Date(0).toISOString(),
+          items: [],
+          rejected: [],
+        });
 
   /*
    * --resync：把现有 JSON 原样重灌进 D1。
@@ -252,6 +272,26 @@ async function main(): Promise<void> {
     rejected: staging.rejected,
   } satisfies StagingFile);
 
+  // 与文件同步重建工作区：只剩「没发出去的条目 + 拒绝名单」，后台看到的就是真实剩余量
+  if (dbItems.length > 0) {
+    await clearCandidates("tools");
+    await syncCandidates("tools", [
+      ...remaining.map((i) => ({
+        itemKey: i.domain.toLowerCase(),
+        name: i.name,
+        url: i.url ?? `https://${i.domain}`,
+        status: (i.stage ?? "candidate") as ItemStatus,
+        judge: i.verdict,
+        card: i,
+      })),
+      ...staging.rejected.map((d) => ({
+        itemKey: d.toLowerCase(),
+        name: d,
+        status: "rejected" as const,
+      })),
+    ]);
+  }
+
   /* 同步 D1：灰度期是冷备，失败不影响 JSON 发布 */
   await syncBoardToD1({
     board: "tools",
@@ -259,7 +299,7 @@ async function main(): Promise<void> {
     actor: process.env.GITHUB_ACTOR ?? "manual",
   });
 
-  const stats = writeToolStats();
+  const stats = await writeToolStats();
   console.log(
     `[publish] 已写入 content/aitools.json（${tools.length} → ${kept.length + accepted.length} 条` +
       `${drops.domains.size ? `，其中下榜 ${drops.domains.size}` : ""}）`,

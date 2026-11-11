@@ -114,7 +114,8 @@ jobs:
         run: |
           git config user.name "horizons-bot"
           git config user.email "bot@horizons.tools"
-          git add content/github.json
+          pnpm exec tsx scripts/admin/board-stats.ts
+          git add content/github.json content/board-stats.json
           # 候选池正常都在；万一被手工清理过，缺文件会让 git add 直接 fatal
           if [ -f content/github-staging.json ]; then git add content/github-staging.json; fi
           if git diff --cached --quiet; then
