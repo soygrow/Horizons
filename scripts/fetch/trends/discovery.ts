@@ -317,7 +317,15 @@ export async function discoverFromProductHunt(): Promise<TrendCandidate[]> {
   try {
     const { fetchProductHuntTools, closePHBrowser } = await import("../sources/productHunt");
     try {
-      const tools = await fetchProductHuntTools(30, "VOTES", "artificial-intelligence", new Set());
+      // 只要一批关键词做候选，最多扫 60 条就收口，别为了凑数量把关站解析等成整轮瓶颈
+      const tools = await fetchProductHuntTools(
+        30,
+        "VOTES",
+        "artificial-intelligence",
+        new Set(),
+        new Set(),
+        60,
+      );
       const out: TrendCandidate[] = [];
       for (const tool of tools) {
         if (!isUsableKeyword(tool.name)) continue;

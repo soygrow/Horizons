@@ -146,16 +146,12 @@ async function main(): Promise<void> {
       `${dryRun ? "｜dry-run" : ""}`,
   );
 
-  const fresh: AITool[] = [];
+  let fresh: AITool[] = [];
   try {
-    const items = await fetchProductHuntTools(count + existing.length, order, topic, existingNames);
-    for (const item of items) {
-      if (fresh.length >= count) break;
-      if (!item.domain || seen.has(item.domain)) continue;
-      seen.add(item.domain);
-      fresh.push(item);
-    }
-    console.log(`[staging] 抓到 ${items.length} 个，新增 ${fresh.length} 个（其余为重复/已拒绝）`);
+    // 去重和「凑够 count 就停」都下沉到抓取器：它按产出数收口，
+    // 不再像以前那样先拉 count + 已收录数 条候选回来慢慢筛。
+    fresh = await fetchProductHuntTools(count, order, topic, existingNames, seen);
+    console.log(`[staging] 新增候选 ${fresh.length}/${count} 个（跳过原因见上方 [fetch] 日志）`);
   } finally {
     await closePHBrowser();
   }
