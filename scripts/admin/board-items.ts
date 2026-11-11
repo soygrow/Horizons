@@ -57,7 +57,7 @@ export async function syncCandidates(
 
   const client = openClient();
   if (!client) {
-    console.warn(`[items] 未配置 D1 通道，跳过 ${board} 候选池落库（文件已写）`);
+    console.warn(`::warning::[items] 未配置 D1 通道，跳过 ${board} 候选池落库（后台看不到这批数据）`);
     return 0;
   }
 
@@ -101,7 +101,13 @@ export async function syncCandidates(
     }
     return written;
   } catch (e) {
-    console.warn(`[items] 写入 ${board} 候选池失败（不影响采集）：`, e);
+    // 后台只读 D1，写失败等于「采集成功但后台什么都没有」。
+    // 这里不抛错（仓库文件仍要提交），但必须在 Actions 里留一条错误注解，
+    // 否则日志一片绿，人只会以为数据没抓到。
+    const msg = e instanceof Error ? e.message : String(e);
+    console.warn(
+      `::error::[items] 写入 ${board} 候选池失败，后台看不到这批数据：${msg.slice(0, 300)}`,
+    );
     return written;
   }
 }

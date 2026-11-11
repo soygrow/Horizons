@@ -67,7 +67,7 @@ export async function saveReport(
   source = "script",
 ): Promise<boolean> {
   if (!d1Configured()) {
-    console.warn(`[report] 未配置 D1 通道，跳过 ${key} 落库（文件已写）`);
+    console.warn(`::warning::[report] 未配置 D1 通道，跳过 ${key} 落库（后台看不到这份快照）`);
     return false;
   }
 
@@ -111,7 +111,10 @@ export async function saveReport(
     console.log(`[report] ${key} 分 ${chunks.length} 片写入（${Math.round(text.length / 1024)}KB）`);
     return true;
   } catch (e) {
-    console.warn(`[report] 写入 ${key} 失败（不影响脚本）：`, e);
+    const msg = e instanceof Error ? e.message : String(e);
+    console.warn(
+      `::error::[report] 写入 ${key} 失败（后台读不到这份快照）：${msg.slice(0, 300)}`,
+    );
     return false;
   }
 }

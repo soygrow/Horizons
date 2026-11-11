@@ -276,7 +276,7 @@ async function main(): Promise<void> {
       added: fresh.length,
       skipped: Math.max(0, count - fresh.length),
       judged: items.length,
-      enriched: 0,
+      enriched,
     },
     lastEnrich: staging.lastEnrich,
   };
