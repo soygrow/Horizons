@@ -22,6 +22,14 @@ export const MIN_VISITS_CORE = 10_000;
 export const MIN_VISITS_WATCH = 1_000;
 /** 无月访问数据时，靠 Product Hunt 热度进观察区 */
 export const WATCH_PH_UPVOTES = 300;
+/**
+ * 无月访问数据时，靠 Hacker News 热度进观察区的门槛。
+ *
+ * 口径换算：Show HN 的票数量级远小于 PH（实测 14 天窗口内 AI 相关条目
+ * 169/200 集中在 3–9 分，20 分以上已是少数），20 分大致对应
+ * 「被一部分人看见」，与 PH 300 票的语义可比。
+ */
+export const WATCH_HN_POINTS = 20;
 
 export type ToolTier = "core" | "watch";
 
@@ -33,6 +41,8 @@ export interface TierInput {
   domain: string;
   /** 上游可能给 null（未采到），与 undefined 同义，别让调用方为此转一遍 */
   phUpvotes?: number | null;
+  /** Hacker News 的 Show HN 票数，与 phUpvotes 并列作为热度兜底 */
+  hnPoints?: number | null;
   trafficMetrics?: { monthlyVisits?: number | null; monthlyVisitsGrowth?: number | null };
   metrics?: { monthlyVisits?: number | null; momGrowth?: number | null };
 }
@@ -62,7 +72,9 @@ export function tierOf(t: TierInput): ToolTier | null {
 
   const v = visitsOf(t);
   if (v === undefined) {
-    return (t.phUpvotes ?? 0) >= WATCH_PH_UPVOTES ? "watch" : null;
+    if ((t.phUpvotes ?? 0) >= WATCH_PH_UPVOTES) return "watch";
+    if ((t.hnPoints ?? 0) >= WATCH_HN_POINTS) return "watch";
+    return null;
   }
   if (v >= MIN_VISITS_CORE) return "core";
   if (v >= MIN_VISITS_WATCH) {

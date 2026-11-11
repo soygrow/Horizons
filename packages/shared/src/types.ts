@@ -322,6 +322,8 @@ export interface AITool {
   // 热度信号（可追溯）
   phUpvotes?: number | null;
   phComments?: number | null;
+  /** Hacker News Show HN 票数（sourceType = hackernews 时才有） */
+  hnPoints?: number | null;
   githubStars?: number | null;    // 兼容旧数据；AI 工具榜优先用 PH 信号
   trancoRank?: number | null;     // 全球排名（Tranco，免费替代）
 
@@ -335,6 +337,7 @@ export interface AITool {
   verified: "verified" | "pending";
   sourceType:
     | "producthunt"
+    | "hackernews"
     | "manual"
     | "submitted"
     | "yc"

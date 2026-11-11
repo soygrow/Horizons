@@ -1,9 +1,10 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "horizons-site",
+  // 截图已迁到 R2（桶 horizons-archive），Worker 拦截 /screenshots/* 从桶里取，
+  // 其余请求原样交给静态资产。数据里的路径仍是 /screenshots/<domain>.png，未改动。
+  "main": "./src/worker.ts",
   "compatibility_date": "2026-10-01",
-  // 站点是纯静态产物；截图若日后迁到 R2，再加 main/src/worker.ts 与 r2_buckets
-  // （当前账号未开通 R2，绑一个不存在的桶会让 wrangler deploy 直接失败）
   // 2026-10-29 切换：新站接管主域，旧 Next 站（horizons-web）不再持有该路由
   "routes": [
     {
@@ -15,6 +16,16 @@
     "directory": "./dist",
     // 保持与现有站一致的 URL 形态（无尾斜杠，不做 301）
     "html_handling": "drop-trailing-slash",
-    "not_found_handling": "404-page"
-  }
+    "not_found_handling": "404-page",
+    "binding": "ASSETS",
+    // 必须让 Worker 先接 /screenshots/*：dist 里可能还留着历史截图文件，
+    // 静态资产命中就不会走到 Worker，R2 也就永远读不到。
+    "run_worker_first": ["/screenshots/*"]
+  },
+  "r2_buckets": [
+    {
+      "binding": "IMAGES",
+      "bucket_name": "horizons-archive"
+    }
+  ]
 }

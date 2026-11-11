@@ -16,6 +16,9 @@ import path from "node:path";
 import type { AITool } from "@horizons/shared";
 import { config } from "../fetch/config"; // 顺带加载 .env.local
 import { fetchProductHuntTools, closePHBrowser } from "../fetch/sources/productHunt";
+import { fetchHackerNewsTools } from "../fetch/sources/hackerNews";
+import { fetchFazierTools } from "../fetch/sources/fazier";
+import { fetchFuturepediaTools } from "../fetch/sources/futurepedia";
 import { loadExisting } from "../fetch/dedupe";
 import { extractTrafficMetrics, fetchLergassyMulti, hasApify } from "../fetch/sources/apify";
 import { applyTraffic } from "../fetch/apply-traffic";
@@ -118,6 +121,76 @@ async function enrichTraffic(items: AITool[]): Promise<number> {
   return ok;
 }
 
+/* ------------------------------- 多源合并抓取 ------------------------------- */
+
+/**
+ * 三源合并。
+ *
+ * 顺序是刻意的：HN 走公开 API、直接给真实域名，最稳；Futurepedia 一个请求
+ * 就能拿完；Product Hunt 放最后兜底 —— 它的 `/r/` 短链已被 Cloudflare
+ * 挑战覆盖（服务端 403、有头 Chrome 停在验证页），每条约 7s 空转，
+ * 不该占用前两个源的预算。
+ *
+ * 三个源共用同一份 `existingNames` / `seen`，先到先得，天然去重。
+ * 任一源抛错只降级不中断，避免一个源挂掉拖垮整轮采集。
+ */
+async function fetchAllSources(
+  count: number,
+  order: "VOTES" | "NEWEST",
+  topic: string,
+  existingNames: Set<string>,
+  seen: Set<string>,
+): Promise<AITool[]> {
+  const out: AITool[] = [];
+
+  // Fazier 放第一：和 PH 同形态（名字 + 一句话 + 票数 + 官网直链），
+  // 单页就能出 50 条左右，是当前唯一能稳定撑起产量的源。
+  try {
+    const fz = await fetchFazierTools(count, existingNames, seen);
+    out.push(...fz.items);
+  } catch (e) {
+    console.warn(`[staging] Fazier 抓取失败：${e instanceof Error ? e.message : e}`);
+  }
+
+  if (out.length < count) {
+    try {
+      const hn = await fetchHackerNewsTools(count - out.length, existingNames, seen);
+      out.push(...hn.items);
+    } catch (e) {
+      console.warn(`[staging] HN 抓取失败：${e instanceof Error ? e.message : e}`);
+    }
+  }
+
+  if (out.length < count) {
+    try {
+      const fp = await fetchFuturepediaTools(count - out.length, existingNames, seen);
+      out.push(...fp.items);
+    } catch (e) {
+      console.warn(`[staging] Futurepedia 抓取失败：${e instanceof Error ? e.message : e}`);
+    }
+  }
+
+  if (out.length < count) {
+    try {
+      const ph = await fetchProductHuntTools(
+        count - out.length,
+        order,
+        topic,
+        existingNames,
+        seen,
+      );
+      out.push(...ph);
+    } catch (e) {
+      console.warn(`[staging] Product Hunt 抓取失败：${e instanceof Error ? e.message : e}`);
+    } finally {
+      await closePHBrowser();
+    }
+  }
+
+  console.log(`[staging] 三源合并完成：${out.length}/${count}`);
+  return out;
+}
+
 /* --------------------------------- 主流程 --------------------------------- */
 
 async function main(): Promise<void> {
@@ -142,19 +215,12 @@ async function main(): Promise<void> {
   ]);
 
   console.log(
-    `[staging] 目标 ${count} 个｜来源 Product Hunt ${order}/${topic}｜富化 ${enrich ? "开" : "关"}` +
-      `${dryRun ? "｜dry-run" : ""}`,
+    `[staging] 目标 ${count} 个｜来源 Fazier + HN + Futurepedia + Product Hunt(${order}/${topic})` +
+      `｜富化 ${enrich ? "开" : "关"}${dryRun ? "｜dry-run" : ""}`,
   );
 
-  let fresh: AITool[] = [];
-  try {
-    // 去重和「凑够 count 就停」都下沉到抓取器：它按产出数收口，
-    // 不再像以前那样先拉 count + 已收录数 条候选回来慢慢筛。
-    fresh = await fetchProductHuntTools(count, order, topic, existingNames, seen);
-    console.log(`[staging] 新增候选 ${fresh.length}/${count} 个（跳过原因见上方 [fetch] 日志）`);
-  } finally {
-    await closePHBrowser();
-  }
+  const fresh: AITool[] = await fetchAllSources(count, order, topic, existingNames, seen);
+  console.log(`[staging] 新增候选 ${fresh.length}/${count} 个（跳过原因见上方 [fetch] 日志）`);
 
   if (fresh.length === 0) {
     console.log("[staging] 无新增，staging 未变动");

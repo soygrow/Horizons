@@ -6,11 +6,18 @@
  *
  * 采集端只拿到「判断必需的字段」就算出 verdict，不依赖 DFS 关键词、AI 解读等富化数据。
  */
-import { isBlockedDomain, type AITool } from "@horizons/shared";
+import {
+  isBlockedDomain,
+  WATCH_HN_POINTS,
+  WATCH_PH_UPVOTES,
+  type AITool,
+} from "@horizons/shared";
+
+/** 与 @horizons/shared 同源，这里再导出一次，既有调用方不用改 import 路径 */
+export { WATCH_HN_POINTS, WATCH_PH_UPVOTES };
 
 export const MIN_VISITS_CORE = 10_000;
 export const MIN_VISITS_WATCH = 1_000;
-export const WATCH_PH_UPVOTES = 300;
 /** 新星豁免窗口（A4 第③条） */
 export const NEW_STAR_DAYS = 120;
 
@@ -129,7 +136,16 @@ export function judge(t: AITool, alive: AliveState = null): Verdict {
       checks.a4 = true;
       return { tier: "watch", reason: `无流量·PH ${votes} 票（观察区）`, checks };
     }
-    return { tier: "reject", reason: "A4 无流量且 PH 不足 300 票", checks };
+    const hn = t.hnPoints ?? 0;
+    if (hn >= WATCH_HN_POINTS) {
+      checks.a4 = true;
+      return { tier: "watch", reason: `无流量·HN ${hn} 分（观察区）`, checks };
+    }
+    return {
+      tier: "reject",
+      reason: `A4 无流量且社区热度不足（PH ${votes} 票 / HN ${hn} 分）`,
+      checks,
+    };
   }
 
   if (v < MIN_VISITS_WATCH) {
