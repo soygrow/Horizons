@@ -505,9 +505,10 @@ const meta = {
           <div id="fields-body" class="space-y-4"></div>
         </section>
 
-        <!-- 工具榜：抓取 → 待发布审核 → 更新榜单。
-             所有动作都在 GitHub Actions 上执行，页面只负责触发与读结果，
-             因此这一步不需要改站点数据，线上榜单不会因为这个页签而变化。 -->
+        <!-- 工具榜：抓取 → 确认收录 → 富化 → 发布。
+             三步操作都挂在「待发布」这张表的工具栏上，条目状态驱动按钮可用性：
+             只有 approved 能富化、只有 enriched 能发布、enriching 期间不可重选。
+             所有动作都在 GitHub Actions 上执行，页面只负责触发与读结果。 -->
         <section id="tab-tools" hidden class="space-y-4">
           <div id="tools-setup" class="hidden rounded-2xl border border-border bg-surface p-4">
             <h2 class="text-sm font-semibold">需要先配置 GitHub 集成</h2>
@@ -646,6 +647,16 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 >
                   批量拒绝
                 </button>
+                <!-- 第三步：发布。放在这里是因为前三步都在同一张表上操作，
+                     发布入口另起一块区域时，用户找不到「审核完了然后呢」 -->
+                <button
+                  id="tools-publish-btn"
+                  type="button"
+                  title="把已富化的条目发布到线上榜单"
+                  class="rounded-lg border border-primary bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  发布到榜单
+                </button>
               </div>
             </div>
             <div class="overflow-x-auto">
@@ -674,23 +685,17 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
           <article class="rounded-2xl border border-border bg-surface p-4">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div class="min-w-0">
-                <h2 class="text-sm font-semibold">更新榜单</h2>
+                <h2 class="text-sm font-semibold">发布检查</h2>
                 <p id="tools-publish-preview" class="mt-1 text-xs text-ink-muted">—</p>
               </div>
               <div class="flex items-center gap-2">
                 <button
                   id="tools-audit-btn"
                   type="button"
+                  title="重新体检已在榜的条目，找出站点失效或流量跌破门槛该下榜的"
                   class="rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   重判存量
-                </button>
-                <button
-                  id="tools-publish-btn"
-                  type="button"
-                  class="rounded-lg border border-primary bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  更新榜单
                 </button>
               </div>
             </div>
@@ -701,9 +706,10 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
               富化完成后这里会显示各字段的空置与异常统计，你再决定发哪些。
             </div>
             <p class="mt-2 text-[11px] leading-relaxed text-ink-muted">
-              只发布「已富化」的条目：候选 → 确认收录 → 富化 → 按完整度挑选 → 发榜。
-              发布后合并进 <code class="rounded bg-surface-2 px-1 py-0.5">content/aitools.json</code> 并自动触发构建；
-              未选中的条目留在队列里继续处理。
+              发布按钮在上方「待发布」表格的工具栏里。只有阶段为「可发榜」的条目会被发布，
+              其余状态自动跳过；发布后合并进
+              <code class="rounded bg-surface-2 px-1 py-0.5">content/aitools.json</code>
+              并自动触发站点构建，未发布的条目继续留在队列里。
             </p>
           </article>
         </section>

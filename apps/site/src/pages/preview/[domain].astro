@@ -1,0 +1,72 @@
+---
+/**
+ * 待发布条目的详情预览页。
+ *
+ * 和线上 /tools/[domain] 用**同一批组件**渲染，只有数据来源不同
+ * （这里读 content/dist/tools/preview/*.json，由 scripts/build/preview-tools.ts
+ * 从 D1 的 board_items 导出）。这样「审核时看到的样子」就是「上线后的样子」，
+ * 不会出现预览一套模板、线上另一套模板的漂移。
+ *
+ * 只在后台内部使用：Base 里非白名单路径自动 noindex，sitemap 也不收录。
+ */
+import Base from "../../layouts/Base.astro";
+import ToolHero from "../../components/detail/ToolHero.astro";
+import PerformanceSection from "../../components/detail/sections/PerformanceSection.astro";
+import OpportunitySection from "../../components/detail/sections/OpportunitySection.astro";
+import TrafficSection from "../../components/detail/sections/TrafficSection.astro";
+import BusinessSection from "../../components/detail/sections/BusinessSection.astro";
+import PlaybookSection from "../../components/detail/sections/PlaybookSection.astro";
+import IdeasSection from "../../components/detail/sections/IdeasSection.astro";
+import { buildSiteMarkdown } from "../../lib/site-markdown";
+
+export async function getStaticPaths() {
+  const mods = import.meta.glob("../../../../../content/dist/tools/preview/*.json", {
+    eager: true,
+  }) as Record<string, { data: Record<string, any> }>;
+  return Object.values(mods).map((mod) => ({
+    params: { domain: mod.data.domain },
+    props: { tool: mod.data },
+  }));
+}
+
+const { tool } = Astro.props as { tool: Record<string, any> };
+const markdown = buildSiteMarkdown(tool as never);
+
+const STAGE_LABEL: Record<string, string> = {
+  enriched: "富化完成，等待发布",
+  enriching: "富化进行中，部分字段还会变",
+  enrich_failed: "富化失败，下面可能是残缺数据",
+};
+const stage = String(tool.stage ?? "enriched");
+---
+
+<Base title={`[预览] ${tool.name ?? tool.domain} - 值不值得做`} description={tool.description} noindex={true}>
+  {/* 预览条：一眼看出这不是线上页面，并且能直接跳回后台 */}
+  <div class="border-b border-primary/30 bg-primary-soft">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-xs text-primary sm:px-6">
+      <span class="rounded-full bg-primary px-2 py-0.5 font-semibold text-white">预览</span>
+      <span class="font-medium">{tool.domain}</span>
+      <span class="text-primary/80">· {STAGE_LABEL[stage] ?? stage}</span>
+      <span class="text-primary/60">· 尚未发布到榜单，此页不会被搜索引擎收录</span>
+      <a href="/admin" class="ml-auto font-medium underline underline-offset-2 hover:no-underline">返回后台</a>
+    </div>
+  </div>
+
+  <div class="flex flex-col">
+    <ToolHero tool={tool} markdown={markdown} />
+
+    <div class="mx-auto flex max-w-7xl flex-col gap-16 px-4 py-12 sm:px-6">
+      <PerformanceSection tool={tool} />
+      <OpportunitySection tool={tool} />
+      <TrafficSection tool={tool} />
+      <BusinessSection tool={tool} />
+      <PlaybookSection tool={tool} />
+      <IdeasSection tool={tool} />
+    </div>
+  </div>
+
+  <script>
+    import { initToolDetail } from "../../scripts/detail";
+    initToolDetail();
+  </script>
+</Base>

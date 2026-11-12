@@ -1,8 +1,14 @@
 /**
  * 后台「工具榜」页签。
  *
- * 只做界面与交互：真正干活的是 API 里的 GitHub Actions 触发，
- * 这里负责把「抓取 → 待发布 → 更新榜单」三步串起来，并把结果画出来。
+ * 只做界面与交互：真正干活的是 API 里的 GitHub Actions 触发。
+ *
+ * 一条工具的生命周期（也是这张表的操作顺序）：
+ *   候选 candidate →（确认收录）→ approved →（开始富化）→ enriching
+ *   → enriched（可点名字看预览页）/ enrich_failed →（发布）→ 上线并移出队列
+ *
+ * 每一步都只对属于它的状态生效：富化只认 approved，发布只认 enriched，
+ * 富化中的条目连复选框都不给勾。宁可少一个入口，也不让用户点出一笔冤枉钱。
  */
 
 /* -------------------------------- 基础工具 -------------------------------- */
@@ -458,12 +464,18 @@ function renderStaging(data: StagingResp): void {
             : row.stage === "enriching"
               ? "富化中"
               : "—";
+        // 富化过的条目才有预览页（构建期从 D1 导出）；没富化的打开抽屉就够了
+        const previewable =
+          row.stage === "enriched" || row.stage === "enriching" || row.stage === "enrich_failed";
+        const nameCell = previewable
+          ? `<a href="/preview/${esc(row.domain)}" target="_blank" rel="noopener" class="block max-w-full truncate font-medium text-primary hover:underline" title="在新页面预览详情页（与线上同一套布局）">${esc(row.name)}</a>`
+          : `<button type="button" data-tool-open="${esc(row.domain)}" class="block max-w-full truncate text-left font-medium text-ink hover:text-primary">${esc(row.name)}</button>`;
         return `<tr class="transition hover:bg-surface-2/50">
             <td class="px-2 py-2.5">
               <input type="checkbox" data-tool-select="${esc(row.domain)}" class="h-3.5 w-3.5 rounded border-border"${checked}${busy ? " disabled title=\"富化进行中，不能重复选择\"" : ""} aria-label="选择 ${esc(row.name)}" />
             </td>
             <td class="max-w-[240px] px-4 py-2.5">
-              <button type="button" data-tool-open="${esc(row.domain)}" class="block max-w-full truncate text-left font-medium text-ink hover:text-primary">${esc(row.name)}</button>
+              ${nameCell}
               <div class="mt-0.5 max-w-full truncate text-[11px] text-ink-muted">${esc(row.description ?? "")}</div>
             </td>
             <td class="px-4 py-2.5 text-xs">
@@ -478,7 +490,13 @@ function renderStaging(data: StagingResp): void {
             <td class="px-4 py-2.5">${stageBadge(row.stage)}</td>
             <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${missing}</td>
             <td class="whitespace-nowrap px-4 py-2.5 text-right">
-              <button type="button" data-tool-open="${esc(row.domain)}" class="text-xs text-primary hover:underline">详情</button>
+              ${
+                // 富化完成的才能发布：单条发布不用先回顶部勾选，少一步操作
+                row.stage === "enriched"
+                  ? `<button type="button" data-tool-publish="${esc(row.domain)}" class="mr-3 text-xs font-medium text-primary hover:underline">发布</button>`
+                  : ""
+              }
+              <button type="button" data-tool-open="${esc(row.domain)}" class="text-xs text-ink-muted hover:text-primary hover:underline">详情</button>
               <button type="button" data-tool-reject="${esc(row.domain)}" data-tool-rejected="${row.rejected}" class="ml-3 text-xs text-ink-muted transition hover:text-danger">${row.rejected ? "恢复" : "拒绝"}</button>
             </td>
           </tr>`;
@@ -547,10 +565,13 @@ function renderPreview(data: PreviewResp): void {
       ? `已确认 ${data.approved} 个还没富化，先点「开始富化」。`
       : "没有已富化的条目：候选 → 确认收录 → 富化 → 才能发榜。";
     btn.setAttribute("disabled", "true");
+    btn.textContent = "发布到榜单";
     return;
   }
 
   btn.removeAttribute("disabled");
+  // 数量直接写在按钮上：不用展开下方的检查区就知道现在能发几条
+  btn.textContent = `发布到榜单（${data.pending}）`;
 
   const e = data.estimate;
   const parts = [
@@ -817,6 +838,42 @@ async function enrichDomains(domains: string[]): Promise<void> {
   });
 }
 
+/**
+ * 发布到线上榜单。
+ *
+ * domains 非空 = 只发这些（后端仍会按「已富化」过滤）；空 = 队列里全部可发榜的。
+ * 发布是唯一会改动线上榜单的动作，所以给两次确认：第一次说清范围，第二次说清后果。
+ */
+async function publishDomains(domains: string[]): Promise<boolean> {
+  const total = state.staging?.enriched ?? 0;
+  const scope = domains.length ? `选中的 ${domains.length} 个` : `全部 ${total} 个可发榜条目`;
+
+  if (
+    !window.confirm(
+      `确认发布${scope}？\n\n只有阶段是「可发榜」的条目会进榜，其余状态自动跳过。`,
+    )
+  ) {
+    return false;
+  }
+  if (
+    !window.confirm(
+      `再确认一次：发布后会合并进 content/aitools.json 并触发站点构建，约 2–5 分钟上线。\n\n确认发布？`,
+    )
+  ) {
+    return false;
+  }
+
+  await apiPost("/tools/publish", { note: `后台发布 ${scope}`, domains });
+  state.selected.clear();
+  void loadJobs();
+  void loadStaging();
+  void loadPreview();
+  window.alert(
+    `已提交发布：${scope}。\n构建约 2–5 分钟上线；发布成功后这些条目会从队列移除，上方任务列表能看到进度。`,
+  );
+  return true;
+}
+
 function bind(): void {
   $("tools-fetch-count").addEventListener("change", updateFetchEstimate);
   $("tools-fetch-enrich").addEventListener("change", updateFetchEstimate);
@@ -849,32 +906,31 @@ function bind(): void {
 
   $("tools-publish-btn").addEventListener("click", async () => {
     const btn = $("tools-publish-btn") as HTMLButtonElement;
-    const enabled = state.staging?.enriched ?? 0;
+    if (btn.disabled) return;
+    // 勾了提交勾选的（后端只放行已富化的），没勾提交全部可发榜的
     const picked = [...state.selected];
-    const scope = picked.length ? `选中的 ${picked.length} 个` : `全部 ${enabled} 个已富化条目`;
-    if (
-      !window.confirm(
-        `确认发布${scope}？\n未富化的条目不会进榜，发布后触发一次站点构建。`,
-      )
-    ) {
+    const total = state.staging?.enriched ?? 0;
+    if (!picked.length && !total) {
+      window.alert("没有可发榜的条目：先富化，阶段变成「可发榜」之后才能发布。");
       return;
     }
 
     btn.disabled = true;
     btn.textContent = "提交中…";
     try {
-      await apiPost("/tools/publish", { note: `后台发布 ${scope}`, domains: picked });
-      state.selected.clear();
+      if (!(await publishDomains(picked))) {
+        // 用户在半路取消：按钮要立刻恢复，不然看起来像已经在发布了
+        btn.disabled = false;
+        btn.textContent = "发布到榜单";
+        return;
+      }
       btn.textContent = "已提交";
-      void loadJobs();
-      void loadStaging();
       window.setTimeout(() => {
-        btn.textContent = "更新榜单";
         void loadPreview();
       }, 4000);
     } catch (e) {
       btn.disabled = false;
-      btn.textContent = "更新榜单";
+      btn.textContent = "发布到榜单";
       window.alert(`发布失败：${e instanceof Error ? e.message : String(e)}`);
     }
   });
@@ -907,6 +963,13 @@ function bind(): void {
     const open = target.closest<HTMLElement>("[data-tool-open]");
     if (open?.dataset.toolOpen) {
       void openDetail(open.dataset.toolOpen);
+      return;
+    }
+
+    // 行内「发布」：只发布这一条已富化的，不用先回顶部勾选
+    const publish = target.closest<HTMLElement>("[data-tool-publish]");
+    if (publish?.dataset.toolPublish) {
+      void publishDomains([publish.dataset.toolPublish]);
       return;
     }
 

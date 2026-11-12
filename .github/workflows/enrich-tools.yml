@@ -94,3 +94,20 @@ jobs:
           git push
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "::notice::富化完成，请到后台查看字段完整度后再选择发榜"
+
+      # 预览页是构建期从 D1 导出 staging 条目生成的（/preview/{domain}），
+      # 不重建的话富化完点「工具名」看到的还是上一版数据。
+      # 富化提交只改 content/tools-field-report.json，不在 deploy-site 的 paths 里，
+      # 不会自动触发，必须显式 dispatch。
+      - name: 触发站点构建（刷新预览页）
+        env:
+          BOT_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${BOT_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/deploy-site.yml/dispatches" \
+            -d '{"ref":"main"}' | head -c 400
+          echo
+          echo "::notice::已请求 Deploy Site，预览页几分钟后可看"
