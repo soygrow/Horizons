@@ -43,9 +43,14 @@ const description = "按 docs/18-AI工具字段采集方案.md 采集的单个�
       </div>
     </div>
 
-    <div id="fc-message" class="mt-6 rounded-xl border border-border bg-surface p-4 text-sm text-ink-secondary"></div>
+    <!--
+      所有「先藏后显」的容器一律用 `hidden` 属性，不要用 Tailwind 的 class="hidden"：
+      JS 里 `el.hidden = false` 只能删属性，删不掉 class，之前 fc-content 就是带着
+      class="hidden" 永远 display:none —— 接口明明返回了 72 个字段，页面却一片空白。
+    -->
+    <div id="fc-message" class="mt-6 rounded-xl border border-border bg-surface p-4 text-sm text-ink-secondary" hidden></div>
 
-    <div id="fc-content" class="mt-6 hidden space-y-6">
+    <div id="fc-content" class="mt-6 space-y-6" hidden>
       <div class="rounded-2xl border border-border bg-surface p-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-baseline gap-2">
@@ -59,14 +64,14 @@ const description = "按 docs/18-AI工具字段采集方案.md 采集的单个�
           <div id="fc-bar" class="h-full rounded-full bg-primary transition-all" style="width: 0%"></div>
         </div>
         <div id="fc-groups" class="mt-3 flex flex-wrap gap-2 text-[11px] text-ink-muted"></div>
-        <p id="fc-step" class="mt-3 hidden text-xs text-primary"></p>
+        <p id="fc-step" class="mt-3 text-xs text-primary" hidden></p>
       </div>
 
       <div id="fc-shots" class="grid gap-4 sm:grid-cols-2"></div>
 
       <div id="fc-fields" class="space-y-4"></div>
 
-      <div id="fc-sources" class="hidden rounded-2xl border border-border bg-surface">
+      <div id="fc-sources" class="rounded-2xl border border-border bg-surface" hidden>
         <div class="border-b border-border p-4">
           <h2 class="text-sm font-semibold">数据源执行情况</h2>
           <p class="mt-1 text-xs text-ink-muted">失败的数据源只影响它负责的字段；这里列出耗时与错误原文。</p>
@@ -248,10 +253,13 @@ const description = "按 docs/18-AI工具字段采集方案.md 采集的单个�
     }
 
     function shotCard(label: string, hint: string, src: string | null): string {
+      // 不用 loading="lazy"：未加载的图片高度为 0，加上页面很长，很容易出现
+      // 「截图区域存在但永远是空白」的观感（只有两张图，代价可忽略）
       const inner = src
-        ? `<a href="${esc(src)}" target="_blank" rel="noreferrer">
-             <img src="${esc(src)}" alt="${esc(label)}" loading="lazy"
-                  class="max-h-[420px] w-full rounded-lg border border-border object-cover object-top" />
+        ? `<a href="${esc(src)}" target="_blank" rel="noreferrer" title="点击查看原图"
+             class="block overflow-hidden rounded-lg border border-border bg-surface-2">
+             <img src="${esc(src)}" alt="${esc(label)}" decoding="async"
+                  class="max-h-[420px] w-full object-cover object-top" />
            </a>`
         : `<div class="flex h-[220px] items-center justify-center rounded-lg border border-dashed border-border text-xs text-ink-muted">未生成截图</div>`;
       return `<div class="rounded-2xl border border-border bg-surface p-4">
