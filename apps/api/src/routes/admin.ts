@@ -5,7 +5,10 @@
  * - 密码只以 PBKDF2-SHA256 哈希形式存在于 Secret 里，库里/仓库里没有明文；
  *   用户名的比较也走「先哈希再逐字节比较」，不让响应时间泄漏前缀。
  * - 会话是服务端可撤销的：Cookie 里是 32 字节随机 token，库里只存 sha256(token)，
- *   HttpOnly + SameSite=Strict + Path=/api/admin，前端 JS 读不到，也不会发给其他接口。
+ *   HttpOnly + SameSite=Strict，前端 JS 读不到。
+ *   Path 是 `/` 而不是 `/api/admin`：站点 Worker 要用同一个会话给 /preview/* 放行，
+ *   限定在 /api/admin 的话浏览器根本不会把 Cookie 发到预览页。代价只是每个静态请求
+ *   多带一个几十字节的头，换来的是不用为预览再维护一套凭证。
  * - 登录失败按 IP 哈希计数，15 分钟窗口内 5 次即封锁；封锁只写在 D1，Worker 无状态也不绕不过。
  * - 所有写操作要求 JSON + 自定义请求头：跨站表单发不出 application/json，
  *   跨站 fetch 会先触发 CORS 预检（本服务不返回 CORS 头），因此 CSRF 打不进来。
@@ -27,7 +30,10 @@ import { trends as adminTrends } from "./admin-trends";
 export const admin = new Hono<{ Bindings: Env }>();
 
 const ADMIN_COOKIE = "hzn_admin";
-const ADMIN_COOKIE_PATH = "/api/admin";
+/** 站点 Worker 要用它给 /preview/* 放行，所以作用域必须是整站（见文件头说明） */
+const ADMIN_COOKIE_PATH = "/";
+/** 改成 `/` 之前发出的旧 Cookie，登录时顺手清掉，免得同名两份各带一个 */
+const LEGACY_COOKIE_PATH = "/api/admin";
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const MAX_FAILS = 5;
 const WINDOW_MS = 15 * 60 * 1000;
@@ -300,6 +306,10 @@ admin.post("/login", async (c) => {
     c.env.DB.prepare("DELETE FROM admin_login_limits WHERE ip_hash = ?").bind(ipHash),
   ]);
 
+  // 老版本 cookie 的作用域是 /api/admin，与新的 `/` 同名共存会让服务端读到哪一份取决于
+  // 浏览器发送顺序。登录时先把它删掉，之后只存在一份。
+  deleteCookie(c, ADMIN_COOKIE, { path: LEGACY_COOKIE_PATH });
+
   setCookie(c, ADMIN_COOKIE, token, {
     path: ADMIN_COOKIE_PATH,
     httpOnly: true,
@@ -319,6 +329,30 @@ admin.use("*", async (c, next) => {
 });
 
 admin.get("/me", (c) => c.json({ ok: true, username: c.env.ADMIN_USERNAME ?? "" }));
+
+/**
+ * 把已有会话的 Cookie 作用域迁到整站。
+ *
+ * Cookie 作用域从 /api/admin 改成 / 之前发出的会话，浏览器不会把它发给 /preview/*，
+ * 而预览页又靠这份会话放行 —— 直接跳过去只会来回重定向。
+ * 后台每次进入时静默调一次：识别到旧作用域就重新下发一份，用户不用重新登录。
+ * 放在 `admin.use("*")` 之后，天然要求登录态。
+ */
+admin.post("/session/refresh", async (c) => {
+  const token = getCookie(c, ADMIN_COOKIE);
+  const session = await readSession(c);
+  if (!token || !session) return c.json({ error: "unauthorized" }, 401);
+
+  deleteCookie(c, ADMIN_COOKIE, { path: LEGACY_COOKIE_PATH });
+  setCookie(c, ADMIN_COOKIE, token, {
+    path: ADMIN_COOKIE_PATH,
+    httpOnly: true,
+    sameSite: "Strict",
+    secure: isHttps(c),
+    maxAge: Math.max(1, Math.floor((session.expires_at - Date.now()) / 1000)),
+  });
+  return c.json({ ok: true });
+});
 
 /** 工具榜后台：抓取 / 审核 / 发布（数据仍在仓库 JSON，这里只做触发与读取） */
 admin.route("/tools", adminTools);
@@ -345,6 +379,7 @@ admin.post("/logout", async (c) => {
       .run();
   }
   deleteCookie(c, ADMIN_COOKIE, { path: ADMIN_COOKIE_PATH });
+  deleteCookie(c, ADMIN_COOKIE, { path: LEGACY_COOKIE_PATH });
   return c.json({ ok: true });
 });
 

@@ -301,7 +301,45 @@ function showLogin(): void {
   ($("login-username") as HTMLInputElement).focus();
 }
 
+/**
+ * 预览页未登录时会被站点 Worker 送回 /admin?next=/preview/xxx。
+ * 登录成功后直接跳回去，不然人还得自己再找一遍那条工具。
+ * 只接受同源 /preview/ 路径，防止这个参数被当成开放重定向。
+ */
+function takeNextUrl(): string | null {
+  const next = new URLSearchParams(location.search).get("next");
+  if (!next) return null;
+  try {
+    const url = new URL(next, location.origin);
+    if (url.origin !== location.origin || !url.pathname.startsWith("/preview/")) return null;
+    return url.pathname + url.search;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 确保会话 Cookie 的作用域是整站，预览页才收得到。
+ * 老会话（作用域还是 /api/admin）在这里静默换一份，不打扰用户重新登录。
+ * 失败无所谓：后台本身不依赖这一步，最坏情况是预览页踢回登录。
+ */
+async function ensureSessionScope(): Promise<void> {
+  try {
+    await api("/session/refresh", { method: "POST", headers: CSRF_HEADERS, body: "{}" });
+  } catch {
+    // 忽略：可能刚好过期，下面的接口调用会照常走 401 流程
+  }
+}
+
 async function enterApp(username: string): Promise<void> {
+  await ensureSessionScope();
+
+  const back = takeNextUrl();
+  if (back) {
+    location.replace(back);
+    return;
+  }
+
   loginView.hidden = true;
   appView.hidden = false;
   $("who").textContent = username;

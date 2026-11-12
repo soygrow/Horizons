@@ -18,10 +18,19 @@
     "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page",
     "binding": "ASSETS",
-    // 必须让 Worker 先接 /screenshots/*：dist 里可能还留着历史截图文件，
-    // 静态资产命中就不会走到 Worker，R2 也就永远读不到。
-    "run_worker_first": ["/screenshots/*"]
+    // 必须让 Worker 先接这两类路径，静态资产一旦命中就不会再走到 Worker：
+    //   /screenshots/*  dist 里可能还留着历史截图，不走 Worker 就永远读不到 R2
+    //   /preview/*      未发布的预览页，Worker 里校验管理员 session 后才放行
+    "run_worker_first": ["/screenshots/*", "/preview/*"]
   },
+  // 只读 admin_sessions 做预览页鉴权（和 apps/api 同一个库、同一张表）
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "horizons-db",
+      "database_id": "355e5cca-29ca-4b37-90a5-6c88d94e7a4b"
+    }
+  ],
   "r2_buckets": [
     {
       "binding": "IMAGES",

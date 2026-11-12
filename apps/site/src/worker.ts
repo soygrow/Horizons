@@ -1,12 +1,24 @@
 /**
- * 站点 Worker：只拦截 /screenshots/* 从 R2 取图，其余请求原样交给静态资产。
+ * 站点 Worker：接管两类动态请求，其余原样交给静态资产。
  *
- * 截图体积大（数百张），不适合随 Astro 构建产物一起部署；
- * 放到 R2 后，构建产物保持轻量，图片 URL 仍是 /screenshots/<domain>.png，数据与页面无需改动。
+ * 1. /screenshots/*  —— 截图体积大（数百张），存在 R2 里，构建产物保持轻量，
+ *    URL 仍是 /screenshots/<domain>.png，数据与页面无需改动。
+ * 2. /preview/*      —— 后台预览页是构建期从 D1 导出的**未发布**内容，
+ *    不能公开。这里校验 session cookie（和 /api/admin 同一张 admin_sessions 表），
+ *    未登录一律 302 回 /admin 登录，登录后自动跳回来。
+ *
+ * 预览鉴权必须放在 Worker，而不是靠 noindex 或藏在 /admin 路径下：
+ * 静态资产是公开可取的，只要 HTML 进得了 dist，谁都能直接拿。
  */
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
   IMAGES: { get(key: string): Promise<R2ObjectLike | null> };
+  /** 与 API Worker 同一个 D1（只读 admin_sessions）。未绑定时按未登录处理 */
+  DB?: {
+    prepare(sql: string): {
+      bind(...values: unknown[]): { first<T = Record<string, unknown>>(): Promise<T | null> };
+    };
+  };
 }
 
 interface R2ObjectLike {
@@ -16,13 +28,81 @@ interface R2ObjectLike {
 }
 
 const SHOT_PREFIX = "/screenshots/";
+const PREVIEW_PREFIX = "/preview";
+const ADMIN_COOKIE = "hzn_admin";
+const ADMIN_PAGE = "/admin";
 
 /** 截图按域名命名、内容极少变化，给长缓存；入口 URL 不变，改图时可用域名后缀或清缓存 */
 const CACHE_CONTROL = "public, max-age=604800, stale-while-revalidate=86400";
 
+/* ------------------------------ 预览鉴权 ------------------------------ */
+
+function isPreviewPath(pathname: string): boolean {
+  return pathname === PREVIEW_PREFIX || pathname.startsWith(`${PREVIEW_PREFIX}/`);
+}
+
+function readCookie(header: string | null, name: string): string | null {
+  if (!header) return null;
+  for (const part of header.split(";")) {
+    const eq = part.indexOf("=");
+    if (eq < 0) continue;
+    if (part.slice(0, eq).trim() !== name) continue;
+    return decodeURIComponent(part.slice(eq + 1).trim());
+  }
+  return null;
+}
+
+/** 与 API 的 readSession 保持同一口径：库里只存 sha256(token) */
+async function isAdminSession(request: Request, env: Env): Promise<boolean> {
+  const token = readCookie(request.headers.get("cookie"), ADMIN_COOKIE);
+  if (!token || token.length < 20 || token.length > 128) return false;
+  // 没绑 D1 时宁可拦下，也不放行未发布内容
+  if (!env.DB) return false;
+
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
+  const tokenHash = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+
+  try {
+    const row = await env.DB.prepare("SELECT expires_at FROM admin_sessions WHERE token_hash = ?")
+      .bind(tokenHash)
+      .first<{ expires_at: number }>();
+    return !!row && row.expires_at > Date.now();
+  } catch {
+    // 查库失败时按未授权处理（fail closed）
+    return false;
+  }
+}
+
+/**
+ * 静态资产本身可能带公共缓存头，鉴权后的响应必须改掉，
+ * 否则 CDN / 浏览器缓存会把未发布内容存下来，鉴权等于没做。
+ */
+function privateResponse(res: Response): Response {
+  const headers = new Headers(res.headers);
+  headers.set("cache-control", "private, no-store");
+  headers.set("x-robots-tag", "noindex, nofollow");
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+}
+
+async function servePreview(request: Request, env: Env, url: URL): Promise<Response> {
+  if (!(await isAdminSession(request, env))) {
+    const next = encodeURIComponent(url.pathname + url.search);
+    return new Response(null, {
+      status: 302,
+      headers: { location: `${ADMIN_PAGE}?next=${next}`, "cache-control": "no-store" },
+    });
+  }
+  return privateResponse(await env.ASSETS.fetch(request));
+}
+
+/* --------------------------------- 入口 --------------------------------- */
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    if (isPreviewPath(url.pathname)) return servePreview(request, env, url);
+
     if (!url.pathname.startsWith(SHOT_PREFIX)) return env.ASSETS.fetch(request);
 
     if (request.method !== "GET" && request.method !== "HEAD") {

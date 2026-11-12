@@ -468,7 +468,7 @@ function renderStaging(data: StagingResp): void {
         const previewable =
           row.stage === "enriched" || row.stage === "enriching" || row.stage === "enrich_failed";
         const nameCell = previewable
-          ? `<a href="/preview/${esc(row.domain)}" target="_blank" rel="noopener" class="block max-w-full truncate font-medium text-primary hover:underline" title="在新页面预览详情页（与线上同一套布局）">${esc(row.name)}</a>`
+          ? `<a href="/preview/${esc(row.domain)}" target="_blank" rel="noopener" class="block max-w-full truncate font-medium text-primary hover:underline" title="在新窗口预览详情页（与线上同一套布局，需管理员登录）">${esc(row.name)}</a>`
           : `<button type="button" data-tool-open="${esc(row.domain)}" class="block max-w-full truncate text-left font-medium text-ink hover:text-primary">${esc(row.name)}</button>`;
         return `<tr class="transition hover:bg-surface-2/50">
             <td class="px-2 py-2.5">
