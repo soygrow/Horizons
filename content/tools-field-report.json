@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-12T06:08:30.152Z",
+  "generatedAt": "2026-11-12T06:55:02.306Z",
   "total": 10,
   "itemsWithIssues": 0,
   "dimensions": [
@@ -52,11 +52,10 @@
     {
       "key": "metrics.registeredAt",
       "label": "域名注册时间",
-      "missing": 10,
-      "missingRatio": 100,
+      "missing": 9,
+      "missingRatio": 90,
       "missingDomains": [
         "agenthunt.io",
-        "alsona.com",
         "claudeduet.com",
         "maxma.com",
         "quest.app",
@@ -76,8 +75,8 @@
       "missing": 10,
       "missingRatio": 100,
       "missingDomains": [
-        "agenthunt.io",
         "alsona.com",
+        "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
         "quest.app",
@@ -107,11 +106,10 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 10,
-      "missingRatio": 100,
+      "missing": 9,
+      "missingRatio": 90,
       "missingDomains": [
         "agenthunt.io",
-        "alsona.com",
         "claudeduet.com",
         "maxma.com",
         "quest.app",
@@ -131,8 +129,8 @@
       "missing": 10,
       "missingRatio": 100,
       "missingDomains": [
-        "agenthunt.io",
         "alsona.com",
+        "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
         "quest.app",
@@ -165,11 +163,10 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 10,
-      "missingRatio": 100,
+      "missing": 9,
+      "missingRatio": 90,
       "missingDomains": [
         "agenthunt.io",
-        "alsona.com",
         "claudeduet.com",
         "maxma.com",
         "quest.app",
@@ -186,11 +183,10 @@
     {
       "key": "pageStructure",
       "label": "页面结构",
-      "missing": 10,
-      "missingRatio": 100,
+      "missing": 9,
+      "missingRatio": 90,
       "missingDomains": [
         "agenthunt.io",
-        "alsona.com",
         "claudeduet.com",
         "maxma.com",
         "quest.app",
@@ -207,11 +203,10 @@
     {
       "key": "siteAudit",
       "label": "站点体检",
-      "missing": 10,
-      "missingRatio": 100,
+      "missing": 9,
+      "missingRatio": 90,
       "missingDomains": [
         "agenthunt.io",
-        "alsona.com",
         "claudeduet.com",
         "maxma.com",
         "quest.app",
@@ -228,11 +223,10 @@
     {
       "key": "aiInsight",
       "label": "AI 解读",
-      "missing": 10,
-      "missingRatio": 100,
+      "missing": 9,
+      "missingRatio": 90,
       "missingDomains": [
         "agenthunt.io",
-        "alsona.com",
         "claudeduet.com",
         "maxma.com",
         "quest.app",
@@ -250,31 +244,25 @@
   "entryIssues": [],
   "items": [
     {
-      "domain": "agenthunt.io",
-      "name": "Agent Hunt",
-      "tier": "watch",
-      "stage": "approved",
-      "monthlyVisits": 9792,
-      "gapCount": 8,
+      "domain": "alsona.com",
+      "name": "Alsona",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 12513,
+      "gapCount": 2,
       "gaps": [
-        "metrics.registeredAt",
         "searchTraffic.organic",
-        "keywords",
-        "backlinks.total",
-        "pricing",
-        "pageStructure",
-        "siteAudit",
-        "aiInsight"
+        "backlinks.total"
       ],
       "issueCount": 0,
       "issues": []
     },
     {
-      "domain": "alsona.com",
-      "name": "Alsona",
-      "tier": "core",
+      "domain": "agenthunt.io",
+      "name": "Agent Hunt",
+      "tier": "watch",
       "stage": "approved",
-      "monthlyVisits": 12513,
+      "monthlyVisits": 9792,
       "gapCount": 8,
       "gaps": [
         "metrics.registeredAt",
