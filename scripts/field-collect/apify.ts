@@ -149,15 +149,20 @@ export interface ModeResult {
 /**
  * 跑一个 vortex 模式。
  *
- * 入参里 `mode` 的键名官方文档没写死（页面上是三个独立按钮），实测有两种写法都能被接受，
- * 所以 base_data 额外试一次「不带 mode」的裸调用：这个 Actor 的默认行为就是 base_data。
- * similar_sites / aitdk 只认 mode，不做二次尝试，避免白花钱。
+ * 入参键名是 `datasetMode`（Actor 页面 / README 的示例：`{"domains":["x.com"],"datasetMode":"base_data"}`）。
+ * 早前写成 `mode` 时被 Actor 静默忽略，三种模式全部返回 base_data —— 这也是
+ * similar_sites / aitdk 相关字段一直空的真正原因，务必不要再改回去。
+ *
+ * base_data 额外保留一次「不带 datasetMode」的裸调用作兜底（Actor 默认行为就是 base_data）；
+ * 另外两种模式只认 datasetMode，不做二次尝试，避免白花钱。
  */
 export async function fetchVortexMode(domain: string, mode: VortexMode): Promise<ModeResult> {
   if (!hasApify()) return { mode, item: null, error: "未配置 APIFY_TOKEN" };
 
   const variants: unknown[] =
-    mode === "base_data" ? [{ domains: [domain], mode }, { domains: [domain] }] : [{ domains: [domain], mode }];
+    mode === "base_data"
+      ? [{ domains: [domain], datasetMode: mode }, { domains: [domain] }]
+      : [{ domains: [domain], datasetMode: mode }];
 
   let lastError = "";
   for (const input of variants) {

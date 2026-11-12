@@ -117,10 +117,13 @@ export async function commonCrawlEvidence(domain: string): Promise<CommonCrawlEv
   let lastError = "";
   for (const crawl of queue) {
     const api = crawl["cdx-api"]!;
-    const res = await httpGet(`${api}?url=${encodeURIComponent(domain)}/*&output=json&limit=1`, {
-      timeoutMs: 15_000,
-      maxBytes: 256 * 1024,
-    });
+    const url = `${api}?url=${encodeURIComponent(domain)}/*&output=json&limit=1`;
+    // 索引服务对同一秒的并发请求经常直接 503，重试一次就能过，别把它记成「无记录」
+    let res = await httpGet(url, { timeoutMs: 15_000, maxBytes: 256 * 1024 });
+    if (!res.ok && (res.status === 503 || res.status === 502 || res.status === 429 || !res.status)) {
+      await new Promise((r) => setTimeout(r, 1500));
+      res = await httpGet(url, { timeoutMs: 20_000, maxBytes: 256 * 1024 });
+    }
     if (!res.ok) {
       lastError = `HTTP ${res.status || "无响应"}`;
       continue;
@@ -176,10 +179,13 @@ export async function sslEvidence(domain: string): Promise<SslEvidence> {
     }
   }
 
-  const res = await httpGet(`https://crt.sh/?q=${encodeURIComponent(domain)}&output=json`, {
-    timeoutMs: 40_000,
-    maxBytes: 3 * 1024 * 1024,
-  });
+  // crt.sh 经常在 30 秒边界上超时/502，重试一次（第二次放宽到 45s）
+  const crtShUrl = `https://crt.sh/?q=${encodeURIComponent(domain)}&output=json`;
+  let res = await httpGet(crtShUrl, { timeoutMs: 30_000, maxBytes: 3 * 1024 * 1024 });
+  if (!res.ok) {
+    await new Promise((r) => setTimeout(r, 2000));
+    res = await httpGet(crtShUrl, { timeoutMs: 45_000, maxBytes: 3 * 1024 * 1024 });
+  }
   if (!res.ok) return { error: `crt.sh 请求失败（HTTP ${res.status || "无响应"}）` };
   const text = res.text.trim();
   if (!text) return { error: "crt.sh 返回空响应（该服务对热点域名经常超时）" };

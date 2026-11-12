@@ -59,66 +59,77 @@ function safeName(domain: string): string {
   return domain.replace(/[^a-z0-9.-]/gi, "-");
 }
 
-/** 页面内提取（在浏览器上下文执行，所以不能引用外部变量） */
+/**
+ * 页面内提取脚本。
+ *
+ * 必须以「字符串」形式传给 page.evaluate，不能传函数：
+ * 本脚本用 tsx 运行，esbuild 的 keepNames 会给函数体注入 `__name(...)` 包装，
+ * 这个 helper 只存在于 Node 侧，传到浏览器里就变成
+ * `ReferenceError: __name is not defined`，整页字段全挂（基本信息和定价组会一起空）。
+ * 字符串形式的表达式不经过 esbuild 改写，浏览器里原样执行。
+ */
+const EXTRACT_SRC = `(() => {
+  var abs = function (u) {
+    if (!u) return "";
+    try { return new URL(u, location.href).toString(); } catch (e) { return ""; }
+  };
+  var metaContent = function (selector) {
+    var el = document.querySelector(selector);
+    return el ? (el.getAttribute("content") || "").trim() : "";
+  };
+
+  var iconEl =
+    document.querySelector('link[rel~="icon"]') ||
+    document.querySelector('link[rel="shortcut icon"]') ||
+    document.querySelector('link[rel="apple-touch-icon"]') ||
+    document.querySelector('link[rel="mask-icon"]');
+
+  var links = [];
+  var anchors = document.querySelectorAll("a[href]");
+  for (var i = 0; i < anchors.length && links.length < 500; i++) {
+    var href = abs(anchors[i].getAttribute("href"));
+    if (!href || !/^https?:/i.test(href)) continue;
+    links.push({ href: href, text: (anchors[i].textContent || "").trim().slice(0, 100) });
+  }
+
+  var headings = [];
+  var hs = document.querySelectorAll("h1, h2");
+  for (var j = 0; j < hs.length && headings.length < 12; j++) {
+    var t = (hs[j].textContent || "").replace(/\\s+/g, " ").trim();
+    if (t) headings.push(t);
+  }
+
+  var jsonLd = "";
+  var scripts = document.querySelectorAll('script[type="application/ld+json"]');
+  for (var k = 0; k < scripts.length && k < 20; k++) {
+    jsonLd += (scripts[k].textContent || "") + "\\n";
+  }
+  jsonLd = jsonLd.slice(0, 200000);
+
+  var metaDates = [
+    metaContent('meta[property="article:published_time"]'),
+    metaContent('meta[property="article:modified_time"]'),
+    metaContent('meta[name="date"]'),
+    metaContent('meta[itemprop="datePublished"]')
+  ].filter(Boolean);
+
+  return {
+    title: (document.title || "").trim(),
+    description: metaContent('meta[name="description"]') || metaContent('meta[property="og:description"]'),
+    siteName: metaContent('meta[property="og:site_name"]') || metaContent('meta[name="application-name"]'),
+    lang: document.documentElement.getAttribute("lang") || "",
+    favicon: abs(iconEl ? iconEl.getAttribute("href") : ""),
+    headings: headings,
+    text: ((document.body && document.body.innerText) || "").replace(/\\n{3,}/g, "\\n\\n").slice(0, 300000),
+    links: links,
+    jsonLd: jsonLd,
+    metaDates: metaDates
+  };
+})()`;
+
+/** 页面内提取（字符串表达式，原因见 EXTRACT_SRC 注释） */
 async function extract(page: import("playwright").Page): Promise<RawExtract> {
-  return page.evaluate(() => {
-    const abs = (u: string | null): string => {
-      if (!u) return "";
-      try {
-        return new URL(u, location.href).toString();
-      } catch {
-        return "";
-      }
-    };
-    const metaContent = (selector: string): string => {
-      const el = document.querySelector(selector);
-      return el ? (el.getAttribute("content") ?? "").trim() : "";
-    };
-
-    const iconEl =
-      document.querySelector('link[rel~="icon"]') ??
-      document.querySelector('link[rel="shortcut icon"]') ??
-      document.querySelector('link[rel="apple-touch-icon"]') ??
-      document.querySelector('link[rel="mask-icon"]');
-
-    const links: { href: string; text: string }[] = [];
-    for (const a of Array.from(document.querySelectorAll("a[href]")).slice(0, 500)) {
-      const href = abs(a.getAttribute("href"));
-      if (!href || !/^https?:/i.test(href)) continue;
-      links.push({ href, text: (a.textContent ?? "").trim().slice(0, 100) });
-    }
-
-    const headings = Array.from(document.querySelectorAll("h1, h2"))
-      .slice(0, 12)
-      .map((h) => (h.textContent ?? "").replace(/\s+/g, " ").trim())
-      .filter(Boolean);
-
-    const jsonLd = Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
-      .slice(0, 20)
-      .map((s) => s.textContent ?? "")
-      .join("\n")
-      .slice(0, 200_000);
-
-    const metaDates = [
-      metaContent('meta[property="article:published_time"]'),
-      metaContent('meta[property="article:modified_time"]'),
-      metaContent('meta[name="date"]'),
-      metaContent('meta[itemprop="datePublished"]'),
-    ].filter(Boolean);
-
-    return {
-      title: (document.title ?? "").trim(),
-      description: metaContent('meta[name="description"]') || metaContent('meta[property="og:description"]'),
-      siteName: metaContent('meta[property="og:site_name"]') || metaContent('meta[name="application-name"]'),
-      lang: document.documentElement.getAttribute("lang") ?? "",
-      favicon: abs(iconEl ? iconEl.getAttribute("href") : ""),
-      headings,
-      text: (document.body?.innerText ?? "").replace(/\n{3,}/g, "\n\n").slice(0, 300_000),
-      links,
-      jsonLd,
-      metaDates,
-    };
-  });
+  return (await page.evaluate(EXTRACT_SRC)) as RawExtract;
 }
 
 /** 从 JSON-LD 里挖 datePublished / dateCreated / dateModified */
@@ -165,8 +176,7 @@ export async function loadSite(
     const httpStatus = res?.status() ?? 0;
     await page.waitForTimeout(2000);
 
-    const raw = await extract(page);
-
+    // 先截图再抽取：抽取万一失败，两张图仍在（截图本身也是必采字段）
     fs.mkdirSync(opts.screenshotDir, { recursive: true });
     const base = safeName(opts.domain);
     for (const vp of VIEWPORTS) {
@@ -180,6 +190,8 @@ export async function loadSite(
         console.warn(`[field-collect] ${vp.suffix} 截图失败：`, e instanceof Error ? e.message : e);
       }
     }
+
+    const raw = await extract(page);
 
     const snapshot: SiteSnapshot = {
       requestedUrl: url,
@@ -251,7 +263,8 @@ export async function loadPricingPage(browser: Browser, urls: string[]): Promise
         continue;
       }
       await page.waitForTimeout(1500);
-      const text = (await page.evaluate(() => document.body?.innerText ?? "")).slice(0, 60_000);
+      // 用 locator 取正文，不传回调（理由同 EXTRACT_SRC：避免 __name 注入）
+      const text = (await page.locator("body").innerText({ timeout: 10_000 }).catch(() => "")).slice(0, 60_000);
       if (text.trim().length > 40) return { url, text };
       last = { url, text, error: "页面正文为空" };
     } catch (e) {

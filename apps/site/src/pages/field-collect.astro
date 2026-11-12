@@ -371,7 +371,31 @@ const description = "按 docs/18-AI工具字段采集方案.md 采集的单个�
           return;
         }
         const data = (await res.json()) as { run: RunDetail };
-        render(data.run);
+        if (!data.run) {
+          showMessage("接口没有返回采集记录。", "error");
+          return;
+        }
+        if (!data.run.result) {
+          showMessage(
+            data.run.status === "queued" || data.run.status === "running"
+              ? "采集还在进行，完成后本页会自动刷新。"
+              : `该记录没有字段结果${data.run.error ? `：${data.run.error}` : "（可能采集在写回前中断）"}`,
+            data.run.error ? "error" : "muted",
+          );
+          return;
+        }
+
+        try {
+          render(data.run);
+        } catch (e) {
+          // 渲染炸了就把原因显示出来，别留一个空白页让人猜
+          showMessage(`字段渲染失败：${e instanceof Error ? e.message : String(e)}`, "error");
+          const raw = $("fc-raw");
+          if (raw) raw.textContent = JSON.stringify(data.run.result, null, 2);
+          const content = $("fc-content");
+          if (content) content.hidden = false;
+          return;
+        }
 
         stopPoll();
         if (data.run.status === "queued" || data.run.status === "running") {

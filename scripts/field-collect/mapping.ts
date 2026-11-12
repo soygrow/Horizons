@@ -83,7 +83,10 @@ export function applyVortexBase(fields: FieldBag, item: SimilarwebItem, source: 
   fields.setNumber("rank_global", item.rankGlobal, { actualSource: source });
   fields.setNumber("country_rank", item.countryRank, { actualSource: source });
   fields.set("country", item.country ?? null, { actualSource: source });
-  fields.set("similarweb_category", item.category ?? null, { actualSource: source });
+  // category 返回空字符串是常态（低流量站点没归类），不能当「有值」
+  const swCategory = textOrUndef(item.category);
+  if (swCategory) fields.set("similarweb_category", swCategory, { actualSource: source });
+  else fields.missing("similarweb_category", "Similarweb 对该站点不返回行业分类（category 为空）");
   fields.setNumber("category_rank", item.categoryRank, { actualSource: source });
 
   fields.set("bounce_rate", item.bounceRate ?? null, { display: fmtPct(item.bounceRate), actualSource: source });
@@ -93,7 +96,11 @@ export function applyVortexBase(fields: FieldBag, item: SimilarwebItem, source: 
   const mom = growth(history, 1);
   const g3m = growth(history, 3);
   fields.set("visits_mom", mom, { display: fmtSignedPct(mom), actualSource: "历史月访问量计算" });
-  fields.set("visits_growth_3m", g3m, { display: fmtSignedPct(g3m), actualSource: "历史月访问量计算" });
+  if (g3m !== null) {
+    fields.set("visits_growth_3m", g3m, { display: fmtSignedPct(g3m), actualSource: "历史月访问量计算" });
+  } else if (history.length) {
+    fields.missing("visits_growth_3m", `历史只有 ${history.length} 个月（需 4 个月才能算 3 个月增长）`);
+  }
 
   const channels: [keyof SimilarwebItem, string][] = [
     ["directTraffic", "direct_traffic"],
@@ -360,30 +367,40 @@ function applyKeywordList(fields: FieldBag, rows: KeywordRow[], source: string):
   const clean = rows.filter((r) => r.keyword);
   if (!clean.length) return;
 
-  fields.set("top_keywords", clean.map((r) => r.keyword), {
+  // 一律 fill：base_data 先写，lergassy 只能补空。
+  // 之前用 set，lergassy 会把 base_data 的关键词连同搜索量一起覆盖成 null（volume 全空）。
+  fill(fields, "top_keywords", clean.map((r) => r.keyword), {
     display: clean.slice(0, 10).map((r) => r.keyword).join("、"),
     actualSource: source,
   });
-  fields.set("keyword_search_volume", clean.map((r) => ({ keyword: r.keyword, searchVolume: r.volume ?? null })), {
-    display: clean.slice(0, 10).map((r) => `${r.keyword} ${fmtBig(r.volume)}`).join("；"),
-    actualSource: source,
-  });
+
+  const volumeRows = clean.filter((r) => r.volume != null);
+  if (volumeRows.length) {
+    fill(fields, "keyword_search_volume", volumeRows.map((r) => ({ keyword: r.keyword, searchVolume: r.volume as number })), {
+      display: volumeRows.slice(0, 10).map((r) => `${r.keyword} ${fmtBig(r.volume)}`).join("；"),
+      actualSource: source,
+    });
+  } else if (!fields.has("keyword_search_volume")) {
+    fields.missing("keyword_search_volume", "该来源不返回关键词搜索量（searchVolume）");
+  }
 
   const cpcRows = clean.filter((r) => r.cpc != null);
   if (cpcRows.length) {
-    fields.set("keyword_cpc", cpcRows.map((r) => ({ keyword: r.keyword, cpc: r.cpc })), {
+    fill(fields, "keyword_cpc", cpcRows.map((r) => ({ keyword: r.keyword, cpc: r.cpc })), {
       display: cpcRows.slice(0, 10).map((r) => `${r.keyword} $${r.cpc}`).join("；"),
       actualSource: source,
     });
+  } else if (!fields.has("keyword_cpc")) {
+    fields.missing("keyword_cpc", "该来源不返回关键词 CPC");
   }
 
   const valueRows = clean.filter((r) => r.value != null);
   if (valueRows.length) {
-    fields.set("keyword_value", valueRows.map((r) => ({ keyword: r.keyword, estimatedValue: r.value })), {
+    fill(fields, "keyword_value", valueRows.map((r) => ({ keyword: r.keyword, estimatedValue: r.value })), {
       display: valueRows.slice(0, 10).map((r) => `${r.keyword} $${r.value}`).join("；"),
       actualSource: source,
     });
-  } else {
+  } else if (!fields.has("keyword_value")) {
     fields.missing("keyword_value", "该来源不返回关键词流量价值（estimatedValue）");
   }
 }
@@ -465,25 +482,45 @@ export function applySerpKeywordFields(fields: FieldBag, pages: SerpPage[], doma
   });
 }
 
-/** 从 SERP 结果里的 published date 反推发布日（只作证据之一，优先级低于官网 JSON-LD） */
-export function applySerpReleaseDate(fields: FieldBag, pages: SerpPage[], launchQuery: string): void {
+/**
+ * 从 SERP 结果里的 published date 反推发布日（只作证据之一，优先级低于官网 JSON-LD）。
+ *
+ * 必须过滤「跑题的搜索结果」：搜 "<domain> launch date" 经常命中同题材的其它产品文章，
+ * 之前不过滤就把 Adobe 2014 年的新闻当成了 cliputils 的发布日（launch_date 也跟着错）。
+ * 只认 host 命中域名、或标题/摘要里明确出现域名/站点名的结果。
+ */
+export function applySerpReleaseDate(fields: FieldBag, pages: SerpPage[], launchQuery: string, domain: string): void {
+  const label = domain.split(".")[0] ?? "";
   const dates: string[] = [];
+  let scanned = 0;
+
   for (const page of pages) {
-    const q = queryOf(page);
-    if (q !== launchQuery) continue;
+    if (queryOf(page) !== launchQuery) continue;
     for (const r of page.organicResults ?? []) {
+      scanned++;
       const d = normalizeDate(r.date) ?? findDateInText(`${r.title ?? ""} ${r.description ?? ""}`);
-      if (d) dates.push(d);
+      if (!d) continue;
+      const hay = `${r.title ?? ""} ${r.description ?? ""} ${r.url ?? ""}`.toLowerCase();
+      const relevant = hostOf(r.url ?? "") === domain || hay.includes(domain) || (label.length >= 4 && hay.includes(label));
+      if (!relevant) continue;
+      dates.push(d);
     }
   }
+
   if (!dates.length) {
-    fields.missing("release_date", "SERP 结果里没有可解析的发布日期");
+    fields.missing(
+      "release_date",
+      scanned
+        ? `SERP 扫了 ${scanned} 条结果，没有一条既带发布日期又与该站相关`
+        : "SERP 没有返回该查询的结果",
+    );
     return;
   }
+
   const earliest = dates.sort()[0];
   fields.set("release_date", earliest, {
-    actualSource: "Apify Google Search Scraper（公告/报道发布日期）",
-    note: `命中 ${dates.length} 个日期，取最早；口径为「相关文章发布时间」，需人工复核`,
+    actualSource: "Apify Google Search Scraper（该站相关报道的发布日期）",
+    note: `命中 ${dates.length} 个相关日期，取最早；口径为「相关文章发布时间」，需人工复核`,
   });
 }
 

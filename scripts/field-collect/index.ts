@@ -119,9 +119,23 @@ async function main(): Promise<void> {
   try {
     /* -------------------- 1. 官网：基础字段 + PC/手机截图 -------------------- */
     await markStep("打开官网并截图（PC / 手机）");
-    const siteRes = await track("目标网站（Playwright）", () =>
-      loadSite(browser, url, { screenshotDir: workDir, domain }),
-    );
+    // 不走 track：loadSite 自己吞异常并以 error 返回，track 会记成 ok:true ，
+    // 于是 sources 里会出现同名的一条 ok 加一条 failed，排查时误导得很。
+    const siteT0 = Date.now();
+    let siteRes: Awaited<ReturnType<typeof loadSite>> | null = null;
+    let siteError = "";
+    try {
+      siteRes = await loadSite(browser, url, { screenshotDir: workDir, domain });
+      siteError = siteRes.error ?? "";
+    } catch (e) {
+      siteError = errMsg(e);
+    }
+    sources.push({
+      name: "目标网站（Playwright）",
+      ok: !!siteRes?.snapshot,
+      ms: Date.now() - siteT0,
+      error: siteRes?.snapshot ? undefined : siteError || "官网无法访问",
+    });
 
     if (siteRes?.snapshot) {
       snapshot = siteRes.snapshot;
@@ -162,11 +176,10 @@ async function main(): Promise<void> {
         linkCount: s.links.length,
       };
     } else {
-      const error = siteRes?.error ?? "官网无法访问";
+      const error = siteError || "官网无法访问";
       for (const key of ["name", "description", "favicon", "language"]) fields.fail(key, `官网打不开：${error}`);
       fields.fail("http_status", error);
       fields.set("domain", domain, { actualSource: "URL 解析" });
-      sources.push({ name: "目标网站（Playwright）", ok: false, ms: 0, error });
     }
 
     /* ------------------------------ 截图上传 R2 ------------------------------ */
@@ -275,7 +288,7 @@ async function main(): Promise<void> {
         fields.set("github_repo", `https://github.com/${repoName}`, { actualSource: "官网链接识别" });
         fields.set("has_open_source", true, { display: "是", actualSource: "官网链接识别" });
       }
-    } else {
+    } else if (snapshot) {
       // 找不到仓库链接不等于闭源，填「否」但把依据写清楚
       fields.set("has_open_source", false, {
         display: "否",
@@ -284,6 +297,11 @@ async function main(): Promise<void> {
       });
       for (const key of ["github_repo", "github_stars", "github_forks", "github_pushed_at", "github_created_at"]) {
         fields.missing(key, "首页未发现 GitHub 仓库链接");
+      }
+    } else {
+      // 官网没打开：连首页链接都没拿到，断言「不开源」是错的结论
+      for (const key of ["has_open_source", "github_repo", "github_stars", "github_forks", "github_pushed_at", "github_created_at"]) {
+        fields.missing(key, "官网打不开，无法识别是否开源 / 仓库链接");
       }
     }
 
@@ -414,7 +432,7 @@ async function main(): Promise<void> {
         }));
         applySerpKeywordFields(fields, pages, domain);
         // 官网 JSON-LD 已经给出发布日时不再用 SERP 覆盖
-        if (!fields.has("release_date")) applySerpReleaseDate(fields, pages, launchQuery);
+        if (!fields.has("release_date")) applySerpReleaseDate(fields, pages, launchQuery, domain);
       } else if (serp?.error) {
         sources.push({ name: "Google Search 明细", ok: false, ms: 0, error: serp.error });
       }
