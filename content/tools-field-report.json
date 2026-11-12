@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-12T06:55:02.306Z",
-  "total": 10,
-  "itemsWithIssues": 0,
+  "generatedAt": "2026-11-12T09:21:19.575Z",
+  "total": 11,
+  "itemsWithIssues": 6,
   "dimensions": [
     {
       "key": "description",
@@ -9,9 +9,34 @@
       "missing": 0,
       "missingRatio": 0,
       "missingDomains": [],
-      "invalid": 0,
-      "invalidRatio": 0,
-      "invalidSamples": []
+      "invalid": 6,
+      "invalidRatio": 55,
+      "invalidSamples": [
+        {
+          "domain": "claudeduet.com",
+          "reason": "简介过短（19 字）"
+        },
+        {
+          "domain": "maxma.com",
+          "reason": "简介过短（16 字）"
+        },
+        {
+          "domain": "quest.app",
+          "reason": "简介过短（16 字）"
+        },
+        {
+          "domain": "rerun.io",
+          "reason": "简介过短（15 字）"
+        },
+        {
+          "domain": "wanaka.app",
+          "reason": "简介过短（18 字）"
+        },
+        {
+          "domain": "xmind.com",
+          "reason": "简介过短（13 字）"
+        }
+      ]
     },
     {
       "key": "categories",
@@ -27,7 +52,7 @@
       "key": "trafficMetrics.monthlyVisits",
       "label": "月访问量",
       "missing": 2,
-      "missingRatio": 20,
+      "missingRatio": 18,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -40,7 +65,7 @@
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
       "missing": 2,
-      "missingRatio": 20,
+      "missingRatio": 18,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -53,7 +78,7 @@
       "key": "metrics.registeredAt",
       "label": "域名注册时间",
       "missing": 9,
-      "missingRatio": 90,
+      "missingRatio": 82,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -72,10 +97,10 @@
     {
       "key": "searchTraffic.organic",
       "label": "自然搜索流量",
-      "missing": 10,
+      "missing": 11,
       "missingRatio": 100,
       "missingDomains": [
-        "alsona.com",
+        "cliputils.com",
         "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
@@ -84,7 +109,8 @@
         "teamily.com",
         "tobira.ai",
         "wanaka.app",
-        "xmind.com"
+        "xmind.com",
+        "alsona.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -94,7 +120,7 @@
       "key": "geoDistribution",
       "label": "地区分布",
       "missing": 2,
-      "missingRatio": 20,
+      "missingRatio": 18,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -107,7 +133,7 @@
       "key": "keywords",
       "label": "关键词",
       "missing": 9,
-      "missingRatio": 90,
+      "missingRatio": 82,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -126,10 +152,10 @@
     {
       "key": "backlinks.total",
       "label": "外链概览",
-      "missing": 10,
+      "missing": 11,
       "missingRatio": 100,
       "missingDomains": [
-        "alsona.com",
+        "cliputils.com",
         "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
@@ -138,7 +164,8 @@
         "teamily.com",
         "tobira.ai",
         "wanaka.app",
-        "xmind.com"
+        "xmind.com",
+        "alsona.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -148,7 +175,7 @@
       "key": "observations.competitors",
       "label": "竞品",
       "missing": 5,
-      "missingRatio": 50,
+      "missingRatio": 45,
       "missingDomains": [
         "claudeduet.com",
         "quest.app",
@@ -164,7 +191,7 @@
       "key": "pricing",
       "label": "定价",
       "missing": 9,
-      "missingRatio": 90,
+      "missingRatio": 82,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -184,7 +211,7 @@
       "key": "pageStructure",
       "label": "页面结构",
       "missing": 9,
-      "missingRatio": 90,
+      "missingRatio": 82,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -204,7 +231,7 @@
       "key": "siteAudit",
       "label": "站点体检",
       "missing": 9,
-      "missingRatio": 90,
+      "missingRatio": 82,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -224,7 +251,7 @@
       "key": "aiInsight",
       "label": "AI 解读",
       "missing": 9,
-      "missingRatio": 90,
+      "missingRatio": 82,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -244,11 +271,11 @@
   "entryIssues": [],
   "items": [
     {
-      "domain": "alsona.com",
-      "name": "Alsona",
+      "domain": "cliputils.com",
+      "name": "Cliputils",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 12513,
+      "monthlyVisits": 58351,
       "gapCount": 2,
       "gaps": [
         "searchTraffic.organic",
@@ -297,8 +324,14 @@
         "siteAudit",
         "aiInsight"
       ],
-      "issueCount": 0,
-      "issues": []
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "description",
+          "label": "简介",
+          "reason": "简介过短（19 字）"
+        }
+      ]
     },
     {
       "domain": "maxma.com",
@@ -317,8 +350,14 @@
         "siteAudit",
         "aiInsight"
       ],
-      "issueCount": 0,
-      "issues": []
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "description",
+          "label": "简介",
+          "reason": "简介过短（16 字）"
+        }
+      ]
     },
     {
       "domain": "quest.app",
@@ -338,8 +377,14 @@
         "siteAudit",
         "aiInsight"
       ],
-      "issueCount": 0,
-      "issues": []
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "description",
+          "label": "简介",
+          "reason": "简介过短（16 字）"
+        }
+      ]
     },
     {
       "domain": "rerun.io",
@@ -358,8 +403,14 @@
         "siteAudit",
         "aiInsight"
       ],
-      "issueCount": 0,
-      "issues": []
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "description",
+          "label": "简介",
+          "reason": "简介过短（15 字）"
+        }
+      ]
     },
     {
       "domain": "teamily.com",
@@ -423,8 +474,14 @@
         "siteAudit",
         "aiInsight"
       ],
-      "issueCount": 0,
-      "issues": []
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "description",
+          "label": "简介",
+          "reason": "简介过短（18 字）"
+        }
+      ]
     },
     {
       "domain": "xmind.com",
@@ -442,6 +499,26 @@
         "pageStructure",
         "siteAudit",
         "aiInsight"
+      ],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "description",
+          "label": "简介",
+          "reason": "简介过短（13 字）"
+        }
+      ]
+    },
+    {
+      "domain": "alsona.com",
+      "name": "Alsona",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 12513,
+      "gapCount": 2,
+      "gaps": [
+        "searchTraffic.organic",
+        "backlinks.total"
       ],
       "issueCount": 0,
       "issues": []
