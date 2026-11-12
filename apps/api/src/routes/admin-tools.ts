@@ -25,7 +25,13 @@ import {
   type WorkflowRun,
 } from "../lib/github";
 import { readBoardStats, type BoardStats } from "../lib/board-stats";
-import { hasWorkspace, listWorkspace, setItemsStatus } from "../lib/board-items";
+import {
+  expireStaleEnriching,
+  hasWorkspace,
+  listWorkspace,
+  markEnriching,
+  setItemsStatus,
+} from "../lib/board-items";
 import { readReport } from "../lib/reports";
 
 const tools = new Hono<{ Bindings: Env }>();
@@ -263,6 +269,24 @@ function fieldGapsOf(t: Record<string, unknown>): string[] {
 
 /** 待发布队列：只读 board_items，返回列表页需要的精简字段 */
 tools.get("/staging", async (c) => {
+  /*
+   * 超时兜底：富化中超过 10 分钟判失败。
+   *
+   * 有任务在跑时先不动 —— 10 条是串行跑的，排后面的条目到点时其实还没轮到，
+   * 按时间判死会让用户在任务跑到一半时看到一片「富化失败」。
+   * 但 job 本身也可能卡死（DB 里永远是 running），所以超过 workflow 的 60 分钟
+   * 上限后照样判死，不能指望人工去清。
+   */
+  const running = await c.env.DB.prepare(
+    "SELECT created_at FROM tool_jobs WHERE kind='enrich' AND status IN ('queued','running')" +
+      " ORDER BY created_at DESC LIMIT 1",
+  ).first<{ created_at: number }>();
+  const jobStale = !running || Date.now() - running.created_at > 60 * 60 * 1000;
+  if (jobStale) {
+    const expired = await expireStaleEnriching(c.env.DB, "tools").catch(() => 0);
+    if (expired > 0) console.log(`[staging] ${expired} 条富化超时，已标记失败`);
+  }
+
   const ws = await listWorkspace<Record<string, unknown> & TierInput>(c.env.DB, "tools");
   const { updatedAt } = ws;
   const all = ws.items;
@@ -304,8 +328,12 @@ tools.get("/staging", async (c) => {
       if (tierFilter === "qualified") return r.tier === "core" || r.tier === "watch";
       if (tierFilter === "unqualified") return r.tier === "reject";
       if (tierFilter === "rejected") return r.rejected;
-      if (tierFilter === "approved") return r.stage === "approved";
+      // 「待发布」= 还没进发布队列的：待富化 / 富化中 / 富化失败，都能在这里找回
+      if (tierFilter === "approved") {
+        return r.stage === "approved" || r.stage === "enriching" || r.stage === "enrich_failed";
+      }
       if (tierFilter === "enriched") return r.stage === "enriched";
+      if (tierFilter === "enrich_failed") return r.stage === "enrich_failed";
       return true;
     });
 
@@ -319,6 +347,9 @@ tools.get("/staging", async (c) => {
     // pending = 还没确认收录的（含判定为 reject 的）
     pending: all.filter((t) => stageOf(t) === "candidate").length,
     approved: all.filter((t) => stageOf(t) === "approved").length,
+    // 富化中单独计数：这些条目会被占住，不能重复选，也不该算进「待富化」里
+    enriching: all.filter((t) => stageOf(t) === "enriching").length,
+    enrichFailed: all.filter((t) => stageOf(t) === "enrich_failed").length,
     enriched: all.filter((t) => stageOf(t) === "enriched").length,
     rejected: rejectedList.length,
     page,
@@ -488,6 +519,15 @@ tools.post("/enrich", async (c) => {
       now,
     )
     .run();
+
+  /*
+   * 派发成功后再占位：条目状态立刻变成 enriching，后台据此禁掉复选框，
+   * 避免「已提交但还显示待富化」时被再选一次，一份钱买两遍。
+   *
+   * 顺序不能反 —— dispatch 失败要能干净地不改任何状态。
+   */
+  const marked = await markEnriching(c.env.DB, "tools", domains, limit).catch(() => 0);
+  console.log(`[enrich] 已标记 ${marked} 条为富化中（domains=${domains.length || "全部"}）`);
 
   const { results } = await c.env.DB.prepare("SELECT * FROM tool_jobs WHERE id = ?")
     .bind(id)

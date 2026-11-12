@@ -27,7 +27,7 @@ import {
   type FieldIssue,
   type StagingItem,
 } from "./verdict";
-import { readWorkspace, syncCandidates, type ItemStatus } from "./board-items";
+import { expireStaleEnriching, readWorkspace, syncCandidates, type ItemStatus } from "./board-items";
 import { hasDataForSEO } from "../fetch/sources/dataforseo";
 import { saveReport } from "./reports";
 
@@ -165,23 +165,31 @@ async function main(): Promise<void> {
   const only = parseDomains();
   const limit = Number(arg("limit") ?? 10);
 
+  // 上一轮跑飞的条目先放出来：否则它们一直占着 enriching，
+  // 既不能重选，也不会进发布队列，只能人工改库
+  await expireStaleEnriching("tools", (m) => console.log(m));
+
   const staging = await readWorkspace<StagingItem>("tools");
   const targets = staging.items.filter((i) => {
     if (!i?.domain) return false;
     if (only) return only.has(i.domain);
-    return i.stage === "approved";
+    // enriching 必须认：后台派发时已经把状态从 approved 改成了 enriching，
+    // 这里只挑 approved 的话，按钮点下去脚本一条都挑不到。
+    // enrich_failed 不在其中：失败要人工重新勾选再跑，不能自动重花一遍钱。
+    return i.stage === "approved" || i.stage === "enriching";
   });
 
   const picked = Number.isFinite(limit) && limit > 0 ? targets.slice(0, limit) : targets;
 
   console.log(
-    `[enrich-staging] 队列 ${staging.items.length}｜已确认待富化 ${targets.length}｜本次处理 ${picked.length}` +
+    `[enrich-staging] 队列 ${staging.items.length}｜待富化 ${targets.length}｜本次处理 ${picked.length}` +
       `${freeOnly ? "｜仅免费字段" : ""}${dry ? "｜dry-run" : ""}`,
   );
 
   if (picked.length === 0) {
     console.log(
-      "[enrich-staging] 没有已确认（stage=approved）的条目。请先在后台勾选确认收录，或用 --domains 指定。",
+      "[enrich-staging] 没有待富化的条目（stage=approved / enriching）。" +
+        "请先在后台勾选确认收录，或用 --domains 指定。",
     );
     console.log(JSON.stringify({ processed: 0, ok: 0, failed: 0, report: REPORT_PATH }));
     return;
@@ -216,8 +224,13 @@ async function main(): Promise<void> {
   const failedSet = new Set(failed.map((f) => f.split("(")[0]));
   const done = new Set(picked.filter((t) => !failedSet.has(t.domain)).map((t) => t.domain));
   const items: StagingItem[] = latest.items.map((i) => {
-    if (!done.has(i.domain)) return i;
-    return { ...i, stage: "enriched", enrichedAt: new Date().toISOString(), fieldGaps: computeFieldGaps(i) };
+    // 成功 → enriched；失败 → enrich_failed（以前失败什么都不写，条目退回 approved，
+    // 后台既看不出失败也分不清是不是没跑过）
+    if (done.has(i.domain)) {
+      return { ...i, stage: "enriched", enrichedAt: new Date().toISOString(), fieldGaps: computeFieldGaps(i) };
+    }
+    if (failedSet.has(i.domain)) return { ...i, stage: "enrich_failed" };
+    return i;
   });
 
   const report = buildFieldReport(items);

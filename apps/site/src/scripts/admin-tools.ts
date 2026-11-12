@@ -63,7 +63,8 @@ interface StagingRow {
   tier: "core" | "watch" | "reject" | null;
   /** 采集时的判定理由，例如「A4 月访问 320 < 1,000」 */
   reason: string | null;
-  stage: "candidate" | "approved" | "enriched" | "published";
+  /** enriching / enrich_failed 是富化引入的中间态：占位中，以及失败后可重试 */
+  stage: "candidate" | "approved" | "enriching" | "enriched" | "enrich_failed" | "published";
   /** 富化后仍缺的页面维度（key 列表） */
   fieldGaps: string[];
   rejected: boolean;
@@ -75,6 +76,10 @@ interface StagingResp {
   total: number;
   pending: number;
   approved: number;
+  /** 富化中的条数（被占住，不可重复选） */
+  enriching?: number;
+  /** 富化失败的条数（可重试） */
+  enrichFailed?: number;
   enriched: number;
   rejected: number;
   page: number;
@@ -154,6 +159,8 @@ const state = {
   /** 批量操作选中的域名 */
   selected: new Set<string>(),
   polling: 0 as number | undefined,
+  /** 上一轮是否有富化任务在跑：用于「刚跑完」时补一次队列刷新 */
+  enrichBusy: false,
   mounted: false,
 };
 
@@ -191,8 +198,12 @@ function stageBadge(stage: StagingRow["stage"]): string {
   switch (stage) {
     case "approved":
       return `<span class="rounded-full bg-primary-soft px-2 py-0.5 text-[11px] font-semibold text-primary">待富化</span>`;
+    case "enriching":
+      return `<span class="rounded-full bg-primary-soft px-2 py-0.5 text-[11px] font-semibold text-primary animate-pulse" title="富化任务已提交，跑完自动更新">富化中</span>`;
     case "enriched":
       return `<span class="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-semibold text-accent">可发榜</span>`;
+    case "enrich_failed":
+      return `<span class="rounded-full bg-danger-soft px-2 py-0.5 text-[11px] font-semibold text-danger" title="富化失败，勾选后可以重试（会再次计费）">富化失败</span>`;
     case "published":
       return `<span class="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] font-semibold text-ink-muted">已发榜</span>`;
     default:
@@ -321,6 +332,18 @@ function syncEnrichButton(jobs: Job[]): void {
   const running = jobs.find(
     (j) => j.kind === "enrich" && (j.status === "queued" || j.status === "running"),
   );
+
+  // 刚跑完：条目状态是脚本最后一步才写库的，最后一次轮询未必赶上，
+  // 这里补一次刷新，让「富化中 → 成功/失败」自己变过去
+  const busy = !!running;
+  if (state.enrichBusy && !busy) {
+    window.setTimeout(() => {
+      void loadStaging();
+      void loadPreview();
+    }, 3000);
+  }
+  state.enrichBusy = busy;
+
   if (running) {
     btn.disabled = true;
     btn.textContent = "富化进行中…";
@@ -398,16 +421,24 @@ function renderStaging(data: StagingResp): void {
     const last = data.lastRun
       ? `｜上次 +${data.lastRun.added}${fmtTime(data.lastRun.at)}`
       : "";
+    // 富化中/失败单独列：混进「已确认」会让人以为还能再提交一次
+    const busy = data.enriching ? ` · 富化中 ${data.enriching}` : "";
+    const bad = data.enrichFailed ? ` · 富化失败 ${data.enrichFailed}` : "";
     meta.textContent =
-      `待确认 ${data.pending} · 已确认 ${data.approved} · 可发榜 ${data.enriched} · 已拒绝 ${data.rejected}` +
+      `待确认 ${data.pending} · 已确认 ${data.approved}${busy}${bad} · 可发榜 ${data.enriched} · 已拒绝 ${data.rejected}` +
       `｜筛选后 ${data.total} 个${last}`;
   }
 
   // 选中项只保留当前列表里还存在的，避免删改后残留
   const visible = new Set(data.items.map((r) => r.domain));
   for (const d of state.selected) if (!visible.has(d)) state.selected.delete(d);
+  // 富化中的行不可选，全选状态只能按「可选行」算，否则永远显示未全选
+  const selectable = data.items.filter((r) => r.stage !== "enriching");
   const all = $("tools-select-all") as HTMLInputElement | null;
-  if (all) all.checked = data.items.length > 0 && data.items.every((r) => state.selected.has(r.domain));
+  if (all) {
+    all.checked = selectable.length > 0 && selectable.every((r) => state.selected.has(r.domain));
+    all.disabled = selectable.length === 0;
+  }
 
   const body = $("tools-staging-body");
   if (!data.items.length) {
@@ -415,17 +446,21 @@ function renderStaging(data: StagingResp): void {
   } else {
     body.innerHTML = data.items
       .map((row) => {
-        const checked = state.selected.has(row.domain) ? " checked" : "";
+        // 富化中的条目已被任务占住：再选一次就是重复付费，直接禁掉
+        const busy = row.stage === "enriching";
+        const checked = state.selected.has(row.domain) && !busy ? " checked" : "";
         const reason = row.rejected ? "已拒绝：不再抓取" : (row.reason ?? "—");
         const missing =
-          row.stage === "approved" || row.stage === "enriched"
+          row.stage === "approved" || row.stage === "enriched" || row.stage === "enrich_failed"
             ? row.fieldGaps.length
               ? `${row.fieldGaps.length} 项`
               : "完整"
-            : "—";
+            : row.stage === "enriching"
+              ? "富化中"
+              : "—";
         return `<tr class="transition hover:bg-surface-2/50">
             <td class="px-2 py-2.5">
-              <input type="checkbox" data-tool-select="${esc(row.domain)}" class="h-3.5 w-3.5 rounded border-border"${checked} aria-label="选择 ${esc(row.name)}" />
+              <input type="checkbox" data-tool-select="${esc(row.domain)}" class="h-3.5 w-3.5 rounded border-border"${checked}${busy ? " disabled title=\"富化进行中，不能重复选择\"" : ""} aria-label="选择 ${esc(row.name)}" />
             </td>
             <td class="max-w-[240px] px-4 py-2.5">
               <button type="button" data-tool-open="${esc(row.domain)}" class="block max-w-full truncate text-left font-medium text-ink hover:text-primary">${esc(row.name)}</button>
@@ -901,7 +936,12 @@ function bind(): void {
   $("tools-select-all").addEventListener("change", (event) => {
     const on = (event.target as HTMLInputElement).checked;
     state.selected.clear();
-    if (on) for (const row of state.staging?.items ?? []) state.selected.add(row.domain);
+    if (on) {
+      // 跳过富化中的行：它们已被任务占用，勾进来会被后端当成重复富化
+      for (const row of state.staging?.items ?? []) {
+        if (row.stage !== "enriching") state.selected.add(row.domain);
+      }
+    }
     void loadStaging();
     void loadPreview();
   });
@@ -969,23 +1009,37 @@ function bind(): void {
     if (btn.disabled) return;
 
     const rows = state.staging?.items ?? [];
-    const domains = [...state.selected];
-    const picked = domains.length
-      ? rows.filter((r) => state.selected.has(r.domain))
-      : rows.filter((r) => r.stage === "approved");
+    // 富化中的条目已被任务占住，无论勾没勾到都不能再进这批
+    const domains = [...state.selected].filter((d) => {
+      const r = rows.find((x) => x.domain === d);
+      return !r || r.stage !== "enriching";
+    });
+    // 只有「待富化 / 富化失败」会被真正送去跑（后端 markEnriching 也限这两种状态），
+    // 勾了已富化的条目不能算进费用，否则估算和实际执行对不上
+    const runnable = (s: StagingRow["stage"]): boolean => s === "approved" || s === "enrich_failed";
+    // 单批上限跟后端一致（接口最多 20 条）：多的不截断的话，
+    // 报价按 30 条算、实际只跑 20 条，剩下的还会被标成富化中然后超时失败
+    const MAX_ENRICH_BATCH = 20;
+    const picked = (domains.length
+      ? rows.filter((r) => state.selected.has(r.domain) && runnable(r.stage))
+      : rows.filter((r) => runnable(r.stage))
+    ).slice(0, MAX_ENRICH_BATCH);
 
-    // 没勾选时按队列里的 approved 总数估算（当前页可能只显示一部分）
+    // 没勾选时按队列里的待富化总数估算（当前页可能只显示一部分）
     const est = domains.length
       ? estimateEnrich(picked)
-      : estimateEnrich(picked, state.staging?.approved ?? picked.length);
+      : estimateEnrich(picked, Math.min(state.staging?.approved ?? picked.length, MAX_ENRICH_BATCH));
 
     if (!est.count) {
-      window.alert("没有待富化的条目：先勾选并「确认收录」");
+      window.alert("没有待富化的条目：先勾选并「确认收录」（富化中的条目要等任务结束）");
       return;
     }
 
     // 第一次确认：把账算清楚 —— 已有数据的条目不再买 DFS，价格差 9 倍
     const detail =
+      (domains.length > MAX_ENRICH_BATCH
+        ? `注意：单批最多 ${MAX_ENRICH_BATCH} 条，本次只处理前 ${MAX_ENRICH_BATCH} 条，其余的跑完再提交。\n\n`
+        : "") +
       `将对 ${est.count} 个条目做富化（单条 2–5 分钟）。\n\n` +
       (est.dfs
         ? `· 需补 DFS 关键词/外链/竞品：${est.dfs} 条 × $${ENRICH_COST.dfs} = $${(est.dfs * ENRICH_COST.dfs).toFixed(2)}\n`
@@ -1009,7 +1063,8 @@ function bind(): void {
     btn.disabled = true;
     btn.textContent = "已提交";
     try {
-      await enrichDomains(domains);
+      // 只把这些真正要跑的域名传下去：带上已富化的条目会被脚本 --domains 强制重跑
+      await enrichDomains(domains.length ? picked.map((r) => r.domain) : []);
       state.selected.clear();
       // 保持禁用，交给 syncEnrichButton 按任务状态恢复：
       // 固定 6 秒后就解锁的做法等于给了「重复下单」的入口

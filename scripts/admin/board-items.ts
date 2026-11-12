@@ -10,8 +10,65 @@
  */
 import { createD1Client, d1Configured, type D1Client } from "./d1-client";
 
-/** 与 board_items.status 保持一致：待审 / 已确认收录 / 已富化 / 已拒绝 */
-export type ItemStatus = "candidate" | "approved" | "enriched" | "rejected";
+/**
+ * 与 board_items.status 保持一致。
+ *
+ *   candidate      待审（采集刚写完）
+ *   approved       已确认收录，等富化
+ *   enriching      富化中（派发时写入，期间不能重复选、不能被发布带走）
+ *   enriched       富化成功，可发榜
+ *   enrich_failed  富化失败（脚本报错 / 超过 ENRICH_TIMEOUT_MS 没回）
+ *   rejected       已拒绝
+ */
+export type ItemStatus =
+  | "candidate"
+  | "approved"
+  | "enriching"
+  | "enriched"
+  | "enrich_failed"
+  | "rejected";
+
+/**
+ * 富化超时：单条超过 10 分钟还停在 enriching 就判失败。
+ *
+ * 富化是逐条起子进程，正常一条几分钟。超过这个时长要么 workflow 被取消、
+ * 要么子进程挂死 —— 没有这个出口，条目会永远卡在「富化中」，
+ * 既不能被再次选择，也不会进发布队列，只能人工去改库。
+ */
+export const ENRICH_TIMEOUT_MS = 10 * 60 * 1000;
+
+/**
+ * 把卡住的「富化中」标记为失败。
+ *
+ * 只按 updated_at 判断：进入 enriching 时写入的就是这个时间，
+ * 富化成功会立刻覆盖成 enriched，所以不会被误判。
+ */
+export async function expireStaleEnriching(
+  board: string,
+  log: (msg: string) => void = (m) => console.log(m),
+): Promise<number> {
+  const client = openClient();
+  if (!client) return 0;
+  const now = Date.now();
+  try {
+    const res = await client.query(
+      "UPDATE board_items SET status='enrich_failed', updated_at=? " +
+        "WHERE board=? AND status='enriching' AND updated_at < ?",
+      [now, board, now - ENRICH_TIMEOUT_MS],
+    );
+    if (res.changes > 0) {
+      log(`[items] ${res.changes} 条富化超时（> ${ENRICH_TIMEOUT_MS / 60000} 分钟），已标记为失败`);
+    }
+    return res.changes;
+  } catch (e) {
+    log(
+      `::warning::[items] 富化超时判定失败：${
+        e instanceof Error ? e.message.slice(0, 160) : String(e)
+      }`,
+    );
+    return 0;
+  }
+}
 
 export interface BoardItemInput {
   /** domain / owner-repo / slug / model-id */

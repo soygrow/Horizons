@@ -9,10 +9,86 @@
  */
 
 /**
- * 条目状态，与后台原来的 stage 取值一致：
- * candidate（待审）/ approved（已确认收录）/ enriched（已富化）/ rejected（已拒绝）
+ * 条目状态：
+ *   candidate     待审
+ *   approved      已确认收录，等富化
+ *   enriching     富化中（派发时写入，期间不可重复选择、不参与发布）
+ *   enriched      富化成功
+ *   enrich_failed 富化失败（脚本报错，或超过 ENRICH_TIMEOUT_MS 没回）
+ *   rejected      已拒绝
  */
-export type ItemStatus = "candidate" | "approved" | "enriched" | "rejected";
+export type ItemStatus =
+  | "candidate"
+  | "approved"
+  | "enriching"
+  | "enriched"
+  | "enrich_failed"
+  | "rejected";
+
+/**
+ * 富化超时：超过 10 分钟还停在 enriching 就判失败。
+ *
+ * 必须与 scripts/admin/board-items.ts 的 ENRICH_TIMEOUT_MS 保持一致 ——
+ * 两边都在判（脚本跑之前、后台读之前），口径不同就会出现
+ * 「后台显示失败、脚本还在跑」这种自相矛盾的状态。
+ */
+export const ENRICH_TIMEOUT_MS = 10 * 60 * 1000;
+
+/**
+ * 把卡住的「富化中」标记为失败，返回改动行数。
+ *
+ * 只按 updated_at 判断：进入 enriching 时写的就是它，富化成功会立刻
+ * 覆盖成 enriched，所以正常完成的条目不会被误判。
+ */
+export async function expireStaleEnriching(db: D1Database, board: string): Promise<number> {
+  const now = Date.now();
+  const res = await db
+    .prepare(
+      "UPDATE board_items SET status='enrich_failed', updated_at=? " +
+        "WHERE board=? AND status='enriching' AND updated_at < ?",
+    )
+    .bind(now, board, now - ENRICH_TIMEOUT_MS)
+    .run();
+  return res.meta?.changes ?? 0;
+}
+
+/**
+ * 把待富化的条目标成 enriching（派发富化任务时调用）。
+ *
+ * domains 为空表示「队列里所有 approved」，用子查询取前 limit 条 ——
+ * SQLite 的 UPDATE 不支持 LIMIT，只能这么写。
+ * 已被别的任务占住的 enriching 不会被重复命中（WHERE 限定了 approved）。
+ */
+export async function markEnriching(
+  db: D1Database,
+  board: string,
+  domains: readonly string[],
+  limit: number,
+): Promise<number> {
+  const now = Date.now();
+  if (domains.length > 0) {
+    // 必须跟脚本的 --limit 对齐：脚本只跑前 limit 条，
+    // 多标出来的条目没人跑，只能等 10 分钟超时被判失败
+    const picked = domains.slice(0, limit);
+    const stmt = db.prepare(
+      "UPDATE board_items SET status='enriching', updated_at=? " +
+        "WHERE board=? AND item_key=? AND status IN ('approved','enrich_failed')",
+    );
+    const results = await db.batch(picked.map((d) => stmt.bind(now, board, d)));
+    return results.reduce((sum, r) => sum + (r.meta?.changes ?? 0), 0);
+  }
+
+  const res = await db
+    .prepare(
+      "UPDATE board_items SET status='enriching', updated_at=? " +
+        "WHERE board=? AND item_key IN (" +
+        "  SELECT item_key FROM board_items WHERE board=? AND status IN ('approved','enrich_failed')" +
+        "  ORDER BY updated_at DESC LIMIT ?)",
+    )
+    .bind(now, board, board, limit)
+    .run();
+  return res.meta?.changes ?? 0;
+}
 
 interface BoardItemRow {
   item_key: string;
