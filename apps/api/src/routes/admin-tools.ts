@@ -46,6 +46,34 @@ const AUDIT_WORKFLOW = "audit-tools.yml";
 
 const MAX_COUNT = 200;
 const MAX_PAGE_SIZE = 100;
+/** 指定网站单次上限，与 scripts/admin/fetch-staging.ts 的 MAX_MANUAL 保持一致 */
+const MAX_MANUAL_DOMAINS = 50;
+
+/**
+ * 清洗后台「指定网站」输入。
+ *
+ * 只做轻量处理（去协议/www/路径、小写、去重），注册域归一交给 fetch-staging 的 tldts：
+ * 这里一份、脚本一份会立刻分叉，而真正的判定在脚本那边。
+ * 数组内再按分隔符拆一次，是为了兼容前端把整段文本当单个字符串传上来的情况。
+ */
+function normalizeDomainInput(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  const out: string[] = [];
+  for (const item of raw) {
+    if (typeof item !== "string") continue;
+    for (const piece of item.split(/[\s,，、;；]+/)) {
+      const s = piece
+        .trim()
+        .toLowerCase()
+        .replace(/^https?:\/\//, "")
+        .replace(/^www\./, "")
+        .replace(/[/?#].*$/, "");
+      if (!/^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/.test(s)) continue;
+      if (!out.includes(s)) out.push(s);
+    }
+  }
+  return out.slice(0, MAX_MANUAL_DOMAINS);
+}
 
 /* ------------------------------- 收录口径 ------------------------------- */
 /**
@@ -167,7 +195,11 @@ tools.post("/jobs", async (c) => {
     return c.json({ error: "invalid_json" }, 400);
   }
 
-  const count = Math.max(1, Math.min(Number(body.count ?? 60) || 60, MAX_COUNT));
+  // 指定网站优先：填了名单就按名单抓，count/order/topic 由脚本忽略
+  const domains = normalizeDomainInput(body.domains);
+  const count = domains.length
+    ? domains.length
+    : Math.max(1, Math.min(Number(body.count ?? 60) || 60, MAX_COUNT));
   const order = body.order === "votes" ? "votes" : "newest";
   const topic =
     typeof body.topic === "string" && body.topic.trim()
@@ -186,6 +218,8 @@ tools.post("/jobs", async (c) => {
       order,
       topic,
       enrich: String(enrich),
+      // workflow_dispatch 的 input 是单行字符串，逗号分隔交给脚本再拆
+      domains: domains.join(","),
       job_id: id,
     });
   } catch (e) {
@@ -202,7 +236,7 @@ tools.post("/jobs", async (c) => {
     .bind(
       id,
       run ? mapStatus(run, "queued") : "queued",
-      JSON.stringify({ count, order, topic, enrich, note }),
+      JSON.stringify({ count, order, topic, enrich, note, ...(domains.length ? { domains } : {}) }),
       run?.id ?? null,
       run?.html_url ?? null,
       now,

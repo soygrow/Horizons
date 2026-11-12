@@ -217,13 +217,46 @@ function stageBadge(stage: StagingRow["stage"]): string {
   }
 }
 
+/**
+ * 解析「指定网站」输入框。
+ *
+ * 与后端 normalizeDomainInput 同一套规则，但只用来算条数和切换禁用态；
+ * 真正的注册域归一在 fetch-staging 的 tldts 里做，不在这里重复实现一份。
+ */
+function parseDomainsInput(): string[] {
+  const raw = ($("tools-fetch-domains") as HTMLTextAreaElement).value;
+  const out: string[] = [];
+  for (const piece of raw.split(/[\s,，、;；]+/)) {
+    const s = piece
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, "")
+      .replace(/^www\./, "")
+      .replace(/[/?#].*$/, "");
+    if (!/^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/.test(s)) continue;
+    if (!out.includes(s)) out.push(s);
+  }
+  return out;
+}
+
 /** 抓取表单底部的预估文案：候选池变化 + Apify 流量成本 */
 function updateFetchEstimate(): void {
-  const count = Number(($("tools-fetch-count") as HTMLSelectElement).value) || 60;
+  const domains = parseDomainsInput();
+  const manual = domains.length > 0;
+  // 指定网站模式下数量/排序/topic 都不参与：禁用而不是清零，
+  // 这样清空输入框就能立刻回到原来的选择
+  for (const id of ["tools-fetch-count", "tools-fetch-order", "tools-fetch-topic"]) {
+    const el = $(id) as HTMLInputElement | HTMLSelectElement;
+    el.disabled = manual;
+    el.classList.toggle("opacity-50", manual);
+  }
+
+  const count = manual ? domains.length : Number(($("tools-fetch-count") as HTMLSelectElement).value) || 60;
   const enrich = ($("tools-fetch-enrich") as HTMLInputElement).checked;
   const before = state.stats?.candidates;
-  const pool =
-    before == null
+  const pool = manual
+    ? `指定 ${domains.length} 个站点（忽略数量/排序/topic，已在榜单或已审过的自动跳过）`
+    : before == null
       ? `新增约 ${fmtNum(count)} 条候选`
       : `候选池 ${fmtNum(before)} → 约 ${fmtNum(before + count)} 条（去重前）`;
   const cost = enrich
@@ -381,6 +414,9 @@ function renderJobs(jobs: Job[]): void {
         try {
           const p = JSON.parse(job.params) as Record<string, unknown>;
           if (job.kind === "fetch") {
+            if (Array.isArray(p.domains) && p.domains.length) {
+              return `指定 ${p.domains.length} 个站点${p.enrich ? " · 补流量" : ""}`;
+            }
             const order = p.order === "votes" ? "按点赞" : "最新";
             return `${p.count ?? "?"} 个 · ${order}${p.enrich ? " · 补流量" : ""}`;
           }
@@ -877,11 +913,26 @@ async function publishDomains(domains: string[]): Promise<boolean> {
 function bind(): void {
   $("tools-fetch-count").addEventListener("change", updateFetchEstimate);
   $("tools-fetch-enrich").addEventListener("change", updateFetchEstimate);
+  // input 而不是 change：粘贴一长串域名时要立刻反映条数，等失焦才更新会让人以为没生效
+  $("tools-fetch-domains").addEventListener("input", updateFetchEstimate);
   updateFetchEstimate();
 
   $("tools-fetch-btn").addEventListener("click", async () => {
     const btn = $("tools-fetch-btn") as HTMLButtonElement;
-    const count = Number(($("tools-fetch-count") as HTMLSelectElement).value);
+    const domains = parseDomainsInput();
+    const raw = ($("tools-fetch-domains") as HTMLTextAreaElement).value.trim();
+    if (raw && domains.length === 0) {
+      window.alert("指定网站里没有解析出有效域名：填形如 picvo.ai 的域名或 https:// 开头的链接。");
+      return;
+    }
+    /** 与后端 MAX_MANUAL_DOMAINS / 脚本 MAX_MANUAL 一致，只是提前拦一次，省得白跑一次 job */
+    const MAX_MANUAL = 50;
+    if (domains.length > MAX_MANUAL) {
+      window.alert(`一次最多指定 ${MAX_MANUAL} 个站点，当前 ${domains.length} 个，请分批提交。`);
+      return;
+    }
+
+    const count = domains.length || Number(($("tools-fetch-count") as HTMLSelectElement).value);
     const order = ($("tools-fetch-order") as HTMLSelectElement).value;
     const topic =
       ($("tools-fetch-topic") as HTMLInputElement).value.trim() || "artificial-intelligence";
@@ -890,7 +941,13 @@ function bind(): void {
     btn.disabled = true;
     btn.textContent = "提交中…";
     try {
-      await apiPost("/tools/jobs", { count, order, topic, enrich });
+      await apiPost("/tools/jobs", {
+        count,
+        order,
+        topic,
+        enrich,
+        ...(domains.length ? { domains } : {}),
+      });
       btn.textContent = "已提交";
       void loadJobs();
       window.setTimeout(() => {

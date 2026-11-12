@@ -10,8 +10,13 @@
  * 用法：
  *   pnpm tsx scripts/admin/fetch-staging.ts --count 60 --order newest --enrich
  *   pnpm tsx scripts/admin/fetch-staging.ts --count 20 --dry
+ *   pnpm tsx scripts/admin/fetch-staging.ts --domains "picvo.ai,gamma.app" --enrich
+ *
+ * `--domains` 是「指定网站」模式：不跑 Product Hunt/HN/Futurepedia，
+ * 直接把给定域名做成候选条目，后面的富化/判定/翻译/落库完全同一套逻辑。
  */
 import fs from "node:fs";
+import { getDomain } from "tldts";
 import type { AITool } from "@horizons/shared";
 import { config } from "../fetch/config"; // 顺带加载 .env.local
 import { fetchProductHuntTools, closePHBrowser } from "../fetch/sources/productHunt";
@@ -20,7 +25,7 @@ import { fetchFuturepediaTools } from "../fetch/sources/futurepedia";
 import { loadExisting } from "../fetch/dedupe";
 import { extractTrafficMetrics, fetchLergassyMulti, hasApify } from "../fetch/sources/apify";
 import { applyTraffic } from "../fetch/apply-traffic";
-import { probeAll } from "./probe";
+import { probeAll, fetchSiteMeta } from "./probe";
 import { looksLikeAiProduct } from "../fetch/ai-relevance";
 import { translateInPlace } from "../fetch/translate";
 import { d1Configured } from "./d1-client";
@@ -37,6 +42,13 @@ import {
 const ENRICH_BATCH = 24;
 /** 单次最多抓 200 个：再多 Actions 容易超时，且后台一次审核不过来 */
 const MAX_COUNT = 200;
+/**
+ * 指定网站单次上限。
+ * 每站要探活（最坏 12s 超时）+ 流量富化 + 翻译，50 个在 45 分钟的 job 预算内仍然安全。
+ */
+const MAX_MANUAL = 50;
+/** 指定网站的元信息抓取并发：同一个域名的首页，一次 6 个足够，再高容易被 WAF 拦 */
+const META_CONCURRENCY = 6;
 
 /* ------------------------------- 参数解析 ------------------------------- */
 
@@ -56,6 +68,32 @@ function intArg(name: string, fallback: number): number {
   const raw = Number(arg(name));
   if (!Number.isFinite(raw) || raw <= 0) return fallback;
   return Math.min(Math.floor(raw), MAX_COUNT);
+}
+
+/**
+ * 解析「指定网站」列表。
+ *
+ * 后台一个输入框里粘贴的东西很杂：完整 URL、带 www、逗号/顿号/换行/空格分隔，
+ * 这里统一归一成注册域（与 Product Hunt/HN/Futurepedia 三个源同一个 tldts 口径），
+ * 免得不带协议、带路径的写法被当成不同域名重复入池。
+ */
+function parseDomains(raw: string | undefined): string[] {
+  if (!raw) return [];
+  const out: string[] = [];
+  for (const piece of raw.split(/[\s,，、;；]+/)) {
+    const s = piece.trim();
+    if (!s) continue;
+    let host: string;
+    try {
+      host = new URL(s.includes("://") ? s : `https://${s}`).hostname;
+    } catch {
+      continue;
+    }
+    const domain = (getDomain(host) || host).toLowerCase();
+    if (!/^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/.test(domain)) continue;
+    if (!out.includes(domain)) out.push(domain);
+  }
+  return out.slice(0, MAX_MANUAL);
 }
 
 /* ------------------------------- 落库辅助 ------------------------------- */
@@ -180,6 +218,77 @@ async function fetchAllSources(
   return out;
 }
 
+/* ----------------------------- 指定网站（人工名单） ----------------------------- */
+
+/**
+ * 从首页 title 里取产品名。
+ * 常见写法是「Picvo — AI 修图」「Picvo | Home」「Picvo - AI photo editor」，
+ * 第一段才是名字；整句当名字会让候选池里一列全是描述句。
+ */
+function nameFromTitle(title: string | undefined): string | undefined {
+  if (!title) return undefined;
+  const first = title.split(/\s+[|·—–]\s+|\s+-\s+/)[0]?.trim() ?? "";
+  const name = first || title.trim();
+  if (name.length < 2 || name.length > 40) return undefined;
+  return name;
+}
+
+/** 名字的最终兜底：域名主体（picvo.ai → Picvo）；至少短且唯一 */
+function nameFromDomain(domain: string): string {
+  const sld = domain.split(".")[0] ?? domain;
+  return (
+    sld
+      .split(/[-_]/)
+      .filter(Boolean)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ") || domain
+  );
+}
+
+/**
+ * 把人工指定的域名做成候选条目。
+ *
+ * 这三个源之外没有「名字 + 简介」可用，所以抓一次首页取 title/description；
+ * 抓不到（SPA、纯 JS 渲染、被拦截）就退回域名主体，不至于让审核页出现空白名字。
+ * heatScore 记 0：指定网站本来就没有 PH/HN 热度信号，编一个数只会污染排序。
+ */
+async function buildManualTools(domains: string[]): Promise<AITool[]> {
+  const now = new Date().toISOString();
+  const out: AITool[] = [];
+
+  for (let i = 0; i < domains.length; i += META_CONCURRENCY) {
+    const chunk = domains.slice(i, i + META_CONCURRENCY);
+    const metas = await Promise.all(chunk.map((d) => fetchSiteMeta(`https://${d}`)));
+    chunk.forEach((domain, idx) => {
+      const meta = metas[idx];
+      const name = nameFromTitle(meta?.title) ?? nameFromDomain(domain);
+      const url = `https://${domain}`;
+      out.push({
+        id: `tool-manual-${domain.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}`,
+        name: name.slice(0, 80),
+        domain,
+        url,
+        description: (meta?.description ?? "").slice(0, 160) || `${name} 官网`,
+        descriptionSource: "source",
+        categories: ["Other"],
+        industry: "人工智能",
+        heatScore: 0,
+        phUpvotes: null,
+        phComments: null,
+        hnPoints: null,
+        firstSeenAt: now,
+        collectedAt: now,
+        verified: "pending",
+        sourceType: "manual",
+        sourceUrl: url,
+      });
+    });
+    console.log(`[staging] 站点信息 ${Math.min(i + META_CONCURRENCY, domains.length)}/${domains.length}`);
+  }
+
+  return out;
+}
+
 /* --------------------------------- 主流程 --------------------------------- */
 
 async function main(): Promise<void> {
@@ -190,6 +299,8 @@ async function main(): Promise<void> {
   const topic = arg("topic") ?? config.productHunt.topicSlugs[0];
   /** PH 时间窗（天）。0 表示不限，一般没必要——见 fetchProductHuntTools 的注释 */
   const days = intArg("days", 30);
+  /** 非空 = 指定网站模式，count/order/topic/days 全部忽略 */
+  const manualDomains = parseDomains(arg("domains"));
 
   if (!dryRun) assertD1();
 
@@ -207,13 +318,52 @@ async function main(): Promise<void> {
     ...pool.map((d) => d.name.toLowerCase()),
   ]);
 
-  console.log(
-    `[staging] 目标 ${count} 个｜来源 Product Hunt(主, ${order}/近${days}天/${topic}) + HN + Futurepedia` +
-      `｜富化 ${enrich ? "开" : "关"}${dryRun ? "｜dry-run" : ""}`,
-  );
+  if (manualDomains.length) {
+    console.log(
+      `[staging] 指定网站 ${manualDomains.length} 个｜来源 人工名单` +
+        `｜富化 ${enrich ? "开" : "关"}${dryRun ? "｜dry-run" : ""}`,
+    );
+  } else {
+    console.log(
+      `[staging] 目标 ${count} 个｜来源 Product Hunt(主, ${order}/近${days}天/${topic}) + HN + Futurepedia` +
+        `｜富化 ${enrich ? "开" : "关"}${dryRun ? "｜dry-run" : ""}`,
+    );
+  }
 
-  const fresh: AITool[] = await fetchAllSources(count, order, topic, existingNames, seen, days);
-  console.log(`[staging] 新增候选 ${fresh.length}/${count} 个（跳过原因见上方 [fetch] 日志）`);
+  let fresh: AITool[];
+  if (manualDomains.length) {
+    /*
+     * 指定网站的取舍：
+     *   - 已发布的跳过：它已经在线上榜单里，要刷新数据应该走「重判」，再入候选池等于制造重复条目；
+     *   - 候选池里「已拒绝」的允许重抓：手动点名就是明确的重新评估意图，UPSERT 会把状态改回来；
+     *   - 候选池里其他状态（待审核/已确认/已富化）跳过：那已经有人审过了，重抓会用简化的
+     *     card 覆盖掉富化结果与审核进度。
+     */
+    const published = new Set(existing.map((t) => t.domain.toLowerCase()));
+    const poolStatus = new Map(pool.map((p) => [p.itemKey.toLowerCase(), p.status]));
+    const blocked: string[] = [];
+    const todo: string[] = [];
+    for (const d of manualDomains) {
+      if (published.has(d)) {
+        blocked.push(`${d}（已在线上榜单，刷新请用「重判」）`);
+        continue;
+      }
+      const st = poolStatus.get(d);
+      if (st && st !== "rejected") {
+        blocked.push(`${d}（已在候选池，状态 ${st}）`);
+        continue;
+      }
+      todo.push(d);
+    }
+    if (blocked.length) {
+      console.log(`[staging] 跳过 ${blocked.length} 个：\n  - ${blocked.join("\n  - ")}`);
+    }
+    fresh = await buildManualTools(todo);
+    console.log(`[staging] 指定网站 ${manualDomains.length} 个 → 待处理 ${fresh.length} 个`);
+  } else {
+    fresh = await fetchAllSources(count, order, topic, existingNames, seen, days);
+    console.log(`[staging] 新增候选 ${fresh.length}/${count} 个（跳过原因见上方 [fetch] 日志）`);
+  }
 
   if (fresh.length === 0) {
     console.log("[staging] 无新增，候选池未变动");
@@ -224,7 +374,10 @@ async function main(): Promise<void> {
 
   // A1 粗筛：HN 和 Futurepedia 也会混进非 AI 的东西（硬件、通用 SaaS）。
   // 先按名称+简介过滤，省掉这些条目的流量查询与探活开销。
-  const relevant = fresh.filter((t) => looksLikeAiProduct(t));
+  // 指定网站不筛：审核员点名要看的站，不该被关键词规则挡在门外；
+  // 这类条目只有首页 title/description，英文关键词匹配本来就不如源站 tagline 可靠。
+  const manual = manualDomains.length > 0;
+  const relevant = manual ? fresh : fresh.filter((t) => looksLikeAiProduct(t));
   const relevantDomains = new Set(relevant.map((t) => t.domain));
   const offTopic = fresh.length - relevant.length;
   if (offTopic > 0) {
@@ -240,6 +393,9 @@ async function main(): Promise<void> {
   const needProbe = has("no-probe")
     ? []
     : relevant.filter((t) => {
+        // 指定网站一律探活：它们没有 PH/HN 热度可依，判定只剩流量 + 站点是否活着，
+        // 少探这一次会把「没法判断」写成「无流量无热度」。
+        if (manual) return true;
         const v = visitsOf(t);
         if (v !== undefined) return v >= MIN_VISITS_WATCH;
         return (t.phUpvotes ?? 0) >= WATCH_PH_UPVOTES;
@@ -300,6 +456,8 @@ async function main(): Promise<void> {
   console.log(`[staging] 已写入 D1 候选池｜本次 ${saved} 条（新增 ${fresh.length}），队列 ${total} 条`);
 
   setGithubOutput({ added: fresh.length, judged: items.length, total });
+  // 指定网站模式下「请求数」是名单条数，不是 --count（那里可能是默认 60，写进日志会误导）
+  const requested = manual ? manualDomains.length : count;
   // Actions 日志里以单行 JSON 结尾，方便人工与脚本解析
   console.log(
     JSON.stringify({
@@ -310,8 +468,8 @@ async function main(): Promise<void> {
       reject: tally.reject,
       total,
       enriched,
-      requested: count,
-      skipped: Math.max(0, count - fresh.length),
+      requested,
+      skipped: Math.max(0, requested - fresh.length),
     }),
   );
 }

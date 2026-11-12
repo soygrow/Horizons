@@ -592,6 +592,21 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 <span>补 Similarweb 流量<br /><span class="text-[11px] text-ink-muted">不补就进不了主榜</span></span>
               </label>
             </div>
+            <!-- 指定网站：填了就只抓名单，忽略上面的数量/排序/topic。
+                 单独占一行是因为要能粘贴一长串域名，塞进 1/4 栏只会让人看不清自己贴了什么。 -->
+            <label class="block px-4 pb-1 text-xs font-medium text-ink-secondary">
+              指定网站（可选）
+              <textarea
+                id="tools-fetch-domains"
+                rows="2"
+                spellcheck="false"
+                placeholder="picvo.ai, gamma.app …  逗号 / 空格 / 换行分隔，最多 50 个；填了就忽略上面的数量与排序"
+                class="mt-1 w-full resize-y rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 font-mono text-xs leading-relaxed text-ink outline-none placeholder:font-sans placeholder:text-ink-muted focus:border-primary"
+              ></textarea>
+              <span class="mt-1 block text-[11px] font-normal leading-relaxed text-ink-muted">
+                名字与简介取自站点首页；判定规则与常规抓取一致——大厂主站、平台域名、无流量且无热度仍会被拒。
+              </span>
+            </label>
             <p id="tools-fetch-estimate" class="px-4 pb-4 text-[11px] leading-relaxed text-ink-muted">—</p>
             <div id="tools-jobs" class="border-t border-border"></div>
           </article>

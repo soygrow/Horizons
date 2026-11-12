@@ -32,6 +32,60 @@ const PROBE_CONCURRENCY = 8;
 const PROBE_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36";
 
+export interface SiteMeta {
+  title?: string;
+  description?: string;
+}
+
+/** 解码 HTML 实体里最常见的几个，够 title/description 用 */
+function decodeEntities(s: string): string {
+  return s
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#0?39;|&apos;/gi, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * 取首页的 title 与 description。
+ *
+ * 只服务后台「指定网站抓取」：这类条目没有 Product Hunt/HN 提供的名字与简介，
+ * 不抓一次首页就只能拿域名主体当名字，人工审核时看不出是什么产品。
+ * 与 probeAlive 分开，是为了不动存活判定的口径（那里 title 只用来判断「有没有」）。
+ */
+export async function fetchSiteMeta(url: string): Promise<SiteMeta> {
+  if (!url) return {};
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), PROBE_TIMEOUT_MS);
+  try {
+    const res = await fetch(url, {
+      redirect: "follow",
+      signal: ctrl.signal,
+      headers: { "user-agent": PROBE_UA, accept: "text/html,*/*" },
+    });
+    if (!res.ok) return {};
+    const html = (await res.text()).slice(0, 60_000);
+    const title = html.match(/<title[^>]*>([^<]{1,300})/i)?.[1];
+    // 两种写法都常见：name="description" 与 property="og:description"
+    const desc =
+      html.match(/<meta[^>]+name=["']description["'][^>]*content=["']([^"']{1,500})/i)?.[1] ??
+      html.match(/<meta[^>]+content=["']([^"']{1,500})["'][^>]*name=["']description["']/i)?.[1] ??
+      html.match(/<meta[^>]+property=["']og:description["'][^>]*content=["']([^"']{1,500})/i)?.[1];
+    return {
+      title: title ? decodeEntities(title) : undefined,
+      description: desc ? decodeEntities(desc) : undefined,
+    };
+  } catch {
+    return {};
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function probeAlive(url: string): Promise<boolean | null> {
   if (!url) return null;
   const ctrl = new AbortController();
