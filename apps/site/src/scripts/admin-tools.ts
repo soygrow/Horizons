@@ -275,8 +275,10 @@ function pickRecentJobs(jobs: Job[]): { rows: Job[]; hidden: number } {
   const isActive = (j: Job) => j.status === "queued" || j.status === "running";
   const active = jobs.filter(isActive);
   const finished = jobs.filter((j) => !isActive(j));
-  // 运行中的永远留在视野里，剩下的名额按时间倒序补满
-  const rows = [...active, ...finished].slice(0, Math.max(JOB_ROWS_VISIBLE, active.length));
+  // 固定 JOB_ROWS_VISIBLE 行：运行中的优先占前几位，但不再因为它「有几个」而放宽行数。
+  // 之前是 Math.max(JOB_ROWS_VISIBLE, active.length)，队列里一旦有 queued 僵尸，
+  // 点一次抓取就从 3 行变 4 行、刷新后又缩回 3 行 —— 行数必须只由常量决定。
+  const rows = [...active, ...finished].slice(0, JOB_ROWS_VISIBLE);
   return { rows, hidden: jobs.length - rows.length };
 }
 
@@ -873,6 +875,41 @@ function bind(): void {
     } finally {
       btn.disabled = false;
       btn.textContent = "确认收录";
+    }
+  });
+
+  $("tools-reject-btn").addEventListener("click", async () => {
+    const domains = [...state.selected];
+    if (!domains.length) {
+      window.alert("先勾选要拒绝的条目（可点表头复选框全选当前页）");
+      return;
+    }
+    if (
+      !window.confirm(
+        `确认拒绝选中的 ${domains.length} 个？\n拒绝后这些域名进入永久不抓取名单，采集时会直接跳过。\n` +
+          `（误操作可在「已拒绝」筛选里单条恢复）`,
+      )
+    ) {
+      return;
+    }
+
+    const btn = $("tools-reject-btn") as HTMLButtonElement;
+    btn.disabled = true;
+    btn.textContent = "提交中…";
+    try {
+      // 后端单次最多收 100 个域名，多选时分批发，避免「点了全选只拒掉一部分」
+      for (let i = 0; i < domains.length; i += 100) {
+        await rejectDomains(domains.slice(i, i + 100), true);
+      }
+      state.selected.clear();
+      await loadStaging();
+      void loadPreview();
+      void loadOverview();
+    } catch (e) {
+      window.alert(`批量拒绝失败：${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "批量拒绝";
     }
   });
 

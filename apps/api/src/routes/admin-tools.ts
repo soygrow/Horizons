@@ -134,8 +134,20 @@ tools.get("/jobs", async (c) => {
   const cfg = ghConfig(c.env);
   const limit = Math.min(Number(c.req.query("limit") ?? 20) || 20, MAX_PAGE_SIZE);
   const rows = await listJobs(c.env, limit);
-  const refreshed = await Promise.all(rows.slice(0, 5).map((r) => refreshJob(c.env, cfg, r)));
-  return c.json({ jobs: [...refreshed, ...rows.slice(5)] });
+  // 所有「还没终结」的行都要回源校准，不能只看前 5 条：
+  // 一旦队列里积下 queued 僵尸（run 早结束但状态没同步），前端按活跃数算展示条数时
+  // 会多出一行 —— 点一次抓取变 4 条、刷新后又缩回 3 条，就是这个原因。
+  // 上限 10 只是防极端情况下一次性打太多 GitHub 请求。
+  const live = rows
+    .filter((r) => r.status === "queued" || r.status === "running")
+    .slice(0, 10);
+  const refreshed = new Map<string, JobRow>();
+  await Promise.all(
+    live.map(async (r) => {
+      refreshed.set(r.id, await refreshJob(c.env, cfg, r));
+    }),
+  );
+  return c.json({ jobs: rows.map((r) => refreshed.get(r.id) ?? r) });
 });
 
 tools.post("/jobs", async (c) => {

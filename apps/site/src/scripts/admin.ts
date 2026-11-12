@@ -305,15 +305,19 @@ async function enterApp(username: string): Promise<void> {
   loginView.hidden = true;
   appView.hidden = false;
   $("who").textContent = username;
+
+  // 刷新后停留在原标签页：hash 优先，hash 丢了再退回上次记住的标签页。
+  // 必须在 await 之前恢复 —— 放到 loadStats 之后就属于「等数据回来才切面板」，
+  // 一旦那个请求变慢或挂了，人就被扔在概览页。
+  const hash = location.hash.replace(/^#/, "");
+  const initial = isTabId(hash) ? hash : loadRememberedTab();
+  if (initial) activateTab(initial, true);
+
   if (!state.users.loaded) {
     state.users.loaded = true;
     void loadUsers();
   }
   await loadStats();
-
-  // 刷新后停留在原标签页（hash 由 activateTab 写入；没有 hash 就留在概览）
-  const hash = location.hash.replace(/^#/, "");
-  if (isTabId(hash)) activateTab(hash, false);
 }
 
 loginForm.addEventListener("submit", async (event) => {
@@ -780,11 +784,35 @@ function isTabId(value: string | null | undefined): value is TabId {
 }
 
 /**
+ * 记住当前标签页。只靠 hash 不够：有些场景（清空地址栏、从书签进、站点被 iframe
+ * 包一层）hash 会丢，人就掉回概览页。本地存一份，hash 缺失时用它兜底。
+ */
+const TAB_STORE_KEY = "admin:tab";
+
+function rememberTab(tab: TabId): void {
+  try {
+    localStorage.setItem(TAB_STORE_KEY, tab);
+  } catch {
+    // 隐私模式下 localStorage 会抛，忽略即可，hash 那条路仍然有效
+  }
+}
+
+function loadRememberedTab(): TabId | null {
+  try {
+    const saved = localStorage.getItem(TAB_STORE_KEY);
+    return isTabId(saved) ? saved : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * 切换标签页。syncUrl 为真时把 tab 写进 hash，刷新后能回到同一页；
  * 数据加载放在这里，点按钮和「刷新后恢复」走同一条路径，不会两处漂移。
  */
 function activateTab(tab: TabId, syncUrl = true): void {
   state.tab = tab;
+  rememberTab(tab);
   document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((b) => {
     b.dataset.active = String(b.dataset.tab === tab);
   });
