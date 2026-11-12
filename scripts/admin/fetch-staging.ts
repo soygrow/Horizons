@@ -22,6 +22,7 @@ import { extractTrafficMetrics, fetchLergassyMulti, hasApify } from "../fetch/so
 import { applyTraffic } from "../fetch/apply-traffic";
 import { probeAll } from "./probe";
 import { looksLikeAiProduct } from "../fetch/ai-relevance";
+import { translateInPlace } from "../fetch/translate";
 import { d1Configured } from "./d1-client";
 import { listCandidates, syncCandidates, type ItemStatus } from "./board-items";
 import {
@@ -259,6 +260,14 @@ async function main(): Promise<void> {
   for (const it of items) tally[it.verdict!.tier]++;
   console.log(
     `[staging] 判定结果：主榜 ${tally.core}｜观察区 ${tally.watch}｜不收录 ${tally.reject}`,
+  );
+
+  // 判定之后、落库之前翻译：判定只看流量与票数，跟语言无关；
+  // 而 A1 粗筛（looksLikeAiProduct）是按英文关键词匹配的，翻译必须放在它后面，
+  // 否则中文描述会把 AI 相关词抹掉，条目会被误判成非 AI 产品剔掉。
+  const zh = await translateInPlace(items);
+  console.log(
+    `[staging] 中文描述：本次翻译 ${zh.translated} 条｜失败 ${zh.failed} 条｜已是中文 ${zh.skipped} 条`,
   );
 
   if (dryRun) {

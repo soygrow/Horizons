@@ -28,6 +28,7 @@ import {
   type StagingItem,
 } from "./verdict";
 import { readWorkspace, syncCandidates, type ItemStatus } from "./board-items";
+import { hasDataForSEO } from "../fetch/sources/dataforseo";
 import { saveReport } from "./reports";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
@@ -237,6 +238,13 @@ async function main(): Promise<void> {
 
   console.log(`\n[enrich-staging] 完成 ${ok}/${picked.length}${failed.length ? `｜失败 ${failed.length}` : ""}`);
   if (report.total > 0) {
+    // 没配 DFS 时关键词/外链/竞品/自然搜索必然是空的，这属于配置缺失而非富化失败，
+    // 不说明的话看报告的人只会以为富化又白跑了
+    if (!hasDataForSEO()) {
+      console.log(
+        "[enrich-staging] 未配置 DataForSEO：关键词 / 外链 / 竞品 / 自然搜索流量 这几项不会补（属预期，配好凭据再跑一次就能填）",
+      );
+    }
     console.log(`[enrich-staging] 字段体检（共 ${report.total} 条，空置 / 有值但异常）：`);
     for (const d of report.dimensions) {
       const flag = d.invalid > 0 ? " ← 需人工核对" : "";
@@ -253,6 +261,17 @@ async function main(): Promise<void> {
     }
   }
   console.log(JSON.stringify({ processed: picked.length, ok, failed: failed.length, report: REPORT_PATH }));
+
+  // 全失败必须让任务失败：以前无论成败都 exit 0，后台任务列表显示「成功」，
+  // 但队列一条都没富化、阶段停在「待富化」，人只能对着日志猜。
+  if (ok === 0) {
+    console.error(`[enrich-staging] ${picked.length} 条全部失败，按失败退出（后台会显示失败）`);
+    process.exitCode = 1;
+  } else if (failed.length) {
+    console.warn(
+      `::warning::[enrich-staging] ${failed.length}/${picked.length} 条失败：${failed.slice(0, 5).join("、")}`,
+    );
+  }
 }
 
 main().catch((e: unknown) => {

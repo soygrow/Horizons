@@ -79,8 +79,13 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
     throw new Error("unauthorized");
   }
   if (!res.ok) {
-    const detail = (await res.json().catch(() => ({}))) as { error?: string; detail?: string };
-    throw new Error(detail.detail ?? detail.error ?? `request_failed_${res.status}`);
+    const detail = (await res.json().catch(() => ({}))) as {
+      error?: string;
+      detail?: string;
+      message?: string;
+    };
+    // message 是给人看的中文说明（如「已有富化任务在跑」），优先于 error 代码
+    throw new Error(detail.detail ?? detail.message ?? detail.error ?? `request_failed_${res.status}`);
   }
   return (await res.json()) as T;
 }

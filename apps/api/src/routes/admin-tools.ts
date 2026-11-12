@@ -219,6 +219,48 @@ tools.get("/jobs/:id", async (c) => {
   return c.json({ job: await refreshJob(c.env, ghConfig(c.env), row) });
 });
 
+/**
+ * 页面展示的 14 个数据维度，与 scripts/admin/verdict.ts 的 FIELD_DIMENSIONS 对齐。
+ *
+ * 为什么在 API 里再算一遍：card 里的 fieldGaps 只在「富化成功」那天写过，
+ * 采集入库的条目压根没这个字段，接口一律 ?? [] 返回空数组，
+ * 后台就把一条缺关键词/外链/AI 解读的条目显示成「缺失：完整」。
+ */
+const FIELD_PATHS = [
+  "description",
+  "categories",
+  "trafficMetrics.monthlyVisits",
+  "trafficMetrics.monthlyVisitsGrowth",
+  "metrics.registeredAt",
+  "searchTraffic.organic",
+  "geoDistribution",
+  "keywords",
+  "backlinks.total",
+  "observations.competitors",
+  "pricing",
+  "pageStructure",
+  "siteAudit",
+  "aiInsight",
+] as const;
+
+function hasValueAt(t: Record<string, unknown>, path: string): boolean {
+  const v = path.split(".").reduce<unknown>((acc, k) => {
+    if (acc && typeof acc === "object") return (acc as Record<string, unknown>)[k];
+    return undefined;
+  }, t);
+  if (v === undefined || v === null) return false;
+  if (typeof v === "string") return v.trim().length > 0;
+  if (typeof v === "number") return Number.isFinite(v) && v !== 0;
+  if (Array.isArray(v)) return v.length > 0;
+  if (typeof v === "object") return Object.keys(v as object).length > 0;
+  return true;
+}
+
+/** 实时算还缺哪些维度；存过的不再信任，口径以当前卡片数据为准 */
+function fieldGapsOf(t: Record<string, unknown>): string[] {
+  return FIELD_PATHS.filter((p) => !hasValueAt(t, p));
+}
+
 /** 待发布队列：只读 board_items，返回列表页需要的精简字段 */
 tools.get("/staging", async (c) => {
   const ws = await listWorkspace<Record<string, unknown> & TierInput>(c.env.DB, "tools");
@@ -252,7 +294,8 @@ tools.get("/staging", async (c) => {
         tier: verdict?.tier ?? tierOf(t),
         reason: verdict?.reason ?? null,
         stage: stageOf(t),
-        fieldGaps: (t.fieldGaps as string[]) ?? [],
+        // 一律按当前卡片实时算：存值只反映上次富化那一刻，采集入库的条目根本没有
+        fieldGaps: fieldGapsOf(t),
         rejected: rejectedSet.has(String(t.domain).toLowerCase()),
       };
     })
@@ -393,6 +436,25 @@ tools.post("/enrich", async (c) => {
   const limit = Math.max(1, Math.min(Number(body.limit ?? 10) || 10, 20));
   const freeOnly = body.freeOnly === true;
   const note = typeof body.note === "string" ? body.note.slice(0, 120) : "";
+
+  // 防重：富化是按次扣钱的，前端按钮锁只是第一道；直接打接口、两个标签页同时点都得挡住。
+  // 先回源校准最近几条，避免被「run 早结束但状态没同步」的僵尸任务误封。
+  const recent = await c.env.DB.prepare(
+    "SELECT * FROM tool_jobs WHERE kind = 'enrich' ORDER BY created_at DESC LIMIT 5",
+  ).all<JobRow>();
+  for (const row of recent.results ?? []) {
+    const fresh = await refreshJob(c.env, cfg, row);
+    if (fresh.status === "queued" || fresh.status === "running") {
+      return c.json(
+        {
+          error: "already_running",
+          message: "已有富化任务在跑，结束后再提交（每次提交都会实际扣费）",
+          job: fresh,
+        },
+        409,
+      );
+    }
+  }
 
   const id = crypto.randomUUID();
   const now = Date.now();

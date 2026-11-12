@@ -111,6 +111,45 @@ export async function syncCandidates(
   }
 }
 
+/**
+ * 只覆盖卡片内容，不动 status。
+ *
+ * 为什么不用 syncCandidates：那条语句会把 status 一起写成传入值，
+ * 后台已经「确认收录」的条目会被打回 candidate，等于把人工审核抹掉。
+ * 这里只改 card（描述就存在 card 里），status/name/url 一律不动。
+ */
+export async function updateCards(
+  board: string,
+  entries: readonly { itemKey: string; card: unknown }[],
+  log: (msg: string) => void = (m) => console.log(m),
+): Promise<number> {
+  if (entries.length === 0) return 0;
+  const client = openClient();
+  if (!client) {
+    log("::warning::[items] 未配置 D1 通道，卡片更新跳过");
+    return 0;
+  }
+
+  const now = Date.now();
+  let done = 0;
+  for (const it of entries) {
+    try {
+      await client.query(
+        "UPDATE board_items SET card = ?, updated_at = ? WHERE board = ? AND item_key = ?",
+        [jsonOrNull(it.card), now, board, it.itemKey],
+      );
+      done++;
+    } catch (e) {
+      log(
+        `::warning::[items] 更新 ${it.itemKey} 卡片失败：${
+          e instanceof Error ? e.message.slice(0, 160) : String(e)
+        }`,
+      );
+    }
+  }
+  return done;
+}
+
 /** 把条目标记为已拒绝（后台点「拒绝」后要让采集不再重复抓） */
 export async function rejectCandidate(board: string, itemKey: string): Promise<boolean> {
   const client = openClient();

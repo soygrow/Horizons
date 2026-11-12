@@ -242,7 +242,9 @@ async function main(): Promise<void> {
   let homeHtml = "";
   let metrics = tool.metrics;
   let trend = tool.trend;
-  let keywords = tool.keywords;
+  // 候选池里的 card 没有 keywords 字段 → 这里是 undefined。
+  // 后面「!keywords.some(...)」和遍历直接跪，DFS 未配置时每个站点都崩在这里。
+  let keywords = tool.keywords ?? [];
   let geo = tool.geoDistribution;
   let backlinks = tool.backlinks;
   let competitors = tool.observations?.competitors ?? [];
@@ -299,75 +301,101 @@ async function main(): Promise<void> {
   // 注：DFS 只能提供「搜索流量」口径（clickstream_etv），总访问量/渠道占比无来源 → 不采集、不展示
 
   if (!freeOnly && hasDataForSEO()) {
+    // 逐项补缺：采集期已经拿到的数据不再重复买 DFS。
+    // 采集卡里带 trafficMetrics/trend（Apify 总量）、competitors、backlinks 的条目，
+    // 以前照样全量打 4 个端点，每站白花 $0.18；现在只补真正缺的那几项。
+    const hasTraffic = !!tool.trafficMetrics && (tool.trend?.length ?? 0) >= 2;
+    const hasKeywords = keywords.some((k) => k.volume != null);
+    const hasBacklinks = (backlinks?.total ?? 0) > 0;
+    const hasCompetitors = competitors.length >= 3;
+    const reuse = [
+      hasTraffic ? "流量" : "",
+      hasKeywords ? "关键词" : "",
+      hasBacklinks ? "外链" : "",
+      hasCompetitors ? "竞品" : "",
+    ].filter(Boolean);
+    if (reuse.length) {
+      console.log(`[enrich-site] 已有数据直接复用，跳过 DFS：${reuse.join("/")}`);
+    }
+
+    // .ai 注册表 2017-12 迁移时把存量域名 Creation Date 统一重置为迁移日，
+    // 这批日期不是真实注册时间，打标避免被当成产品年龄。
+    const registeredAtSuspect =
+      !!registeredAt &&
+      /\.ai$/i.test(domain) &&
+      registeredAt >= "2017-12-14" &&
+      registeredAt <= "2017-12-17"
+        ? true
+        : undefined;
+
     try {
       // 不调 domain_rank_overview：该端点只返回「当前 location 的单条排名概览」，
       // 没有 location_name，拿不到国家分布（实测 items 恒为 1 条），此前一直白花 $0.09/站。
       // 国家分布只有 vortex 能给，无 vortex 时保留旧值或留空。
       const [kw, histResult, bk, comps] = await Promise.all([
-        fetchKeywords(domain, 10),
-        fetchTrafficHistory(domain),
-        fetchBacklinksSummary(domain),
-        fetchCompetitors(domain, 8),
+        hasKeywords ? null : fetchKeywords(domain, 10),
+        hasTraffic ? null : fetchTrafficHistory(domain),
+        hasBacklinks ? null : fetchBacklinksSummary(domain),
+        hasCompetitors ? null : fetchCompetitors(domain, 8),
       ]);
-      const hist = histResult.history;
-      // 月搜索流量 = 最新一个月的 clickstream_etv（比普通 etv 更接近真实）
-      const last = hist[hist.length - 1];
-      const organic = last?.organic ?? 0;
-      const paid = last ? last.total - last.organic : 0;
-      const total = last?.total ?? 0;
-      searchTraffic = { organic, paid };
 
-      const momGrowth = (() => {
-        if (hist.length < 2) return undefined;
-        const prev = hist[hist.length - 2].total;
-        const lastTotal = hist[hist.length - 1].total;
-        if (prev < 1 || lastTotal < 1) return undefined; // 流量过小，环比无意义
-        if (prev <= 0) return undefined;
-        return Math.round(((lastTotal - prev) / prev) * 1000) / 10;
-      })();
+      if (histResult) {
+        const hist = histResult.history;
+        // 月搜索流量 = 最新一个月的 clickstream_etv（比普通 etv 更接近真实）
+        const last = hist[hist.length - 1];
+        const organic = last?.organic ?? 0;
+        const paid = last ? last.total - last.organic : 0;
+        const total = last?.total ?? 0;
+        searchTraffic = { organic, paid };
 
-      // 权重口径：已有 Ahrefs DR（0~100）优先保留，避免被 DFS rank（0~1000）覆盖造成口径漂移
-      const prevWeight = tool.metrics?.domainWeight;
-      const keepDR = tool.metrics?.domainWeightLabel === "DR" && prevWeight !== undefined;
-      // rank=0 视为「未采到等级」；0 本身是 DR 的有效值，不在此清空
-      const dfsWeight = bk && bk.domainWeight > 0 ? bk.domainWeight : undefined;
-      metrics = {
-        // DFS 给的是「搜索流量」，无搜索流量 ≠ 真的 0 访问，按缺失处理更准确
-        monthlyVisits: total > 0 ? total : undefined,
-        organicVisits: organic > 0 ? organic : undefined,
-        momGrowth,
-        domainWeight: keepDR ? prevWeight : dfsWeight,
-        domainWeightLabel: keepDR ? "DR" : dfsWeight !== undefined ? "权重" : undefined,
-        registeredAt, // 优先 RDAP
-        // .ai 注册表 2017-12 迁移时把存量域名 Creation Date 统一重置为迁移日，
-        // 这批日期不是真实注册时间，打标避免被当成产品年龄。
-        registeredAtSuspect:
-          !!registeredAt &&
-          /\.ai$/i.test(domain) &&
-          registeredAt >= "2017-12-14" &&
-          registeredAt <= "2017-12-17"
-            ? true
-            : undefined,
-      };
-      // 趋势优先级：vortex（总访问量，本站已有 ≥2 个月）> DFS 搜索流量历史。
-      // DFS 在无搜索流量时会给全 0 月份，也不能用来覆盖真实趋势。
-      const hasVortexTrend = !!tool.trafficMetrics && (tool.trend?.length ?? 0) >= 2;
-      if (!hasVortexTrend && hist.some((p) => p.total > 0)) trend = hist;
-      keywords = kw;
-      keywordCount = histResult.keywordCount;
-      rankDistribution = histResult.rankDistribution;
-      backlinks = bk && bk.total > 0
-        ? {
-            total: bk.total,
-            totalDofollowShare: bk.totalDofollowShare,
-            refDomains: bk.refDomains,
-            refDofollowShare: bk.refDofollowShare,
-          }
-        : undefined;
-      if (comps.length) competitors = comps;
-      console.log(
-        `[enrich-site] DFS：月搜索流量=${total}（自然 ${organic} / 付费 ${paid}）｜关键词 ${kw.length}｜排名词 ${keywordCount}｜外链 ${bk?.total ?? "—"}｜竞品 ${comps.length}`,
-      );
+        const momGrowth = (() => {
+          if (hist.length < 2) return undefined;
+          const prev = hist[hist.length - 2].total;
+          const lastTotal = hist[hist.length - 1].total;
+          if (prev < 1 || lastTotal < 1) return undefined; // 流量过小，环比无意义
+          if (prev <= 0) return undefined;
+          return Math.round(((lastTotal - prev) / prev) * 1000) / 10;
+        })();
+
+        // 权重口径：已有 Ahrefs DR（0~100）优先保留，避免被 DFS rank（0~1000）覆盖造成口径漂移
+        const prevWeight = tool.metrics?.domainWeight;
+        const keepDR = tool.metrics?.domainWeightLabel === "DR" && prevWeight !== undefined;
+        // rank=0 视为「未采到等级」；0 本身是 DR 的有效值，不在此清空
+        const dfsWeight = bk && bk.domainWeight > 0 ? bk.domainWeight : undefined;
+        metrics = {
+          // DFS 给的是「搜索流量」，无搜索流量 ≠ 真的 0 访问，按缺失处理更准确
+          monthlyVisits: total > 0 ? total : undefined,
+          organicVisits: organic > 0 ? organic : undefined,
+          momGrowth,
+          domainWeight: keepDR ? prevWeight : dfsWeight,
+          domainWeightLabel: keepDR ? "DR" : dfsWeight !== undefined ? "权重" : undefined,
+          registeredAt, // 优先 RDAP
+          registeredAtSuspect,
+        };
+        // 趋势优先级：vortex（总访问量，本站已有 ≥2 个月）> DFS 搜索流量历史。
+        // DFS 在无搜索流量时会给全 0 月份，也不能用来覆盖真实趋势。
+        if (hist.some((p) => p.total > 0)) trend = hist;
+        keywordCount = histResult.keywordCount;
+        rankDistribution = histResult.rankDistribution;
+        console.log(
+          `[enrich-site] DFS：月搜索流量=${total}（自然 ${organic} / 付费 ${paid}）｜关键词 ${kw?.length ?? 0}｜排名词 ${keywordCount}｜外链 ${bk?.total ?? "—"}｜竞品 ${comps?.length ?? 0}`,
+        );
+      } else {
+        // 复用了采集的流量：只补注册时间，别把已有的月访问量/环比冲成 undefined
+        metrics = { ...(metrics ?? {}), registeredAt, registeredAtSuspect };
+        console.log(`[enrich-site] DFS：流量沿用采集值（月访问 ${tool.trafficMetrics?.monthlyVisits ?? "—"}）`);
+      }
+
+      if (kw?.length) keywords = kw;
+      if (bk && bk.total > 0) {
+        backlinks = {
+          total: bk.total,
+          totalDofollowShare: bk.totalDofollowShare,
+          refDomains: bk.refDomains,
+          refDofollowShare: bk.refDofollowShare,
+        };
+      }
+      if (comps?.length) competitors = comps;
     } catch (e) {
       console.warn("[enrich-site] DataForSEO 失败：", e instanceof Error ? e.message : e);
     }
@@ -451,7 +479,9 @@ async function main(): Promise<void> {
             : undefined,
         directVisits: tm.directVisits,
         momGrowth: tm.monthlyVisitsGrowth,
-        registeredAt: tool.metrics?.registeredAt,
+        // 必须用本轮刚查到的（RDAP 优先）值：这里若读 tool.metrics 的旧值，
+        // 后面 {...metrics, ...metricsForLLM} 会用 undefined 把新注册时间冲掉
+        registeredAt: registeredAt ?? tool.metrics?.registeredAt,
         domainWeight: tool.metrics?.domainWeight,
         domainWeightLabel: tool.metrics?.domainWeightLabel,
       }

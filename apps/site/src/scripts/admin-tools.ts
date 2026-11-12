@@ -282,8 +282,59 @@ function pickRecentJobs(jobs: Job[]): { rows: Job[]; hidden: number } {
   return { rows, hidden: jobs.length - rows.length };
 }
 
+/**
+ * 富化单价（单条）：
+ *   DFS 四个端点（关键词/流量历史/外链/竞品）约 $0.18；
+ *   只走 LLM + 自建爬虫约 $0.02。
+ * 采集期已经从 Apify 拿到流量/竞品/外链的条目，富化只补缺的那几项，别按最贵档报账。
+ */
+const ENRICH_COST = { dfs: 0.18, ai: 0.02 } as const;
+
+/** 这些维度只有 DFS 能补 */
+const DFS_DIMS = new Set([
+  "searchTraffic.organic",
+  "keywords",
+  "backlinks.total",
+  "observations.competitors",
+]);
+
+function estimateEnrich(
+  rows: StagingRow[],
+  countFallback?: number,
+): { count: number; dfs: number; ai: number; total: number; rough: boolean } {
+  let dfs = 0;
+  let ai = 0;
+  for (const r of rows) {
+    if (r.fieldGaps.some((k) => DFS_DIMS.has(k))) dfs++;
+    else ai++;
+  }
+  const count = countFallback ?? rows.length;
+  // 队列只展示当前页时，按「剩余条目全走 DFS」估上限，宁可报多不报少
+  const unseen = Math.max(0, count - rows.length);
+  const total = (dfs + unseen) * ENRICH_COST.dfs + ai * ENRICH_COST.ai;
+  return { count, dfs: dfs + unseen, ai, total, rough: unseen > 0 };
+}
+
+/** 富化会花钱，跑着的时候按钮必须锁住：以前只能靠人自觉，连点两次就是两份账单 */
+function syncEnrichButton(jobs: Job[]): void {
+  const btn = $("tools-enrich-btn") as HTMLButtonElement;
+  const running = jobs.find(
+    (j) => j.kind === "enrich" && (j.status === "queued" || j.status === "running"),
+  );
+  if (running) {
+    btn.disabled = true;
+    btn.textContent = "富化进行中…";
+    btn.title = "已有富化任务在跑，结束之后才能再提交（每提交一次都会实际扣费）";
+    return;
+  }
+  btn.disabled = false;
+  btn.textContent = "开始富化";
+  btn.title = "";
+}
+
 function renderJobs(jobs: Job[]): void {
   const box = $("tools-jobs");
+  syncEnrichButton(jobs);
   if (!jobs.length) {
     box.innerHTML = `<p class="px-4 py-4 text-xs text-ink-muted">还没有任务。点上面的「开始抓取」会在这里显示进度。</p>`;
     return;
@@ -914,35 +965,57 @@ function bind(): void {
   });
 
   $("tools-enrich-btn").addEventListener("click", async () => {
+    const btn = $("tools-enrich-btn") as HTMLButtonElement;
+    if (btn.disabled) return;
+
+    const rows = state.staging?.items ?? [];
     const domains = [...state.selected];
-    const count = domains.length || (state.staging?.approved ?? 0);
-    if (!count) {
+    const picked = domains.length
+      ? rows.filter((r) => state.selected.has(r.domain))
+      : rows.filter((r) => r.stage === "approved");
+
+    // 没勾选时按队列里的 approved 总数估算（当前页可能只显示一部分）
+    const est = domains.length
+      ? estimateEnrich(picked)
+      : estimateEnrich(picked, state.staging?.approved ?? picked.length);
+
+    if (!est.count) {
       window.alert("没有待富化的条目：先勾选并「确认收录」");
       return;
     }
-    const estimate = (count * 0.3).toFixed(2);
+
+    // 第一次确认：把账算清楚 —— 已有数据的条目不再买 DFS，价格差 9 倍
+    const detail =
+      `将对 ${est.count} 个条目做富化（单条 2–5 分钟）。\n\n` +
+      (est.dfs
+        ? `· 需补 DFS 关键词/外链/竞品：${est.dfs} 条 × $${ENRICH_COST.dfs} = $${(est.dfs * ENRICH_COST.dfs).toFixed(2)}\n`
+        : "") +
+      (est.ai
+        ? `· 采集数据已够，只补 AI 解读：${est.ai} 条 × $${ENRICH_COST.ai} = $${(est.ai * ENRICH_COST.ai).toFixed(2)}\n`
+        : "") +
+      `\n预计合计约 $${est.total.toFixed(2)}${est.rough ? "（队列未全量展示，此为上限估算）" : ""}。\n继续？`;
+    if (!window.confirm(detail)) return;
+
+    // 第二次确认：这是会真扣钱的操作，再问一遍
     if (
       !window.confirm(
-        `将对 ${count} 个条目做富化（DFS 关键词/外链/竞品 + AI 解读）。\n` +
-          `预计花费约 $${estimate}，单条 2–5 分钟，跑完再来这里看字段完整度。`,
+        `再确认一次：提交后立即开始扣费，预计 $${est.total.toFixed(2)}。\n` +
+          `任务跑完之前不能重复提交，也无法中途退款。\n\n确认提交富化？`,
       )
     ) {
       return;
     }
 
-    const btn = $("tools-enrich-btn") as HTMLButtonElement;
     btn.disabled = true;
     btn.textContent = "已提交";
     try {
       await enrichDomains(domains);
       state.selected.clear();
+      // 保持禁用，交给 syncEnrichButton 按任务状态恢复：
+      // 固定 6 秒后就解锁的做法等于给了「重复下单」的入口
       void loadJobs();
-      window.setTimeout(() => {
-        btn.disabled = false;
-        btn.textContent = "开始富化";
-        void loadStaging();
-        void loadPreview();
-      }, 6000);
+      void loadStaging();
+      void loadPreview();
     } catch (e) {
       btn.disabled = false;
       btn.textContent = "开始富化";

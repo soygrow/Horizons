@@ -3,6 +3,7 @@ import path from "node:path";
 import type { AITool, AIToolCategory } from "@horizons/shared";
 import "./config"; // 副作用导入：触发 .env.local 加载
 import { chatJSON, hasLLM } from "./sources/llm";
+import { SYSTEM_DESC, ZH_RE } from "./translate";
 
 /**
  * LLM 增强管线：中文一句话描述 + 品类分类 + 细分赛道标签。
@@ -34,14 +35,6 @@ const SYSTEM = `你是 AI 工具目录网站的资深编辑。根据用户提供
 只输出 JSON，不要多余文本。`;
 
 /** 只翻译简介用的提示词：不动分类与赛道，避免机器重判覆盖已校准的品类 */
-const SYSTEM_DESC = `你是 AI 工具目录的中文编辑。用户给出若干工具的名称与英文简介。
-把每条英文简介翻译成中文，要求：
-- 不超过 40 字，说清「做什么」和「给谁用」；
-- 产品名 / 品牌名保持原文，不翻译；
-- 不要「该工具」「这是一款」这类冗余开头，直接说功能；
-- API、SaaS、LLM 等专业术语保留原文，不硬译；
-- 语气客观，不夸大（不写「最强」「颠覆」）。
-输出 JSON：{"items":[{"id":<原样返回的 id>,"zh":"<中文简介>"}]}，条数与输入一致，不要多余文本。`;
 
 function loadTools(): AITool[] {
   try {
@@ -80,7 +73,7 @@ interface LLMOut {
  * 这样历史上被误标成 ai 却仍是英文的条目也能覆盖到。
  */
 async function translateDescriptions(tools: AITool[], dry: boolean, limit: number): Promise<void> {
-  const ZH = /[\u4e00-\u9fa5]/;
+  const ZH = ZH_RE;
   let targets = tools.filter((t) => t.description && !ZH.test(t.description));
   if (limit > 0) targets = targets.slice(0, limit);
 
