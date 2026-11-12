@@ -1,0 +1,89 @@
+name: Collect Fields (新采集方案验证)
+
+# 后台「新采集」tab 的落点：输入一个网站，按 docs/18-AI工具字段采集方案.md
+# 把 72 个字段逐项采一遍，结果写 D1 的 field_collect_runs（含 PC / 手机截图）。
+#
+# 为什么必须在 GitHub 的机器上跑：
+#   本地到 web.archive.org / crt.sh / Common Crawl 基本不通，而这些恰是
+#   「上线时间证据链」的全部来源；本地跑出来的覆盖率会系统性偏低，测不出方案好坏。
+#
+# 需要的仓库 Secrets：
+#   APIFY_TOKEN              Similarweb / Google SERP Actor（没配则该部分字段为「未采集」）
+#   DEEPSEEK_API_KEY         分类 / 核心功能 / 目标用户（没配则退回关键词规则）
+#   CLOUDFLARE_API_TOKEN     写 D1 + 上传截图到 R2（需要 D1 Edit 与 R2 Edit 权限）
+#   CLOUDFLARE_ACCOUNT_ID
+#   D1_DATABASE_ID
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "要采集的网站地址（可带或不带 https://）"
+        required: true
+        type: string
+      job_id:
+        description: "后台任务 ID（field_collect_runs.id，仅用于回写结果）"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: collect-fields-${{ inputs.job_id || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      # 无头 Chromium 就够：截图和 HTML 抽取都在同一个 page 里完成，不需要有头模式
+      - name: 安装 Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: 采集字段
+        env:
+          TARGET_URL: ${{ inputs.url }}
+          JOB_ID: ${{ inputs.job_id }}
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+          # 仓库 token 只用于读 GitHub 公共仓库指标（抬高 60/h 的匿名配额）
+          GH_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$TARGET_URL" ]; then
+            echo "::error::缺少必填输入 url"
+            exit 1
+          fi
+          pnpm exec tsx scripts/field-collect/index.ts --url "$TARGET_URL" --job "${JOB_ID:-gh-$GITHUB_RUN_ID}"
+
+      # 截图同时作为构建产物留一份：R2 上传依赖 token 的 R2 权限，
+      # 万一没有，人或可从此处直接下载，不至于「字段采到了但看不到图」
+      - name: 上传截图产物
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: field-collect-${{ inputs.job_id || github.run_id }}
+          path: |
+            /tmp/horizons-field-collect/**/*.png
+            /tmp/horizons-field-collect/**/result.json
+          if-no-files-found: ignore
+          retention-days: 7

@@ -143,6 +143,8 @@ const meta = {
           <button type="button" data-tab="boards" class="admin-tab">榜单版本</button>
           <button type="button" data-tab="daily" class="admin-tab">每日情报</button>
           <button type="button" data-tab="fields" class="admin-tab">数据字段</button>
+          <!-- 新采集：docs/18-AI工具字段采集方案.md 的逐字段验证，单独一条线 -->
+          <button type="button" data-tab="newcollect" class="admin-tab">新采集</button>
         </nav>
       </header>
 
@@ -1195,6 +1197,79 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
               </table>
             </div>
             <div id="opp-pager" class="flex items-center justify-between gap-3 border-t border-border px-5 py-3 text-xs text-ink-muted"></div>
+          </div>
+        </section>
+
+      <!-- 新采集：docs/18-AI工具字段采集方案.md 的字段采集验证。
+             后台只负责「输入域名 → 触发 GitHub Actions → 看采集记录」，
+             字段明细在独立页面 /field-collect?id=xxx 展示（那次采集的全部 72 个字段）。
+             这条线不写任何榜单数据，验完方案可以直接清表。 -->
+        <section id="tab-newcollect" hidden class="space-y-4">
+          <div class="rounded-2xl border border-border bg-surface">
+            <div class="border-b border-border p-4">
+              <h2 class="text-sm font-semibold">新采集 · 字段采集方案验证</h2>
+              <p class="mt-1 text-xs leading-relaxed text-ink-muted">
+                按 <code class="rounded bg-surface-2 px-1 py-0.5">docs/18-AI工具字段采集方案.md</code>
+                把单个网站的 72 个字段逐个采一遍，用来判断这个方案能不能采全：基础信息、上线时间证据链、流量与渠道、SEO
+                关键词、定价与开源。采集在 GitHub Actions 上跑（需要 Playwright + Similarweb Actor），
+                同时产出 PC 与手机两张截图。
+              </p>
+            </div>
+            <div class="space-y-3 p-4">
+              <form id="ncol-form" class="flex flex-col gap-2 sm:flex-row">
+                <input
+                  id="ncol-url"
+                  type="text"
+                  inputmode="url"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="example.com 或 https://example.com/pricing"
+                  class="min-w-0 flex-1 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-ink outline-none transition placeholder:text-ink-muted focus:border-primary"
+                />
+                <button
+                  id="ncol-start"
+                  type="submit"
+                  class="shrink-0 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  开始采集
+                </button>
+              </form>
+              <p id="ncol-note" class="text-[11px] leading-relaxed text-ink-muted">
+                点「开始采集」会触发 GitHub Actions，在云端把文档里的 72 个字段跑一遍（含 PC / 手机截图）。
+              </p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+              <div class="min-w-0">
+                <h2 class="text-sm font-semibold">采集记录</h2>
+                <p class="mt-1 text-xs text-ink-muted">最近 30 次；点「查看字段」打开那次采集的完整结果页。</p>
+              </div>
+              <button
+                id="ncol-reload"
+                type="button"
+                class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-primary hover:text-primary"
+              >
+                刷新
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[720px] text-left text-sm">
+                <thead class="bg-surface-2/60 text-[11px] uppercase tracking-wide text-ink-muted">
+                  <tr>
+                    <th class="px-3 py-2 font-medium">提交时间</th>
+                    <th class="px-3 py-2 font-medium">网站</th>
+                    <th class="px-3 py-2 font-medium">状态</th>
+                    <th class="px-3 py-2 font-medium">已采字段</th>
+                    <th class="px-3 py-2 font-medium">Actions</th>
+                    <th class="px-3 py-2 text-right font-medium">结果</th>
+                  </tr>
+                </thead>
+                <tbody id="ncol-body"></tbody>
+              </table>
+            </div>
+            <div id="ncol-empty" class="px-4 py-6 text-center text-xs text-ink-muted">还没有采集记录</div>
           </div>
         </section>
 

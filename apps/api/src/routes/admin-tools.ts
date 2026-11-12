@@ -30,6 +30,7 @@ import {
   hasWorkspace,
   listWorkspace,
   markEnriching,
+  listEnrichingItems,
   setItemsStatus,
 } from "../lib/board-items";
 import { readReport } from "../lib/reports";
@@ -260,7 +261,7 @@ tools.get("/jobs/:id", async (c) => {
 });
 
 /**
- * 页面展示的 14 个数据维度，与 scripts/admin/verdict.ts 的 FIELD_DIMENSIONS 对齐。
+ * 页面展示的 15 个数据维度，与 scripts/admin/verdict.ts 的 FIELD_DIMENSIONS 对齐。
  *
  * 为什么在 API 里再算一遍：card 里的 fieldGaps 只在「富化成功」那天写过，
  * 采集入库的条目压根没这个字段，接口一律 ?? [] 返回空数组，
@@ -279,6 +280,7 @@ const FIELD_PATHS = [
   "observations.competitors",
   "pricing",
   "pageStructure",
+  "screenshotDesktopUrl",
   "siteAudit",
   "aiInsight",
 ] as const;
@@ -507,14 +509,43 @@ tools.post("/enrich", async (c) => {
   const recent = await c.env.DB.prepare(
     "SELECT * FROM tool_jobs WHERE kind = 'enrich' ORDER BY created_at DESC LIMIT 5",
   ).all<JobRow>();
+  let running: JobRow | null = null;
   for (const row of recent.results ?? []) {
     const fresh = await refreshJob(c.env, cfg, row);
     if (fresh.status === "queued" || fresh.status === "running") {
+      running = fresh;
+      break;
+    }
+  }
+
+  /*
+   * 有一批在跑时，只拦「和它重叠的那部分」，不再一刀切拒绝：
+   * 富化中的条目在派发时就已经被标成 enriching，可以逐条比对；
+   * 队列里其它待富化的条目没理由跟着停（一个批次要跑十几分钟）。
+   *
+   * 没指定域名则不放过 —— 那等于「跑全部已确认」，必然和正在跑的批次重叠，
+   * 而脚本在 --domains 缺省时会把 enriching 的条目也一起挑走（重复计费）。
+   */
+  let todo = domains;
+  if (running) {
+    if (!domains.length) {
       return c.json(
         {
           error: "already_running",
-          message: "已有富化任务在跑，结束后再提交（每次提交都会实际扣费）",
-          job: fresh,
+          message: "已有富化任务在跑。要追加富化请先勾选具体条目，跳过正在跑的那批",
+          job: running,
+        },
+        409,
+      );
+    }
+    const busy = await listEnrichingItems(c.env.DB, "tools", domains);
+    todo = domains.filter((d) => !busy.has(d));
+    if (!todo.length) {
+      return c.json(
+        {
+          error: "all_enriching",
+          message: "勾选的条目都在富化中，等这批跑完再提交，或换一批",
+          job: running,
         },
         409,
       );
@@ -527,7 +558,8 @@ tools.post("/enrich", async (c) => {
   let run: WorkflowRun | null;
   try {
     run = await dispatchWorkflow(cfg, ENRICH_WORKFLOW, {
-      domains: domains.join(","),
+      // 只发真正要跑的（已被别的批次占住的条目不进这批）
+      domains: todo.join(","),
       limit: String(limit),
       free_only: String(freeOnly),
       job_id: id,
@@ -546,7 +578,7 @@ tools.post("/enrich", async (c) => {
     .bind(
       id,
       run ? mapStatus(run, "queued") : "queued",
-      JSON.stringify({ domains, limit, freeOnly, note }),
+      JSON.stringify({ domains: todo, limit, freeOnly, note }),
       run?.id ?? null,
       run?.html_url ?? null,
       now,
@@ -557,11 +589,14 @@ tools.post("/enrich", async (c) => {
   /*
    * 派发成功后再占位：条目状态立刻变成 enriching，后台据此禁掉复选框，
    * 避免「已提交但还显示待富化」时被再选一次，一份钱买两遍。
+   * 这也是「任务在跑时仍可提交另一批」的前提 —— 占位越晚，重叠窗口越长。
    *
    * 顺序不能反 —— dispatch 失败要能干净地不改任何状态。
    */
-  const marked = await markEnriching(c.env.DB, "tools", domains, limit).catch(() => 0);
-  console.log(`[enrich] 已标记 ${marked} 条为富化中（domains=${domains.length || "全部"}）`);
+  const marked = await markEnriching(c.env.DB, "tools", todo, limit).catch(() => 0);
+  console.log(
+    `[enrich] 已标记 ${marked} 条为富化中（domains=${todo.length || "全部"}${todo.length !== domains.length ? `，跳过占住 ${domains.length - todo.length}` : ""}）`,
+  );
 
   const { results } = await c.env.DB.prepare("SELECT * FROM tool_jobs WHERE id = ?")
     .bind(id)

@@ -366,6 +366,12 @@ export const FIELD_DIMENSIONS: readonly FieldDimension[] = [
     },
   },
   {
+    // 详情页 Hero 的桌面截图：有值即视为采到（图能否取到由 R2 / Worker 决定，
+    // 这里只统计「富化有没有拍」）；移动版缺失不算问题，故不单列维度。
+    key: "screenshotDesktopUrl",
+    label: "官网截图",
+  },
+  {
     key: "siteAudit",
     label: "站点体检",
     check: (t) => {

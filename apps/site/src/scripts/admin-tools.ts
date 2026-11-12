@@ -167,6 +167,14 @@ const state = {
   polling: 0 as number | undefined,
   /** 上一轮是否有富化任务在跑：用于「刚跑完」时补一次队列刷新 */
   enrichBusy: false,
+  /** 最近一次拿到的任务列表：勾选变化时要据此重算富化按钮，不能等下次轮询 */
+  jobs: [] as Job[],
+  /**
+   * 刚提交、D1 状态还没变成 enriching 的域名（提交时间戳）。
+   * markEnriching 在 dispatch 之后才执行，这段空窗里如果不本地占位，
+   * 按钮会因为「还是待富化」再次亮起，点一下就重复扣一遍钱。
+   */
+  enrichPending: new Map<string, number>(),
   mounted: false,
 };
 
@@ -365,7 +373,37 @@ function estimateEnrich(
   return { count, dfs: dfs + unseen, ai, total, rough: unseen > 0 };
 }
 
-/** 富化会花钱，跑着的时候按钮必须锁住：以前只能靠人自觉，连点两次就是两份账单 */
+/** 富化只认这两种状态：后端 markEnriching 与脚本 --domains 是同一口径 */
+function enrichRunnable(stage: StagingRow["stage"]): boolean {
+  return stage === "approved" || stage === "enrich_failed";
+}
+
+/** 刚提交、库里还没标成 enriching 的条目，本地先当成富化中 */
+function isEnrichPending(domain: string): boolean {
+  const at = state.enrichPending.get(domain);
+  if (at == null) return false;
+  // 90 秒足够 dispatch + markEnriching 落地；超时作废，
+  // 免得状态因为异常一直刷不回来时把条目永久锁在本地
+  if (Date.now() - at < 90_000) return true;
+  state.enrichPending.delete(domain);
+  return false;
+}
+
+/** 这一条现在能不能送去富化：状态可跑 + 不是刚提交的那批 */
+function canEnrich(row: StagingRow): boolean {
+  return enrichRunnable(row.stage) && !isEnrichPending(row.domain);
+}
+
+/**
+ * 富化按钮能不能点，只看「这一批里有没有可富化的条目」。
+ *
+ * 以前是「有任务在跑就全局锁死」：可一个批次要跑十几分钟，期间队列里
+ * 其它待富化的条目全被挡在外面。而富化中的条目本来就已经被 markEnriching
+ * 占住了（复选框禁用、后端也不会重复标记），没必要让整张表跟着停。
+ *
+ * 唯一还要拦的是「有任务在跑 + 没勾选」：不勾等于跑全部已确认，
+ * 必然和正在跑的批次重叠，脚本在缺省 --domains 时还会把 enriching 的一起挑走。
+ */
 function syncEnrichButton(jobs: Job[]): void {
   const btn = $("tools-enrich-btn") as HTMLButtonElement;
   const running = jobs.find(
@@ -383,19 +421,34 @@ function syncEnrichButton(jobs: Job[]): void {
   }
   state.enrichBusy = busy;
 
-  if (running) {
-    btn.disabled = true;
-    btn.textContent = "富化进行中…";
-    btn.title = "已有富化任务在跑，结束之后才能再提交（每提交一次都会实际扣费）";
-    return;
-  }
-  btn.disabled = false;
-  btn.textContent = "开始富化";
-  btn.title = "";
+  const rows = state.staging?.items ?? [];
+  const picked = rows.filter((r) => state.selected.has(r.domain));
+  // 勾了就按勾的算；没勾 = 整个队列的已确认数（当前页可能只显示一部分）
+  const runnable = picked.length
+    ? picked.filter(canEnrich).length
+    : Math.max(
+        // 未勾选 = 跑队列里全部已确认：扣掉刚提交、库里还没标上的那几条
+        (state.staging?.approved ?? 0) -
+          [...state.enrichPending.keys()].filter(isEnrichPending).length,
+        rows.filter(canEnrich).length,
+      );
+
+  const needPick = busy && picked.length === 0;
+  btn.disabled = runnable === 0 || needPick;
+  // 有任务在跑时还能点，说明是「再追加一批」：文案要说清不是重复下单
+  btn.textContent = busy ? "继续富化" : "开始富化";
+  btn.title = needPick
+    ? "已有富化任务在跑：勾选要富化的条目再提交，正在跑的那批不会被重复提交"
+    : runnable === 0
+      ? picked.length
+        ? "勾选的条目都已富化或正在富化，没有可富化的"
+        : "没有待富化的条目：先在「待确认」里确认收录"
+      : "";
 }
 
 function renderJobs(jobs: Job[]): void {
   const box = $("tools-jobs");
+  state.jobs = jobs;
   syncEnrichButton(jobs);
   if (!jobs.length) {
     box.innerHTML = `<p class="px-4 py-4 text-xs text-ink-muted">还没有任务。点上面的「开始抓取」会在这里显示进度。</p>`;
@@ -474,6 +527,11 @@ function renderStaging(data: StagingResp): void {
   // 选中项只保留当前列表里还存在的，避免删改后残留
   const visible = new Set(data.items.map((r) => r.domain));
   for (const d of state.selected) if (!visible.has(d)) state.selected.delete(d);
+  // 本地占位到期的回收：库里状态已经不是「待富化/富化失败」就不用再挡它
+  for (const d of [...state.enrichPending.keys()]) {
+    const row = data.items.find((r) => r.domain === d);
+    if (row && !enrichRunnable(row.stage)) state.enrichPending.delete(d);
+  }
   // 富化中的行不可选，全选状态只能按「可选行」算，否则永远显示未全选
   const selectable = data.items.filter((r) => r.stage !== "enriching");
   const all = $("tools-select-all") as HTMLInputElement | null;
@@ -546,6 +604,9 @@ function renderStaging(data: StagingResp): void {
         <button type="button" data-tool-page="${data.page - 1}" ${data.page <= 1 ? 'class="cursor-not-allowed opacity-40" disabled' : 'class="text-primary hover:underline"'}>上一页</button>
         <button type="button" data-tool-page="${data.page + 1}" ${data.page >= pages ? 'class="cursor-not-allowed opacity-40" disabled' : 'class="text-primary hover:underline"'}>下一页</button>
       </span>`;
+
+  // 阶段是这次刷新才变的（富化中 → 成功/失败），按钮可用性得跟着重算
+  syncEnrichButton(state.jobs);
 }
 
 /** 下榜清单：存量重判的产出，没跑过就明确说「未知」而不是显示 0 */
@@ -1050,6 +1111,8 @@ function bind(): void {
     if (!input?.dataset.toolSelect) return;
     if (input.checked) state.selected.add(input.dataset.toolSelect);
     else state.selected.delete(input.dataset.toolSelect);
+    // 勾选直接决定「这批能不能富化」，按钮要立刻跟着变
+    syncEnrichButton(state.jobs);
     void loadPreview();
   });
 
@@ -1062,6 +1125,7 @@ function bind(): void {
         if (row.stage !== "enriching") state.selected.add(row.domain);
       }
     }
+    syncEnrichButton(state.jobs);
     void loadStaging();
     void loadPreview();
   });
@@ -1136,13 +1200,12 @@ function bind(): void {
     });
     // 只有「待富化 / 富化失败」会被真正送去跑（后端 markEnriching 也限这两种状态），
     // 勾了已富化的条目不能算进费用，否则估算和实际执行对不上
-    const runnable = (s: StagingRow["stage"]): boolean => s === "approved" || s === "enrich_failed";
     // 单批上限跟后端一致（接口最多 20 条）：多的不截断的话，
     // 报价按 30 条算、实际只跑 20 条，剩下的还会被标成富化中然后超时失败
     const MAX_ENRICH_BATCH = 20;
     const picked = (domains.length
-      ? rows.filter((r) => state.selected.has(r.domain) && runnable(r.stage))
-      : rows.filter((r) => runnable(r.stage))
+      ? rows.filter((r) => state.selected.has(r.domain) && canEnrich(r))
+      : rows.filter(canEnrich)
     ).slice(0, MAX_ENRICH_BATCH);
 
     // 没勾选时按队列里的待富化总数估算（当前页可能只显示一部分）
@@ -1151,7 +1214,11 @@ function bind(): void {
       : estimateEnrich(picked, Math.min(state.staging?.approved ?? picked.length, MAX_ENRICH_BATCH));
 
     if (!est.count) {
-      window.alert("没有待富化的条目：先勾选并「确认收录」（富化中的条目要等任务结束）");
+      window.alert(
+        "没有可富化的条目。\n\n只能富化「待富化 / 富化失败」的条目：\n" +
+          "· 富化中的条目正在跑，等它结束再提交（不会重复计费）\n" +
+          "· 已富化的条目不用再跑（要重跑请先确认收录）",
+      );
       return;
     }
 
@@ -1185,15 +1252,17 @@ function bind(): void {
     try {
       // 只把这些真正要跑的域名传下去：带上已富化的条目会被脚本 --domains 强制重跑
       await enrichDomains(domains.length ? picked.map((r) => r.domain) : []);
+      // 派发成功就本地占位：库里要等 markEnriching 才变 enriching，
+      // 这段空窗里按钮不该再亮起来（重复点就是重复扣费）
+      const at = Date.now();
+      for (const r of picked) state.enrichPending.set(r.domain, at);
       state.selected.clear();
-      // 保持禁用，交给 syncEnrichButton 按任务状态恢复：
-      // 固定 6 秒后就解锁的做法等于给了「重复下单」的入口
+      syncEnrichButton(state.jobs);
       void loadJobs();
       void loadStaging();
       void loadPreview();
     } catch (e) {
-      btn.disabled = false;
-      btn.textContent = "开始富化";
+      syncEnrichButton(state.jobs);
       window.alert(`富化提交失败：${e instanceof Error ? e.message : String(e)}`);
     }
   });

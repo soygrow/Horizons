@@ -22,6 +22,7 @@ import { base64UrlDecode, randomBytesBase64 } from "../lib/crypto";
 import { PAYWALL_BUTTONS, paywallButtonLabel } from "../lib/paywall";
 import { adminBoards } from "./admin-boards";
 import { adminDaily } from "./admin-daily";
+import { adminFieldCollect } from "./admin-field-collect";
 import { github as adminGithub } from "./admin-github";
 import { models as adminModels, opps as adminOpps } from "./admin-simple-boards";
 import { adminTools } from "./admin-tools";
@@ -370,6 +371,12 @@ admin.route("/boards", adminBoards);
 
 // /daily 挂在登录中间件之后，自动受鉴权保护
 admin.route("/daily", adminDaily);
+
+/**
+ * 新采集：按 docs/18-AI工具字段采集方案.md 采单个网站的全部字段。
+ * 独立的一条线（自己的表、自己的 workflow、自己的脚本），不参与任何榜单数据。
+ */
+admin.route("/field-collect", adminFieldCollect);
 
 admin.post("/logout", async (c) => {
   const token = getCookie(c, ADMIN_COOKIE);

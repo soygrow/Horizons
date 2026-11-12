@@ -34,6 +34,7 @@ import {
 } from "./sources/dataforseo";
 import { chatJSON, hasLLM } from "./sources/llm";
 import { fetchSimilarwebKeywords } from "./sources/apify";
+import { captureScreenshots } from "./sources/screenshot";
 import { readWorkspace, syncCandidates, type ItemStatus } from "../admin/board-items";
 
 /**
@@ -275,6 +276,23 @@ async function main(): Promise<void> {
     );
   } catch (e) {
     console.warn("[enrich-site] 爬虫失败：", e instanceof Error ? e.message : e);
+  }
+
+  // 1.5) 官网截图（桌面 + 移动）：免费，--free-only 也照跑
+  //      放在爬虫之后 —— 首页能抓到说明站是通的，这时候截图成功率最高。
+  //      截图失败只告警：Cloudflare 拦截、超时都很常见，不该让整站富化失败。
+  try {
+    const shot = await captureScreenshots(domain, tool.url);
+    if (shot.screenshotDesktopUrl) {
+      tool.screenshotDesktopUrl = shot.screenshotDesktopUrl;
+      tool.screenshotMobileUrl = shot.screenshotMobileUrl;
+      console.log(
+        `[enrich-site] 截图：新拍 ${shot.captured} 张` +
+          `${shot.uploadFailed ? `｜R2 上传失败 ${shot.uploadFailed} 张（本地已留存）` : ""}`,
+      );
+    }
+  } catch (e) {
+    console.warn("[enrich-site] 截图失败：", e instanceof Error ? e.message : e);
   }
 
   // 定价线索

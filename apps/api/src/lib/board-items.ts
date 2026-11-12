@@ -90,6 +90,35 @@ export async function markEnriching(
   return res.meta?.changes ?? 0;
 }
 
+/**
+ * 这些条目当前是否已被富化任务占住（status='enriching'）。
+ *
+ * 用来挡「重复提交同一批」：后台允许在一批跑着的时候再提交另一批（队列里的
+ * 待富化条目不该被一个正在跑的任务全局堵住），代价是必须逐条比对，
+ * 否则重叠的那部分会被脚本按域名无脑重跑一遍（脚本 --domains 不看状态）。
+ */
+export async function listEnrichingItems(
+  db: D1Database,
+  board: string,
+  keys: readonly string[],
+): Promise<Set<string>> {
+  const out = new Set<string>();
+  // D1 单条 SQL 的绑定参数上限是 100
+  for (let i = 0; i < keys.length; i += 100) {
+    const chunk = keys.slice(i, i + 100);
+    const { results } = await db
+      .prepare(
+        "SELECT item_key FROM board_items WHERE board = ? AND status = 'enriching' AND item_key IN (" +
+          chunk.map(() => "?").join(",") +
+          ")",
+      )
+      .bind(board, ...chunk)
+      .all<{ item_key: string }>();
+    for (const r of results ?? []) out.add(r.item_key);
+  }
+  return out;
+}
+
 interface BoardItemRow {
   item_key: string;
   status: string;

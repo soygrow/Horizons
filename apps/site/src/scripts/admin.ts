@@ -4,6 +4,7 @@
  */
 import { mountAdminBoards } from "./admin-boards";
 import { mountAdminDaily } from "./admin-daily";
+import { mountNewCollect } from "./admin-field-collect";
 import { mountAdminGithub } from "./admin-github";
 import { mountAdminModels, mountAdminOpps } from "./admin-simple-boards";
 import { mountAdminTools } from "./admin-tools";
@@ -236,6 +237,8 @@ const TAB_IDS = [
   "boards",
   "daily",
   "fields",
+  // 新采集：docs/18 方案的字段采集验证，独立于上面所有榜单数据
+  "newcollect",
 ] as const;
 
 type TabId = (typeof TAB_IDS)[number];
@@ -875,6 +878,8 @@ function activateTab(tab: TabId, syncUrl = true): void {
   if (tab === "boards") mountAdminBoards();
   if (tab === "daily") mountAdminDaily();
   if (tab === "fields" && !fieldHealth) void loadFieldHealth();
+  // 新采集每次切入都刷一次列表：可能刚在别的窗口里触发了采集
+  if (tab === "newcollect") mountNewCollect();
 }
 
 document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((btn) => {
