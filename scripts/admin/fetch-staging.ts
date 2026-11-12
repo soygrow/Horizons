@@ -1,10 +1,10 @@
 /**
  * 后台「获取新工具」入口（由 .github/workflows/fetch-tools.yml 调用）。
  *
- * 与 `pnpm fetch` 的区别：结果**不写** content/aitools.json，而是落到
- * content/tools-staging.json 等待后台审核；审核通过后由 publish-tools.ts 合并进正式库。
+ * 结果**只写 D1 的 board_items**（候选池），不落任何仓库文件：
+ * 后台读的就是它，审核通过后由 publish-tools.ts 合并进 content/aitools.json。
  *
- * 抓取源与本地一致（Product Hunt），流量富化复用 backfill-traffic 的批次口径，
+ * 抓取源与本地一致，流量富化复用 backfill-traffic 的批次口径，
  * 因此后台点一次按钮 = 本地跑一次 pnpm fetch + backfill-traffic。
  *
  * 用法：
@@ -12,31 +12,25 @@
  *   pnpm tsx scripts/admin/fetch-staging.ts --count 20 --dry
  */
 import fs from "node:fs";
-import path from "node:path";
 import type { AITool } from "@horizons/shared";
 import { config } from "../fetch/config"; // 顺带加载 .env.local
 import { fetchProductHuntTools, closePHBrowser } from "../fetch/sources/productHunt";
 import { fetchHackerNewsTools } from "../fetch/sources/hackerNews";
-import { fetchFazierTools } from "../fetch/sources/fazier";
 import { fetchFuturepediaTools } from "../fetch/sources/futurepedia";
 import { loadExisting } from "../fetch/dedupe";
 import { extractTrafficMetrics, fetchLergassyMulti, hasApify } from "../fetch/sources/apify";
 import { applyTraffic } from "../fetch/apply-traffic";
 import { probeAll } from "./probe";
-import { syncCandidates } from "./board-items";
+import { looksLikeAiProduct } from "../fetch/ai-relevance";
+import { d1Configured } from "./d1-client";
+import { listCandidates, syncCandidates, type ItemStatus } from "./board-items";
 import {
   judge,
   visitsOf,
   MIN_VISITS_WATCH,
   WATCH_PH_UPVOTES,
-  type StagingFile,
   type StagingItem,
 } from "./verdict";
-
-export type { StagingFile };
-
-const ROOT = path.resolve(import.meta.dirname, "../..");
-const STAGING_PATH = path.join(ROOT, "content/tools-staging.json");
 
 /** 与 backfill-traffic.ts 一致的批大小：一次 Actor run 处理 24 个域名 */
 const ENRICH_BATCH = 24;
@@ -50,6 +44,9 @@ function has(flag: string): boolean {
 }
 
 function arg(name: string): string | undefined {
+  // 同时认 `--count 4` 和 `--count=4`：只认前者时，本地带等号会静默跑成默认值
+  const inline = process.argv.find((a) => a.startsWith(`--${name}=`));
+  if (inline) return inline.slice(name.length + 3);
   const i = process.argv.indexOf(`--${name}`);
   return i >= 0 ? process.argv[i + 1] : undefined;
 }
@@ -60,28 +57,21 @@ function intArg(name: string, fallback: number): number {
   return Math.min(Math.floor(raw), MAX_COUNT);
 }
 
-/* ------------------------------- 文件读写 ------------------------------- */
+/* ------------------------------- 落库辅助 ------------------------------- */
 
-function loadStaging(): StagingFile {
-  try {
-    const raw = JSON.parse(fs.readFileSync(STAGING_PATH, "utf-8")) as Partial<StagingFile>;
-    return {
-      updatedAt: raw.updatedAt ?? new Date(0).toISOString(),
-      items: Array.isArray(raw.items) ? raw.items : [],
-      rejected: Array.isArray(raw.rejected) ? raw.rejected : [],
-      lastRun: raw.lastRun,
-      lastEnrich: raw.lastEnrich,
-    };
-  } catch {
-    return { updatedAt: new Date(0).toISOString(), items: [], rejected: [] };
-  }
+/** Actions 靠它判断要不要提交快照；本地跑没有这个文件，直接忽略 */
+function setGithubOutput(pairs: Record<string, string | number>): void {
+  const file = process.env.GITHUB_OUTPUT;
+  if (!file) return;
+  fs.appendFileSync(file, Object.entries(pairs).map(([k, v]) => `${k}=${v}`).join("\n") + "\n");
 }
 
-/** 原子写：先写临时文件再 rename，中断不会把待发布队列写坏 */
-function saveStaging(data: StagingFile): void {
-  const tmp = `${STAGING_PATH}.tmp`;
-  fs.writeFileSync(tmp, JSON.stringify(data, null, 2) + "\n", "utf-8");
-  fs.renameSync(tmp, STAGING_PATH);
+/** 候选池只有 D1 一处，写不进去就等于白跑，宁可失败也不要静默成功 */
+function assertD1(): void {
+  if (d1Configured()) return;
+  throw new Error(
+    "未配置 D1 通道（CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID / D1_DATABASE_ID），候选池无处可写",
+  );
 }
 
 /* ------------------------------- 站点存活探测 ------------------------------- */
@@ -124,12 +114,13 @@ async function enrichTraffic(items: AITool[]): Promise<number> {
 /* ------------------------------- 多源合并抓取 ------------------------------- */
 
 /**
- * 三源合并。
+ * 多源合并，Product Hunt 是主源。
  *
- * 顺序是刻意的：HN 走公开 API、直接给真实域名，最稳；Futurepedia 一个请求
- * 就能拿完；Product Hunt 放最后兜底 —— 它的 `/r/` 短链已被 Cloudflare
- * 挑战覆盖（服务端 403、有头 Chrome 停在验证页），每条约 7s 空转，
- * 不该占用前两个源的预算。
+ * PH 的产品质量明显高于另两个源（真实上线、有票数背书、AI 分类过滤生效），
+ * 所以由它先吃满预算；HN 和 Futurepedia 只补 PH 剩下的缺口。
+ *
+ * PH 的 `/r/` 短链被 Cloudflare 挑战覆盖，域名靠「名字 + slug 推断 + 探活校验」，
+ * 拿不准的直接丢弃（实测准确率 100%、覆盖约六成），所以不必担心主源会灌水。
  *
  * 三个源共用同一份 `existingNames` / `seen`，先到先得，天然去重。
  * 任一源抛错只降级不中断，避免一个源挂掉拖垮整轮采集。
@@ -143,33 +134,7 @@ async function fetchAllSources(
 ): Promise<AITool[]> {
   const out: AITool[] = [];
 
-  // Fazier 放第一：和 PH 同形态（名字 + 一句话 + 票数 + 官网直链），
-  // 单页就能出 50 条左右，是当前唯一能稳定撑起产量的源。
-  try {
-    const fz = await fetchFazierTools(count, existingNames, seen);
-    out.push(...fz.items);
-  } catch (e) {
-    console.warn(`[staging] Fazier 抓取失败：${e instanceof Error ? e.message : e}`);
-  }
-
-  if (out.length < count) {
-    try {
-      const hn = await fetchHackerNewsTools(count - out.length, existingNames, seen);
-      out.push(...hn.items);
-    } catch (e) {
-      console.warn(`[staging] HN 抓取失败：${e instanceof Error ? e.message : e}`);
-    }
-  }
-
-  if (out.length < count) {
-    try {
-      const fp = await fetchFuturepediaTools(count - out.length, existingNames, seen);
-      out.push(...fp.items);
-    } catch (e) {
-      console.warn(`[staging] Futurepedia 抓取失败：${e instanceof Error ? e.message : e}`);
-    }
-  }
-
+  // 主源：Product Hunt
   if (out.length < count) {
     try {
       const ph = await fetchProductHuntTools(
@@ -187,7 +152,27 @@ async function fetchAllSources(
     }
   }
 
-  console.log(`[staging] 三源合并完成：${out.length}/${count}`);
+  // 补位：HN 走公开 API、直接给真实域名，最稳
+  if (out.length < count) {
+    try {
+      const hn = await fetchHackerNewsTools(count - out.length, existingNames, seen);
+      out.push(...hn.items);
+    } catch (e) {
+      console.warn(`[staging] HN 抓取失败：${e instanceof Error ? e.message : e}`);
+    }
+  }
+
+  // 补位：Futurepedia 一个请求就能拿完
+  if (out.length < count) {
+    try {
+      const fp = await fetchFuturepediaTools(count - out.length, existingNames, seen);
+      out.push(...fp.items);
+    } catch (e) {
+      console.warn(`[staging] Futurepedia 抓取失败：${e instanceof Error ? e.message : e}`);
+    }
+  }
+
+  console.log(`[staging] 多源合并完成：${out.length}/${count}`);
   return out;
 }
 
@@ -200,22 +185,24 @@ async function main(): Promise<void> {
   const order = arg("order") === "newest" ? ("NEWEST" as const) : ("VOTES" as const);
   const topic = arg("topic") ?? config.productHunt.topicSlugs[0];
 
-  const staging = loadStaging();
-  const existing = loadExisting();
+  if (!dryRun) assertD1();
 
-  // 已发布 + 待发布 + 已拒绝，三类都算「见过」，避免重复抓取占额度
+  const existing = loadExisting();
+  // 候选池只从 D1 读：已拒绝的域名也算「见过」，否则后台点过拒绝的下次还会被抓回来
+  const pool = await listCandidates<StagingItem>("tools");
+
+  // 已发布 + 候选池（含已拒绝），两类都算「见过」，避免重复抓取占额度
   const seen = new Set<string>([
     ...existing.map((t) => t.domain),
-    ...staging.items.map((t) => t.domain),
-    ...staging.rejected,
+    ...pool.map((d) => d.itemKey),
   ]);
   const existingNames = new Set([
     ...existing.map((t) => t.name.toLowerCase()),
-    ...staging.items.map((t) => t.name.toLowerCase()),
+    ...pool.map((d) => d.name.toLowerCase()),
   ]);
 
   console.log(
-    `[staging] 目标 ${count} 个｜来源 Fazier + HN + Futurepedia + Product Hunt(${order}/${topic})` +
+    `[staging] 目标 ${count} 个｜来源 Product Hunt(主, ${order}/${topic}) + HN + Futurepedia` +
       `｜富化 ${enrich ? "开" : "关"}${dryRun ? "｜dry-run" : ""}`,
   );
 
@@ -223,25 +210,35 @@ async function main(): Promise<void> {
   console.log(`[staging] 新增候选 ${fresh.length}/${count} 个（跳过原因见上方 [fetch] 日志）`);
 
   if (fresh.length === 0) {
-    console.log("[staging] 无新增，staging 未变动");
-    console.log(JSON.stringify({ added: 0, enriched: 0, total: staging.items.length }));
+    console.log("[staging] 无新增，候选池未变动");
+    console.log(JSON.stringify({ added: 0, enriched: 0, total: pool.length }));
+    setGithubOutput({ added: 0, judged: 0, total: pool.length });
     return;
   }
 
-  const enriched = enrich ? await enrichTraffic(fresh) : 0;
-  console.log(`[staging] 流量判定字段就绪 ${enriched}/${fresh.length}`);
+  // A1 粗筛：HN 和 Futurepedia 也会混进非 AI 的东西（硬件、通用 SaaS）。
+  // 先按名称+简介过滤，省掉这些条目的流量查询与探活开销。
+  const relevant = fresh.filter((t) => looksLikeAiProduct(t));
+  const relevantDomains = new Set(relevant.map((t) => t.domain));
+  const offTopic = fresh.length - relevant.length;
+  if (offTopic > 0) {
+    console.log(`[staging] A1 粗筛剔除 ${offTopic} 个（名称/简介无 AI 相关词）`);
+  }
+
+  const enriched = enrich ? await enrichTraffic(relevant) : 0;
+  console.log(`[staging] 流量判定字段就绪 ${enriched}/${relevant.length}`);
 
   // 第二阶段之前的「判定」：只靠 A1–A4 必需字段定 tier，
   // 不做 DFS 关键词/外链/AI 解读——那部分要等人工确认收录后再手动触发。
   // 探活短路：流量和 PH 票都不够的条目，A4 已经能判死，再发一次 GET 纯属浪费
   const needProbe = has("no-probe")
     ? []
-    : fresh.filter((t) => {
+    : relevant.filter((t) => {
         const v = visitsOf(t);
         if (v !== undefined) return v >= MIN_VISITS_WATCH;
         return (t.phUpvotes ?? 0) >= WATCH_PH_UPVOTES;
       });
-  const skippedProbe = fresh.length - needProbe.length;
+  const skippedProbe = relevant.length - needProbe.length;
   if (skippedProbe > 0) {
     console.log(`[staging] 跳过探活 ${skippedProbe} 个（流量与 PH 票均不足，A4 已可判定）`);
   }
@@ -250,7 +247,7 @@ async function main(): Promise<void> {
     : new Map<string, boolean | null>();
   console.log(`[staging] 存活探测 ${needProbe.length} 个`);
   const items: StagingItem[] = fresh.map((t) => {
-    const verdict = judge(t, aliveMap.get(t.domain) ?? null);
+    const verdict = judge(t, aliveMap.get(t.domain) ?? null, relevantDomains.has(t.domain));
     return { ...t, verdict, stage: verdict.tier === "reject" ? "rejected" : "candidate" };
   });
   const tally = { core: 0, watch: 0, reject: 0 };
@@ -265,40 +262,30 @@ async function main(): Promise<void> {
     return;
   }
 
-  const merged: StagingFile = {
-    updatedAt: new Date().toISOString(),
-    items: [...staging.items, ...items],
-    // 新抓到的域名若命中拒绝名单会进来，这里再兜一层
-    rejected: staging.rejected.filter((d) => !fresh.some((t) => t.domain === d)),
-    lastRun: {
-      at: new Date().toISOString(),
-      requested: count,
-      added: fresh.length,
-      skipped: Math.max(0, count - fresh.length),
-      judged: items.length,
-      enriched,
-    },
-    lastEnrich: staging.lastEnrich,
-  };
-  saveStaging(merged);
-  console.log(
-    `[staging] 已写入 content/tools-staging.json｜待发布 ${merged.items.length} 条（本次 +${fresh.length}）`,
-  );
-
-  // 同时落库：后台只读 D1，文件仅作发布脚本的兜底输入
+  // 只写候选池（D1）。不做「读旧队列 → 合并 → 全量回写」：
+  // 那是文件时代的产物，UPSERT 天然只影响本次涉及的域名，也避免覆盖后台刚改的状态。
   const saved = await syncCandidates(
     "tools",
-    merged.items.map((t) => ({
+    items.map((t) => ({
       itemKey: t.domain,
       name: t.name,
       url: t.url ?? null,
       cats: t.categories ?? null,
-      status: t.stage === "rejected" ? "rejected" : "candidate",
+      status: (t.stage === "rejected" ? "rejected" : "candidate") as ItemStatus,
       judge: t.verdict,
       card: t,
     })),
   );
-  if (saved > 0) console.log(`[staging] 已同步 ${saved} 条到 D1 board_items`);
+
+  // 没有文件兜底了：写不全就是后台缺数据，必须让这一步红掉
+  if (saved !== items.length) {
+    throw new Error(`候选池写入不完整：${saved}/${items.length}，已中止以免后台缺条目`);
+  }
+
+  const total = new Set([...pool.map((d) => d.itemKey), ...items.map((t) => t.domain)]).size;
+  console.log(`[staging] 已写入 D1 候选池｜本次 ${saved} 条（新增 ${fresh.length}），队列 ${total} 条`);
+
+  setGithubOutput({ added: fresh.length, judged: items.length, total });
   // Actions 日志里以单行 JSON 结尾，方便人工与脚本解析
   console.log(
     JSON.stringify({
@@ -307,7 +294,10 @@ async function main(): Promise<void> {
       core: tally.core,
       watch: tally.watch,
       reject: tally.reject,
-      total: merged.items.length,
+      total,
+      enriched,
+      requested: count,
+      skipped: Math.max(0, count - fresh.length),
     }),
   );
 }

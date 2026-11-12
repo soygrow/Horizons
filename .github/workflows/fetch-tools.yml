@@ -68,11 +68,12 @@ jobs:
           pnpm exec playwright install --with-deps chromium
           sudo apt-get install -y xvfb
 
-      - name: 抓取新工具（写入待发布队列）
+      - name: 抓取新工具（写入 D1 候选池）
+        id: fetch
         env:
           PH_TOKEN: ${{ secrets.PH_TOKEN }}
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
-          # 候选池落 D1（后台只读库）；失败只告警，不阻塞产物提交
+          # 候选池只写 D1；写不进去这一步直接失败，不会再退化成「写文件成功」
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
@@ -91,15 +92,16 @@ jobs:
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: pnpm tsx scripts/admin/tool-stats.ts
 
-      - name: 提交待发布队列
+      # 候选池在 D1，仓库里不再有队列文件；只有真的抓到新条目才提交快照
+      - name: 提交概览快照
+        if: steps.fetch.outputs.added != '0'
         run: |
           git config user.name "horizons-bot"
           git config user.email "bot@horizons.tools"
-          git add content/tools-staging.json content/tools-stats.json
+          git add content/tools-stats.json
           if git diff --cached --quiet; then
-            echo "::notice::没有新工具，未产生提交"
+            echo "::notice::概览快照无变化，未产生提交"
             exit 0
           fi
-          added=$(node -e "const s=require('./content/tools-staging.json');console.log(s.lastRun?.added ?? s.items.length)")
-          git commit -m "chore(tools): 抓取新工具进入待发布队列（+${added}）"
+          git commit -m "chore(tools): 概览快照（候选池 +${{ steps.fetch.outputs.added }}）"
           git push

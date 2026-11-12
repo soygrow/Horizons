@@ -25,14 +25,12 @@ import {
   visitsOf,
   FIELD_DIMENSIONS,
   type FieldIssue,
-  type StagingFile,
   type StagingItem,
 } from "./verdict";
-import { syncCandidates, type ItemStatus } from "./board-items";
+import { readWorkspace, syncCandidates, type ItemStatus } from "./board-items";
 import { saveReport } from "./reports";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
-const STAGING_PATH = path.join(ROOT, "content/tools-staging.json");
 const REPORT_PATH = path.join(ROOT, "content/tools-field-report.json");
 /** 单站富化的硬超时：DFS + LLM 正常在 2–5 分钟 */
 const PER_SITE_TIMEOUT_MS = 12 * 60_000;
@@ -73,21 +71,6 @@ export interface FieldReport {
   /** 条目级异常（官网域名对不上、名称为空等），不属于任何页面维度 */
   entryIssues: Array<{ domain: string; label: string; reason: string }>;
   items: FieldGapRow[];
-}
-
-function readStaging(): StagingFile {
-  try {
-    const raw = JSON.parse(fs.readFileSync(STAGING_PATH, "utf-8")) as Partial<StagingFile>;
-    return {
-      updatedAt: raw.updatedAt ?? new Date(0).toISOString(),
-      items: Array.isArray(raw.items) ? raw.items : [],
-      rejected: Array.isArray(raw.rejected) ? raw.rejected : [],
-      lastRun: raw.lastRun,
-      lastEnrich: raw.lastEnrich,
-    };
-  } catch {
-    return { updatedAt: new Date(0).toISOString(), items: [], rejected: [] };
-  }
 }
 
 function writeJson(file: string, data: unknown): void {
@@ -181,7 +164,7 @@ async function main(): Promise<void> {
   const only = parseDomains();
   const limit = Number(arg("limit") ?? 10);
 
-  const staging = readStaging();
+  const staging = await readWorkspace<StagingItem>("tools");
   const targets = staging.items.filter((i) => {
     if (!i?.domain) return false;
     if (only) return only.has(i.domain);
@@ -226,8 +209,8 @@ async function main(): Promise<void> {
     else failed.push(`${tool.domain}(exit ${res.status ?? "timeout"})`);
   }
 
-  // 子进程逐条改过队列文件，这里重新读取再写 stage / fieldGaps
-  const latest = readStaging();
+  // 子进程已把富化结果写回 D1，这里重新读一遍再统一打 stage / fieldGaps
+  const latest = await readWorkspace<StagingItem>("tools");
   // 精确匹配失败域名（避免 a.com / ab.com 这类前缀撞车）
   const failedSet = new Set(failed.map((f) => f.split("(")[0]));
   const done = new Set(picked.filter((t) => !failedSet.has(t.domain)).map((t) => t.domain));
@@ -235,14 +218,6 @@ async function main(): Promise<void> {
     if (!done.has(i.domain)) return i;
     return { ...i, stage: "enriched", enrichedAt: new Date().toISOString(), fieldGaps: computeFieldGaps(i) };
   });
-
-  const next: StagingFile = {
-    ...latest,
-    updatedAt: new Date().toISOString(),
-    items,
-    lastEnrich: { at: new Date().toISOString(), requested: picked.length, ok, failed: failed.length },
-  };
-  writeJson(STAGING_PATH, next);
 
   const report = buildFieldReport(items);
   writeJson(REPORT_PATH, report);

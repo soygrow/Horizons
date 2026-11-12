@@ -152,8 +152,8 @@ function mapItems(board: Board, staging: StagingLike): BoardItemInput[] {
   ];
 }
 
-const STAGING_FILE: Record<Board, string> = {
-  tools: "tools-staging.json",
+const STAGING_FILE: Partial<Record<Board, string>> = {
+  // tools 的候选池已改为采集时直连 D1，不再有仓库文件可回填
   trends: "trends-staging.json",
   github: "github-staging.json",
 };
@@ -173,9 +173,15 @@ async function backfillBoard(
   board: Board,
   opts: { dry: boolean; force: boolean },
 ): Promise<void> {
-  const staging = readJson<StagingLike>(STAGING_FILE[board]);
+  const file = STAGING_FILE[board];
+  if (!file) {
+    console.log(`[backfill] ${board}: 候选池采集时直连 D1，无仓库文件可回填；若库里缺数据请重跑采集`);
+    return;
+  }
+
+  const staging = readJson<StagingLike>(file);
   if (!staging) {
-    console.log(`[backfill] ${board}: 没有 ${STAGING_FILE[board]}，跳过`);
+    console.log(`[backfill] ${board}: 没有 ${file}，跳过`);
     return;
   }
 

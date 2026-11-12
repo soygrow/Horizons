@@ -268,6 +268,18 @@ function kindLabelOf(kind: string): string {
   }
 }
 
+/** 任务列表只展示最近几次：历史累积会把这一块撑得很长，日志本来就能去 Actions 翻 */
+const JOB_ROWS_VISIBLE = 3;
+
+function pickRecentJobs(jobs: Job[]): { rows: Job[]; hidden: number } {
+  const isActive = (j: Job) => j.status === "queued" || j.status === "running";
+  const active = jobs.filter(isActive);
+  const finished = jobs.filter((j) => !isActive(j));
+  // 运行中的永远留在视野里，剩下的名额按时间倒序补满
+  const rows = [...active, ...finished].slice(0, Math.max(JOB_ROWS_VISIBLE, active.length));
+  return { rows, hidden: jobs.length - rows.length };
+}
+
 function renderJobs(jobs: Job[]): void {
   const box = $("tools-jobs");
   if (!jobs.length) {
@@ -275,9 +287,12 @@ function renderJobs(jobs: Job[]): void {
     return;
   }
 
+  // 轮询看全量，别因为被截断就停了
   schedulePolling(jobs.some((j) => j.status === "queued" || j.status === "running"));
 
-  box.innerHTML = jobs
+  const { rows, hidden } = pickRecentJobs(jobs);
+
+  box.innerHTML = rows
     .map((job) => {
       const badge = statusBadge(job.status);
       const params = (() => {
@@ -311,6 +326,13 @@ function renderJobs(jobs: Job[]): void {
         </div>`;
     })
     .join("");
+
+  if (hidden > 0) {
+    box.insertAdjacentHTML(
+      "beforeend",
+      `<p class="px-4 py-2 text-[11px] text-ink-muted">仅显示最近 ${rows.length} 次，另有 ${hidden} 条更早记录</p>`,
+    );
+  }
 }
 
 function renderStaging(data: StagingResp): void {
@@ -356,7 +378,9 @@ function renderStaging(data: StagingResp): void {
               <button type="button" data-tool-open="${esc(row.domain)}" class="block max-w-full truncate text-left font-medium text-ink hover:text-primary">${esc(row.name)}</button>
               <div class="mt-0.5 max-w-full truncate text-[11px] text-ink-muted">${esc(row.description ?? "")}</div>
             </td>
-            <td class="px-4 py-2.5 text-xs text-ink-secondary">${esc(row.domain)}</td>
+            <td class="px-4 py-2.5 text-xs">
+              <a href="${esc(row.url || `https://${row.domain}`)}" target="_blank" rel="noopener" class="text-ink-secondary underline decoration-border underline-offset-2 transition hover:text-primary hover:decoration-primary" title="在新页面打开 ${esc(row.domain)}">${esc(row.domain)}</a>
+            </td>
             <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${fmtNum(row.phUpvotes)}</td>
             <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${fmtVisits(row.monthlyVisits)}</td>
             <td class="max-w-[200px] px-4 py-2.5">

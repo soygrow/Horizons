@@ -113,10 +113,14 @@ export function momOf(t: AITool): number | undefined {
  * traffic_history（$0.075/次），为一次筛选花 7500 倍的钱不划算，无流量时
  * 直接用 PH 票走新星豁免。搜索流量只作为富化后的质量指标展示。
  */
-export function judge(t: AITool, alive: AliveState = null): Verdict {
+export function judge(t: AITool, alive: AliveState = null, a1 = true): Verdict {
   const a2 = !isExcludedHost(t.domain);
-  const checks: VerdictChecks = { a1: true, a2, a3: alive, a4: false };
+  const checks: VerdictChecks = { a1, a2, a3: alive, a4: false };
 
+  // 采集端用关键词粗筛出 a1；判定维护/重判走默认 true，不改变已上榜条目的结论
+  if (!a1) {
+    return { tier: "reject", reason: "A1 不像 AI 产品（名称/简介无 AI 相关词）", checks };
+  }
   if (!a2) {
     return { tier: "reject", reason: "A2 大厂主站或平台域名", checks };
   }

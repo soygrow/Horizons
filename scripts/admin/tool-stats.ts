@@ -14,11 +14,11 @@ import path from "node:path";
 import { tierOf, visitsOf } from "@horizons/shared";
 import type { AITool, ToolTier } from "@horizons/shared";
 import { saveReport } from "./reports";
+import { readWorkspace } from "./board-items";
 import type { StagingItem } from "./verdict";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const TOOLS_PATH = path.join(ROOT, "content/aitools.json");
-const STAGING_PATH = path.join(ROOT, "content/tools-staging.json");
 const STATS_PATH = path.join(ROOT, "content/tools-stats.json");
 
 /** 榜单目标条数（与 data.ts 的 MAX_LISTED_TOOLS 一致） */
@@ -98,8 +98,9 @@ function readJson<T>(file: string, fallback: T): T {
 
 export async function writeToolStats(): Promise<ToolStats> {
   const tools = readJson<AITool[]>(TOOLS_PATH, []);
-  const staging = readJson<{ items?: StagingItem[]; rejected?: string[] }>(STAGING_PATH, {});
-  const stats = computeToolStats(tools, staging.items ?? [], staging.rejected ?? []);
+  // 队列统计取自 D1（候选池唯一来源）；未配置 D1 时为空，不影响正式库口径
+  const { items, rejected } = await readWorkspace<StagingItem>("tools");
+  const stats = computeToolStats(tools, items, rejected);
 
   const tmp = `${STATS_PATH}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify(stats, null, 2) + "\n", "utf-8");

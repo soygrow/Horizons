@@ -34,18 +34,16 @@ import {
 } from "./sources/dataforseo";
 import { chatJSON, hasLLM } from "./sources/llm";
 import { fetchSimilarwebKeywords } from "./sources/apify";
+import { readWorkspace, syncCandidates, type ItemStatus } from "../admin/board-items";
 
 /**
  * 单站增强管线：为指定域名的工具补齐 V5/V6 详情页数据（自建爬虫 + DataForSEO + PH + LLM）。
  * 用法：pnpm tsx scripts/fetch/enrich-site.ts --domain picvo.ai [--dry]
  */
 
-/** --staging：对后台待发布队列（content/tools-staging.json）做富化，不碰线上数据 */
+/** --staging：对后台待发布队列（D1 的 board_items）做富化，不碰线上数据 */
 const USE_STAGING = process.argv.includes("--staging");
-const TOOLS_PATH = path.resolve(
-  process.cwd(),
-  USE_STAGING ? "content/tools-staging.json" : "content/aitools.json",
-);
+const TOOLS_PATH = path.resolve(process.cwd(), "content/aitools.json");
 const CATEGORIES = [
   "AI Chat", "Image Gen", "Video", "Voice & Audio", "Writing", "Coding",
   "Automation", "Marketing", "Productivity", "Data & Analytics", "Other",
@@ -66,7 +64,11 @@ function parseDomain(): string {
   return "picvo.ai";
 }
 
-function loadTools(): AITool[] {
+async function loadTools(): Promise<AITool[]> {
+  if (USE_STAGING) {
+    const { items } = await readWorkspace<AITool>("tools");
+    return items;
+  }
   try {
     const raw = JSON.parse(fs.readFileSync(TOOLS_PATH, "utf-8")) as
       | AITool[]
@@ -77,15 +79,25 @@ function loadTools(): AITool[] {
   }
 }
 
-function saveTools(tools: AITool[]): void {
+async function saveTools(tools: AITool[]): Promise<void> {
   if (!USE_STAGING) {
     fs.writeFileSync(TOOLS_PATH, JSON.stringify(tools, null, 2) + "\n", "utf-8");
     return;
   }
-  // 队列文件是对象结构（items / rejected / lastRun），只替换 items，其余原样保留
-  const raw = JSON.parse(fs.readFileSync(TOOLS_PATH, "utf-8")) as Record<string, unknown>;
-  const next = { ...raw, updatedAt: new Date().toISOString(), items: tools };
-  fs.writeFileSync(TOOLS_PATH, JSON.stringify(next, null, 2) + "\n", "utf-8");
+  // 候选池在 D1：只回写当前这一条。整队列重灌会覆盖后台刚做的确认/拒绝
+  const domain = parseDomain();
+  const tool = tools.find((t) => t.domain === domain) as (AITool & { stage?: string }) | undefined;
+  if (!tool) return;
+  await syncCandidates("tools", [
+    {
+      itemKey: domain,
+      name: tool.name,
+      url: tool.url ?? `https://${domain}`,
+      // stage 沿用库里的现值，富化只更新卡片内容
+      status: (tool.stage ?? "candidate") as ItemStatus,
+      card: tool,
+    },
+  ]);
 }
 
 /** PH 单站搜索（best-effort，失败返回 null） */
@@ -215,7 +227,7 @@ async function main(): Promise<void> {
     process.argv.includes("--analysis-only") || insightOnly || oppOnly;
   console.log(`[enrich-site] 目标：${domain}${dry ? "（dry-run）" : ""}`);
 
-  const tools = loadTools();
+  const tools = await loadTools();
   const tool = tools.find((t) => t.domain === domain);
   if (!tool) {
     console.error(`[enrich-site] 未找到 ${domain}，请先收录该工具`);
@@ -415,7 +427,7 @@ async function main(): Promise<void> {
     if (dry) {
       console.log(`[enrich-site] ${domain}：dry-run，免费字段未写入`);
     } else {
-      saveTools(tools);
+      await saveTools(tools);
       console.log(`[enrich-site] ${domain}：免费字段已写回`);
     }
     return;
@@ -571,7 +583,7 @@ async function main(): Promise<void> {
     if (dry) {
       console.log("[enrich-site] dry-run，未写入");
     } else {
-      saveTools(tools);
+      await saveTools(tools);
       console.log(`[enrich-site] 已写入 ${domain}（仅分析文本）`);
     }
     return;
@@ -614,7 +626,7 @@ async function main(): Promise<void> {
   if (dry) {
     console.log("[enrich-site] dry-run，未写入");
   } else {
-    saveTools(tools);
+    await saveTools(tools);
     console.log(`[enrich-site] 已写入 ${domain}`);
   }
 }

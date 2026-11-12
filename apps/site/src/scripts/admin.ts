@@ -223,19 +223,27 @@ function badge(text: string, tone: "pro" | "free" | "warn" | "danger" | "ok"): s
 
 /* --------------------------------- 状态 --------------------------------- */
 
+/** 标签页清单：隐藏面板、和 URL hash 对齐都以此为准，新增 tab 只改这里 */
+const TAB_IDS = [
+  "overview",
+  "users",
+  "payments",
+  "tools",
+  "trends",
+  "github",
+  "models",
+  "opps",
+  "boards",
+  "daily",
+  "fields",
+] as const;
+
+type TabId = (typeof TAB_IDS)[number];
+
 const state = {
   stats: null as Stats | null,
   chartCurrency: "",
-  tab: "overview" as
-    | "overview"
-    | "users"
-    | "payments"
-    | "tools"
-    | "trends"
-    | "github"
-    | "boards"
-    | "daily"
-    | "fields",
+  tab: "overview" as TabId,
   users: { page: 1, q: "", type: "all", loaded: false, data: null as Page<UserItem> | null },
   payments: {
     page: 1,
@@ -302,6 +310,10 @@ async function enterApp(username: string): Promise<void> {
     void loadUsers();
   }
   await loadStats();
+
+  // 刷新后停留在原标签页（hash 由 activateTab 写入；没有 hash 就留在概览）
+  const hash = location.hash.replace(/^#/, "");
+  if (isTabId(hash)) activateTab(hash, false);
 }
 
 loginForm.addEventListener("submit", async (event) => {
@@ -763,38 +775,45 @@ async function loadPaywallPeople(): Promise<void> {
 
 /* --------------------------------- 交互 --------------------------------- */
 
+function isTabId(value: string | null | undefined): value is TabId {
+  return !!value && (TAB_IDS as readonly string[]).includes(value);
+}
+
+/**
+ * 切换标签页。syncUrl 为真时把 tab 写进 hash，刷新后能回到同一页；
+ * 数据加载放在这里，点按钮和「刷新后恢复」走同一条路径，不会两处漂移。
+ */
+function activateTab(tab: TabId, syncUrl = true): void {
+  state.tab = tab;
+  document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((b) => {
+    b.dataset.active = String(b.dataset.tab === tab);
+  });
+  for (const id of TAB_IDS) {
+    const panel = document.getElementById(`tab-${id}`);
+    if (panel) panel.hidden = id !== tab;
+  }
+  if (syncUrl) {
+    history.replaceState(null, "", `${location.pathname}${location.search}#${tab}`);
+  }
+
+  if (tab === "users") void loadUsers();
+  if (tab === "payments") {
+    void loadPayments();
+    loadPaywall();
+  }
+  if (tab === "tools") mountAdminTools();
+  if (tab === "trends") mountAdminTrends();
+  if (tab === "github") mountAdminGithub();
+  if (tab === "models") mountAdminModels();
+  if (tab === "opps") mountAdminOpps();
+  if (tab === "boards") mountAdminBoards();
+  if (tab === "daily") mountAdminDaily();
+  if (tab === "fields" && !fieldHealth) void loadFieldHealth();
+}
+
 document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((btn) => {
   btn.addEventListener("click", () => {
-    const tab = btn.dataset.tab as typeof state.tab;
-    state.tab = tab;
-    document.querySelectorAll<HTMLButtonElement>("button[data-tab]").forEach((b) => {
-      b.dataset.active = String(b.dataset.tab === tab);
-    });
-    $("tab-overview").hidden = tab !== "overview";
-    $("tab-users").hidden = tab !== "users";
-    $("tab-payments").hidden = tab !== "payments";
-    $("tab-tools").hidden = tab !== "tools";
-    $("tab-trends").hidden = tab !== "trends";
-    $("tab-github").hidden = tab !== "github";
-    $("tab-models").hidden = tab !== "models";
-    $("tab-opps").hidden = tab !== "opps";
-    $("tab-boards").hidden = tab !== "boards";
-    $("tab-daily").hidden = tab !== "daily";
-    $("tab-fields").hidden = tab !== "fields";
-
-    if (tab === "users") void loadUsers();
-    if (tab === "payments") {
-      void loadPayments();
-      loadPaywall();
-    }
-    if (tab === "tools") mountAdminTools();
-    if (tab === "trends") mountAdminTrends();
-    if (tab === "github") mountAdminGithub();
-    if (tab === "models") mountAdminModels();
-    if (tab === "opps") mountAdminOpps();
-    if (tab === "boards") mountAdminBoards();
-    if (tab === "daily") mountAdminDaily();
-    if (tab === "fields" && !fieldHealth) void loadFieldHealth();
+    if (isTabId(btn.dataset.tab)) activateTab(btn.dataset.tab);
   });
 });
 

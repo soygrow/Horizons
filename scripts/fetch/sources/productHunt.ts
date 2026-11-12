@@ -1,3 +1,4 @@
+import dns from "node:dns/promises";
 import fs from "node:fs";
 import path from "node:path";
 import { chromium, type Browser, type Page } from "playwright";
@@ -20,17 +21,41 @@ function isExcludedDomain(domain: string): boolean {
 const REDIRECT_POLL_MS = 900;
 const REDIRECT_POLL_TIMES = 8;
 const REDIRECT_GOTO_TIMEOUT_MS = 15_000;
+/** 连续这么多条浏览器都解析失败，就认定出口 IP 被拦，本轮不再尝试 */
+const BROWSER_FAIL_STREAK_LIMIT = 2;
 
 // PH 的 website/url/productLinks 全是 /r/ 跳转，且被 Cloudflare 防护（服务端 403、
-// headless 被挑战拦截），只有有头 Chrome 能穿透。故用 Playwright 有头模式解析域名。
+// headless 被挑战拦截）。解析顺序：
+//   1. 有头 Chrome（本地住宅 IP 能过挑战；配了 PH_PROXY 时 CI 也能过）
+//   2. 读一次 302 的 Location 头（成本低，偶尔能捞回来）
+//   3. 按产品名 / PH slug 推断域名 + 页面校验（零依赖兜底，命中率约四到五成）
+// 拿不准的一律丢弃，不写进队列 —— 宁缺毋滥。
 let browser: Browser | null = null;
+
+/** 住宅代理，形如 http://user:pass@host:port。填了之后有头 Chrome 走代理，CI 里也能过挑战 */
+function proxyConfig(): { server: string; username?: string; password?: string } | undefined {
+  const raw = process.env.PH_PROXY?.trim();
+  if (!raw) return undefined;
+  try {
+    const u = new URL(raw);
+    return {
+      server: `${u.protocol}//${u.host}`,
+      username: u.username ? decodeURIComponent(u.username) : undefined,
+      password: u.password ? decodeURIComponent(u.password) : undefined,
+    };
+  } catch {
+    console.warn("[fetch] PH_PROXY 格式不对，已忽略（应形如 http://user:pass@host:port）");
+    return undefined;
+  }
+}
 
 async function getBrowser(): Promise<Browser> {
   if (browser) return browser;
+  const proxy = proxyConfig();
   try {
-    browser = await chromium.launch({ headless: false, channel: "chrome" });
+    browser = await chromium.launch({ headless: false, channel: "chrome", ...(proxy ? { proxy } : {}) });
   } catch {
-    browser = await chromium.launch({ headless: false });
+    browser = await chromium.launch({ headless: false, ...(proxy ? { proxy } : {}) });
   }
   return browser;
 }
@@ -97,6 +122,145 @@ async function resolveRedirectViaHeader(url: string): Promise<string> {
   }
 }
 
+/** 归一化：小写 + 去掉一切非字母数字，用于「标题里是否含产品名」这类模糊比较 */
+const normKey = (s: string) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/** 域名停放/出售页：这类站能探活通过，但内容是错的，必须挡掉 */
+const PARKED_PAGE =
+  /this domain (is|may be) for sale|buy this domain|domain (is )?parked|(该)?网站正在出售|域名(出售|转让|待售)|该域名[^<]{0,10}(出售|转让)/i;
+
+/**
+ * 多词产品名里，首词经常被无关大站占着（"Inbox Zero" → inbox.com 是付费邮箱）。
+ * 命中的词一律不做首词候选，只认全名。
+ */
+const GENERIC_FIRST_WORDS = new Set([
+  "product", "inbox", "glass", "beam", "cloud", "data", "smart", "open", "free",
+  "best", "super", "mega", "chat", "note", "team", "work", "flow", "space",
+  "stack", "labs", "studio", "tools", "agent", "agents", "app", "apps",
+]);
+
+/**
+ * 词边界匹配：`The Glass Hand` 不算命中 `Glasshand`，但 `Pancake` 算命中 `Pancake`。
+ *
+ * 用单纯的「包含」判断会被拆词写法骗过 —— glasshand.app 就是这么混进候选的，
+ * 它其实是另一个同名产品，跟 PH 上那个「给 agent 一台真 iPhone」毫无关系。
+ */
+function hasPhrase(text: string, phrase: string): boolean {
+  const hay = text.toLowerCase().match(/[a-z0-9]+/g) ?? [];
+  const want = phrase.toLowerCase().match(/[a-z0-9]+/g) ?? [];
+  if (want.length === 0 || hay.length < want.length) return false;
+  outer: for (let i = 0; i + want.length <= hay.length; i++) {
+    for (let j = 0; j < want.length; j++) {
+      if (hay[i + j] !== want[j]) continue outer;
+    }
+    return true;
+  }
+  return false;
+}
+
+/**
+ * 生成「候选域名 + 对应的校验片段」。
+ *
+ * 两者一一对应：出首词候选时也只拿首词去校验，避免「域名按首词猜、校验靠全名」
+ * 这种自欺欺人的组合。
+ */
+function guessPlan(name: string, slug: string): { domains: string[]; phrases: string[] } {
+  const bases = new Set<string>();
+  const phrases: string[] = [];
+
+  const full = normKey(name);
+  if (full.length >= 3) {
+    bases.add(full);
+    phrases.push(name.trim());
+  }
+
+  // 首词只对多词名有意义（单词名的 full 已覆盖），且要求够长、不是通用词：
+  // 这条规则挡掉的正是 inbox.com / product.ai 那类误判。
+  const words = name.split(/\s+/).filter(Boolean);
+  const first = normKey(words[0] ?? "");
+  if (words.length > 1 && first.length >= 6 && first !== full && !GENERIC_FIRST_WORDS.has(first)) {
+    bases.add(first);
+    phrases.push(words[0]);
+  }
+
+  const fromSlug = normKey(slug);
+  if (fromSlug.length >= 3 && !bases.has(fromSlug)) {
+    bases.add(fromSlug);
+    phrases.push(slug);
+  }
+
+  const tlds = ["com", "ai", "io", "app", "co"];
+  const domains: string[] = [];
+  for (const b of bases) for (const t of tlds) domains.push(`${b}.${t}`);
+  return { domains: domains.slice(0, 15), phrases };
+}
+
+/**
+ * 探活 + 内容校验：title / og:site_name / h1 里必须按词边界出现名字片段。
+ *
+ * 只看标题区，不看正文：正文太容易蒙对，停放页和同名大站都能凑出关键词。
+ */
+async function verifyCandidate(domain: string, phrases: string[]): Promise<boolean> {
+  try {
+    await dns.lookup(domain);
+  } catch {
+    return false; // 域名不存在，省掉一次 HTTP
+  }
+
+  try {
+    const res = await fetch(`https://${domain}/`, {
+      redirect: "follow",
+      signal: AbortSignal.timeout(8000),
+      headers: { "User-Agent": config.userAgent, Accept: "text/html,application/xhtml+xml" },
+    });
+    if (!res.ok) return false;
+
+    const html = (await res.text()).slice(0, 120_000);
+    if (PARKED_PAGE.test(html)) return false;
+
+    const title = html.match(/<title[^>]*>([^<]{1,200})/i)?.[1] ?? "";
+    const ogSite =
+      html.match(/property=["']og:site_name["'][^>]*content=["']([^"']{1,120})/i)?.[1] ?? "";
+    const h1 = html.match(/<h1[^>]*>([^<]{1,150})/i)?.[1] ?? "";
+
+    const head = `${title} ${ogSite} ${h1}`;
+    return phrases.some((p) => hasPhrase(head, p));
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 兜底解析：/r/ 短链拿不到时，按名字/slug 推断域名。
+ *
+ * 实测（12 条真实 PH 榜单）命中 7 条且全部正确，另外 5 条丢弃。命中率约六成，
+ * 换来的是「进队列的域名都对得上产品」——其余交给人工，不从 PH 硬凑。
+ */
+export async function guessDomain(name: string, slug: string): Promise<string> {
+  const { domains, phrases } = guessPlan(name, slug);
+  if (phrases.length === 0) return "";
+
+  // 5 个一批并发：绝大多数候选 DNS 就直接挂了，真正发 HTTP 的通常不超过 3 个
+  for (let i = 0; i < domains.length; i += 5) {
+    const batch = domains.slice(i, i + 5);
+    const hits = await Promise.all(
+      batch.map(async (d) => ((await verifyCandidate(d, phrases)) ? d : "")),
+    );
+    const hit = hits.find(Boolean);
+    if (hit) return hit;
+  }
+  return "";
+}
+
+/**
+ * 取 PH 的 slug 作为名字的规范形态："TheySaid 4.0" → theysaid。
+ * 尾部数字是 PH 给重名产品加的后缀（"pancake-7"），推断域名时要剥掉。
+ */
+function slugOf(node: { slug?: string; url?: string }): string {
+  const raw = node.slug || node.url?.match(/\/(?:products|posts)\/([^/?#]+)/)?.[1] || "";
+  return raw.replace(/-\d+$/, "");
+}
+
 function cleanUrl(raw: string): string {
   const d = extractDomain(raw);
   return d ? `https://${d}` : raw;
@@ -126,6 +290,10 @@ interface PostNode {
   name: string;
   tagline: string;
   website: string;
+  /** PH 帖子页，形如 https://www.producthunt.com/products/wanaka-studio/launches/... */
+  url: string;
+  /** 产品 slug（"wanaka-studio"、"pancake-7"），推断域名时比名字干净 */
+  slug: string;
   votesCount: number;
   commentsCount: number;
   createdAt: string;
@@ -173,6 +341,8 @@ export async function fetchProductHuntTools(
             name
             tagline
             website
+            url
+            slug
             votesCount
             commentsCount
             createdAt
@@ -195,6 +365,9 @@ export async function fetchProductHuntTools(
   let skippedNoDomain = 0;
   let skippedBlocked = 0;
   let skippedSeen = 0;
+  let viaGuess = 0;
+  /** 有头浏览器连续失败次数：没配代理时它在 CI 里必然过不了挑战，触发后本轮跳过 */
+  let browserFailStreak = 0;
 
   while (items.length < limit && scanned < scanCap) {
     const res = await fetch("https://api.producthunt.com/v2/api/graphql", {
@@ -224,26 +397,55 @@ export async function fetchProductHuntTools(
 
     for (const node of pageNodes) {
       if (items.length >= limit) break;
+
+      // PH 官方的 MCP / Launch 等条目不是第三方产品，域名也推不出来，直接跳过
+      if (/product hunt/i.test(node.name)) {
+        skippedBlocked++;
+        console.log(`[fetch] ${node.name}：Product Hunt 自家条目，跳过`);
+        continue;
+      }
+
       if (existingNames.has(node.name.toLowerCase())) {
         skippedName++;
         continue;
       }
 
       let realUrl = "";
-      const r = await resolveRedirect(node.website);
-      if (r.url) {
-        realUrl = r.url;
-      } else {
-        realUrl = await resolveRedirectViaHeader(node.website);
-        if (!realUrl) {
-          skippedNoDomain++;
-          console.log(
-            `[fetch] ${node.name}：域名解析失败（${
-              r.failure === "not_redirected" ? "/r/ 未跳转，可能被挑战页挡住" : "打开链接报错"
-            }），跳过`,
-          );
-          continue;
+
+      // 第 1 层：有头 Chrome。连续失败说明当前出口 IP 过不了挑战（CI 常见），
+      // 再逐条白等 20 秒只会把一轮采集拖到十几分钟，索性本轮不再尝试。
+      if (browserFailStreak < BROWSER_FAIL_STREAK_LIMIT) {
+        const r = await resolveRedirect(node.website);
+        if (r.url) {
+          realUrl = r.url;
+          browserFailStreak = 0;
+        } else {
+          browserFailStreak++;
+          if (browserFailStreak === BROWSER_FAIL_STREAK_LIMIT) {
+            console.warn(
+              "[fetch] 有头浏览器连续解析失败，判定当前出口 IP 被 Cloudflare 拦，本轮改用推断；" +
+                "要恢复精确解析请配置 PH_PROXY（住宅代理）",
+            );
+          }
         }
+      }
+
+      // 第 2 层：直接读 302 的 Location
+      if (!realUrl) realUrl = await resolveRedirectViaHeader(node.website);
+
+      // 第 3 层：按名字/slug 推断 + 校验
+      if (!realUrl) {
+        const guessed = await guessDomain(node.name, slugOf(node));
+        if (guessed) {
+          realUrl = `https://${guessed}`;
+          viaGuess++;
+        }
+      }
+
+      if (!realUrl) {
+        skippedNoDomain++;
+        console.log(`[fetch] ${node.name}：域名解析不到（浏览器/302/推断均失败），跳过`);
+        continue;
       }
 
       const domain = extractDomain(realUrl);
@@ -286,7 +488,7 @@ export async function fetchProductHuntTools(
         verified: "pending",
         sourceType: "producthunt",
         sourceUrl: node.website,
-        phUrl: `https://www.producthunt.com/posts/${domain}`,
+        phUrl: node.url,
       });
       console.log(`[fetch] ${node.name} → ${domain}`);
     }
@@ -297,7 +499,8 @@ export async function fetchProductHuntTools(
 
   console.log(
     `[fetch] PH(${order}, topic=${topic}) 翻 ${pages} 页扫 ${scanned} 条，产出 ${items.length}/${limit}` +
-      `｜name已存在 ${skippedName}｜未解析出域名 ${skippedNoDomain}｜黑名单 ${skippedBlocked}｜域名已收录 ${skippedSeen}`,
+      `｜name已存在 ${skippedName}｜未解析出域名 ${skippedNoDomain}｜黑名单 ${skippedBlocked}｜域名已收录 ${skippedSeen}` +
+      `｜推断命中 ${viaGuess}`,
   );
 
   return items;

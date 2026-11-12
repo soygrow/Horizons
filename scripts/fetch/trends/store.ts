@@ -18,7 +18,7 @@ export const DATASET_PATH = path.resolve(process.cwd(), "content/trends.json");
 /**
  * 候选池：本轮采集出的词先落这里，等后台人工审核后才并入榜单。
  *
- * 和 tools-staging.json 同一套思路——采集与发布解耦，采集跑完线上不会有任何变化。
+ * 和 tools 的候选池同一套思路——采集与发布解耦，采集跑完线上不会有任何变化。
  * 只存本轮碰到的词（约 80 个），不是全量，避免 5MB 的榜单文件被整份复制。
  */
 export const STAGING_PATH = path.resolve(process.cwd(), "content/trends-staging.json");

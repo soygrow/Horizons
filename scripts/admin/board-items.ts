@@ -1,13 +1,12 @@
 /**
  * 候选池（工作区）的 D1 读写 —— Node 侧，供采集 / 富化 / 发布脚本使用。
  *
- * 背景：后台要求「只读数据库」，但候选池的生产者是采集流水线（原本只写仓库文件）。
- * 过渡期两边都写：
- *   - 仓库文件保留，作为发布脚本的兜底输入，也方便人工看 diff；
- *   - D1 的 board_items 是后台的唯一数据源。
+ * 这里就是候选池的唯一存储：采集写、后台读、富化改、发布读，全部围绕
+ * board_items。不再落 content/tools-staging.json —— 仓库文件既是并发写入的
+ * 冲突源，也让「后台看到的」和「文件里的」有机会不一致。
  *
- * 写入失败一律只告警：候选池落库是为了后台能看，不能因为它把一次成功的
- * 采集变成失败任务 —— 文件里还有完整数据可回填。
+ * 写入失败不静默：调用方（fetch-staging）必须检查返回值，
+ * 否则就是「采集成功但后台什么都没有」。
  */
 import { createD1Client, d1Configured, type D1Client } from "./d1-client";
 
@@ -156,6 +155,29 @@ export async function listCandidates<T = unknown>(
     console.warn("[items] 读取候选池失败：", e);
     return [];
   }
+}
+
+/**
+ * 按「队列形态」读回：status 列是真相（后台的确认/拒绝都写这里），
+ * 卡片里存的是采集当时的旧 stage，所以用 status 覆盖后再返回。
+ *
+ * rejected 单独返回：它不参与发布，只用于采集端跳过已拒的域名。
+ */
+export async function readWorkspace<T = Record<string, unknown>>(
+  board: string,
+): Promise<{ items: Array<T & { stage?: string }>; rejected: string[] }> {
+  const rows = await listCandidates<T & { stage?: string }>(board);
+
+  const items: Array<T & { stage?: string }> = [];
+  const rejected: string[] = [];
+  for (const r of rows) {
+    if (r.status === "rejected") {
+      rejected.push(r.itemKey);
+      continue;
+    }
+    if (r.card) items.push({ ...r.card, stage: r.status });
+  }
+  return { items, rejected };
 }
 
 /** 发布完成后清空该榜工作区（与原来清空 staging 文件等价） */

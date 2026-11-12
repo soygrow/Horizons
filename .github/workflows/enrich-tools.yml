@@ -84,7 +84,7 @@ jobs:
         run: |
           git config user.name "horizons-bot"
           git config user.email "bot@horizons.tools"
-          git add content/tools-staging.json content/tools-field-report.json
+          git add content/tools-field-report.json
           if git diff --cached --quiet; then
             echo "::notice::本次没有产生变化"
             echo "changed=false" >> "$GITHUB_OUTPUT"

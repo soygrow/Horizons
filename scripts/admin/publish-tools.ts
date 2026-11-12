@@ -23,14 +23,13 @@ import path from "node:path";
 import { compareByToolScore, computeToolScore, tierOf } from "@horizons/shared";
 import type { AITool } from "@horizons/shared";
 import { syncBoardToD1 } from "./board-sync";
-import { clearCandidates, listCandidates, syncCandidates, type ItemStatus } from "./board-items";
+import { clearCandidates, readWorkspace, syncCandidates, type ItemStatus } from "./board-items";
 import type { PublishRow } from "./publish-board";
 import { statsLine, writeToolStats } from "./tool-stats";
 import type { StagingFile, StagingItem } from "./verdict";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const TOOLS_PATH = path.join(ROOT, "content/aitools.json");
-const STAGING_PATH = path.join(ROOT, "content/tools-staging.json");
 const AUDIT_PATH = path.join(ROOT, "content/tools-audit.json");
 /** 审计结果的保鲜期：超过就不认，防止用几天前的清单误删 */
 const AUDIT_TTL_MS = 24 * 3600_000;
@@ -132,28 +131,17 @@ async function main(): Promise<void> {
   const tools = readJson<AITool[]>(TOOLS_PATH, []);
 
   /*
-   * 候选池优先读 D1。
+   * 候选池只读 D1（没有文件兜底了）。
    *
-   * 后台的「确认收录 / 拒绝」现在直接写 board_items，文件里的 stage 可能已经落后；
-   * 库里没有数据（采集还没落库）时才读文件，保证流水线不断。
+   * status 列才是真相：后台的「确认收录 / 拒绝」直接写 board_items，
+   * 卡片里的 stage 是采集当时的旧值，由 readWorkspace 覆盖。
    */
-  const dbItems = await listCandidates<StagingItem>("tools");
-  const staging: StagingFile =
-    dbItems.length > 0
-      ? {
-          updatedAt: new Date().toISOString(),
-          // status 列才是真相：卡片里的 stage 是采集时的旧值
-          items: dbItems
-            .filter((d) => d.status !== "rejected")
-            .map((d) => (d.card ? { ...d.card, stage: d.status as StagingItem["stage"] } : null))
-            .filter((c): c is StagingItem => Boolean(c)),
-          rejected: dbItems.filter((d) => d.status === "rejected").map((d) => d.itemKey),
-        }
-      : readJson<StagingFile>(STAGING_PATH, {
-          updatedAt: new Date(0).toISOString(),
-          items: [],
-          rejected: [],
-        });
+  const { items: queued, rejected: rejectedKeys } = await readWorkspace<StagingItem>("tools");
+  const staging: StagingFile = {
+    updatedAt: new Date().toISOString(),
+    items: queued,
+    rejected: rejectedKeys,
+  };
 
   /*
    * --resync：把现有 JSON 原样重灌进 D1。
@@ -265,15 +253,9 @@ async function main(): Promise<void> {
   // 只移除本次发出去的条目；未富化/未确认的继续留在队列里
   const published = new Set(accepted.map((t) => t.domain));
   const remaining = staging.items.filter((i) => !published.has(i.domain));
-  writeJson(STAGING_PATH, {
-    ...staging,
-    updatedAt: new Date().toISOString(),
-    items: remaining,
-    rejected: staging.rejected,
-  } satisfies StagingFile);
 
-  // 与文件同步重建工作区：只剩「没发出去的条目 + 拒绝名单」，后台看到的就是真实剩余量
-  if (dbItems.length > 0) {
+  // 重建 D1 工作区：只剩「没发出去的条目 + 拒绝名单」，后台看到的就是真实剩余量
+  if (staging.items.length > 0 || staging.rejected.length > 0) {
     await clearCandidates("tools");
     await syncCandidates("tools", [
       ...remaining.map((i) => ({
