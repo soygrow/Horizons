@@ -192,12 +192,18 @@ adminFieldCollect.post("/", async (c) => {
 
 /* --------------------------------- 详情 --------------------------------- */
 
-adminFieldCollect.get("/:id", async (c) => {
-  const id = c.req.param("id");
-  const found = await c.env.DB.prepare("SELECT * FROM field_collect_runs WHERE id = ?").bind(id).first<RunRow>();
-  if (!found) return c.json({ error: "not_found" }, 404);
+/**
+ * 读一条采集详情（含整份 result）。
+ *
+ * 抽成独立函数是因为结果页现在走公开只读路由 /api/fc/:id —— 那个链接不该依赖
+ * 后台登录态（Cookie 一过期、换个浏览器、发给别人看就全打不开了），
+ * 两条路由共用这里的查询与状态对账，避免各写一遍。
+ */
+export async function loadRunDetail(env: Env, id: string): Promise<(ReturnType<typeof serialize> & { result: unknown }) | null> {
+  const found = await env.DB.prepare("SELECT * FROM field_collect_runs WHERE id = ?").bind(id).first<RunRow>();
+  if (!found) return null;
 
-  const row = await reconcile(c, found);
+  const row = await reconcile({ env }, found);
   let result: unknown = null;
   if (row.result) {
     try {
@@ -206,7 +212,13 @@ adminFieldCollect.get("/:id", async (c) => {
       result = null;
     }
   }
-  return c.json({ run: { ...serialize(row), result } });
+  return { ...serialize(row), result };
+}
+
+adminFieldCollect.get("/:id", async (c) => {
+  const run = await loadRunDetail(c.env, c.req.param("id"));
+  if (!run) return c.json({ error: "not_found" }, 404);
+  return c.json({ run });
 });
 
 /** 手动对账入口（页面上的「刷新状态」用，避免有些情况下没轮询到） */

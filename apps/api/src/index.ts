@@ -9,6 +9,7 @@ import { billing } from "./routes/billing";
 import { track } from "./routes/track";
 import { admin } from "./routes/admin";
 import { publicBoards } from "./routes/boards";
+import { fcPublic } from "./routes/fc";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -20,6 +21,8 @@ app.route("/api/ph", ph);
 app.route("/api/admin", admin);
 // 榜单公开只读接口：只返回当前生效版本，不暴露历史与写入
 app.route("/api/boards", publicBoards);
+// 新采集结果页的只读接口：id 是随机 UUID，不需要后台登录态（理由见 routes/fc.ts）
+app.route("/api/fc", fcPublic);
 // 顺序无关：/doing/counts 与 /:slug/doing 不会互相吞掉（前者无 :slug 段）
 app.route("/api/opportunity", opportunity);
 app.route("/api/favorites", favorites);

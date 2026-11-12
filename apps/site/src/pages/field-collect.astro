@@ -7,8 +7,10 @@
  *   2. 采集是异步的（GitHub Actions 跑 2~5 分钟），单独一页可以只在需要时打开、并自己轮询；
  *   3. 这个页面不依赖后台其余面板的状态，删掉整条新采集链路时只需删这一个页面。
  *
- * 数据来自 /api/admin/field-collect/:id（需要后台登录态）。页面本身静态，
- * 所以 build 阶段不会去读 D1，采集记录晚于部署上线也不影响。
+ * 数据来自 /api/fc/:id（公开只读，见 apps/api/src/routes/fc.ts）：这个链接要能直接
+ * 复制出去、换个浏览器或手机打开；早前只走 /api/admin/... 时，Cookie 一过期就只剩
+ * 「需要先登录后台」，看上去就像「点了查看字段什么也没有」。取不到时仍回退一次后台接口。
+ * 页面本身静态，所以 build 阶段不会去读 D1，采集记录晚于部署上线也不影响。
  */
 import Base from "../layouts/Base.astro";
 
@@ -353,11 +355,27 @@ const description = "按 docs/18-AI工具字段采集方案.md 采集的单个�
         showMessage("缺少采集 ID。请从后台「新采集」里点「查看字段」进入本页。");
         return;
       }
+      // 先打公开只读接口（不依赖后台登录态，链接可以直接分享/换浏览器打开）；
+      // 老链接如果还指着后台接口，下面就回退一次。
+      let res: Response | null = null;
       try {
-        const res = await fetch(`/api/admin/field-collect/${encodeURIComponent(id)}`, {
-          credentials: "same-origin",
-          cache: "no-store",
-        });
+        res = await fetch(`/api/fc/${encodeURIComponent(id)}`, { cache: "no-store" });
+      } catch {
+        res = null;
+      }
+      if (!res || res.status >= 500) {
+        try {
+          res = await fetch(`/api/admin/field-collect/${encodeURIComponent(id)}`, {
+            credentials: "same-origin",
+            cache: "no-store",
+          });
+        } catch (e) {
+          showMessage(`读取失败：${e instanceof Error ? e.message : String(e)}`, "error");
+          return;
+        }
+      }
+
+      try {
         if (res.status === 401) {
           showMessage("需要先登录后台。登录后回到本页刷新即可。", "error");
           return;
