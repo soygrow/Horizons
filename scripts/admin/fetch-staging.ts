@@ -131,6 +131,7 @@ async function fetchAllSources(
   topic: string,
   existingNames: Set<string>,
   seen: Set<string>,
+  days: number,
 ): Promise<AITool[]> {
   const out: AITool[] = [];
 
@@ -143,6 +144,8 @@ async function fetchAllSources(
         topic,
         existingNames,
         seen,
+        undefined,
+        days,
       );
       out.push(...ph);
     } catch (e) {
@@ -184,6 +187,8 @@ async function main(): Promise<void> {
   const count = intArg("count", config.maxPerRun);
   const order = arg("order") === "newest" ? ("NEWEST" as const) : ("VOTES" as const);
   const topic = arg("topic") ?? config.productHunt.topicSlugs[0];
+  /** PH 时间窗（天）。0 表示不限，一般没必要——见 fetchProductHuntTools 的注释 */
+  const days = intArg("days", 30);
 
   if (!dryRun) assertD1();
 
@@ -202,11 +207,11 @@ async function main(): Promise<void> {
   ]);
 
   console.log(
-    `[staging] 目标 ${count} 个｜来源 Product Hunt(主, ${order}/${topic}) + HN + Futurepedia` +
+    `[staging] 目标 ${count} 个｜来源 Product Hunt(主, ${order}/近${days}天/${topic}) + HN + Futurepedia` +
       `｜富化 ${enrich ? "开" : "关"}${dryRun ? "｜dry-run" : ""}`,
   );
 
-  const fresh: AITool[] = await fetchAllSources(count, order, topic, existingNames, seen);
+  const fresh: AITool[] = await fetchAllSources(count, order, topic, existingNames, seen, days);
   console.log(`[staging] 新增候选 ${fresh.length}/${count} 个（跳过原因见上方 [fetch] 日志）`);
 
   if (fresh.length === 0) {

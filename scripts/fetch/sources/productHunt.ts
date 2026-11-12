@@ -317,6 +317,12 @@ interface PostPage {
  * 省得回到调用方再筛一遍、还得为了筛而多抓。
  *
  * `maxScan` 只防 PH 返回异常页时死循环，正常路径不会碰到。
+ *
+ * `postedAfterDays` 是时间窗。必须配合 `order: VOTES` 用：
+ *   · NEWEST 抓的是「刚发布」，实测 40 条中位 1 票、最高 3 票，而观察区门槛是
+ *     300 票 —— 这样抓下来的条目在判定端会 100% 被拒，等于白抓；
+ *   · VOTES + 30 天窗口，前 20 条票数 335~611，翻到第 4 页仍有 199 票，
+ *     既保证是新品，又能真正进榜。
  */
 export async function fetchProductHuntTools(
   limit: number,
@@ -325,6 +331,7 @@ export async function fetchProductHuntTools(
   existingNames: Set<string> = new Set(),
   seenDomains: Set<string> = new Set(),
   maxScan?: number,
+  postedAfterDays = 30,
 ): Promise<AITool[]> {
   const token = getToken();
   if (!token) {
@@ -332,9 +339,14 @@ export async function fetchProductHuntTools(
     return [];
   }
 
+  const postedAfter =
+    postedAfterDays > 0
+      ? `, postedAfter: "${new Date(Date.now() - postedAfterDays * 86_400_000).toISOString()}"`
+      : "";
+
   const query = `
     query($first: Int!, $after: String) {
-      posts(first: $first, after: $after, order: ${order}, topic: "${topic}") {
+      posts(first: $first, after: $after, order: ${order}, topic: "${topic}"${postedAfter}) {
         pageInfo { endCursor hasNextPage }
         edges {
           node {
@@ -490,7 +502,7 @@ export async function fetchProductHuntTools(
         sourceUrl: node.website,
         phUrl: node.url,
       });
-      console.log(`[fetch] ${node.name} → ${domain}`);
+      console.log(`[fetch] ${node.name} → ${domain}（${node.votesCount} 票）`);
     }
 
     if (!posts?.pageInfo?.hasNextPage || !posts?.pageInfo?.endCursor) break;
@@ -498,7 +510,7 @@ export async function fetchProductHuntTools(
   }
 
   console.log(
-    `[fetch] PH(${order}, topic=${topic}) 翻 ${pages} 页扫 ${scanned} 条，产出 ${items.length}/${limit}` +
+    `[fetch] PH(${order}, topic=${topic}, 近 ${postedAfterDays} 天) 翻 ${pages} 页扫 ${scanned} 条，产出 ${items.length}/${limit}` +
       `｜name已存在 ${skippedName}｜未解析出域名 ${skippedNoDomain}｜黑名单 ${skippedBlocked}｜域名已收录 ${skippedSeen}` +
       `｜推断命中 ${viaGuess}`,
   );
