@@ -25,7 +25,7 @@ on:
         required: false
         default: "10"
       free_only:
-        description: "仅免费字段（跳过 DFS 与 LLM）"
+        description: "仅免费字段（跳过付费采集与 LLM）"
         type: boolean
         default: false
       job_id:
@@ -67,9 +67,6 @@ jobs:
       - name: 富化已确认候选
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           # 富化状态与字段体检报告写库（后台只读库）
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
