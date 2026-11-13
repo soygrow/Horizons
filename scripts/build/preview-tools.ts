@@ -27,8 +27,15 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../..");
 const OUT_DIR = path.join(ROOT, "content/dist/tools/preview");
 
-/** 哪些状态值得预览：富化过的都在其中，没富化的打开也是空壳 */
-const PREVIEW_STAGES = new Set(["enriched", "enriching", "enrich_failed"]);
+/**
+ * 哪些状态值得预览。
+ *
+ * `candidate` 必须在内：采集落库后 stage 就是 candidate，
+ * 只收 enriched 的话「后台刚采完 → 点预览」永远打不开 ——
+ * 而审核员恰恰是在这一步判断这条要不要继续富化。
+ * `rejected` 排除：判定不收录的条目没有预览价值。
+ */
+const PREVIEW_STAGES = new Set(["candidate", "enriched", "enriching", "enrich_failed"]);
 
 interface PreviewItem {
   domain?: string;

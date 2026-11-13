@@ -100,7 +100,11 @@ export const zh = {
   aiInsight: {
     label: "AI 解读",
     analyzedAt: "分析于 {time}",
+    confidence: "置信度 {value}%",
     question: "这门生意在解决什么痛点？",
+    before: "以前怎么做",
+    now: "现在怎么做",
+    comparison: "相比之下",
     audiences: "帮的是谁",
     hooks: "靠什么打动人",
     willingness: "付费意愿",
@@ -111,6 +115,17 @@ export const zh = {
     acquisition: "它是怎么获客的",
     moat: "护城河在哪",
     monetization: "怎么收费",
+  },
+
+  /** 各模块的 AI 补充分析（moduleInsights） */
+  moduleInsight: {
+    label: "AI 补充",
+    analysis: "分析",
+    soWhat: "所以呢",
+    performance: "产品表现",
+    growth: "增长",
+    keywords: "关键词与搜索",
+    competition: "竞争格局",
   },
   trafficDecrypt: {
     overview: "流量总览",
@@ -157,6 +172,8 @@ export const zh = {
 
     /* ---- 上线时间可信度 ---- */
     launchConfidence: "可信度 {level}",
+    /** 关键词区标题右侧：已采到的关键词总数 */
+    keywordTotal: "共 {count} 个关键词",
     channels: {
       direct: "直接访问",
       organicSearch: "自然搜索",
@@ -231,6 +248,8 @@ export const zh = {
     monetization: "变现蓝图",
     model: "商业模式",
     tiers: "定价阶梯",
+    /** 官网抓到的官方价格档位（事实数据），与上面的 LLM「定价阶梯」解读区分 */
+    pricePlans: "官方价格",
     payment: "收入信号",
     paymentNote: "当月估算值，仅作参考，不代表真实收入",
     pricingAdvice: "起步定价建议",

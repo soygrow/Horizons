@@ -73,6 +73,25 @@ const gp = tool.growthPlaybook;
                 </ul>
               </div>
             ) : null}
+            {/* 官网抓到的官方价格档位：一直有数据，此前详情页完全不渲染 */}
+            {tool.pricing?.length ? (
+              <div>
+                <span class="text-xs text-ink-muted">{t.pricePlans}</span>
+                <ul class="mt-2 grid gap-2 sm:grid-cols-2">
+                  {tool.pricing.map((p: { plan?: string; price?: string; desc?: string }) => (
+                    <li class="rounded-lg border border-border px-3 py-2">
+                      <div class="flex items-baseline justify-between gap-3">
+                        <span class="text-sm font-medium break-words text-ink">{p.plan}</span>
+                        <span class="shrink-0 text-sm tabular-nums text-ink">{p.price}</span>
+                      </div>
+                      {p.desc ? (
+                        <p class="mt-1 text-xs leading-relaxed text-ink-muted">{p.desc}</p>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             {mb.pricingAdvice ? (
               <div class="rounded-lg border border-primary/20 bg-primary-soft px-4 py-3">
                 <span class="text-xs font-medium text-primary">{t.pricingAdvice}</span>

@@ -33,6 +33,7 @@ const { tool } = Astro.props as { tool: Record<string, any> };
 const markdown = buildSiteMarkdown(tool as never);
 
 const STAGE_LABEL: Record<string, string> = {
+  candidate: "刚采集完，仅流量与排名已落库",
   enriched: "富化完成，等待发布",
   enriching: "富化进行中，部分字段还会变",
   enrich_failed: "富化失败，下面可能是残缺数据",

@@ -71,6 +71,11 @@ const NAV: [string, string][] = [
           </button>
         </div>
 
+        {/* 细分赛道（segmentLabel）：一直有数据、此前没有任何渲染位 */}
+        {tool.segmentLabel ? (
+          <p class="text-sm font-medium text-primary">{tool.segmentLabel}</p>
+        ) : null}
+
         <p class="max-w-2xl text-lg leading-relaxed text-ink-secondary">{tool.description}</p>
 
         <div class="flex flex-col gap-3">
@@ -88,6 +93,21 @@ const NAV: [string, string][] = [
               <div class="flex flex-wrap items-center gap-2">
                 {tool.categoryTags.map((tag: string) => (
                   <Badge>{tag}</Badge>
+                ))}
+              </div>
+            ) : null
+          }
+          {/* 标签组（tagGroups）：变现方式 / SEO 打法 / 成熟度信号等，此前只进了 AI 爬虫用 markdown */}
+          {
+            tool.tagGroups?.length ? (
+              <div class="flex flex-col gap-2">
+                {tool.tagGroups.map((g: { label?: string; values?: string[] }) => (
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs text-ink-muted">{g.label}</span>
+                    {(g.values ?? []).map((v: string) => (
+                      <Badge>{v}</Badge>
+                    ))}
+                  </div>
                 ))}
               </div>
             ) : null

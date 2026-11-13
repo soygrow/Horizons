@@ -24,6 +24,8 @@ export interface VortexSnapshot {
   rankGlobal?: number;
   countryRank?: number;
   country?: string;
+  /** 国家全称：base_data 只在 website_traffic_by_country 里给，用于直接展示 */
+  countryName?: string;
   category?: string;
   categoryRank?: number;
   /** Similarweb 自评数据覆盖度："full" | "partial" */
@@ -148,13 +150,27 @@ export function parseVortexBase(item: SimilarwebItem, period: string): VortexSna
       ? [...months.slice(0, -1), { month: months[months.length - 1].month, visits: total }]
       : months;
 
+  /*
+   * 所属国家：顶层 `country` 经常为空，真正有数据的是
+   * `website_traffic_by_country`（按占比降序）。只看顶层字段会让
+   * 「所属国家」在数据齐全时也空着，所以用数组第一项兜底，
+   * 国家全称也从同一项取 —— 两者必须来自同一国家，否则会显示错配。
+   */
+  const topCountry = item.website_traffic_by_country?.[0];
+  const country = item.country || topCountry?.country;
+  const countryName =
+    item.website_traffic_by_country?.find(
+      (g) => (g.country ?? "").toUpperCase() === (country ?? "").toUpperCase(),
+    )?.countryName ?? topCountry?.countryName;
+
   return {
     period: period || (normalized.length ? normalized[normalized.length - 1].month : ""),
     monthlyVisits,
     months: normalized,
     rankGlobal: item.rankGlobal,
     countryRank: item.countryRank,
-    country: item.country,
+    country,
+    countryName,
     category: item.category || undefined,
     categoryRank: item.categoryRank,
     dataCoverage: item.dataCoverage,
@@ -163,30 +179,51 @@ export function parseVortexBase(item: SimilarwebItem, period: string): VortexSna
 }
 
 /**
- * 把判定必需字段写回 AITool。
+ * 把采集到的字段写回 AITool。
  *
- * 只写 `metrics.monthlyVisits` / `momGrowth` / `trafficMetrics` 的空位，
- * 不碰其余字段：完整映射在富化阶段（apply-fields）统一做，
- * 这里多写一处就多一处口径分叉的机会。
+ * 写的是**采集阶段就已经拿到、页面直接展示**的那部分：访问量、环比、
+ * 所属国家、三档排名。这些字段 base_data 一次就给全了，原先只写访问量，
+ * 排名和国家解析出来就扔，导致「采集完成 → 预览」这两格恒为「—」，
+ * 而页面读取端早就准备好了位置。
+ *
+ * 互动指标 / 渠道 / 地域分布 / 关键词仍然留给富化阶段（apply-fields）——
+ * 那些要么需要额外换算，要么来自别的源，不在这里写，避免两处口径分叉。
  */
 export function applyVortexAdmission(tool: AITool, snap: VortexSnapshot): void {
-  if (snap.monthlyVisits === undefined) return;
-
   const growth = momGrowthOf(snap.months);
-  tool.metrics = {
-    ...(tool.metrics ?? {}),
-    monthlyVisits: snap.monthlyVisits,
-    ...(growth !== undefined ? { momGrowth: growth } : {}),
-  };
 
-  // visitsOf() 优先读 trafficMetrics，所以这里必须同步写，
-  // 否则库里残留的旧 trafficMetrics 会盖掉刚采到的新值。
-  tool.trafficMetrics = {
-    ...(tool.trafficMetrics ?? {}),
-    monthlyVisits: snap.monthlyVisits,
-    ...(growth !== undefined ? { monthlyVisitsGrowth: growth } : {}),
-    ...(snap.period ? { snapshotMonth: snap.period } : {}),
-  };
+  if (snap.monthlyVisits !== undefined) {
+    tool.metrics = {
+      ...(tool.metrics ?? {}),
+      monthlyVisits: snap.monthlyVisits,
+      ...(growth !== undefined ? { momGrowth: growth } : {}),
+    };
+
+    // visitsOf() 优先读 trafficMetrics，所以这里必须同步写，
+    // 否则库里残留的旧 trafficMetrics 会盖掉刚采到的新值。
+    tool.trafficMetrics = {
+      ...(tool.trafficMetrics ?? {}),
+      monthlyVisits: snap.monthlyVisits,
+      ...(growth !== undefined ? { monthlyVisitsGrowth: growth } : {}),
+      ...(snap.period ? { snapshotMonth: snap.period } : {}),
+    };
+  }
+
+  // 所属国家：country 存 ISO 代码、countryName 存全称，页面优先显示全称。
+  if (snap.country || snap.countryName) {
+    tool.metrics = {
+      ...(tool.metrics ?? {}),
+      ...(snap.country ? { country: snap.country.toUpperCase() } : {}),
+      ...(snap.countryName ? { countryName: snap.countryName } : {}),
+    };
+  }
+
+  // 三档排名：global / country / category 分别判空，缺一个不影响其余两个落库。
+  const ranks = { ...(tool.ranks ?? {}) };
+  if (snap.rankGlobal !== undefined) ranks.global = snap.rankGlobal;
+  if (snap.countryRank !== undefined) ranks.country = snap.countryRank;
+  if (snap.categoryRank !== undefined) ranks.category = snap.categoryRank;
+  if (Object.keys(ranks).length > 0) tool.ranks = ranks;
 }
 
 /** 快照日期字符串，写 traffic_history.snapshot_date 用 */

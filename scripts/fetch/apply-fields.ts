@@ -118,8 +118,14 @@ export function applyFields(
     mark("metrics.organicShare", "vortex_base", opts.period);
   }
 
-  const country = str("country");
+  /*
+   * 所属国家：`country` 是 vortex 的顶层单值字段，很多站只给
+   * `website_traffic_by_country` 数组而不给单值 —— 只看 country 会让
+   * 「所属国家」这一格在数据齐全的情况下也恒为空。数组里占比最高的那项
+   * 就是同一个语义，作为回退源。
+   */
   const geo = arr<{ country?: string; countryName?: string; share?: number }>("traffic_by_country");
+  const country = str("country") ?? geo?.[0]?.country;
   if (country) {
     tool.metrics.country = country.toUpperCase();
     const name = geo?.find((g) => (g.country ?? "").toUpperCase() === country.toUpperCase())?.countryName;
@@ -149,6 +155,11 @@ export function applyFields(
         ? { socialVisits: pctOf(visits, num("social_traffic"))! }
         : {}),
       ...(num("time_on_site") !== undefined ? { avgVisitDurationSec: Math.round(num("time_on_site")!) } : {}),
+      // 月浏览量：vortex 不给这个字段，用「访问量 × 页均访问」推算 ——
+      // trafficMetrics 里定义了却没有生产者，页面就会显示「—」。
+      ...(num("pages_per_visit") !== undefined
+        ? { monthlyPageviews: Math.round(visits * num("pages_per_visit")!) }
+        : {}),
       ...(opts.period ? { snapshotMonth: opts.period } : {}),
     };
     mark("trafficMetrics", "vortex_base", opts.period);
@@ -274,10 +285,18 @@ export function applyFields(
   }
 
   /* ------------------------------ AI 引荐 ------------------------------ */
+  /*
+   * `gen_ai_traffic` 是占比，`ai_traffic_visits` 是绝对量。vortex 有时只给
+   * 后者（或只给前者），只读占比会让整块 AI 引荐在数据存在时也不显示。
+   * 两者互为回退：缺占比就用访问量 ÷ 总访问量反算。
+   */
   const aiShare = num("gen_ai_traffic");
-  if (aiShare !== undefined) {
-    const ai: AiTraffic = { share: round2(aiShare) };
-    const aiVisits = pctOf(visits, aiShare);
+  const aiVisitCount = num("ai_traffic_visits");
+  const aiShareResolved =
+    aiShare ?? (aiVisitCount !== undefined && visits ? (aiVisitCount / visits) * 100 : undefined);
+  if (aiShareResolved !== undefined) {
+    const ai: AiTraffic = { share: round2(aiShareResolved) };
+    const aiVisits = aiVisitCount ?? pctOf(visits, aiShareResolved);
     if (aiVisits !== undefined) ai.visits = aiVisits;
     const chatgpt = num("ai_chatgpt_share");
     const claude = num("ai_claude_share");
@@ -304,6 +323,21 @@ export function applyFields(
   if (confidence === "高" || confidence === "中" || confidence === "低") {
     tool.launchConfidence = confidence;
     mark("launchConfidence", "多来源推算");
+  }
+
+  /* ------------------------------ 功能特性 ------------------------------ */
+  /*
+   * 官网抓到的功能词是事实数据，Hero 的标签区却只认 LLM 写的 featureTags。
+   * LLM 没跑或没产出时这块就是空的，所以这里只补空、不覆盖 ——
+   * 解读字段的优先级仍然是 LLM 更高。
+   */
+  const features = arr<string>("features");
+  if (features?.length && !tool.featureTags?.length) {
+    const tags = features.filter((f) => typeof f === "string" && f.trim()).slice(0, 8);
+    if (tags.length) {
+      tool.featureTags = tags;
+      mark("featureTags", "官网功能词");
+    }
   }
 
   /* ------------------------------ 竞品 / 定价 ------------------------------ */
