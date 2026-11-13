@@ -96,3 +96,14 @@ export function formatCount(value?: number | null): string {
   if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
   return String(value);
 }
+
+/**
+ * 完整数字（千分位）：19222 → 19,222。
+ *
+ * 指标卡不缩写：19.2K 看不出量级细节，而流量类数字（月访问、渠道访问量）
+ * 本来就是读者要核对的原始值，K 只是把信息抹掉了一层。
+ */
+export function formatNum(value?: number | null): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return "";
+  return Math.round(value).toLocaleString("en-US");
+}

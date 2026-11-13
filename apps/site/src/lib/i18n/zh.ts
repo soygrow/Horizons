@@ -138,7 +138,7 @@ export const zh = {
     totalSeries: "总访问量",
     organicSeries: "自然搜索",
     noHistory: "暂无历史数据",
-    sources: "流量结构",
+    sources: "渠道结构",
     countries: "主要国家",
     searchRanks: "搜索与排名",
     rankDistribution: "关键词排名分布",

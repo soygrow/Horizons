@@ -80,30 +80,24 @@ const x = (i: number) => PAD.left + (points.length === 1 ? plotW / 2 : (i * plot
 const y = (v: number) => H - PAD.bottom - (Math.max(0, v) / yMax) * plotH;
 
 /**
- * 按「有数据的连续段」切分折线。
+ * 折线连续画满 6 格，缺口月份按 0 经过。
  *
- * 趋势固定画 6 格，缺月由 traffic_history 补 0。这些 0 不能参与连线：
- *   - 补在开头 → 会拉出一条从 0 直冲当月峰值的斜线，读起来像「一个月暴涨几十倍」；
- *   - 补在末尾 → 折线尾巴砸到 0，读起来像「流量归零」。
- * 两种情况都是假信号，所以缺口处直接断开，只保留横轴月份。
- * 判定逻辑（含存量数据没有 collected 标记的情况）集中在 pendingTrendFlags。
+ * 以前缺口处会断开，理由是「避免读成暴涨/归零」；但断开的曲线本身也像
+ * 数据坏了，横轴上留着空格反而更难读。现在统一走一条连续曲线：
+ * 0 值落回基线，涨跌形状完整，读者一眼能看到「前几个月是 0，10 月才起量」。
+ * 数值标签仍然只标有采集记录的月份，免得一排「0」糊在图上。
  */
 const flags = pendingTrendFlags(points);
-const runs: number[][] = [];
-let run: number[] = [];
-flags.forEach((isPending, i) => {
-  if (isPending) {
-    if (run.length) runs.push(run);
-    run = [];
-  } else {
-    run.push(i);
-  }
-});
-if (run.length) runs.push(run);
+const runs: number[][] = [points.map((_, i) => i)];
 
 const toSegments = (key: "total" | "organic") =>
   runs.map((idx) => {
-    const coords = idx.map((i) => ({ x: x(i), y: y(points[i][key] ?? 0), v: points[i][key] ?? 0 }));
+    const coords = idx.map((i) => ({
+      x: x(i),
+      y: y(points[i][key] ?? 0),
+      v: points[i][key] ?? 0,
+      i,
+    }));
     return { coords, d: smoothPath(coords) };
   });
 
@@ -180,17 +174,19 @@ const labelStep = Math.max(1, Math.ceil(points.length / 8));
   {
     !isStars &&
       totalRuns.map((seg) =>
-        seg.coords.map((c) => (
-          <text
-            x={c.x}
-            y={Math.max(c.y - 6, PAD.top + 8)}
-            text-anchor="middle"
-            font-size="10"
-            class="fill-current text-ink-secondary"
-          >
-            {formatCount(c.v)}
-          </text>
-        )),
+        seg.coords
+          .filter((c) => !flags[c.i])
+          .map((c) => (
+            <text
+              x={c.x}
+              y={Math.max(c.y - 6, PAD.top + 8)}
+              text-anchor="middle"
+              font-size="10"
+              class="fill-current text-ink-secondary"
+            >
+              {formatCount(c.v)}
+            </text>
+          )),
       )
   }
 

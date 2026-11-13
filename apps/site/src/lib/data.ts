@@ -162,14 +162,99 @@ export function getMonthlyVisits(tool: AITool): number | undefined {
   return tool.trafficMetrics?.monthlyVisits ?? tool.metrics?.monthlyVisits;
 }
 
+/**
+ * 占比字段归一化成百分数。
+ *
+ * vortex 的渠道/地域占比是 0~1 小数（0.42 = 42%），而页面统一按百分数渲染；
+ * 历史数据里两种口径都出现过（写入端曾经漏乘 100），所以这里按
+ * 「>1 视为已经是百分数」兜底，两批数据都能显示对。
+ */
+export function toPercent(value?: number | null): number | undefined {
+  if (value === null || value === undefined || !Number.isFinite(value)) return undefined;
+  return value > 1 ? Math.round(value * 10) / 10 : Math.round(value * 1000) / 10;
+}
+
+/**
+ * 判断一份渠道占比是 0~1 小数还是 0~100 百分数。
+ *
+ * 逐字段用「>1 就当百分数」去猜，会误伤真实占比正好 1% 的项（1 被放大成 100%）；
+ * 看整份数据的总和更可靠：九个渠道加起来 ≈1 就是小数口径。
+ */
+function shareScale(shares: Record<string, number> | undefined): number {
+  if (!shares) return 1;
+  const sum = Object.values(shares).reduce(
+    (acc, v) => acc + (typeof v === "number" && Number.isFinite(v) ? v : 0),
+    0,
+  );
+  return sum > 0 && sum <= 1.2 ? 100 : 1;
+}
+
+/** 整份渠道占比，统一换算成百分数（百分数口径的原样返回） */
+export function channelSharesPct(tool: AITool): Record<string, number> {
+  const raw = (tool.channelShares ?? {}) as Record<string, number>;
+  const scale = shareScale(raw);
+  const out: Record<string, number> = {};
+  for (const [key, value] of Object.entries(raw)) {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      out[key] = Math.round(value * scale * 10) / 10;
+    }
+  }
+  return out;
+}
+
+/** 某个渠道的占比（百分数），无数据返回 undefined */
+export function getChannelShare(tool: AITool, key: string): number | undefined {
+  return channelSharesPct(tool)[key];
+}
+
+/**
+ * 渠道访问量 = 月访问量 × 渠道占比。
+ *
+ * 不直接用库里存的绝对量：占比和总量来自同一次采集，乘出来一定自洽；
+ * 而早一批数据的绝对量是「把 0.42 当百分数」算的，只有正确值的 1/100。
+ */
+export function getChannelVisits(tool: AITool, key: string): number | undefined {
+  const visits = getMonthlyVisits(tool);
+  const share = getChannelShare(tool, key);
+  if (visits === undefined || share === undefined) return undefined;
+  return Math.round((visits * share) / 100);
+}
+
+/**
+ * 国家展示名：ISO 码 → 中文（ID → 印度尼西亚）。
+ *
+ * 采集结果里 countryName 是英文（Indonesia），中文页面直接用会像没翻译；
+ * 用 Intl 的区域名表转换，不另外维护一份映射。
+ */
+const REGION_NAMES = new Intl.DisplayNames(["zh-CN"], { type: "region" });
+
+export function countryLabel(code?: string | null): string | undefined {
+  if (!code) return undefined;
+  const key = code.trim().toUpperCase();
+  if (key.length !== 2) return code;
+  try {
+    const name = REGION_NAMES.of(key);
+    return name && name !== key ? name : code;
+  } catch {
+    return code;
+  }
+}
+
 /** 环比增长 %：vortex 优先，回退存量 metrics */
 export function getMoMGrowth(tool: AITool): number | undefined {
   return tool.trafficMetrics?.monthlyVisitsGrowth ?? tool.metrics?.momGrowth;
 }
 
-/** 自然搜索量：vortex 优先，回退存量 metrics */
+/**
+ * 自然搜索量：先用渠道占比 × 总访问量（与「渠道结构」同源、必然自洽），
+ * 再回退库里存的绝对量。历史绝对量是按小数当百分数算的，会偏小 100 倍。
+ */
 export function getOrganicVisits(tool: AITool): number | undefined {
-  return tool.trafficMetrics?.organicSearchVisits ?? tool.metrics?.organicVisits;
+  return (
+    getChannelVisits(tool, "organicSearch") ??
+    tool.trafficMetrics?.organicSearchVisits ??
+    tool.metrics?.organicVisits
+  );
 }
 
 /**
@@ -249,7 +334,10 @@ export function categoryLabel(cat: string): string {
  * 付费搜索为 0 时比值恒等于 100%，与直接访问/引荐/社媒无关，不能当作全渠道占比。
  */
 export function getOrganicShare(tool: AITool): number | undefined {
-  if (tool.metrics?.organicShare !== undefined) return tool.metrics.organicShare;
+  // 渠道结构里的 organicSearch 是同一份全渠道口径，与「渠道结构」那块天然一致
+  const fromChannel = getChannelShare(tool, "organicSearch");
+  if (fromChannel !== undefined) return fromChannel;
+  if (tool.metrics?.organicShare !== undefined) return toPercent(tool.metrics.organicShare);
   const tm = tool.trafficMetrics;
   if (tm?.organicSearchVisits !== undefined && tm?.monthlyVisits) {
     return (tm.organicSearchVisits / tm.monthlyVisits) * 100;

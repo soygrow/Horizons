@@ -1,6 +1,7 @@
 import type { AITool } from "@horizons/shared";
 import { formatCount } from "./format";
-import { pendingTrendFlags } from "./data";
+// 别名避免与本文件里的局部变量 countryLabel（国名文本）撞名
+import { channelSharesPct, countryLabel as regionName, pendingTrendFlags, toPercent } from "./data";
 
 function fmtDuration(sec?: number | null): string {
   if (sec === null || sec === undefined) return "0s";
@@ -74,11 +75,13 @@ export function buildSiteMarkdown(tool: AITool): string {
   }
 
   if (tool.channelShares && Object.keys(tool.channelShares).length) {
-    L.push("## 流量结构");
+    L.push("## 渠道结构");
     L.push("");
+    // 原始占比是 0~1 小数，直接拼 % 会输出「0.42%」
+    const shares = channelSharesPct(tool);
     for (const [key, label] of CHANNEL_LABELS) {
-      const v = tool.channelShares[key as keyof typeof tool.channelShares];
-      if (v !== undefined) L.push(`- ${label}: ${v}%`);
+      const pct = shares[key];
+      if (pct !== undefined) L.push(`- ${label}: ${pct}%`);
     }
     L.push("");
   }
@@ -86,7 +89,9 @@ export function buildSiteMarkdown(tool: AITool): string {
   if (tool.geoDistribution?.length) {
     L.push("## 主要国家");
     L.push("");
-    for (const g of tool.geoDistribution) L.push(`- ${g.country}: ${g.share}%`);
+    for (const g of tool.geoDistribution) {
+      L.push(`- ${regionName(g.country) ?? g.country}: ${toPercent(g.share) ?? 0}%`);
+    }
     L.push("");
   }
 
@@ -105,7 +110,6 @@ export function buildSiteMarkdown(tool: AITool): string {
     L.push("");
     if (tool.ranks.global) L.push(`- 全球排名: 第 ${tool.ranks.global.toLocaleString("en-US")} 名`);
     if (tool.ranks.country) L.push(`- 国内排名: 第 ${tool.ranks.country.toLocaleString("en-US")} 名`);
-    if (tool.ranks.category) L.push(`- 行业排名: 第 ${tool.ranks.category.toLocaleString("en-US")} 名`);
     L.push("");
   }
 

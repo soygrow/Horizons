@@ -5,14 +5,14 @@ import Stat from "../Stat.astro";
 import InsightCard from "../InsightCard.astro";
 import Badge from "../Badge.astro";
 import { getDict, format as tf } from "../../../lib/i18n";
+import { formatDate, formatMom, formatNum, momCapHint, isLaunchPlausible } from "../../../lib/format";
 import {
-  formatCount,
-  formatDate,
-  formatMom,
-  momCapHint,
-  isLaunchPlausible,
-} from "../../../lib/format";
-import { getOrganicShare, getOrganicVisits, getLaunchedAt } from "../../../lib/data";
+  countryLabel,
+  getChannelVisits,
+  getLaunchedAt,
+  getOrganicShare,
+  getOrganicVisits,
+} from "../../../lib/data";
 
 interface Props {
   tool: Record<string, any>;
@@ -43,8 +43,19 @@ const organicVisits = getOrganicVisits(tool as never);
 const organicShareRaw = getOrganicShare(tool as never);
 const organicShare =
   organicShareRaw !== undefined ? Math.round(organicShareRaw * 10) / 10 : undefined;
-/** 所属国家：国名优先，其次 ISO 代码，最后回退地域分布里占比最高的一项 */
-const country = m?.countryName ?? m?.country ?? (tool.geoDistribution?.[0]?.country as string | undefined);
+
+/**
+ * 直接访问量 = 月访问量 × direct 渠道占比。
+ * 库里存的 trafficMetrics.directVisits 是「0.42 当百分数」算出来的（小 100 倍），
+ * 按占比重算才能和渠道结构那块对上，也才有 8,073 这个量级。
+ */
+const directVisits =
+  getChannelVisits(tool as never, "direct") ?? (tm?.directVisits as number | undefined);
+
+/** 所属国家：ISO 码转中文（ID → 印度尼西亚），无代码时回退采集到的国名 */
+const country =
+  countryLabel(m?.country ?? (tool.geoDistribution?.[0]?.country as string | undefined)) ??
+  m?.countryName;
 
 /** 上线时间：Wayback 首快照优先，回退域名注册时间；早于 2017 视为域名前史 */
 const launchedRaw: string | undefined = getLaunchedAt(tool as never);
@@ -96,7 +107,7 @@ const aiCards: { k: string; v?: string; badge?: string }[] = [
   <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
     <Stat
       label={dict.metrics.monthlyVisits}
-      value={visits !== undefined ? formatCount(visits) : undefined}
+      value={visits !== undefined ? formatNum(visits) : undefined}
     />
     <Stat
       label={dict.metrics.monthlyVisitsGrowth}
@@ -106,7 +117,7 @@ const aiCards: { k: string; v?: string; badge?: string }[] = [
     />
     <Stat
       label={dict.metrics.organicSearchVisits}
-      value={organicVisits !== undefined ? formatCount(organicVisits) : undefined}
+      value={organicVisits !== undefined ? formatNum(organicVisits) : undefined}
     />
     <Stat
       label={dict.metrics.organicShare}
@@ -115,14 +126,14 @@ const aiCards: { k: string; v?: string; badge?: string }[] = [
     />
     <Stat
       label={dict.metrics.directVisits}
-      value={tm?.directVisits !== undefined ? formatCount(tm.directVisits) : undefined}
+      value={directVisits !== undefined ? formatNum(directVisits) : undefined}
     />
     <Stat
       label={dict.metrics.country}
       value={country}
       hint={
         ranks?.country
-          ? `${dict.traffic.countryRank} #${formatCount(ranks.country)}`
+          ? `${dict.traffic.countryRank} #${formatNum(ranks.country)}`
           : "Similarweb 判定的主要流量来源国家"
       }
     />

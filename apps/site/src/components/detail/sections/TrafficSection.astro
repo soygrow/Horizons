@@ -9,8 +9,8 @@ import NoData from "../NoData.astro";
 import Pending from "../Pending.astro";
 import TrafficTrendChart from "../TrafficTrendChart.astro";
 import { getDict, format as tf } from "../../../lib/i18n";
-import { formatCount } from "../../../lib/format";
-import { pendingTrendFlags } from "../../../lib/data";
+import { formatNum } from "../../../lib/format";
+import { channelSharesPct, countryLabel, pendingTrendFlags, toPercent } from "../../../lib/data";
 
 interface Props {
   tool: Record<string, any>;
@@ -24,7 +24,11 @@ const geo: any[] = tool.geoDistribution ?? [];
 const ranks = tool.ranks;
 const keywords: any[] = tool.keywords ?? [];
 const td = tool.trafficDecrypt;
-const channelShares: Record<string, number> = tool.channelShares ?? {};
+/**
+ * 渠道占比整份归一化成百分数。
+ * 用整份数据的量级判定口径（九项和≈1 即小数），逐项猜会把「真实 1%」放成 100%。
+ */
+const channelShares: Record<string, number> = channelSharesPct(tool as never);
 const seo = tool.seoStanding;
 const ai = tool.aiTraffic;
 const eng = tool.engagement;
@@ -51,10 +55,11 @@ const pendingFlags = pendingTrendFlags(trend);
 const collectedPoints = trend.filter((_, i) => !pendingFlags[i] && (trend[i]?.total ?? 0) > 0);
 const pendingMonths = Math.max(0, TREND_MONTHS - collectedPoints.length, pendingFlags.filter(Boolean).length);
 
+// channelShares 已是百分数，直接按占比降序画九根条
 const channelItems = Object.entries(channelShares)
   .map(([key, value]) => ({
     label: (dict.traffic.channels as Record<string, string>)[key] ?? key,
-    value: value ?? 0,
+    value,
   }))
   .sort((a, b) => b.value - a.value);
 
@@ -135,7 +140,7 @@ const aiProviders = [
             <div class="flex flex-col gap-4">
               {ai.visits !== undefined ? (
                 <p class="text-sm text-ink-secondary">
-                  {dict.traffic.aiVisits}：{formatCount(ai.visits)}
+                  {dict.traffic.aiVisits}：{formatNum(ai.visits)}
                 </p>
               ) : null}
               {aiProviders.some((p) => p.value !== undefined) ? (
@@ -182,7 +187,7 @@ const aiProviders = [
               <div>
                 <span class="text-xs text-ink-muted">{dict.metrics.monthlyPageviews}</span>
                 <p class="text-xl font-semibold tabular-nums text-ink">
-                  {tm?.monthlyPageviews !== undefined ? formatCount(tm.monthlyPageviews) : "—"}
+                  {tm?.monthlyPageviews !== undefined ? formatNum(tm.monthlyPageviews) : "—"}
                 </p>
               </div>
             </div>
@@ -195,7 +200,13 @@ const aiProviders = [
       <SubCard title={dict.traffic.countries}>
         {
           geo.length ? (
-            <Bars items={geo.map((g: any) => ({ label: g.country, value: g.share, suffix: "%" }))} />
+            <Bars
+              items={geo.map((g: any) => ({
+                label: countryLabel(g.country) ?? g.country,
+                value: toPercent(g.share) ?? 0,
+                suffix: "%",
+              }))}
+            />
           ) : (
             <NoData />
           )
@@ -210,11 +221,11 @@ const aiProviders = [
         ) : null}
         <div class="flex flex-col gap-5">
           {/*
-            三格恒显示，缺值给「—」。
-            行业排名在低流量站经常为空，隐藏整格会让人以为是漏渲染；
-            摆一个「—」至少说明「查了，但没有」。
+            两格恒显示，缺值给「—」。
+            行业（类目）排名已去掉：Similarweb 对低流量站基本不返回 category，
+            实测一条都没有，摆一格「—」只占版面不提供信息。
           */}
-          <div class="grid grid-cols-3 gap-4">
+          <div class="grid grid-cols-2 gap-4">
             <div class="rounded-lg border border-border p-4">
               <span class="text-xs text-ink-muted">{dict.traffic.globalRank}</span>
               <p class="text-2xl font-semibold tabular-nums text-ink">
@@ -225,12 +236,6 @@ const aiProviders = [
               <span class="text-xs text-ink-muted">{dict.traffic.countryRank}</span>
               <p class="text-2xl font-semibold tabular-nums text-ink">
                 {ranks?.country ? ranks.country.toLocaleString("en-US") : "—"}
-              </p>
-            </div>
-            <div class="rounded-lg border border-border p-4">
-              <span class="text-xs text-ink-muted">{dict.traffic.categoryRank}</span>
-              <p class="text-2xl font-semibold tabular-nums text-ink">
-                {ranks?.category ? ranks.category.toLocaleString("en-US") : "—"}
               </p>
             </div>
           </div>
@@ -270,7 +275,7 @@ const aiProviders = [
                             {s.position ? `#${s.position}` : dict.traffic.serpNotRanked}
                           </td>
                           <td class="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">
-                            {s.volume ? formatCount(s.volume) : "—"}
+                            {s.volume ? formatNum(s.volume) : "—"}
                           </td>
                         </tr>
                       ))}
@@ -309,7 +314,7 @@ const aiProviders = [
                       <tr class="border-t border-border">
                         <td class="py-2.5 text-ink">{k.term}</td>
                         <td class="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">
-                          {k.volume ? formatCount(k.volume) : "—"}
+                          {k.volume ? formatNum(k.volume) : "—"}
                         </td>
                       </tr>
                     ))}
@@ -320,7 +325,7 @@ const aiProviders = [
           }
 
           {
-            !seo?.samples?.length && !keywords.length && !ranks?.global && !ranks?.country && !ranks?.category ? (
+            !seo?.samples?.length && !keywords.length && !ranks?.global && !ranks?.country ? (
               <NoData />
             ) : null
           }
