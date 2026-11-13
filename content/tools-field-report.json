@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-13T12:30:32.604Z",
-  "total": 12,
+  "generatedAt": "2026-11-13T12:53:21.968Z",
+  "total": 13,
   "itemsWithIssues": 6,
   "dimensions": [
     {
@@ -10,7 +10,7 @@
       "missingRatio": 0,
       "missingDomains": [],
       "invalid": 6,
-      "invalidRatio": 50,
+      "invalidRatio": 46,
       "invalidSamples": [
         {
           "domain": "claudeduet.com",
@@ -52,7 +52,7 @@
       "key": "trafficMetrics.monthlyVisits",
       "label": "月访问量",
       "missing": 2,
-      "missingRatio": 17,
+      "missingRatio": 15,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -64,11 +64,12 @@
     {
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
-      "missing": 3,
-      "missingRatio": 25,
+      "missing": 4,
+      "missingRatio": 31,
       "missingDomains": [
-        "jonzi.ai",
+        "kixy.ai",
         "claudeduet.com",
+        "jonzi.ai",
         "wanaka.app"
       ],
       "invalid": 0,
@@ -79,7 +80,7 @@
       "key": "metrics.registeredAt",
       "label": "域名注册时间",
       "missing": 9,
-      "missingRatio": 75,
+      "missingRatio": 69,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -96,12 +97,11 @@
       "invalidSamples": []
     },
     {
-      "key": "searchTraffic.organic",
+      "key": "trafficMetrics.organicSearchVisits",
       "label": "自然搜索流量",
-      "missing": 12,
-      "missingRatio": 100,
+      "missing": 11,
+      "missingRatio": 85,
       "missingDomains": [
-        "jonzi.ai",
         "agenthunt.io",
         "alsona.com",
         "claudeduet.com",
@@ -122,7 +122,7 @@
       "key": "geoDistribution",
       "label": "地区分布",
       "missing": 2,
-      "missingRatio": 17,
+      "missingRatio": 15,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -134,35 +134,13 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 10,
-      "missingRatio": 83,
+      "missing": 11,
+      "missingRatio": 85,
       "missingDomains": [
-        "jonzi.ai",
+        "kixy.ai",
         "agenthunt.io",
         "claudeduet.com",
-        "maxma.com",
-        "quest.app",
-        "rerun.io",
-        "teamily.com",
-        "tobira.ai",
-        "wanaka.app",
-        "xmind.com"
-      ],
-      "invalid": 0,
-      "invalidRatio": 0,
-      "invalidSamples": []
-    },
-    {
-      "key": "backlinks.total",
-      "label": "外链概览",
-      "missing": 12,
-      "missingRatio": 100,
-      "missingDomains": [
         "jonzi.ai",
-        "agenthunt.io",
-        "alsona.com",
-        "claudeduet.com",
-        "cliputils.com",
         "maxma.com",
         "quest.app",
         "rerun.io",
@@ -179,7 +157,7 @@
       "key": "observations.competitors",
       "label": "竞品",
       "missing": 5,
-      "missingRatio": 42,
+      "missingRatio": 38,
       "missingDomains": [
         "claudeduet.com",
         "quest.app",
@@ -195,11 +173,11 @@
       "key": "pricing",
       "label": "定价",
       "missing": 10,
-      "missingRatio": 83,
+      "missingRatio": 77,
       "missingDomains": [
-        "jonzi.ai",
         "agenthunt.io",
         "claudeduet.com",
+        "jonzi.ai",
         "maxma.com",
         "quest.app",
         "rerun.io",
@@ -216,7 +194,7 @@
       "key": "pageStructure",
       "label": "页面结构",
       "missing": 9,
-      "missingRatio": 75,
+      "missingRatio": 69,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -236,7 +214,7 @@
       "key": "screenshotDesktopUrl",
       "label": "官网截图",
       "missing": 10,
-      "missingRatio": 83,
+      "missingRatio": 77,
       "missingDomains": [
         "agenthunt.io",
         "alsona.com",
@@ -257,7 +235,7 @@
       "key": "siteAudit",
       "label": "站点体检",
       "missing": 9,
-      "missingRatio": 75,
+      "missingRatio": 69,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -277,7 +255,7 @@
       "key": "aiInsight",
       "label": "AI 解读",
       "missing": 9,
-      "missingRatio": 75,
+      "missingRatio": 69,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -297,18 +275,15 @@
   "entryIssues": [],
   "items": [
     {
-      "domain": "jonzi.ai",
-      "name": "Reels schneiden lassen mit KI",
+      "domain": "kixy.ai",
+      "name": "Kixy",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 19222,
-      "gapCount": 5,
+      "monthlyVisits": 71843,
+      "gapCount": 2,
       "gaps": [
         "trafficMetrics.monthlyVisitsGrowth",
-        "searchTraffic.organic",
-        "keywords",
-        "backlinks.total",
-        "pricing"
+        "keywords"
       ],
       "issueCount": 0,
       "issues": []
@@ -319,12 +294,11 @@
       "tier": "watch",
       "stage": "approved",
       "monthlyVisits": 9792,
-      "gapCount": 9,
+      "gapCount": 8,
       "gaps": [
         "metrics.registeredAt",
-        "searchTraffic.organic",
+        "trafficMetrics.organicSearchVisits",
         "keywords",
-        "backlinks.total",
         "pricing",
         "pageStructure",
         "screenshotDesktopUrl",
@@ -340,10 +314,9 @@
       "tier": "core",
       "stage": "enriched",
       "monthlyVisits": 12513,
-      "gapCount": 3,
+      "gapCount": 2,
       "gaps": [
-        "searchTraffic.organic",
-        "backlinks.total",
+        "trafficMetrics.organicSearchVisits",
         "screenshotDesktopUrl"
       ],
       "issueCount": 0,
@@ -354,15 +327,14 @@
       "name": "Claude Duet",
       "tier": "watch",
       "stage": "approved",
-      "gapCount": 13,
+      "gapCount": 12,
       "gaps": [
         "trafficMetrics.monthlyVisits",
         "trafficMetrics.monthlyVisitsGrowth",
         "metrics.registeredAt",
-        "searchTraffic.organic",
+        "trafficMetrics.organicSearchVisits",
         "geoDistribution",
         "keywords",
-        "backlinks.total",
         "observations.competitors",
         "pricing",
         "pageStructure",
@@ -385,10 +357,24 @@
       "tier": "core",
       "stage": "enriched",
       "monthlyVisits": 58351,
-      "gapCount": 2,
+      "gapCount": 1,
       "gaps": [
-        "searchTraffic.organic",
-        "backlinks.total"
+        "trafficMetrics.organicSearchVisits"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "jonzi.ai",
+      "name": "Reels schneiden lassen mit KI",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 19222,
+      "gapCount": 3,
+      "gaps": [
+        "trafficMetrics.monthlyVisitsGrowth",
+        "keywords",
+        "pricing"
       ],
       "issueCount": 0,
       "issues": []
@@ -399,12 +385,11 @@
       "tier": "core",
       "stage": "approved",
       "monthlyVisits": 89336,
-      "gapCount": 9,
+      "gapCount": 8,
       "gaps": [
         "metrics.registeredAt",
-        "searchTraffic.organic",
+        "trafficMetrics.organicSearchVisits",
         "keywords",
-        "backlinks.total",
         "pricing",
         "pageStructure",
         "screenshotDesktopUrl",
@@ -426,12 +411,11 @@
       "tier": "watch",
       "stage": "approved",
       "monthlyVisits": 1317,
-      "gapCount": 10,
+      "gapCount": 9,
       "gaps": [
         "metrics.registeredAt",
-        "searchTraffic.organic",
+        "trafficMetrics.organicSearchVisits",
         "keywords",
-        "backlinks.total",
         "observations.competitors",
         "pricing",
         "pageStructure",
@@ -454,12 +438,11 @@
       "tier": "core",
       "stage": "approved",
       "monthlyVisits": 54018,
-      "gapCount": 9,
+      "gapCount": 8,
       "gaps": [
         "metrics.registeredAt",
-        "searchTraffic.organic",
+        "trafficMetrics.organicSearchVisits",
         "keywords",
-        "backlinks.total",
         "pricing",
         "pageStructure",
         "screenshotDesktopUrl",
@@ -481,12 +464,11 @@
       "tier": "core",
       "stage": "approved",
       "monthlyVisits": 4244,
-      "gapCount": 10,
+      "gapCount": 9,
       "gaps": [
         "metrics.registeredAt",
-        "searchTraffic.organic",
+        "trafficMetrics.organicSearchVisits",
         "keywords",
-        "backlinks.total",
         "observations.competitors",
         "pricing",
         "pageStructure",
@@ -503,12 +485,11 @@
       "tier": "core",
       "stage": "approved",
       "monthlyVisits": 2949,
-      "gapCount": 10,
+      "gapCount": 9,
       "gaps": [
         "metrics.registeredAt",
-        "searchTraffic.organic",
+        "trafficMetrics.organicSearchVisits",
         "keywords",
-        "backlinks.total",
         "observations.competitors",
         "pricing",
         "pageStructure",
@@ -524,15 +505,14 @@
       "name": "Wanaka Studio",
       "tier": "watch",
       "stage": "approved",
-      "gapCount": 13,
+      "gapCount": 12,
       "gaps": [
         "trafficMetrics.monthlyVisits",
         "trafficMetrics.monthlyVisitsGrowth",
         "metrics.registeredAt",
-        "searchTraffic.organic",
+        "trafficMetrics.organicSearchVisits",
         "geoDistribution",
         "keywords",
-        "backlinks.total",
         "observations.competitors",
         "pricing",
         "pageStructure",
@@ -555,12 +535,11 @@
       "tier": "core",
       "stage": "approved",
       "monthlyVisits": 1109852,
-      "gapCount": 9,
+      "gapCount": 8,
       "gaps": [
         "metrics.registeredAt",
-        "searchTraffic.organic",
+        "trafficMetrics.organicSearchVisits",
         "keywords",
-        "backlinks.total",
         "pricing",
         "pageStructure",
         "screenshotDesktopUrl",
