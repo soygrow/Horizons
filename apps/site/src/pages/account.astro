@@ -83,6 +83,30 @@ const oppTitles = Object.fromEntries(allOpportunities().map((o) => [o.slug, o.ti
 
         <p id="acct-notice" class="mt-4 hidden rounded-lg border border-warning/30 bg-warning-soft px-3 py-2 text-xs leading-relaxed text-ink-secondary"></p>
 
+        <!-- 有笔没付完的订单：留两个出口，别让用户只剩「重新下单」这一条路 -->
+        <div
+          id="acct-pending"
+          class="mt-4 hidden flex-wrap items-center gap-3 rounded-lg border border-border bg-surface-2 px-3 py-2.5"
+        >
+          <p id="acct-pending-text" class="min-w-0 flex-1 text-xs leading-relaxed text-ink-secondary">
+            有一笔订单还没付完，继续支付即可完成，不需要重新下单。
+          </p>
+          <button
+            id="acct-pending-pay"
+            type="button"
+            class="shrink-0 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            继续支付
+          </button>
+          <button
+            id="acct-pending-drop"
+            type="button"
+            class="shrink-0 text-xs text-ink-muted transition hover:text-ink"
+          >
+            放弃这笔
+          </button>
+        </div>
+
         <!-- 未订阅：选方案 -->
         <div id="acct-plans" class="mt-5 grid gap-3 sm:grid-cols-2" style="display: none">
           <div class="rounded-xl border border-border p-4">

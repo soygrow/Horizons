@@ -15,6 +15,8 @@ export interface PendingOrder {
   transactionId: string;
   /** 写入时刻，用来判断这笔是不是陈到不该再打扰用户 */
   at: number;
+  /** 展示用的方案名（「月付」「年付一次性」等），仅为了让提示能说清是哪一笔 */
+  plan?: string;
 }
 
 function parse(raw: string | null): PendingOrder | null {
@@ -25,6 +27,7 @@ function parse(raw: string | null): PendingOrder | null {
     return {
       transactionId: value.transactionId,
       at: typeof value.at === "number" ? value.at : 0,
+      plan: typeof value.plan === "string" ? value.plan : undefined,
     };
   } catch {
     return null;
@@ -50,8 +53,8 @@ export function readPending(): PendingOrder | null {
   return value;
 }
 
-export function writePending(transactionId: string): void {
-  localStorage.setItem(KEY, JSON.stringify({ transactionId, at: Date.now() }));
+export function writePending(transactionId: string, plan?: string): void {
+  localStorage.setItem(KEY, JSON.stringify({ transactionId, at: Date.now(), plan }));
 }
 
 export function clearPending(): void {

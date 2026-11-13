@@ -180,6 +180,10 @@ export function initAccount() {
     subNext: document.getElementById("acct-sub-next"),
     cancel: document.getElementById("acct-cancel"),
     resume: document.getElementById("acct-resume"),
+    pending: document.getElementById("acct-pending"),
+    pendingText: document.getElementById("acct-pending-text"),
+    pendingPay: document.getElementById("acct-pending-pay"),
+    pendingDrop: document.getElementById("acct-pending-drop"),
   };
   if (!els.main) return;
 
@@ -203,9 +207,50 @@ export function initAccount() {
       btn.disabled = next || btn.dataset.enabled !== "1";
       btn.classList.toggle("opacity-60", next);
     }
-    for (const btn of [els.cancel, els.resume]) {
+    for (const btn of [els.cancel, els.resume, els.pendingPay]) {
       if (btn instanceof HTMLButtonElement) btn.disabled = next;
     }
+  }
+
+  /** 「有一笔没付完」的提示条：默认 hidden，显示时换成 flex 才不会和 hidden 打架 */
+  function showPendingBanner(plan?: string) {
+    if (!els.pending || !els.pendingText) return;
+    const label = plan ? `这笔${plan}订单` : "这笔订单";
+    els.pendingText.textContent = `你有${label}还没付完，继续支付即可完成，不需要重新下单。`;
+    els.pending.classList.remove("hidden");
+    els.pending.classList.add("flex");
+  }
+
+  function hidePendingBanner() {
+    if (!els.pending) return;
+    els.pending.classList.add("hidden");
+    els.pending.classList.remove("flex");
+  }
+
+  /**
+   * 拉起 overlay 付一笔已存在的 transaction。
+   * 返回 false 表示 Paddle.js 没起来，调用方自己决定退化为跳链接还是报错。
+   */
+  async function openOverlay(
+    transactionId: string,
+    clientToken: string | null | undefined,
+    env: PaddleEnv | undefined,
+    onClosed?: () => void,
+  ): Promise<boolean> {
+    if (!clientToken) return false;
+
+    const ready = await loadPaddleJs(
+      env ?? "sandbox",
+      clientToken,
+      // 付完了要强制查一次，不能被「这笔查过了」的短路挡住
+      () => void settlePending(transactionId, true),
+      onClosed,
+    );
+    const paddle = getPaddle();
+    if (!ready || !paddle) return false;
+
+    paddle.Checkout.open({ transactionId, settings: { displayMode: "overlay" } });
+    return true;
   }
 
   function renderProfile(user: SessionUser) {
@@ -623,9 +668,9 @@ export function initAccount() {
   }
 
   /** 从 Paddle 结算页回来后：先主动查一次（兜底），再短轮询等 webhook 落库 */
-  async function settlePending(transactionId: string) {
-    // 这笔已经查过一轮：不再空等，留着 pending 让定价页给出「继续支付」
-    if (sessionStorage.getItem(SETTLE_TRIED_KEY) === transactionId) return;
+  async function settlePending(transactionId: string, force = false) {
+    // 这笔已经查过一轮：不再空等，留着 pending 让「继续支付」还有用
+    if (!force && sessionStorage.getItem(SETTLE_TRIED_KEY) === transactionId) return;
     sessionStorage.setItem(SETTLE_TRIED_KEY, transactionId);
 
     showNotice("正在确认支付结果，通常几秒内完成，请不要关闭页面…");
@@ -639,16 +684,21 @@ export function initAccount() {
       if (ok) {
         clearPending();
         sessionStorage.removeItem(SETTLE_TRIED_KEY);
+        hidePendingBanner();
         showNotice("订阅已生效，Pro 权益已开通。");
         return;
       }
       await sleep(POLL_INTERVAL_MS);
     }
 
-    // 不删 pending：没付完的人回定价页还能续上这笔，避免重复建单
+    // 不删 pending：没付完的人还能续上这笔，避免重复建单
     showNotice(
-      "暂未查到支付结果。若银行已扣款，权益会在几分钟内自动开通；若未完成支付，可回定价页继续这笔订单。",
+      "暂未查到支付结果。若银行已扣款，权益会在几分钟内自动开通；若未完成支付，可点上方「继续支付」完成这笔订单。",
     );
+
+    // 确认没付成，把出口亮出来，别让用户只剩重新下单
+    const still = readPending();
+    if (still) showPendingBanner(still.plan);
   }
 
   function wireBuyButtons() {
@@ -698,19 +748,21 @@ export function initAccount() {
         }
 
         const { transactionId } = res.data;
-        writePending(transactionId);
+        const planLabel = `${plan === "month" ? "月付" : "年付"}${autoRenew ? "" : "一次性"}`;
+        // 连方案名一起记下，让「继续支付」的提示能说清是哪一笔
+        writePending(transactionId, planLabel);
 
-        // 优先 overlay：不离开站点，付完就地轮询权益
-        if (res.data.clientToken) {
-          const ready = await loadPaddleJs(res.data.paddleEnv ?? "sandbox", res.data.clientToken, () => {
-            void settlePending(transactionId);
-          });
-          const paddle = getPaddle();
-          if (ready && paddle) {
-            setBusy(false);
-            paddle.Checkout.open({ transactionId, settings: { displayMode: "overlay" } });
-            return;
-          }
+        // 优先 overlay：不离开站点，付完就地轮询权益；
+        // 中途关掉就把「继续支付」亮出来，别让人以为钱白付了
+        const opened = await openOverlay(
+          transactionId,
+          res.data.clientToken,
+          res.data.paddleEnv,
+          () => showPendingBanner(planLabel),
+        );
+        if (opened) {
+          setBusy(false);
+          return;
         }
 
         // 兜底：跳 Paddle 返回的结算链接（需后台配好默认支付链接）
@@ -766,6 +818,78 @@ export function initAccount() {
     });
   }
 
+  /** 账户页的「继续支付 / 放弃这笔」 */
+  function wirePendingBanner() {
+    els.pendingPay?.addEventListener("click", async () => {
+      if (busy) return;
+
+      const pending = readPending();
+      if (!pending) {
+        hidePendingBanner();
+        showNotice("这笔订单的记录已过期，请重新选择方案。");
+        return;
+      }
+
+      setBusy(true);
+      hideNotice();
+
+      const res = await postJson<{
+        transactionId: string;
+        status: string;
+        completed: boolean;
+        checkoutUrl: string | null;
+        clientToken?: string | null;
+        paddleEnv?: PaddleEnv;
+        error?: string;
+      }>("/api/billing/checkout/resume", { transactionId: pending.transactionId });
+
+      // 已取消、已过期、或不属于当前账号：本地记录就是废的，清掉免得反复纠缠
+      if (res.status === 409 || res.status === 400 || res.status === 403) {
+        clearPending();
+        hidePendingBanner();
+        setBusy(false);
+        showNotice("这笔订单已失效，请重新选择方案下单。");
+        return;
+      }
+
+      if (!res.ok || !res.data?.transactionId) {
+        setBusy(false);
+        showNotice("暂时无法继续这笔订单，请稍后重试或邮件联系我们。");
+        return;
+      }
+
+      // 其实已经付过了：不用再拉起结算页，直接等权益落库
+      if (res.data.completed) {
+        hidePendingBanner();
+        setBusy(false);
+        await settlePending(res.data.transactionId, true);
+        return;
+      }
+
+      const opened = await openOverlay(
+        res.data.transactionId,
+        res.data.clientToken,
+        res.data.paddleEnv,
+        () => showPendingBanner(pending.plan),
+      );
+      setBusy(false);
+      if (opened) return;
+
+      if (res.data.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl;
+        return;
+      }
+
+      showNotice("结算页未能打开，请刷新后重试，或联系 woshizhanghao1125@gmail.com。");
+    });
+
+    els.pendingDrop?.addEventListener("click", () => {
+      clearPending();
+      hidePendingBanner();
+      showNotice("已放弃这笔订单，可随时重新下单。");
+    });
+  }
+
   async function main() {
     const me = await getJson<{ user: SessionUser | null }>("/api/me");
     els.loading?.classList.add("hidden");
@@ -781,17 +905,26 @@ export function initAccount() {
     wireSubscriptionActions();
     wireFavoriteRemoval();
     wireDoingLeave();
+    wirePendingBanner();
     void loadDoing();
     void loadFavorites();
 
     const billing = await refresh();
 
     const pending = readPending();
-    if (pending && billing) {
-      // 只对刚产生的订单做自动确认，陈旧的留给定价页的「继续支付」入口处理
-      if (Date.now() - pending.at < SETTLE_FRESH_MS) {
-        await settlePending(pending.transactionId);
-      }
+    if (!pending) return;
+
+    if (billing?.plan === "pro") {
+      // 已经是 Pro，残留记录只会误导，直接清掉
+      clearPending();
+      return;
+    }
+
+    if (Date.now() - pending.at < SETTLE_FRESH_MS) {
+      // 刚新建的单多半是「付完刚跳回来」：先查一轮，查不到再由 settlePending 亮出「继续支付」
+      void settlePending(pending.transactionId);
+    } else {
+      showPendingBanner(pending.plan);
     }
   }
 

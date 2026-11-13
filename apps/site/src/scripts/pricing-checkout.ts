@@ -258,7 +258,10 @@ export function initPricingCheckout() {
 
         // 先记下这笔，关掉 overlay 也能回来续，而不是重新建单。
         // 换计划时这里会直接覆盖：旧单留在 Paddle 里不可再支付，本地的「继续支付」也就自然指向新单
-        writePending(data.transactionId);
+        writePending(
+          data.transactionId,
+          `${plan === "month" ? "月付" : "年付"}${autoRenew ? "" : "一次性"}`,
+        );
 
         // 优先 overlay：停在定价页完成支付，付完再回账户页看权益
         const opened = await openOverlay(data, () => askForResume(data.transactionId));
