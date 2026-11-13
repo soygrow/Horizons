@@ -24,7 +24,7 @@ const VISIT_CAP = 100_000;
 const clamp = (n: number, min = 0, max = 100) => Math.min(max, Math.max(min, n));
 const round1 = (n: number) => Math.round(n * 10) / 10;
 
-export type ToolScoreKey = "scale" | "growth" | "seo" | "heat" | "dr" | "opp";
+export type ToolScoreKey = "scale" | "growth" | "seo" | "heat" | "rank" | "opp";
 
 export interface ToolScorePart {
   key: ToolScoreKey;
@@ -72,7 +72,7 @@ export function computeToolScore(tool: AITool): ToolScore {
   const growth = momGrowthOf(tool);
   const share = organicShareOf(tool);
   const heat = typeof tool.heatScore === "number" ? tool.heatScore : undefined;
-  const dr = tool.metrics?.domainWeight;
+  const grank = tool.ranks?.global;
   const opp = tool.opportunity?.score;
 
   const raw: Omit<ToolScorePart, "points">[] = [];
@@ -126,22 +126,21 @@ export function computeToolScore(tool: AITool): ToolScore {
     });
   }
 
-  /* 5. 域名权重 10：DR 直接取值；回退的全球排名按对数反比换算，方向不能反 */
-  if (dr !== undefined) {
-    const label = tool.metrics?.domainWeightLabel;
-    const isRank = label === "全球排名";
-    // 全球排名越小越强：第 1 名 100 分，每放大 10 倍扣 20 分。
+  /*
+   * 5. 全球排名 10：原来用 Ahrefs/DFS 的 DR，数据源下线后存量值会永久冻结，
+   *    改用 SimilarWeb 全球排名。排名越小越强，所以按对数反比换算，方向不能反。
+   */
+  if (typeof grank === "number" && grank > 0) {
+    // 第 1 名 100 分，每放大 10 倍扣 20 分。
     // 排名 10 万以外换算为负，按「缺失维度不罚底」原则不计入。
-    const normalized = isRank ? 100 - 20 * Math.log10(Math.max(dr, 1)) : dr;
+    const normalized = 100 - 20 * Math.log10(Math.max(grank, 1));
     if (normalized > 0) {
       raw.push({
-        key: "dr",
-        label: isRank ? "全球排名" : "域名权重",
+        key: "rank",
+        label: "全球排名",
         weight: 10,
         value: round1(clamp(normalized)),
-        note: isRank
-          ? `SimilarWeb 全球排名第 ${dr.toLocaleString("en-US")}`
-          : `${dr} ${label ?? "DR"}`,
+        note: `SimilarWeb 全球排名第 ${grank.toLocaleString("en-US")}`,
       });
     }
   }

@@ -19,8 +19,10 @@ export interface ToolRow {
   org: number | null;
   /** 规模标签（★ GitHub Stars / ▲ PH Upvotes），无数据为 null */
   scale: string | null;
-  dr: number | null;
-  drLabel: string | null;
+  /** SimilarWeb 全球排名（越小越强）；原 DR 列，DFS 下线后改放排名 */
+  grank: number | null;
+  /** 上面那格的口径说明，null 表示无值 */
+  grankLabel: string | null;
   heat: number;
   growth: number | null;
   spark: number[] | null;

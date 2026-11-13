@@ -570,7 +570,7 @@ export function initAccount() {
     name: string;
     visits: number | null;
     mom: number | null;
-    dr: number | null;
+    grank: number | null;
   }
 
   let toolsIndex: Map<string, ToolIndexRow> | null = null;
@@ -611,7 +611,7 @@ export function initAccount() {
       const meta = [t.domain];
       if (typeof t.visits === "number") meta.push(`月访问 ${formatCount(t.visits)}`);
       if (typeof t.mom === "number") meta.push(`环比 ${formatMom(t.mom)}`);
-      if (typeof t.dr === "number") meta.push(`DR ${t.dr}`);
+      if (typeof t.grank === "number") meta.push(`全球排名 #${t.grank.toLocaleString("en-US")}`);
 
       return `<div class="flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-3.5 transition hover:border-primary/40">
         <a href="/tools/${encodeURIComponent(t.domain)}" class="min-w-0 flex-1">

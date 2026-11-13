@@ -31,7 +31,6 @@ import {
   getMoMGrowth,
   getOrganicVisits,
   getOrganicShare,
-  getDomainWeight,
   getLaunchedAt,
   derivePricingModel,
   repoScore,
@@ -128,9 +127,13 @@ function tally(values: (string | null | undefined)[]) {
 
 /** AI 工具榜列表行（客户端筛选/渲染所需字段 + 预渲染 HTML） */
 function toToolRow(t: (typeof tools)[number], rank: number): ToolRow {
-  const dw = getDomainWeight(t);
-  // 上游会把缺失的 DR 写成字符串 "n/a"，只认有限数值，否则按无数据处理
-  const drValue = typeof dw.value === "number" && Number.isFinite(dw.value) ? dw.value : null;
+  /**
+   * 这一列原来放 Ahrefs/DFS 的 DR，数据源已下线，存量值会永久冻结在旧快照上，
+   * 所以改成 SimilarWeb 全球排名（越小越强，口径写在 grankLabel 里）。
+   * 只认有限数值：上游偶尔写成 "n/a" 之类的字符串。
+   */
+  const globalRank = t.ranks?.global;
+  const grank = typeof globalRank === "number" && Number.isFinite(globalRank) ? globalRank : null;
   const row: Omit<ToolRow, "h"> = {
     rank,
     tier: tierOf(t) === "watch" ? "watch" : "core",
@@ -149,8 +152,8 @@ function toToolRow(t: (typeof tools)[number], rank: number): ToolRow {
       : t.phUpvotes
         ? `▲ ${formatCount(t.phUpvotes)}`
         : null,
-    dr: drValue,
-    drLabel: drValue === null ? null : (dw.label ?? null),
+    grank,
+    grankLabel: grank === null ? null : "全球排名",
     heat: t.heatScore,
     growth: computeGrowth(t),
     spark: trafficSparklinePoints(t)?.map((v) => Math.round(v * 100)) ?? null,

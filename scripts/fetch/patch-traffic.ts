@@ -2,22 +2,21 @@ import "./config";
 import fs from "node:fs";
 
 import { applyTraffic } from "./apply-traffic";
-import { extractTrafficMetrics, fetchDomainRating, fetchLergassyMulti } from "./sources/apify";
+import { extractTrafficMetrics, fetchLergassyMulti } from "./sources/apify";
 
 /**
- * 补齐缺失的全渠道流量（trafficMetrics）与域名权重。
+ * 补齐缺失的全渠道流量（trafficMetrics）。
  *
  * 背景：部分站的 metrics 只有 DFS 的「搜索流量」口径（organic === monthlyVisits，
  * 自然搜索占比恒为 100%），因为 enrich-site 阶段流量抓取失败/未覆盖。
  *
  * 用法：
- *   pnpm tsx scripts/fetch/patch-traffic.ts [--dry] [--weight] [域名...]
- * 不带域名时读取 /tmp/no-tm.txt；--weight 额外补域名权重（DR）。
+ *   pnpm tsx scripts/fetch/patch-traffic.ts [--dry] [域名...]
+ * 不带域名时读取 /tmp/no-tm.txt。
  *
  * 走 fetchLergassyMulti（批量 + 会打印失败原因），不复用单域的静默缓存。
  */
 const DRY = process.argv.includes("--dry");
-const WITH_WEIGHT = process.argv.includes("--weight");
 /** --refresh：已有月访问但缺少趋势/环比的站也重拉，只补空字段 */
 const REFRESH = process.argv.includes("--refresh");
 const argDomains = process.argv.slice(2).filter((a) => !a.startsWith("--"));
@@ -36,7 +35,7 @@ const all = JSON.parse(fs.readFileSync(file, "utf8")) as Array<Record<string, an
 async function main(): Promise<void> {
   let ok = 0;
   let miss = 0;
-  /** 任何实际写入（流量或权重）都算变更，避免只补权重时 ok=0 而不落盘 */
+  /** 任何实际写入都算变更，避免 ok=0 时误判成「无改动」而不落盘 */
   let changed = 0;
 
   const raw = await fetchLergassyMulti(domains);
@@ -92,20 +91,6 @@ async function main(): Promise<void> {
           }
           ok++;
         }
-      }
-    }
-
-    // 2) 域名权重（Ahrefs DR，0~100）
-    if (WITH_WEIGHT && tool.metrics?.domainWeight == null) {
-      const dr = await fetchDomainRating(domain);
-      if (dr !== null) {
-        console.log(`  · ${domain} 域名权重 DR=${dr}`);
-        if (!DRY) {
-          tool.metrics = { ...(tool.metrics ?? {}), domainWeight: dr, domainWeightLabel: "DR" };
-          changed++;
-        }
-      } else {
-        console.log(`  · ${domain} 无 DR`);
       }
     }
   }
