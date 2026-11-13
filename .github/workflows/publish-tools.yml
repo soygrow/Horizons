@@ -80,7 +80,9 @@ jobs:
           # 榜单文件已变，统计快照必须跟着重建，否则后台概览会停在旧数字
           pnpm exec tsx scripts/admin/tool-stats.ts
           pnpm exec tsx scripts/admin/board-stats.ts
-          git add content/aitools.json content/tools-staging.json content/tools-stats.json content/board-stats.json
+          # 候选池已迁到 D1（b44dd1b），仓库里不再有 tools-staging.json。
+          # 继续 git add 一个不存在的路径会让整步 exit 128，发布直接失败。
+          git add content/aitools.json content/tools-stats.json content/board-stats.json
           if git diff --cached --quiet; then
             echo "::notice::没有可发布的条目，未产生提交"
             echo "changed=false" >> "$GITHUB_OUTPUT"
