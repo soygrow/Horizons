@@ -9,6 +9,7 @@
 
 import { getPaddle, loadPaddleJs, type PaddleEnv } from "../lib/paddle-overlay";
 import { confirmAction } from "../lib/confirm";
+import { clearPending, readPending, writePending } from "../lib/pending-order";
 import { hideToast, showToast } from "../lib/toast";
 import { formatCount, formatMom } from "../lib/format";
 import {
@@ -59,9 +60,10 @@ interface BillingMe {
 
 type PlanId = "month" | "year";
 
-const PENDING_TXN_KEY = "hzn_pending_txn";
 /** 同一笔只轮询一次，否则每次进账户页都要空等半分钟 */
 const SETTLE_TRIED_KEY = "hzn_settle_tried";
+/** 太旧的待确认单不自动查：多半是用户根本没付，让他盯着「正在确认」30 秒毫无意义 */
+const SETTLE_FRESH_MS = 10 * 60 * 1000;
 const POLL_INTERVAL_MS = 2500;
 const POLL_ATTEMPTS = 12;
 
@@ -635,7 +637,7 @@ export function initAccount() {
       // 订阅与一次性都落成 pro，判定只看权益本身
       const ok = billing?.plan === "pro";
       if (ok) {
-        sessionStorage.removeItem(PENDING_TXN_KEY);
+        clearPending();
         sessionStorage.removeItem(SETTLE_TRIED_KEY);
         showNotice("订阅已生效，Pro 权益已开通。");
         return;
@@ -696,7 +698,7 @@ export function initAccount() {
         }
 
         const { transactionId } = res.data;
-        sessionStorage.setItem(PENDING_TXN_KEY, transactionId);
+        writePending(transactionId);
 
         // 优先 overlay：不离开站点，付完就地轮询权益
         if (res.data.clientToken) {
@@ -784,9 +786,12 @@ export function initAccount() {
 
     const billing = await refresh();
 
-    const pending = sessionStorage.getItem(PENDING_TXN_KEY);
+    const pending = readPending();
     if (pending && billing) {
-      await settlePending(pending);
+      // 只对刚产生的订单做自动确认，陈旧的留给定价页的「继续支付」入口处理
+      if (Date.now() - pending.at < SETTLE_FRESH_MS) {
+        await settlePending(pending.transactionId);
+      }
     }
   }
 

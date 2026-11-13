@@ -14,9 +14,9 @@
 
 import { getPaddle, loadPaddleJs, type PaddleEnv } from "../lib/paddle-overlay";
 import { trackPaywallClick } from "../lib/paywall-track";
+import { clearPending, readPending, writePending } from "../lib/pending-order";
 import { hideToast, showToast } from "../lib/toast";
 
-const PENDING_TXN_KEY = "hzn_pending_txn";
 const BANNER_ID = "hzn-resume-banner";
 
 type PlanId = "month" | "year";
@@ -45,10 +45,6 @@ function formatDay(ms: number): string {
   const d = new Date(ms);
   const p = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-}
-
-function clearPending() {
-  sessionStorage.removeItem(PENDING_TXN_KEY);
 }
 
 function hideResumeBanner() {
@@ -114,7 +110,7 @@ async function openOverlay(
     data.clientToken,
     () => {
       completed = true;
-      sessionStorage.setItem(PENDING_TXN_KEY, data.transactionId);
+      writePending(data.transactionId);
       window.location.href = "/account";
     },
     () => {
@@ -193,8 +189,8 @@ export function initPricingCheckout() {
   let busy = false;
 
   // 上次留下未付完的订单：进页面就提示可续上（已付清的那种点进去会直接跳账户页）
-  const pending = sessionStorage.getItem(PENDING_TXN_KEY);
-  if (pending) askForResume(pending);
+  const pending = readPending();
+  if (pending) askForResume(pending.transactionId);
 
   for (const btn of buttons) {
     btn.addEventListener("click", async () => {
@@ -260,8 +256,9 @@ export function initPricingCheckout() {
 
         const data = (await res.json()) as CheckoutOk;
 
-        // 先记下这笔，关掉 overlay 也能回来续，而不是重新建单
-        sessionStorage.setItem(PENDING_TXN_KEY, data.transactionId);
+        // 先记下这笔，关掉 overlay 也能回来续，而不是重新建单。
+        // 换计划时这里会直接覆盖：旧单留在 Paddle 里不可再支付，本地的「继续支付」也就自然指向新单
+        writePending(data.transactionId);
 
         // 优先 overlay：停在定价页完成支付，付完再回账户页看权益
         const opened = await openOverlay(data, () => askForResume(data.transactionId));

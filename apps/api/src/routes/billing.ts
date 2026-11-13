@@ -486,10 +486,35 @@ billing.post("/checkout/resume", async (c) => {
       return c.json({ error: "forbidden" }, 403);
     }
 
+    // 钱已经进来了：不必再拉起结算页，让前端直接去账户页等权益
+    if (
+      txn.status === "billed" ||
+      txn.status === "paid" ||
+      txn.status === "completed"
+    ) {
+      return c.json({
+        transactionId: txn.id,
+        status: txn.status,
+        completed: true,
+        checkoutUrl: null,
+        clientToken: null,
+        paddleEnv: c.env.PADDLE_ENV === "production" ? "production" : "sandbox",
+      });
+    }
+
+    // 只有 draft / ready 还能付。canceled、expired 这些硬拉起 overlay 只会让 Paddle 报错，
+    // 不如明确告诉前端「这笔已经不能用」，让它清掉本地记录、引导重新下单
+    if (txn.status !== "draft" && txn.status !== "ready") {
+      return c.json(
+        { error: "transaction_not_payable", status: txn.status },
+        409,
+      );
+    }
+
     return c.json({
       transactionId: txn.id,
       status: txn.status,
-      completed: txn.status === "completed" || txn.status === "paid",
+      completed: false,
       checkoutUrl: txn.checkoutUrl,
       clientToken: c.env.PADDLE_CLIENT_TOKEN ?? null,
       paddleEnv: c.env.PADDLE_ENV === "production" ? "production" : "sandbox",
