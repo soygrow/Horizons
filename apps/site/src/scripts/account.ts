@@ -60,8 +60,10 @@ interface BillingMe {
 type PlanId = "month" | "year";
 
 const PENDING_TXN_KEY = "hzn_pending_txn";
+/** 同一笔只轮询一次，否则每次进账户页都要空等半分钟 */
+const SETTLE_TRIED_KEY = "hzn_settle_tried";
 const POLL_INTERVAL_MS = 2500;
-const POLL_ATTEMPTS = 24;
+const POLL_ATTEMPTS = 12;
 
 
 
@@ -620,6 +622,10 @@ export function initAccount() {
 
   /** 从 Paddle 结算页回来后：先主动查一次（兜底），再短轮询等 webhook 落库 */
   async function settlePending(transactionId: string) {
+    // 这笔已经查过一轮：不再空等，留着 pending 让定价页给出「继续支付」
+    if (sessionStorage.getItem(SETTLE_TRIED_KEY) === transactionId) return;
+    sessionStorage.setItem(SETTLE_TRIED_KEY, transactionId);
+
     showNotice("正在确认支付结果，通常几秒内完成，请不要关闭页面…");
 
     await postJson("/api/billing/sync", { transactionId });
@@ -630,14 +636,17 @@ export function initAccount() {
       const ok = billing?.plan === "pro";
       if (ok) {
         sessionStorage.removeItem(PENDING_TXN_KEY);
+        sessionStorage.removeItem(SETTLE_TRIED_KEY);
         showNotice("订阅已生效，Pro 权益已开通。");
         return;
       }
       await sleep(POLL_INTERVAL_MS);
     }
 
-    sessionStorage.removeItem(PENDING_TXN_KEY);
-    showNotice("暂未查到支付结果。若银行已扣款，权益会在几分钟内自动开通，可稍后刷新本页。");
+    // 不删 pending：没付完的人回定价页还能续上这笔，避免重复建单
+    showNotice(
+      "暂未查到支付结果。若银行已扣款，权益会在几分钟内自动开通；若未完成支付，可回定价页继续这笔订单。",
+    );
   }
 
   function wireBuyButtons() {

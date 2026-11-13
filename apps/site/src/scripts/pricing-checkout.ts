@@ -6,6 +6,10 @@
  * - 已有生效订阅 → 提示，不重复下单
  * - 成功 → 写 pending txn 后由 overlay 完成；付完跳 /account 确认权益
  *   （账户页读到同一个 sessionStorage key 会自动 sync + 轮询）
+ * - 用户中途关掉 overlay → 不新建订单，页面顶部给「继续支付」，续上原来那笔 transaction
+ *
+ * 「不新建」是这个文件的核心约束：重复建单会在 Paddle 留一串草稿交易，
+ * 既对不上账，也会让客户收到多封结算邮件。
  */
 
 import { getPaddle, loadPaddleJs, type PaddleEnv } from "../lib/paddle-overlay";
@@ -13,6 +17,7 @@ import { trackPaywallClick } from "../lib/paywall-track";
 import { hideToast, showToast } from "../lib/toast";
 
 const PENDING_TXN_KEY = "hzn_pending_txn";
+const BANNER_ID = "hzn-resume-banner";
 
 type PlanId = "month" | "year";
 
@@ -21,6 +26,11 @@ interface CheckoutOk {
   checkoutUrl: string | null;
   clientToken?: string | null;
   paddleEnv?: PaddleEnv;
+}
+
+interface ResumeOk extends CheckoutOk {
+  status: string;
+  completed: boolean;
 }
 
 function setNotice(text: string | null) {
@@ -37,6 +47,143 @@ function formatDay(ms: number): string {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
+function clearPending() {
+  sessionStorage.removeItem(PENDING_TXN_KEY);
+}
+
+function hideResumeBanner() {
+  document.getElementById(BANNER_ID)?.remove();
+}
+
+/** 未付完的订单给一个恢复入口，点一下续上，不要重新下单 */
+function showResumeBanner(onResume: () => void) {
+  if (document.getElementById(BANNER_ID)) return;
+
+  const bar = document.createElement("div");
+  bar.id = BANNER_ID;
+  bar.className =
+    "mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-surface px-5 py-3.5";
+
+  const text = document.createElement("p");
+  text.className = "min-w-0 flex-1 text-sm text-ink-secondary";
+  text.textContent = "你有一笔未完成的订单，继续支付即可完成，不需要重新下单。";
+
+  const pay = document.createElement("button");
+  pay.type = "button";
+  pay.className =
+    "shrink-0 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover";
+  pay.textContent = "继续支付";
+  pay.addEventListener("click", () => {
+    hideResumeBanner();
+    onResume();
+  });
+
+  const drop = document.createElement("button");
+  drop.type = "button";
+  drop.className = "shrink-0 text-xs text-ink-muted transition hover:text-ink";
+  drop.textContent = "放弃这笔";
+  drop.addEventListener("click", () => {
+    hideResumeBanner();
+    clearPending();
+    setNotice("已放弃这笔订单，可随时重新下单。");
+  });
+
+  bar.append(text, pay, drop);
+
+  // 挂在卡片区下方的提示位之前；页面结构变了就退化为插到 body 顶部
+  const anchor = document.getElementById("pricing-notice");
+  if (anchor?.parentElement) anchor.parentElement.insertBefore(bar, anchor);
+  else document.body.insertBefore(bar, document.body.firstChild);
+}
+
+/**
+ * 打开 overlay。返回 false 表示 Paddle.js 没起来，调用方应退化为跳 checkout.url。
+ * onClosed 只在「没付成」时触发：付完 Paddle 也会发 closed，用 completed 挡掉。
+ */
+async function openOverlay(
+  data: CheckoutOk,
+  onClosed: () => void,
+): Promise<boolean> {
+  if (!data.clientToken) return false;
+
+  const env = data.paddleEnv ?? "sandbox";
+  let completed = false;
+
+  const ready = await loadPaddleJs(
+    env,
+    data.clientToken,
+    () => {
+      completed = true;
+      sessionStorage.setItem(PENDING_TXN_KEY, data.transactionId);
+      window.location.href = "/account";
+    },
+    () => {
+      if (completed) return;
+      onClosed();
+    },
+  );
+
+  const paddle = getPaddle();
+  if (!ready || !paddle) return false;
+
+  paddle.Checkout.open({
+    transactionId: data.transactionId,
+    settings: { displayMode: "overlay" },
+  });
+  return true;
+}
+
+function askForResume(transactionId: string) {
+  showResumeBanner(() => {
+    void resumeCheckout(transactionId);
+  });
+}
+
+/** 续上一笔：拿到新的 client token 后重新拉起同一个 transaction */
+async function resumeCheckout(transactionId: string) {
+  setNotice(null);
+  try {
+    const res = await fetch("/api/billing/checkout/resume", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ transactionId }),
+    });
+
+    if (res.status === 401) {
+      window.location.href = `/api/auth/google?next=${encodeURIComponent("/pricing")}`;
+      return;
+    }
+
+    if (!res.ok) {
+      clearPending();
+      setNotice("这笔订单已失效，请重新下单。");
+      return;
+    }
+
+    const data = (await res.json()) as ResumeOk;
+
+    if (data.completed) {
+      clearPending();
+      window.location.href = "/account";
+      return;
+    }
+
+    const opened = await openOverlay(data, () => askForResume(transactionId));
+    if (opened) return;
+
+    if (data.checkoutUrl) {
+      window.location.href = data.checkoutUrl;
+      return;
+    }
+
+    clearPending();
+    setNotice("结算页未能打开，请刷新后重试。");
+  } catch {
+    setNotice("网络异常，请稍后重试。");
+  }
+}
+
 export function initPricingCheckout() {
   const buttons = Array.from(
     document.querySelectorAll<HTMLButtonElement>("[data-checkout-plan]"),
@@ -44,6 +191,10 @@ export function initPricingCheckout() {
   if (!buttons.length) return;
 
   let busy = false;
+
+  // 上次留下未付完的订单：进页面就提示可续上（已付清的那种点进去会直接跳账户页）
+  const pending = sessionStorage.getItem(PENDING_TXN_KEY);
+  if (pending) askForResume(pending);
 
   for (const btn of buttons) {
     btn.addEventListener("click", async () => {
@@ -60,6 +211,7 @@ export function initPricingCheckout() {
       btn.disabled = true;
       btn.textContent = "正在打开结算页…";
       setNotice(null);
+      hideResumeBanner();
 
       try {
         const res = await fetch("/api/billing/checkout", {
@@ -108,30 +260,20 @@ export function initPricingCheckout() {
 
         const data = (await res.json()) as CheckoutOk;
 
+        // 先记下这笔，关掉 overlay 也能回来续，而不是重新建单
+        sessionStorage.setItem(PENDING_TXN_KEY, data.transactionId);
+
         // 优先 overlay：停在定价页完成支付，付完再回账户页看权益
-        if (data.clientToken) {
-          const env = data.paddleEnv ?? "sandbox";
-          const ready = await loadPaddleJs(env, data.clientToken, () => {
-            sessionStorage.setItem(PENDING_TXN_KEY, data.transactionId);
-            window.location.href = "/account";
-          });
-          const paddle = getPaddle();
-          if (ready && paddle) {
-            paddle.Checkout.open({
-              transactionId: data.transactionId,
-              settings: { displayMode: "overlay" },
-            });
-            return;
-          }
-        }
+        const opened = await openOverlay(data, () => askForResume(data.transactionId));
+        if (opened) return;
 
         // 兜底：跳 Paddle 托管结算页
         if (data.checkoutUrl) {
-          sessionStorage.setItem(PENDING_TXN_KEY, data.transactionId);
           window.location.href = data.checkoutUrl;
           return;
         }
 
+        clearPending();
         setNotice("结算页未能打开，请刷新后重试。");
       } catch {
         setNotice("网络异常，请稍后重试。");

@@ -379,6 +379,41 @@ const meta = {
             </div>
             <div id="payments-pager" class="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-xs text-ink-muted"></div>
           </div>
+
+          <div class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+              <div>
+                <h2 class="text-sm font-semibold">订阅</h2>
+                <p id="subs-total" class="mt-1 text-xs text-ink-muted">—</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <select id="subs-status" class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
+                  <option value="">全部状态</option>
+                  <option value="active">续费中</option>
+                  <option value="past_due">扣款失败</option>
+                  <option value="trialing">试用中</option>
+                  <option value="paused">已暂停</option>
+                  <option value="canceled">已结束</option>
+                </select>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[880px] text-left text-sm">
+                <thead class="bg-surface-2/60 text-xs text-ink-muted">
+                  <tr>
+                    <th class="px-4 py-2.5 font-medium">用户</th>
+                    <th class="px-4 py-2.5 font-medium">方案</th>
+                    <th class="px-4 py-2.5 text-right font-medium">每期金额</th>
+                    <th class="px-4 py-2.5 font-medium">状态</th>
+                    <th class="px-4 py-2.5 font-medium">下次扣款</th>
+                    <th class="px-4 py-2.5 font-medium">当前周期</th>
+                  </tr>
+                </thead>
+                <tbody id="subs-body" class="divide-y divide-border"></tbody>
+              </table>
+            </div>
+            <div id="subs-pager" class="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-xs text-ink-muted"></div>
+          </div>
         </section>
 
         <!-- 每日情报 -->

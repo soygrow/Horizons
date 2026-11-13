@@ -27,6 +27,7 @@ export interface PaddleJs {
 
 let paddleLoading: Promise<boolean> | null = null;
 let onCompletedRef: (() => void) | null = null;
+let onClosedRef: (() => void) | null = null;
 
 export function getPaddle(): PaddleJs | undefined {
   return (window as unknown as { Paddle?: PaddleJs }).Paddle;
@@ -34,14 +35,18 @@ export function getPaddle(): PaddleJs | undefined {
 
 /**
  * 按需加载 Paddle.js，返回 false 时调用方退化为跳转 checkout.url。
- * 每次调用都会替换「支付完成」回调，指向当前这笔 transaction。
+ * 每次调用都会替换回调，指向当前这笔 transaction：
+ * - onCompleted：付完了
+ * - onClosed：用户自己关掉了 overlay（还没付），用于给「继续支付」入口
  */
 export function loadPaddleJs(
   env: PaddleEnv,
   token: string,
   onCompleted: () => void,
+  onClosed?: () => void,
 ): Promise<boolean> {
   onCompletedRef = onCompleted;
+  onClosedRef = onClosed ?? null;
   if (paddleLoading) return paddleLoading;
 
   paddleLoading = new Promise<boolean>((resolve) => {
@@ -60,6 +65,8 @@ export function loadPaddleJs(
           token,
           eventCallback: (event) => {
             if (event.name === "checkout.completed") onCompletedRef?.();
+            // 付完单后 overlay 关闭也会发 closed，调用方用 completed 标志过滤
+            else if (event.name === "checkout.closed") onClosedRef?.();
           },
         });
         resolve(true);

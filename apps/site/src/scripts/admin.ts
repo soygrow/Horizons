@@ -78,6 +78,26 @@ interface PaymentItem {
   name: string | null;
 }
 
+interface SubItem {
+  id: string;
+  plan: string;
+  status: string;
+  amount: number;
+  currency: string;
+  currentPeriodEnd: number | null;
+  nextBilledAt: number | null;
+  cancelAtPeriodEnd: boolean;
+  canceledAt: number | null;
+  createdAt: number;
+  email: string | null;
+  name: string | null;
+}
+
+/** byStatus 是全量分布，不受筛选影响，用来在标题旁标「1 笔扣款失败」 */
+interface SubPage extends Page<SubItem> {
+  byStatus: Record<string, number>;
+}
+
 interface PaywallButtonStat {
   key: string;
   label: string;
@@ -255,6 +275,12 @@ const state = {
     loaded: false,
     data: null as Page<PaymentItem> | null,
   },
+  subs: {
+    page: 1,
+    status: "",
+    loaded: false,
+    data: null as SubPage | null,
+  },
   paywall: {
     days: 30,
     stats: null as PaywallStats | null,
@@ -296,6 +322,7 @@ function showLogin(): void {
   state.stats = null;
   state.users.loaded = false;
   state.payments.loaded = false;
+  state.subs.loaded = false;
   appView.hidden = true;
   loginView.hidden = false;
   setLoginError(null);
@@ -442,7 +469,10 @@ async function loadStats(): Promise<void> {
 $("refresh").addEventListener("click", () => {
   void loadStats();
   if (state.tab === "users") void loadUsers();
-  if (state.tab === "payments") void loadPayments();
+  if (state.tab === "payments") {
+    void loadPayments();
+    void loadSubscriptions();
+  }
 });
 
 /* -------------------------------- 概览渲染 ------------------------------- */
@@ -687,7 +717,10 @@ async function loadPayments(): Promise<void> {
               <td class="px-4 py-3">${statusBadge}</td>
               <td class="px-4 py-3 text-xs text-ink-secondary">${esc(fmtDateTime(p.paidAt ?? p.createdAt))}</td>
               <td class="px-4 py-3">
-                <span class="block max-w-[180px] truncate font-mono text-[11px] text-ink-muted" title="${esc(p.orderId)}">${esc(p.orderId)}</span>
+                <div class="flex items-center gap-2">
+                  <span class="block max-w-[150px] truncate font-mono text-[11px] text-ink-muted" title="${esc(p.orderId)}">${esc(p.orderId)}</span>
+                  <button type="button" data-copy="${esc(p.orderId)}" class="shrink-0 rounded border border-border px-1.5 py-0.5 text-[10px] text-ink-muted transition hover:text-ink">复制</button>
+                </div>
               </td>
             </tr>`;
           })
@@ -697,6 +730,84 @@ async function loadPayments(): Promise<void> {
     renderPager($("payments-pager"), data, (page) => {
       state.payments.page = page;
       void loadPayments();
+    });
+  } catch (error) {
+    handleApiError(error);
+  }
+}
+
+/* --------------------------------- 订阅 --------------------------------- */
+
+const SUB_LABEL: Record<string, string> = {
+  active: "续费中",
+  trialing: "试用中",
+  past_due: "扣款失败",
+  paused: "已暂停",
+  canceled: "已结束",
+};
+
+/**
+ * 订阅视图只读。
+ *
+ * past_due 排在最前且单独计数：那是银行拒了一次扣款、Paddle 正在重试的状态，
+ * 几天内不处理就会自动降级成免费用户，而这批人是最可能来问「我的 Pro 怎么没了」的。
+ * 退款与取消一律去 Paddle 后台操作，自建后台不提供按钮。
+ */
+async function loadSubscriptions(): Promise<void> {
+  const query = new URLSearchParams({
+    page: String(state.subs.page),
+    pageSize: "20",
+  });
+  if (state.subs.status) query.set("status", state.subs.status);
+
+  try {
+    const data = await api<SubPage>(`/subscriptions?${query.toString()}`);
+    state.subs.data = data;
+    state.subs.loaded = true;
+
+    const pastDue = data.byStatus.past_due ?? 0;
+    $("subs-total").textContent = pastDue
+      ? `${data.total} 条记录，其中 ${pastDue} 笔扣款失败待处理`
+      : `${data.total} 条记录`;
+
+    const body = $("subs-body");
+    body.innerHTML = data.items.length
+      ? data.items
+          .map((s) => {
+            const planLabel = s.plan === "year" ? "年付" : "月付";
+            const tone =
+              s.status === "past_due"
+                ? "warn"
+                : s.status === "canceled" || s.status === "paused"
+                  ? "free"
+                  : "ok";
+            const nextText = s.nextBilledAt
+              ? esc(fmtDate(s.nextBilledAt))
+              : s.cancelAtPeriodEnd
+                ? '<span class="text-warning">到期不续费</span>'
+                : "—";
+            const endText = s.canceledAt
+              ? `${esc(fmtDate(s.currentPeriodEnd))}<span class="text-ink-muted">（已取消）</span>`
+              : esc(fmtDate(s.currentPeriodEnd));
+
+            return `<tr class="transition hover:bg-surface-2/50">
+              <td class="px-4 py-3">
+                <div class="text-sm text-ink">${esc(s.email ?? "未知用户")}</div>
+                <div class="mt-0.5 text-[11px] text-ink-muted">${esc(s.name || "")}</div>
+              </td>
+              <td class="px-4 py-3 text-xs text-ink-secondary">${esc(planLabel)}</td>
+              <td class="px-4 py-3 text-right text-xs font-medium tabular-nums">${esc(money(s.amount, s.currency))}</td>
+              <td class="px-4 py-3">${badge(SUB_LABEL[s.status] ?? s.status, tone)}</td>
+              <td class="px-4 py-3 text-xs text-ink-secondary">${nextText}</td>
+              <td class="px-4 py-3 text-xs text-ink-secondary">${endText}</td>
+            </tr>`;
+          })
+          .join("")
+      : `<tr><td colspan="6" class="px-4 py-12 text-center text-xs text-ink-muted">还没有订阅记录</td></tr>`;
+
+    renderPager($("subs-pager"), data, (page) => {
+      state.subs.page = page;
+      void loadSubscriptions();
     });
   } catch (error) {
     handleApiError(error);
@@ -868,6 +979,7 @@ function activateTab(tab: TabId, syncUrl = true): void {
   if (tab === "users") void loadUsers();
   if (tab === "payments") {
     void loadPayments();
+    void loadSubscriptions();
     loadPaywall();
   }
   if (tab === "tools") mountAdminTools();
@@ -920,6 +1032,37 @@ $("payments-search").addEventListener("input", onPaymentsSearch);
   state.payments.status = (event.target as HTMLSelectElement).value;
   state.payments.page = 1;
   void loadPayments();
+});
+
+($("subs-status") as HTMLSelectElement).addEventListener("change", (event) => {
+  state.subs.status = (event.target as HTMLSelectElement).value;
+  state.subs.page = 1;
+  void loadSubscriptions();
+});
+
+// 订单号一键复制：退款要在 Paddle 后台按订单号搜，手抄 26 位 ID 必错
+document.addEventListener("click", (event) => {
+  const btn = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>(
+    "[data-copy]",
+  );
+  if (!btn) return;
+  const value = btn.dataset.copy ?? "";
+  if (!value) return;
+  void navigator.clipboard
+    ?.writeText(value)
+    .then(() => {
+      const original = btn.textContent;
+      btn.textContent = "已复制";
+      window.setTimeout(() => {
+        btn.textContent = original;
+      }, 1200);
+    })
+    .catch(() => {
+      btn.textContent = "复制失败";
+      window.setTimeout(() => {
+        btn.textContent = "复制";
+      }, 1200);
+    });
 });
 
 $("paywall-refresh").addEventListener("click", () => loadPaywall());

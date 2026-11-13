@@ -450,6 +450,56 @@ billing.post("/checkout", async (c) => {
 });
 
 /**
+ * 续上一笔没付完的结算。
+ *
+ * 用户关掉 overlay、或从托管页按了返回，服务端那笔 transaction 仍然是「待支付」，
+ * 重新拉起即可，不要新建 —— 否则同一个人会留下一串草稿交易，对账时分不清哪笔是真的。
+ * 归属用 custom_data.user_id 校验：拿别人的 transactionId 来试只会得到 403。
+ */
+billing.post("/checkout/resume", async (c) => {
+  const session = await readSession(c);
+  if (!session) return c.json({ error: "unauthorized" }, 401);
+
+  if (!isPaddleConfigured(c.env)) {
+    return c.json({ error: "paddle_not_configured" }, 503);
+  }
+
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: "invalid_json" }, 400);
+  }
+
+  const payload = (body ?? {}) as { transactionId?: unknown };
+  const transactionId =
+    typeof payload.transactionId === "string" ? payload.transactionId.trim() : "";
+  if (!/^txn_[A-Za-z0-9]{6,}$/.test(transactionId)) {
+    return c.json({ error: "invalid_transaction" }, 400);
+  }
+
+  try {
+    const txn = await getPaddleTransaction(c.env, transactionId);
+
+    const owner = txn.customData?.user_id;
+    if (typeof owner !== "string" || owner !== session.id) {
+      return c.json({ error: "forbidden" }, 403);
+    }
+
+    return c.json({
+      transactionId: txn.id,
+      status: txn.status,
+      completed: txn.status === "completed" || txn.status === "paid",
+      checkoutUrl: txn.checkoutUrl,
+      clientToken: c.env.PADDLE_CLIENT_TOKEN ?? null,
+      paddleEnv: c.env.PADDLE_ENV === "production" ? "production" : "sandbox",
+    });
+  } catch (e) {
+    return paddleFailure(c, e, "checkout_resume");
+  }
+});
+
+/**
  * 支付回来后的兜底：前端带着 transactionId 回到账户页，
  * 这里主动查一次 Paddle，把订阅与订单补齐（不依赖 webhook 的到达时间）。
  */

@@ -764,6 +764,108 @@ admin.get("/payments", async (c) => {
   });
 });
 
+/* -------------------------------- 订阅列表 -------------------------------- */
+
+/**
+ * 订阅和订单分开看：订单是「钱进来过」，订阅是「还会不会再扣」。
+ *
+ * 这里只读，不提供退款/取消按钮 —— 财务动作在 Paddle 后台点，自建后台只负责看清现状。
+ * 状态为 past_due 的排最前：那意味着银行拒了一次扣款，Paddle 正在重试，
+ * 需要人盯一眼，否则几天后自动降级，用户会来问「为什么我的 Pro 没了」。
+ */
+const SUB_STATUSES = ["active", "trialing", "past_due", "paused", "canceled"] as const;
+
+interface SubRow {
+  id: string;
+  plan: string;
+  status: string;
+  amount_cents: number;
+  currency: string;
+  current_period_end: number | null;
+  next_billed_at: number | null;
+  cancel_at_period_end: number;
+  canceled_at: number | null;
+  created_at: number;
+  email: string | null;
+  name: string | null;
+}
+
+admin.get("/subscriptions", async (c) => {
+  const env = c.env;
+  const page = clampInt(c.req.query("page"), 1, 1, 10_000);
+  const pageSize = clampInt(c.req.query("pageSize"), 20, 1, MAX_PAGE_SIZE);
+  const offset = (page - 1) * pageSize;
+  const q = (c.req.query("q") ?? "").trim().slice(0, 100);
+  const status = (c.req.query("status") ?? "").trim();
+
+  const where: string[] = [];
+  const binds: unknown[] = [];
+  if (q) {
+    where.push("(u.email LIKE ? OR COALESCE(u.name, '') LIKE ? OR s.id LIKE ?)");
+    binds.push(`%${q}%`, `%${q}%`, `%${q}%`);
+  }
+  if ((SUB_STATUSES as readonly string[]).includes(status)) {
+    where.push("s.status = ?");
+    binds.push(status);
+  }
+  const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+  const [countRes, listRes, summaryRes] = await env.DB.batch([
+    env.DB.prepare(
+      `SELECT COUNT(*) AS c FROM subscriptions s LEFT JOIN users u ON u.id = s.user_id ${whereSql}`,
+    ).bind(...binds),
+    env.DB.prepare(
+      `SELECT s.id, s.plan, s.status, s.amount_cents, s.currency, s.current_period_end,
+              s.next_billed_at, s.cancel_at_period_end, s.canceled_at, s.created_at,
+              u.email, u.name
+         FROM subscriptions s
+         LEFT JOIN users u ON u.id = s.user_id
+         ${whereSql}
+        ORDER BY CASE s.status
+                   WHEN 'past_due' THEN 0
+                   WHEN 'active' THEN 1
+                   WHEN 'trialing' THEN 2
+                   ELSE 3
+                 END,
+                 COALESCE(s.next_billed_at, s.current_period_end, s.created_at) DESC
+        LIMIT ? OFFSET ?`,
+    ).bind(...binds, pageSize, offset),
+    env.DB.prepare(
+      "SELECT status, COUNT(*) AS c FROM subscriptions GROUP BY status",
+    ),
+  ]);
+
+  const total = ((countRes?.results?.[0] ?? { c: 0 }) as { c: number }).c;
+  const rows = (listRes?.results ?? []) as SubRow[];
+
+  const byStatus: Record<string, number> = {};
+  for (const row of (summaryRes?.results ?? []) as { status: string; c: number }[]) {
+    byStatus[row.status] = row.c;
+  }
+
+  return c.json({
+    page,
+    pageSize,
+    total,
+    pages: Math.max(1, Math.ceil(total / pageSize)),
+    byStatus,
+    items: rows.map((r) => ({
+      id: r.id,
+      plan: r.plan,
+      status: r.status,
+      amount: r.amount_cents,
+      currency: r.currency,
+      currentPeriodEnd: r.current_period_end,
+      nextBilledAt: r.next_billed_at,
+      cancelAtPeriodEnd: Boolean(r.cancel_at_period_end),
+      canceledAt: r.canceled_at,
+      createdAt: r.created_at,
+      email: r.email,
+      name: r.name,
+    })),
+  });
+});
+
 /* --------------------------- 付费按钮点击统计 ---------------------------- */
 
 /**
