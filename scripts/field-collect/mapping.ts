@@ -318,7 +318,21 @@ export function applyLergassy(fields: FieldBag, item: LergassyItem): void {
     fill(fields, "time_on_site", item.avgVisitDuration, { actualSource: source });
   }
 
-  const mom = item.monthlyVisitsChange ?? growth(history, 1);
+  /*
+   * 优先用月度序列自算：准入阶段走的是 `applyVortexAdmission → momGrowthOf(months)`，
+   * 两处必须同源同口径。vortex 的 `monthlyVisitsChange` 单位不稳定（0.15 与 15 都出现过），
+   * 直接落库会让富化后的环比从 +15.2% 掉成 +0.2%，跟准入阶段显示的数对不上。
+   * 序列不足 2 个月时才回退它，并按「绝对值 ≤1 视为小数」归一化成百分数。
+   */
+  const fromHistory = growth(history, 1);
+  const rawChange = item.monthlyVisitsChange;
+  const fromVortex =
+    rawChange == null
+      ? null
+      : Math.abs(rawChange) <= 1
+        ? Math.round(rawChange * 1000) / 10
+        : rawChange;
+  const mom = fromHistory ?? fromVortex;
   if (mom != null) fill(fields, "visits_mom", mom, { display: fmtSignedPct(mom), actualSource: source });
   const g3m = growth(history, 3);
   if (g3m != null) fill(fields, "visits_growth_3m", g3m, { display: fmtSignedPct(g3m), actualSource: source });

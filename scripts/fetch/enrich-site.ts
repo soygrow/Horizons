@@ -249,6 +249,12 @@ async function main(): Promise<void> {
   let phUpvotes = tool.phUpvotes;
   let phComments = tool.phComments;
   let pricingPlans = tool.pricing;
+  /**
+   * 本轮实际采到的快照月份（月度序列里最后一个有访问量的月）。
+   * 不能拿「当前月 - 1」硬算：月初/月末跑会漂一个月，
+   * 导致页面「数据快照」和 trafficMetrics 里的数是两个月份。
+   */
+  let collectedPeriod: string | undefined;
 
   if (!analysisOnly) {
   // 1) 自建爬虫：页面结构 + 技术栈 + 收款信号 + 定价线索 + RDAP 注册时间
@@ -312,12 +318,18 @@ async function main(): Promise<void> {
       });
       const history = await readTrafficMonths(domain, { months: 6 });
 
-      // 快照月份取月度序列最后一个月，用于 sources.period 溯源
+      /*
+       * 快照月份取「最后一个有访问量的月份」，不是序列末项。
+       * vortex 会补一个当月但还没出数的空壳月份（visits 为 0 或缺失），
+       * 直接取末项会让 monthlyVisits 是 10 月的值、snapshotMonth 却标成 11 月，
+       * 后台与详情页的「数据快照」就跟采集结果对不上了。
+       */
       const histField = payload.fields.find((f) => f.key === "monthly_visits_history");
-      const lastMonth =
-        Array.isArray(histField?.value) && histField.value.length
-          ? (histField.value[histField.value.length - 1] as { month?: string }).month
-          : undefined;
+      const lastMonth = Array.isArray(histField?.value)
+        ? ([...histField.value] as { month?: string; visits?: number }[])
+            .reverse()
+            .find((m) => typeof m.visits === "number" && m.visits > 0)?.month
+        : undefined;
 
       const applied = applyFields(tool, payload, {
         at: payload.collectedAt?.slice(0, 10),
@@ -332,16 +344,21 @@ async function main(): Promise<void> {
           `｜采集花费 ≈$${payload.cost?.total ?? 0}`,
       );
 
-      if (payload.screenshots.desktop) {
-        tool.screenshotDesktopUrl = payload.screenshots.desktop;
-        tool.screenshotMobileUrl = payload.screenshots.mobile;
+      // 两个视口分开判断：移动版拍失败时不能把已有的手机截图覆盖成空
+      if (payload.screenshots.desktop) tool.screenshotDesktopUrl = payload.screenshots.desktop;
+      if (payload.screenshots.mobile) tool.screenshotMobileUrl = payload.screenshots.mobile;
+      if (payload.screenshots.desktop || payload.screenshots.mobile) {
         console.log("[enrich-site] 截图：复用 collectSite 产物");
       }
 
-      // 关键词（含搜索量）来自 vortex topKeywords，DFS 兜底不再需要
-      if (!keywords.some((k) => k.volume != null) && tool.keywords?.length) {
+      /*
+       * 关键词（含搜索量）一律以本轮采集为准。
+       * 旧值是 DFS 时代的残留，不能因为它「有 volume」就挡住 vortex 刚写进来的结果 ——
+       * 那样结尾的 `tool.keywords = keywords` 会把新关键词覆盖回旧数组。
+       */
+      if (tool.keywords?.length) {
         keywords = tool.keywords;
-        if (!keywordCount) keywordCount = tool.keywords.length;
+        keywordCount = tool.keywords.length;
       }
 
       /*
@@ -355,6 +372,7 @@ async function main(): Promise<void> {
       searchTraffic = tool.searchTraffic;
       keywordCount = tool.keywordCount ?? keywordCount;
       metrics = tool.metrics;
+      collectedPeriod = lastMonth;
     } catch (e) {
       console.warn("[enrich-site] 采集复用失败：", e instanceof Error ? e.message : e);
     }
@@ -545,7 +563,8 @@ async function main(): Promise<void> {
     // 仅更新分析文本与快照，保留刚抓取的 vortex 流量字段（尤其 channelShares）
     tool.metrics = metricsForLLM;
     tool.dataSnapshot = {
-      period: lastPeriod(),
+      // 没跑采集时沿用已入库的快照月份，不要用「当前月 - 1」硬算覆盖它
+      period: tool.trafficMetrics?.snapshotMonth ?? lastPeriod(),
       syncedAt: new Date().toISOString().replace("T", " ").slice(0, 19),
     };
     tool.collectedAt = new Date().toISOString();
@@ -586,7 +605,12 @@ async function main(): Promise<void> {
   // 渠道占比只有 vortex 能给：已跑过 apify 的站要保留，否则先 apify 后 enrich 会把渠道清空
   if (!tool.trafficMetrics) tool.channelShares = undefined;
   tool.dataSnapshot = {
-    period: lastPeriod(),
+    /*
+     * 与 trafficMetrics.snapshotMonth 用同一个月份：三个来源（dataSnapshot /
+     * trafficMetrics / 准入阶段）只要有一个用「当前月 - 1」硬算，页面快照标签
+     * 就会和实际数据差一个月。
+     */
+    period: collectedPeriod ?? tool.trafficMetrics?.snapshotMonth ?? lastPeriod(),
     syncedAt: new Date().toISOString().replace("T", " ").slice(0, 19),
   };
   tool.collectedAt = new Date().toISOString();

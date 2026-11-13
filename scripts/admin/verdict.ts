@@ -315,10 +315,12 @@ export const FIELD_DIMENSIONS: readonly FieldDimension[] = [
     },
   },
   {
-    key: "searchTraffic.organic",
+    key: "trafficMetrics.organicSearchVisits",
     label: "自然搜索流量",
     check: (t) => {
-      const o = t.searchTraffic?.organic;
+      // 新方案（vortex）把自然搜索量写在 trafficMetrics；searchTraffic 是 DFS 时代的容器，
+      // 已经没有生产者了，继续按它判缺失会让每条都显示「缺自然搜索」。
+      const o = t.trafficMetrics?.organicSearchVisits ?? t.searchTraffic?.organic;
       if (typeof o !== "number") return "自然搜索流量不是数字";
       if (!Number.isFinite(o) || o < 0) return "自然搜索流量为负数";
       const total = visitsOf(t);
@@ -357,15 +359,11 @@ export const FIELD_DIMENSIONS: readonly FieldDimension[] = [
       return withVolume.length === 0 ? "全部关键词缺搜索量（只有词）" : null;
     },
   },
-  {
-    key: "backlinks.total",
-    label: "外链概览",
-    check: (t) => {
-      const n = t.backlinks?.total;
-      if (typeof n !== "number") return "外链总数不是数字";
-      return !Number.isFinite(n) || n <= 0 ? "外链总数为 0" : null;
-    },
-  },
+  /*
+   * 「外链概览」维度已移除：外链只有 DFS / Ahrefs 能给，DFS 下线后没有任何采集源
+   * 会写 tool.backlinks。留着这一项的结果是——每一条富化完都必然显示「缺外链」，
+   * 把一个「暂时没有数据源」误报成「这次没采到」。
+   */
   {
     key: "observations.competitors",
     label: "竞品",

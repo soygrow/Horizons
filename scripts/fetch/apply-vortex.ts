@@ -201,11 +201,18 @@ export function applyVortexAdmission(tool: AITool, snap: VortexSnapshot): void {
 
     // visitsOf() 优先读 trafficMetrics，所以这里必须同步写，
     // 否则库里残留的旧 trafficMetrics 会盖掉刚采到的新值。
+    /*
+     * snapshotMonth 必须指向「真正有访问量的那个月」。
+     * vortex 会补一个当月空壳月（visits 为 0），而 monthlyVisits 取的是最近一个有数的月，
+     * 直接用 snap.period 会让 01 卡片的数字和「数据快照」标签差一个月。
+     */
+    const snapMonth =
+      [...(snap.months ?? [])].reverse().find((m) => m.visits > 0)?.month ?? snap.period;
     tool.trafficMetrics = {
       ...(tool.trafficMetrics ?? {}),
       monthlyVisits: snap.monthlyVisits,
       ...(growth !== undefined ? { monthlyVisitsGrowth: growth } : {}),
-      ...(snap.period ? { snapshotMonth: snap.period } : {}),
+      ...(snapMonth ? { snapshotMonth: snapMonth } : {}),
     };
   }
 

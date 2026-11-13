@@ -33,7 +33,7 @@ import { saveReport } from "./reports";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const REPORT_PATH = path.join(ROOT, "content/tools-field-report.json");
-/** 单站富化的硬超时：DFS + LLM 正常在 2–5 分钟 */
+/** 单站富化的硬超时：采集 + LLM 正常在 2–5 分钟 */
 const PER_SITE_TIMEOUT_MS = 12 * 60_000;
 
 export interface FieldGapRow {

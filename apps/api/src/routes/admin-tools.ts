@@ -273,10 +273,10 @@ const FIELD_PATHS = [
   "trafficMetrics.monthlyVisits",
   "trafficMetrics.monthlyVisitsGrowth",
   "metrics.registeredAt",
-  "searchTraffic.organic",
+  // 自然搜索量：新方案写在 trafficMetrics，searchTraffic 已无生产者
+  "trafficMetrics.organicSearchVisits",
   "geoDistribution",
   "keywords",
-  "backlinks.total",
   "observations.competitors",
   "pricing",
   "pageStructure",
@@ -483,7 +483,7 @@ tools.post("/staging/approve", async (c) => {
   });
 });
 
-/** 触发富化：对已确认收录的候选补 DFS/AI 数据，并产出字段完整度报告 */
+/** 触发富化：对已确认收录的候选补流量/关键词/竞品与 AI 解读，并产出字段完整度报告 */
 tools.post("/enrich", async (c) => {
   const cfg = ghConfig(c.env);
   if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 503);

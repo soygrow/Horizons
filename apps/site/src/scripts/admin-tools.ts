@@ -267,8 +267,10 @@ function updateFetchEstimate(): void {
     : before == null
       ? `新增约 ${fmtNum(count)} 条候选`
       : `候选池 ${fmtNum(before)} → 约 ${fmtNum(before + count)} 条（去重前）`;
+  // 准入采集按 vortex base_data 实价 $0.002/条估；命中 collect_raw 的不计费，
+  // 所以这是上限而不是均价（日志里「本次花费」才是真实账单）。
   const cost = enrich
-    ? `流量富化约 $${(count * 0.003).toFixed(2)}`
+    ? `准入采集上限约 $${(count * 0.002).toFixed(2)}（$0.002/条，命中缓存不计费）`
     : "不补流量：只有 PH 点赞 ≥ 300 的能进榜";
   $("tools-fetch-estimate").textContent = [pool, cost, "跑完先落在「待发布」，不影响线上"].join("｜");
 }
@@ -341,36 +343,44 @@ function pickRecentJobs(jobs: Job[]): { rows: Job[]; hidden: number } {
 }
 
 /**
- * 富化单价（单条）：
- *   DFS 四个端点（关键词/流量历史/外链/竞品）约 $0.18；
- *   只走 LLM + 自建爬虫约 $0.02。
- * 采集期已经从 Apify 拿到流量/竞品/外链的条目，富化只补缺的那几项，别按最贵档报账。
+ * 富化单价（单条），对齐 scripts/field-collect/index.ts 里的 PRICE 实价：
+ *   vortex aitdk 模式   $0.002（注册日 / 关键词密度）
+ *   Google SERP         $0.0025/query，每次 2–3 条（关键词排名 2 + 发布日 1）
+ *   LLM 字段抽取        $0.001
+ *   vortex base_data    不重复收费：富化直接读准入阶段存下的 collect_raw
+ *   备选源 lergassy     $0.004，只在流量组仍不足时才买
+ *
+ * DFS 早已下线，不再有「$0.18 一条」那一档；按实际调用报账，别用废口径吓人。
  */
-const ENRICH_COST = { dfs: 0.18, ai: 0.02 } as const;
+const ENRICH_COST = {
+  /** 单条基准：aitdk $0.002 + 3 条 SERP $0.0075 + LLM $0.001 ≈ $0.0105 */
+  perSite: 0.002 + 3 * 0.0025 + 0.001,
+  /** 流量组缺失时追加的备选源单价 */
+  fallback: 0.004,
+} as const;
 
-/** 这些维度只有 DFS 能补 */
-const DFS_DIMS = new Set([
-  "searchTraffic.organic",
-  "keywords",
-  "backlinks.total",
-  "observations.competitors",
-]);
+/**
+ * 流量维度缺失 → 富化会额外买一次 lergassy 备选源。
+ *
+ * 注意 fieldGaps 的 key 是 FIELD_DIMENSIONS 的字段路径（如 trafficMetrics.monthlyVisits），
+ * 不是「searchTraffic.organic」这类旧 DFS 维度名 —— 用前缀判断才能命中。
+ */
+function lacksTraffic(r: StagingRow): boolean {
+  return r.fieldGaps.some(
+    (k) => k.startsWith("trafficMetrics.") || k === "metrics.monthlyVisits",
+  );
+}
 
 function estimateEnrich(
   rows: StagingRow[],
   countFallback?: number,
-): { count: number; dfs: number; ai: number; total: number; rough: boolean } {
-  let dfs = 0;
-  let ai = 0;
-  for (const r of rows) {
-    if (r.fieldGaps.some((k) => DFS_DIMS.has(k))) dfs++;
-    else ai++;
-  }
+): { count: number; perSite: number; fallback: number; total: number; rough: boolean } {
   const count = countFallback ?? rows.length;
-  // 队列只展示当前页时，按「剩余条目全走 DFS」估上限，宁可报多不报少
+  // 队列只展示当前页时，看不见的条目按「还要多买一份备选源」估上限，宁可报多不报少
   const unseen = Math.max(0, count - rows.length);
-  const total = (dfs + unseen) * ENRICH_COST.dfs + ai * ENRICH_COST.ai;
-  return { count, dfs: dfs + unseen, ai, total, rough: unseen > 0 };
+  const fallback = rows.filter(lacksTraffic).length + unseen;
+  const total = count * ENRICH_COST.perSite + fallback * ENRICH_COST.fallback;
+  return { count, perSite: ENRICH_COST.perSite, fallback, total, rough: unseen > 0 };
 }
 
 /** 富化只认这两种状态：后端 markEnriching 与脚本 --domains 是同一口径 */
@@ -427,8 +437,10 @@ function syncEnrichButton(jobs: Job[]): void {
   const runnable = picked.length
     ? picked.filter(canEnrich).length
     : Math.max(
-        // 未勾选 = 跑队列里全部已确认：扣掉刚提交、库里还没标上的那几条
-        (state.staging?.approved ?? 0) -
+        // 未勾选 = 跑队列里全部可富化的（待富化 + 富化失败，失败重试也是合法可跑）：
+        // 扣掉刚提交、库里还没标上的那几条
+        (state.staging?.approved ?? 0) +
+          (state.staging?.enrichFailed ?? 0) -
           [...state.enrichPending.keys()].filter(isEnrichPending).length,
         rows.filter(canEnrich).length,
       );
@@ -926,7 +938,7 @@ async function approveDomains(domains: string[], approve: boolean): Promise<void
   await apiPost("/tools/staging/approve", { domains, approve });
 }
 
-/** 触发富化：DFS 单次 $0.075、单站约 $0.30，所以必须先生成确认再花钱 */
+/** 触发富化：单条约 $0.01（aitdk + SERP + LLM），仍是真花钱的动作，提交前必须确认 */
 async function enrichDomains(domains: string[]): Promise<void> {
   await apiPost("/tools/enrich", {
     domains,
@@ -1211,7 +1223,15 @@ function bind(): void {
     // 没勾选时按队列里的待富化总数估算（当前页可能只显示一部分）
     const est = domains.length
       ? estimateEnrich(picked)
-      : estimateEnrich(picked, Math.min(state.staging?.approved ?? picked.length, MAX_ENRICH_BATCH));
+      : estimateEnrich(
+          picked,
+          Math.min(
+            // 没勾选时后端跑「全部可富化的」：待富化 + 富化失败的都算
+            (state.staging?.approved ?? 0) + (state.staging?.enrichFailed ?? 0) ||
+              picked.length,
+            MAX_ENRICH_BATCH,
+          ),
+        );
 
     if (!est.count) {
       window.alert(
@@ -1222,17 +1242,16 @@ function bind(): void {
       return;
     }
 
-    // 第一次确认：把账算清楚 —— 已有数据的条目不再买 DFS，价格差 9 倍
+    // 第一次确认：把账算清楚 —— 流量快照复用准入缓存，实际只花 aitdk + SERP + LLM
     const detail =
       (domains.length > MAX_ENRICH_BATCH
         ? `注意：单批最多 ${MAX_ENRICH_BATCH} 条，本次只处理前 ${MAX_ENRICH_BATCH} 条，其余的跑完再提交。\n\n`
         : "") +
       `将对 ${est.count} 个条目做富化（单条 2–5 分钟）。\n\n` +
-      (est.dfs
-        ? `· 需补 DFS 关键词/外链/竞品：${est.dfs} 条 × $${ENRICH_COST.dfs} = $${(est.dfs * ENRICH_COST.dfs).toFixed(2)}\n`
-        : "") +
-      (est.ai
-        ? `· 采集数据已够，只补 AI 解读：${est.ai} 条 × $${ENRICH_COST.ai} = $${(est.ai * ENRICH_COST.ai).toFixed(2)}\n`
+      `· 单条约 $${est.perSite.toFixed(4)}：aitdk 数据 $0.002 + Google 搜索 3 条 $0.0075 + AI 抽取 $0.001\n` +
+      `· 流量快照复用准入阶段的采集缓存，不再重复收费\n` +
+      (est.fallback
+        ? `· 其中 ${est.fallback} 条流量数据不足，会补备选源：${est.fallback} × $${ENRICH_COST.fallback} = $${(est.fallback * ENRICH_COST.fallback).toFixed(3)}\n`
         : "") +
       `\n预计合计约 $${est.total.toFixed(2)}${est.rough ? "（队列未全量展示，此为上限估算）" : ""}。\n继续？`;
     if (!window.confirm(detail)) return;
