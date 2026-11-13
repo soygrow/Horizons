@@ -32,7 +32,8 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # 整站构建约 20 分钟，再留出部署重试的余量（3 次 + 两次 30s 等待）
+    timeout-minutes: 30
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -62,8 +63,23 @@ jobs:
       - name: 构建产物断言（阻塞）
         run: node scripts/check/site-artifacts.mjs
 
+      # Cloudflare 的 versions 接口会偶发返回 code 10013（未分类瞬时错误）：
+      # assets 已经全部上传成功，只卡在最后创建 Worker version 这一步，重试即过。
+      # 不重试的话，一次抖动就要人工重跑整条 20 分钟的流水线。
       - name: 部署到 Cloudflare（horizons-site）
-        run: pnpm --filter @horizons/site exec wrangler deploy
+        run: |
+          for attempt in 1 2 3; do
+            echo "第 ${attempt}/3 次尝试部署…"
+            if pnpm --filter @horizons/site exec wrangler deploy; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              echo "部署失败，30 秒后重试"
+              sleep 30
+            fi
+          done
+          echo "连续 3 次部署失败：请确认 Cloudflare 状态页，以及 CLOUDFLARE_API_TOKEN 是否仍有 Workers Scripts:Edit 权限"
+          exit 1
 
       # 部署已经成功，验收只用于暴露问题：失败不阻塞流水线，
       # 避免网络抖动把一次成功发布标成失败。
