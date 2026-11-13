@@ -223,6 +223,32 @@ export function normalizeDensity(item: SimilarwebItem): { items: { term: string;
   return { items: items.slice(0, 12), totalWords: Number.isFinite(totalWords) ? totalWords : 0 };
 }
 
+export interface WhoisInfo {
+  registeredAt?: string;
+  expiresAt?: string;
+  lastChangedAt?: string;
+  registrar?: string;
+  registrantCountry?: string;
+  nameServers: string[];
+}
+
+/**
+ * aitdk 模式自带整套 WHOIS。之前只取词频，这堆字段白扔 —— 而域名注册日
+ * 恰恰是「上线时间」最硬的下界证据（cliputils：注册 2026-07-19，却被推成 10-07）。
+ */
+export function normalizeWhois(item: SimilarwebItem): WhoisInfo | null {
+  const clean = (v?: string) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
+  const info: WhoisInfo = {
+    registeredAt: clean(item.whois_registration_date),
+    expiresAt: clean(item.whois_expiration_date),
+    lastChangedAt: clean(item.whois_last_changed_date),
+    registrar: clean(item.whois_registrar),
+    registrantCountry: clean(item.whois_registrant_country),
+    nameServers: Array.isArray(item.whois_name_servers) ? item.whois_name_servers.filter((s) => typeof s === "string") : [],
+  };
+  return info.registeredAt || info.registrar ? info : null;
+}
+
 /* ------------------------------ lergassy 映射 ------------------------------ */
 
 const CHANNEL_RULES: { key: string; test: RegExp }[] = [
@@ -414,10 +440,33 @@ export function queryOf(page: SerpPage): string {
 }
 
 /** 拿前 N 个关键词做排名采样（SERP 按 query 计费，全量跑不现实） */
-export function pickSampleKeywords(fields: FieldBag, n: number): string[] {
+/**
+ * 采样几个关键词去查 Google 排名。
+ *
+ * 必须过滤品牌词：top_keywords 里必然有 "cliputils"/"clip utils" 这种自家品牌词，
+ * 查它等于查自己排第几（必然第一），$0.0025 一条纯浪费。之前 4 个 query 里
+ * 有 2 个是品牌词。
+ */
+export function pickSampleKeywords(
+  fields: FieldBag,
+  n: number,
+  opts: { domain?: string; siteName?: string } = {},
+): string[] {
   const list = fields.get("top_keywords");
   if (!Array.isArray(list)) return [];
-  return (list as unknown[]).filter((k): k is string => typeof k === "string").slice(0, n);
+
+  const flat = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const brand = [opts.domain?.split(".")[0] ?? "", opts.siteName ?? ""]
+    .map(flat)
+    .filter((s) => s.length >= 3);
+
+  return (list as unknown[])
+    .filter((k): k is string => typeof k === "string")
+    .filter((k) => {
+      const key = flat(k);
+      return !brand.some((b) => key === b || key.includes(b));
+    })
+    .slice(0, n);
 }
 
 function hostOf(u: string): string {

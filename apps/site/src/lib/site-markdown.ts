@@ -1,5 +1,6 @@
 import type { AITool } from "@horizons/shared";
 import { formatCount } from "./format";
+import { pendingTrendFlags } from "./data";
 
 function fmtDuration(sec?: number | null): string {
   if (sec === null || sec === undefined) return "0s";
@@ -41,8 +42,10 @@ export function buildSiteMarkdown(tool: AITool): string {
   if (m?.monthlyVisits !== undefined) L.push(`- 月访问量: ${m.monthlyVisits}`);
   if (m?.momGrowth !== undefined) L.push(`- 环比增长: ${m.momGrowth}%`);
   if (m?.organicVisits !== undefined) L.push(`- 自然搜索量: ${m.organicVisits}`);
-  if (tool.searchTraffic?.paid !== undefined) L.push(`- 付费搜索流量: ${tool.searchTraffic.paid}`);
-  if (m?.domainWeight !== undefined) L.push(`- 域名权重${m.domainWeightLabel ? `（${m.domainWeightLabel}）` : ""}: ${m.domainWeight}`);
+  if (m?.organicShare !== undefined) L.push(`- 自然搜索占比: ${m.organicShare}%`);
+  const countryLabel = m?.countryName ?? m?.country;
+  if (countryLabel) L.push(`- 所属国家: ${countryLabel}`);
+  // 域名权重（DR）来自已下线的 DataForSEO，存量值会一直冻结在旧快照上，不再对外输出
   if (m?.registeredAt)
     L.push(
       `- 域名注册: ${m.registeredAt}${m.registeredAtSuspect ? "（注册局迁移日，非真实注册时间）" : ""}`,
@@ -55,13 +58,19 @@ export function buildSiteMarkdown(tool: AITool): string {
   L.push("");
 
   if (tool.trend?.length) {
-    L.push(`## 流量趋势（近 ${tool.trend.length} 个月）`);
-    L.push("");
-    L.push("| 月份 | 总访问量 | 自然搜索 |");
-    L.push("| --- | --- | --- |");
-    for (const p of tool.trend)
-      L.push(`| ${p.date} | ${p.total} | ${p.organic} |`);
-    L.push("");
+    // 补 0 的月份不进表：写一行「0」会被当成「当月零访问」，
+    // 那是趋势图特意规避的假信号，导出文本也不该重新制造一遍
+    const flags = pendingTrendFlags(tool.trend);
+    const rows = tool.trend.filter((_, i) => !flags[i]);
+    const pending = flags.filter(Boolean).length;
+    if (rows.length) {
+      L.push(`## 流量趋势（近 ${tool.trend.length} 个月，其中 ${pending} 个月待累积）`);
+      L.push("");
+      L.push("| 月份 | 总访问量 | 自然搜索 |");
+      L.push("| --- | --- | --- |");
+      for (const p of rows) L.push(`| ${p.date} | ${p.total} | ${p.organic} |`);
+      L.push("");
+    }
   }
 
   if (tool.channelShares && Object.keys(tool.channelShares).length) {
@@ -96,6 +105,41 @@ export function buildSiteMarkdown(tool: AITool): string {
     L.push("");
     if (tool.ranks.global) L.push(`- 全球排名: 第 ${tool.ranks.global.toLocaleString("en-US")} 名`);
     if (tool.ranks.country) L.push(`- 国内排名: 第 ${tool.ranks.country.toLocaleString("en-US")} 名`);
+    if (tool.ranks.category) L.push(`- 行业排名: 第 ${tool.ranks.category.toLocaleString("en-US")} 名`);
+    L.push("");
+  }
+
+  const seo = tool.seoStanding;
+  if (seo?.samples?.length) {
+    L.push("## 搜索排名（采样）");
+    L.push("");
+    L.push("| 关键词 | 排名 | 搜索量 |");
+    L.push("| --- | --- | --- |");
+    for (const s of seo.samples)
+      L.push(
+        `| ${s.term} | ${s.position ? `#${s.position}` : "未进前 20"} | ${s.volume ? formatCount(s.volume) : "—"} |`,
+      );
+    L.push("");
+    // 采样词有限，必须写清「基于 N 个采样词」，否则会被当成全站排名统计
+    L.push(
+      `- 前 10 名: ${seo.top10 ?? 0} 个 / 前 20 名: ${seo.top20 ?? 0} 个（基于 ${seo.samples.length} 个采样词）`,
+    );
+    L.push("");
+  }
+
+  const aiv = tool.aiTraffic;
+  if (aiv && aiv.share !== undefined) {
+    L.push("## AI 引荐");
+    L.push("");
+    L.push(`- 占比: ${aiv.share}%`);
+    if (aiv.visits !== undefined) L.push(`- 推算访问量: ${formatCount(aiv.visits)}`);
+    const providers: [string, number | undefined][] = [
+      ["ChatGPT", aiv.chatgpt],
+      ["Claude", aiv.claude],
+      ["Gemini", aiv.gemini],
+      ["Perplexity", aiv.perplexity],
+    ];
+    for (const [name, v] of providers) if (v !== undefined) L.push(`- ${name}: ${v}%`);
     L.push("");
   }
 
@@ -113,12 +157,11 @@ export function buildSiteMarkdown(tool: AITool): string {
   if (tool.keywords?.length) {
     L.push("## 头部关键词");
     L.push("");
-    L.push("| 关键词 | 搜索量 | CPC | 流量 |");
-    L.push("| --- | --- | --- | --- |");
+    // 不再输出 CPC / 关键词流量：vortex 两个字段恒为空，一列「—」等于噪声
+    L.push("| 关键词 | 搜索量 |");
+    L.push("| --- | --- |");
     for (const k of tool.keywords)
-      L.push(
-        `| ${k.term} | ${k.volume ? formatCount(k.volume) : "—"} | ${k.cpc ? `$${k.cpc}` : "—"} | ${k.traffic ?? "—"} |`,
-      );
+      L.push(`| ${k.term} | ${k.volume ? formatCount(k.volume) : "—"} |`);
     L.push("");
   }
 

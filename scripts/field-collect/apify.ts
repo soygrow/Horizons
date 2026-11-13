@@ -123,6 +123,16 @@ export interface SimilarwebItem {
   aiTrafficShareGemini?: number;
   aiTrafficSharePerplexity?: number;
   aiTrafficSources?: { name?: string; source?: string; share?: number; rank?: number }[];
+  /*
+   * Similarweb 的数据可信度自评，vortex 原样透传。
+   *
+   * dataCoverage = "full" 表示样本充足；"partial" 通常是新站或流量来源过于分散，
+   * 数值可能有较大偏差。isSmall 是它的「小站」标记（月访问低于统计下限）。
+   * 这两个字段只读不加工：判定端据此把不可信的站放进观察区，不进主榜。
+   * 字段缺失时**不降级**，否则 Actor 少返回一个键就会把所有站误伤进观察区。
+   */
+  dataCoverage?: string;
+  isSmall?: boolean;
   website_traffic_by_country?: { country?: string; countryName?: string; share?: number; visits?: number }[];
   topKeywords?: { keyword?: string; searchVolume?: number; cpc?: number | null; estimatedValue?: number }[];
   keyword_density?: { keyword?: string; density?: number; count?: number }[] | Record<string, number>;
@@ -134,6 +144,14 @@ export interface SimilarwebItem {
     similarityScore?: number;
     category?: string;
   }[];
+  /* aitdk 模式额外返回 WHOIS，之前一直被忽略；域名注册日是上线时间最硬的下界 */
+  whois_registration_date?: string;
+  whois_expiration_date?: string;
+  whois_last_changed_date?: string;
+  whois_registrar?: string;
+  whois_registrant_country?: string;
+  whois_name_servers?: string[];
+  whois_securely_registered?: boolean;
 }
 
 export type VortexMode = "base_data" | "similar_sites" | "aitdk";

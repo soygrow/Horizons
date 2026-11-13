@@ -96,6 +96,17 @@ export interface Verdict {
   monthlyVisits?: number;
 }
 
+/**
+ * 数据可信度信号，来自 Similarweb 自评（vortex base_data 透传）。
+ *
+ * 两个字段都缺失时视为「未知」而不是「不可信」：Actor 少返回一个键
+ * 不该把所有站误伤进观察区，那是比漏判更糟的故障。
+ */
+export interface TrafficQuality {
+  dataCoverage?: string;
+  isSmall?: boolean;
+}
+
 export function visitsOf(t: AITool): number | undefined {
   return t.trafficMetrics?.monthlyVisits ?? t.metrics?.monthlyVisits;
 }
@@ -113,7 +124,12 @@ export function momOf(t: AITool): number | undefined {
  * traffic_history（$0.075/次），为一次筛选花 7500 倍的钱不划算，无流量时
  * 直接用 PH 票走新星豁免。搜索流量只作为富化后的质量指标展示。
  */
-export function judge(t: AITool, alive: AliveState = null, a1 = true): Verdict {
+export function judge(
+  t: AITool,
+  alive: AliveState = null,
+  a1 = true,
+  quality?: TrafficQuality,
+): Verdict {
   const a2 = !isExcludedHost(t.domain);
   const checks: VerdictChecks = { a1, a2, a3: alive, a4: false };
 
@@ -157,6 +173,27 @@ export function judge(t: AITool, alive: AliveState = null, a1 = true): Verdict {
   }
 
   checks.a4 = true;
+
+  /*
+   * 可信度优先于访问量：Similarweb 自己说样本不足时，数够主榜也放观察区。
+   * 页面会照常展示，只是不带 #名次、标「待验证」—— 让它上主榜等于
+   * 用一个不可信的数去和真实站排名次。
+   */
+  if (quality?.dataCoverage === "partial" || quality?.isSmall === true) {
+    const why = [
+      quality.dataCoverage ? `覆盖度 ${quality.dataCoverage}` : "",
+      quality.isSmall ? "Similarweb 标记为小站" : "",
+    ]
+      .filter(Boolean)
+      .join(" · ");
+    return {
+      tier: "watch",
+      reason: `月访问 ${v.toLocaleString()}，但${why || "Similarweb 样本不足"}（观察区）`,
+      checks,
+      monthlyVisits: v,
+    };
+  }
+
   if (v >= MIN_VISITS_CORE) {
     return { tier: "core", reason: `月访问 ${v.toLocaleString()} ≥ 10,000`, checks, monthlyVisits: v };
   }

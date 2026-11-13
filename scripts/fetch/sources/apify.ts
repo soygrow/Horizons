@@ -564,8 +564,11 @@ export async function fetchWaybackFirstSnapshots(domains: string[]): Promise<Map
 }
 
 /**
- * 主入口：vortex（字段最全）→ lergassy 备选 → DataForSEO 自然搜索兜底。
- * 自然搜索份额 Apify 拿不到时，用 DataForSEO domain_rank_overview 的 organic.etv 补齐。
+ * 主入口：vortex（字段最全）→ lergassy 备选。
+ *
+ * DataForSEO 已于 2026-11 下线：它给的是「搜索流量」口径，与页面展示的
+ * 「总访问量」不是一回事；缺自然搜索份额时保留缺失，不再跨源补齐 ——
+ * 两个口径混在一起，页面上的数就对不上任何一份原始数据了。
  */
 export async function fetchTrafficMetrics(
   domain: string,
@@ -596,7 +599,7 @@ export async function fetchTrafficMetrics(
     }
   }
 
-  // 自然搜索份额缺失时不再回调 DataForSEO：enrich-site 阶段的 historical_rank_overview
-  // 已计算 organic 并写入 metrics.organicVisits，此处兜底属于同一数据的重复请求。
+  // 自然搜索份额缺失时不做跨源补齐：页面展示的 organicShare 必须来自同一个快照，
+  // 否则「总访问量」和「自然搜索占比」会分别来自两个不同月份，算出来的自然搜索量是假的。
   return m?.monthlyVisits ? m : null;
 }

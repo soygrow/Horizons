@@ -157,24 +157,37 @@ export function trafficSparklinePoints(tool: AITool, maxPoints = 6): number[] | 
   return vals.map((v) => (v - min) / range);
 }
 
-/** 月访问量：vortex(SimilarWeb) 优先，回退 DFS metrics */
+/** 月访问量：vortex(SimilarWeb) 优先，回退存量 metrics（历史快照） */
 export function getMonthlyVisits(tool: AITool): number | undefined {
   return tool.trafficMetrics?.monthlyVisits ?? tool.metrics?.monthlyVisits;
 }
 
-/** 环比增长 %：vortex 优先，回退 DFS metrics */
+/** 环比增长 %：vortex 优先，回退存量 metrics */
 export function getMoMGrowth(tool: AITool): number | undefined {
   return tool.trafficMetrics?.monthlyVisitsGrowth ?? tool.metrics?.momGrowth;
 }
 
-/** 自然搜索量：vortex 优先，回退 DFS metrics */
+/** 自然搜索量：vortex 优先，回退存量 metrics */
 export function getOrganicVisits(tool: AITool): number | undefined {
   return tool.trafficMetrics?.organicSearchVisits ?? tool.metrics?.organicVisits;
 }
 
-/** 域名权重（DR）：数值 + 展示标签 */
-export function getDomainWeight(tool: AITool): { value?: number; label?: string } {
-  return { value: tool.metrics?.domainWeight, label: tool.metrics?.domainWeightLabel };
+/**
+ * 趋势点是否属于「待累积」的占位月份（不是真实的 0 访问）。
+ *
+ * 新数据带 `collected: false` 标记，直接信任它。存量数据没这个标记，
+ * 但首尾连续为 0 的点必然是当年补的月份（网页流量不会真的从 0 起步再爬升）：
+ * 不识别出来的话，趋势图会画出一条从 0 冲上峰值的假爆涨。
+ * 中间夹着 0 的情况不当占位，那是真断档，照常画。
+ */
+export function pendingTrendFlags(points: { total?: number; collected?: boolean }[]): boolean[] {
+  const flags = points.map((p) => p.collected === false);
+  const isLegacyZero = (p?: { total?: number; collected?: boolean }) =>
+    p?.collected === undefined && (p?.total ?? 0) <= 0;
+
+  for (let i = 0; i < points.length && isLegacyZero(points[i]); i++) flags[i] = true;
+  for (let j = points.length - 1; j >= 0 && isLegacyZero(points[j]); j--) flags[j] = true;
+  return flags;
 }
 
 /**

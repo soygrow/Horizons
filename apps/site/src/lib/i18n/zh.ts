@@ -68,6 +68,8 @@ export const zh = {
     avgVisitDuration: "平均访问时长",
     organicShare: "自然搜索占比",
     domainWeight: "域名权重",
+    /** 01 第 6 格：DFS 域名权重下线后换成所属国家 */
+    country: "所属国家",
     /** 详情页展示用：产品上线时间（Wayback 首快照） */
     launchedAt: "上线时间",
     registeredAt: "域名注册",
@@ -133,7 +135,28 @@ export const zh = {
     ranks: "排名",
     globalRank: "全球排名",
     countryRank: "国内排名",
+    /** 行业（Similarweb 类目）内排名；低流量站常为空，格子保留显示 — */
+    categoryRank: "行业排名",
     rankN: "第 {n} 名",
+
+    /* ---- AI 引荐（10 渠道里的 gen-ai 单独展开） ---- */
+    aiReferral: "AI 引荐",
+    aiShare: "AI 平台引荐占比",
+    aiVisits: "推算访问量",
+    aiProviderDistribution: "平台分布",
+    aiProviderHint: "Similarweb 对小站通常不返回分平台占比，这里显示 — 表示未采到，不是 0",
+
+    /* ---- 搜索表现（SERP 采样） ---- */
+    serpTitle: "关键词排名（采样）",
+    serpPosition: "排名",
+    serpNotRanked: "未进前 20",
+    serpSampleHint: "基于 {count} 个采样词",
+    serpSampledAt: "采样于 {date}",
+    top10: "TOP 10",
+    top20: "TOP 20",
+
+    /* ---- 上线时间可信度 ---- */
+    launchConfidence: "可信度 {level}",
     channels: {
       direct: "直接访问",
       organicSearch: "自然搜索",

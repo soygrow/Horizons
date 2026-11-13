@@ -1,16 +1,17 @@
 name: Enrich Tools (staging)
 
 # 后台「开始富化」按钮的落点。
-# 只处理 stage=approved（人工已确认收录）的候选，补 DFS 关键词/外链/竞品/搜索流量
+# 只处理 stage=approved（人工已确认收录）的候选，补流量/渠道/AI 引荐/SERP
 # 与 LLM 解读，然后生成 content/tools-field-report.json 供后台看完整度。
 # **不碰** content/aitools.json，所以不会触发站点重建。
 #
 # 需要的仓库 Secrets：
-#   APIFY_TOKEN             流量补全（$0.00001/域）
-#   DATAFORSEO_LOGIN        DFS 关键词/搜索流量
-#   DATAFORSEO_PASSWORD
+#   APIFY_TOKEN             vortex（准入已付费，富化命中 collect_raw 为 $0）+ SERP
 #   DEEPSEEK_API_KEY        AI 解读
 # 配不全时可用「仅免费字段」模式（free_only=true）跳过付费项。
+#
+# DataForSEO 已于 2026-11 下线：它给的「搜索流量」与页面展示的「总访问量」
+# 不是同一口径，且同一域名准入阶段已买过 vortex，再买一次只是重复付费。
 
 on:
   workflow_dispatch:
@@ -66,8 +67,9 @@ jobs:
       - name: 富化已确认候选
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
-          DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}
-          DATAFORSEO_PASSWORD: ${{ secrets.DATAFORSEO_PASSWORD }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           # 富化状态与字段体检报告写库（后台只读库）
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

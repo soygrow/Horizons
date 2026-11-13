@@ -6,7 +6,7 @@
  *   → 本脚本富化 → stage=enriched + fieldGaps
  *   → 后台看 tools-field-report.json 决定发哪些 → publish-tools.ts --domains
  *
- * 富化本身复用 scripts/fetch/enrich-site.ts（DataForSEO + LLM + 自建爬虫），
+ * 富化本身复用 scripts/fetch/enrich-site.ts（field-collect + LLM + 自建爬虫），
  * 通过 --staging 直接读写待发布队列，不触碰 content/aitools.json。
  *
  * 用法：
@@ -28,7 +28,7 @@ import {
   type StagingItem,
 } from "./verdict";
 import { expireStaleEnriching, readWorkspace, syncCandidates, type ItemStatus } from "./board-items";
-import { hasDataForSEO } from "../fetch/sources/dataforseo";
+import { hasApify } from "../fetch/sources/apify";
 import { saveReport } from "./reports";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
@@ -251,11 +251,11 @@ async function main(): Promise<void> {
 
   console.log(`\n[enrich-staging] 完成 ${ok}/${picked.length}${failed.length ? `｜失败 ${failed.length}` : ""}`);
   if (report.total > 0) {
-    // 没配 DFS 时关键词/外链/竞品/自然搜索必然是空的，这属于配置缺失而非富化失败，
+    // 没配 APIFY_TOKEN 时流量 / 关键词 / 渠道 / 国家分布全是空的，这属于配置缺失而非富化失败，
     // 不说明的话看报告的人只会以为富化又白跑了
-    if (!hasDataForSEO()) {
+    if (!hasApify()) {
       console.log(
-        "[enrich-staging] 未配置 DataForSEO：关键词 / 外链 / 竞品 / 自然搜索流量 这几项不会补（属预期，配好凭据再跑一次就能填）",
+        "[enrich-staging] 未配置 APIFY_TOKEN：流量 / 关键词 / 渠道结构 / 国家分布 这几项不会更新（属预期，配好凭据再跑一次就能填）",
       );
     }
     console.log(`[enrich-staging] 字段体检（共 ${report.total} 条，空置 / 有值但异常）：`);

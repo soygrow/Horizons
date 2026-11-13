@@ -3,7 +3,7 @@
 import SectionHeader from "../SectionHeader.astro";
 import Stat from "../Stat.astro";
 import InsightCard from "../InsightCard.astro";
-import { getDict } from "../../../lib/i18n";
+import { getDict, format as tf } from "../../../lib/i18n";
 import {
   formatCount,
   formatDate,
@@ -21,6 +21,7 @@ const { tool } = Astro.props;
 
 const m = tool.metrics;
 const tm = tool.trafficMetrics;
+const ranks = tool.ranks;
 const mom = tm?.monthlyVisitsGrowth ?? m?.momGrowth;
 const pi = tool.performanceInsight;
 const ds = tool.dataSnapshot;
@@ -68,7 +69,7 @@ const launchedUnknown = !!launchedRaw && !launchedAt;
       label={dict.metrics.monthlyVisitsGrowth}
       value={mom !== undefined ? formatMom(mom) : undefined}
       success={(mom ?? 0) > 0}
-      hint={momCapHint(mom) ?? "上月无数据或基数为 0，无法计算环比"}
+      hint={momCapHint(mom)}
     />
     <Stat
       label={dict.metrics.organicSearchVisits}
@@ -76,25 +77,21 @@ const launchedUnknown = !!launchedRaw && !launchedAt;
     />
     <Stat
       label={dict.metrics.organicShare}
-      value={
-        tm?.organicSearchVisits !== undefined && tm?.monthlyVisits
-          ? `${Math.round((tm.organicSearchVisits / tm.monthlyVisits) * 1000) / 10}%`
-          : undefined
-      }
-      hint="该站缺少全渠道流量份额，无法计算自然搜索占比（DFS 只给搜索渠道内部构成，不能当全渠道占比）"
+      value={m?.organicShare !== undefined ? `${m.organicShare}%` : undefined}
+      hint="Similarweb 全渠道口径：自然搜索访问 ÷ 总访问"
     />
     <Stat
       label={dict.metrics.directVisits}
       value={tm?.directVisits !== undefined ? formatCount(tm.directVisits) : undefined}
     />
     <Stat
-      label={dict.metrics.domainWeight}
-      value={
-        m?.domainWeight !== undefined
-          ? `${m.domainWeightLabel === "全球排名" ? "#" : ""}${formatCount(m.domainWeight)}`
-          : undefined
+      label={dict.metrics.country}
+      value={m?.countryName ?? m?.country}
+      hint={
+        ranks?.country
+          ? `${dict.traffic.countryRank} #${formatCount(ranks.country)}`
+          : "Similarweb 判定的主要流量来源国家"
       }
-      hint={m?.domainWeightLabel === "全球排名" ? "SimilarWeb 全球排名（非 Ahrefs DR）" : "未采集到该站的域名权重"}
     />
     <Stat
       label={dict.metrics.launchedAt}
@@ -104,7 +101,9 @@ const launchedUnknown = !!launchedRaw && !launchedAt;
           ? "该域名更早年份已有存档（多为停放页或其他项目），无法确定产品上线时间"
           : launchedEstimated
             ? "该域名早期已有其他站点存档，产品实际上线可能更晚"
-            : "站点首次被 Wayback 存档的时间"
+            : tool.launchConfidence
+              ? `${tf(dict.traffic.launchConfidence, { level: tool.launchConfidence })} · 站点首次被 Wayback 存档的时间`
+              : "站点首次被 Wayback 存档的时间"
       }
     />
   </div>

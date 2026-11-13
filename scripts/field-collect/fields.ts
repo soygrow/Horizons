@@ -7,6 +7,11 @@
  *
  * 与项目里其他采集模块无关：不读 content/*.json，不写 aitools，
  * 只服务「单个网站能不能把这 72 个字段采到」这一个验证目标。
+ *
+ * 唯一在文档之外新增的字段是 domain_registered_at：aitdk 模式本来就返回
+ * whois_registration_date，之前白扔（$0.002 只用了词频两项），接上之后
+ * 上线时间有了「域名注册」这条硬下界，cliputils 的 launch_date 才能从
+ * 错误的 2026-10-07 修正到 2026-07-19。
  */
 
 export type GroupKey = "basic" | "launch" | "traffic" | "channels" | "seo" | "product";
@@ -52,6 +57,7 @@ export const FIELDS: FieldDef[] = [
   { key: "wayback_first_status", label: "最早有效网页状态", group: "launch", method: "Wayback CDX API", api: "statuscode", paid: false },
   { key: "commoncrawl_first_timestamp", label: "最早历史抓取时间", group: "launch", method: "Common Crawl Index API", api: "timestamp", paid: false },
   { key: "ssl_first_seen", label: "最早 SSL 证书时间", group: "launch", method: "crt.sh / crt.live API", api: "not_before / first_seen", paid: false },
+  { key: "domain_registered_at", label: "域名注册时间", group: "launch", method: "Similarweb aitdk（WHOIS）", api: "whois_registration_date", paid: true },
   { key: "release_date", label: "产品正式发布日", group: "launch", method: "Apify Google Search Scraper + 原始页面 datePublished", api: "datePublished / dateCreated", paid: true },
   { key: "github_created_at", label: "GitHub 项目创建时间", group: "launch", method: "GitHub REST API", api: "created_at", paid: false },
   { key: "launch_date", label: "产品上线日期", group: "launch", method: "多来源综合推算", api: "自行生成 launch_date", paid: false },

@@ -10,6 +10,7 @@ import Pending from "../Pending.astro";
 import TrafficTrendChart from "../TrafficTrendChart.astro";
 import { getDict, format as tf } from "../../../lib/i18n";
 import { formatCount } from "../../../lib/format";
+import { pendingTrendFlags } from "../../../lib/data";
 
 interface Props {
   tool: Record<string, any>;
@@ -22,9 +23,27 @@ const trend: any[] = tool.trend ?? [];
 const geo: any[] = tool.geoDistribution ?? [];
 const ranks = tool.ranks;
 const keywords: any[] = tool.keywords ?? [];
-const rankDistribution: any[] = tool.rankDistribution ?? [];
 const td = tool.trafficDecrypt;
 const channelShares: Record<string, number> = tool.channelShares ?? {};
+const seo = tool.seoStanding;
+const ai = tool.aiTraffic;
+const eng = tool.engagement;
+
+/**
+ * 趋势固定画 6 个月。
+ *
+ * 不按「实际有几个月」缩横轴：vortex 第一次只给 3 个月，
+ * 缩成 3 格会让新站看起来和老站一样完整。缺的月份补 0 摆在那里，
+ * 读者能直接看出「数据还在累积」，两个月后就自然填满了。
+ *
+ * 「哪一格是补的」统一交给 pendingTrendFlags 判断（新数据看 collected，
+ * 存量数据看首尾连续的 0），页面按它提示「N 个月待累积」，
+ * 趋势图按同一套判定跳过着色与标签，不会画出掉到 0 的假断崖。
+ */
+const TREND_MONTHS = 6;
+const pendingFlags = pendingTrendFlags(trend);
+const collectedPoints = trend.filter((_, i) => !pendingFlags[i] && (trend[i]?.total ?? 0) > 0);
+const pendingMonths = Math.max(0, TREND_MONTHS - collectedPoints.length, pendingFlags.filter(Boolean).length);
 
 const channelItems = Object.entries(channelShares)
   .map(([key, value]) => ({
@@ -32,6 +51,21 @@ const channelItems = Object.entries(channelShares)
     value: value ?? 0,
   }))
   .sort((a, b) => b.value - a.value);
+
+const durationText = (() => {
+  const sec = eng?.durationSec;
+  if (typeof sec !== "number" || sec <= 0) return undefined;
+  const m = Math.floor(sec / 60);
+  const s = Math.round(sec % 60);
+  return m > 0 ? `${m} 分 ${s} 秒` : `${s} 秒`;
+})();
+
+const aiProviders = [
+  { key: "chatgpt", label: "ChatGPT" },
+  { key: "claude", label: "Claude" },
+  { key: "gemini", label: "Gemini" },
+  { key: "perplexity", label: "Perplexity" },
+].map((p) => ({ label: p.label, value: (ai as Record<string, number | undefined> | undefined)?.[p.key] }));
 ---
 
 <section id="traffic" class="flex scroll-mt-36 flex-col gap-10">
@@ -44,10 +78,12 @@ const channelItems = Object.entries(channelShares)
     <div slot="left" class="flex flex-col gap-5">
       <SubCard title={dict.traffic.trend}>
         <span slot="extra" class="text-sm text-ink-muted">
-          {tf(dict.traffic.monthsRange, { count: trend.length })}
+          {tf(dict.traffic.monthsRange, { count: TREND_MONTHS })}
+          {pendingMonths > 0 ? `（${pendingMonths} 个月待累积）` : ""}
         </span>
         {
-          trend.length >= 2 ? (
+          /* 只有一个有数月份时也画：画一个点 + 数值，比一句「暂无历史」更有信息量 */
+          collectedPoints.length >= 1 ? (
             <TrafficTrendChart points={trend as any} />
           ) : (
             <NoData note={dict.traffic.noHistory} />
@@ -59,6 +95,66 @@ const channelItems = Object.entries(channelShares)
         {
           channelItems.length ? (
             <Bars items={channelItems.map((c) => ({ label: c.label, value: c.value, suffix: "%" }))} />
+          ) : (
+            <NoData />
+          )
+        }
+      </SubCard>
+
+      <SubCard title={dict.traffic.aiReferral}>
+        <span slot="extra" class="text-sm text-ink-muted">
+          {ai?.share !== undefined ? `${dict.traffic.aiShare} ${ai.share}%` : ""}
+        </span>
+        {
+          ai?.share !== undefined ? (
+            <div class="flex flex-col gap-4">
+              {ai.visits !== undefined ? (
+                <p class="text-sm text-ink-secondary">
+                  {dict.traffic.aiVisits}：{formatCount(ai.visits)}
+                </p>
+              ) : null}
+              {aiProviders.some((p) => p.value !== undefined) ? (
+                <div>
+                  <span class="text-xs text-ink-muted">{dict.traffic.aiProviderDistribution}</span>
+                  <div class="mt-2">
+                    <Bars
+                      items={aiProviders
+                        .filter((p) => p.value !== undefined)
+                        .map((p) => ({ label: p.label, value: p.value as number, suffix: "%" }))}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <p class="text-xs leading-relaxed text-ink-muted">{dict.traffic.aiProviderHint}</p>
+              )}
+            </div>
+          ) : (
+            <NoData />
+          )
+        }
+      </SubCard>
+
+      <SubCard title={dict.traffic.engagement}>
+        {
+          eng ? (
+            <div class="grid grid-cols-3 gap-4">
+              <div>
+                <span class="text-xs text-ink-muted">{dict.traffic.bounceRate}</span>
+                <p class="text-xl font-semibold tabular-nums text-ink">
+                  {eng.bounceRate !== undefined ? `${eng.bounceRate}%` : "—"}
+                </p>
+              </div>
+              <div>
+                <span class="text-xs text-ink-muted">{dict.traffic.pagesPerVisit}</span>
+                <p class="text-xl font-semibold tabular-nums text-ink">
+                  {eng.pagesPerVisit !== undefined ? eng.pagesPerVisit : "—"}
+                </p>
+              </div>
+              <div>
+                <span class="text-xs text-ink-muted">{dict.traffic.timeOnSite}</span>
+                <p class="text-xl font-semibold tabular-nums text-ink">{durationText ?? "—"}</p>
+              </div>
+            </div>
           ) : (
             <NoData />
           )
@@ -77,34 +173,99 @@ const channelItems = Object.entries(channelShares)
 
       <SubCard title={dict.traffic.searchRanks}>
         <div class="flex flex-col gap-5">
+          {/*
+            三格恒显示，缺值给「—」。
+            行业排名在低流量站经常为空，隐藏整格会让人以为是漏渲染；
+            摆一个「—」至少说明「查了，但没有」。
+          */}
+          <div class="grid grid-cols-3 gap-4">
+            <div class="rounded-lg border border-border p-4">
+              <span class="text-xs text-ink-muted">{dict.traffic.globalRank}</span>
+              <p class="text-2xl font-semibold tabular-nums text-ink">
+                {ranks?.global ? ranks.global.toLocaleString("en-US") : "—"}
+              </p>
+            </div>
+            <div class="rounded-lg border border-border p-4">
+              <span class="text-xs text-ink-muted">{dict.traffic.countryRank}</span>
+              <p class="text-2xl font-semibold tabular-nums text-ink">
+                {ranks?.country ? ranks.country.toLocaleString("en-US") : "—"}
+              </p>
+            </div>
+            <div class="rounded-lg border border-border p-4">
+              <span class="text-xs text-ink-muted">{dict.traffic.categoryRank}</span>
+              <p class="text-2xl font-semibold tabular-nums text-ink">
+                {ranks?.category ? ranks.category.toLocaleString("en-US") : "—"}
+              </p>
+            </div>
+          </div>
+
           {
-            ranks?.global || ranks?.country ? (
-              <div class="grid grid-cols-2 gap-4">
-                <div class="rounded-lg border border-border p-4">
-                  <span class="text-xs text-ink-muted">{dict.traffic.globalRank}</span>
-                  <p class="text-2xl font-semibold tabular-nums text-ink">
-                    {ranks.global ? ranks.global.toLocaleString("en-US") : "—"}
-                  </p>
+            seo?.samples?.length ? (
+              <div class="flex flex-col gap-3">
+                <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+                  <span class="text-ink-secondary">
+                    {dict.traffic.top10} <b class="tabular-nums text-ink">{seo.top10 ?? 0}</b>
+                  </span>
+                  <span class="text-ink-secondary">
+                    {dict.traffic.top20} <b class="tabular-nums text-ink">{seo.top20 ?? 0}</b>
+                  </span>
+                  <span class="text-xs text-ink-muted">
+                    {tf(dict.traffic.serpSampleHint, { count: seo.samples.length })}
+                  </span>
                 </div>
-                <div class="rounded-lg border border-border p-4">
-                  <span class="text-xs text-ink-muted">{dict.traffic.countryRank}</span>
-                  <p class="text-2xl font-semibold tabular-nums text-ink">
-                    {ranks.country ? ranks.country.toLocaleString("en-US") : "—"}
-                  </p>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left text-sm">
+                    <thead class="text-xs text-ink-muted">
+                      <tr>
+                        <th class="py-2 font-medium">{dict.keywords.term}</th>
+                        <th class="whitespace-nowrap py-2 text-right font-medium">
+                          {dict.traffic.serpPosition}
+                        </th>
+                        <th class="whitespace-nowrap py-2 text-right font-medium">
+                          {dict.keywords.volume}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {seo.samples.slice(0, 10).map((s: any) => (
+                        <tr class="border-t border-border">
+                          <td class="py-2.5 text-ink">{s.term}</td>
+                          <td class="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">
+                            {s.position ? `#${s.position}` : dict.traffic.serpNotRanked}
+                          </td>
+                          <td class="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">
+                            {s.volume ? formatCount(s.volume) : "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
+                {seo.sampledAt ? (
+                  <p class="text-xs text-ink-muted">
+                    {tf(dict.traffic.serpSampledAt, { date: seo.sampledAt })}
+                  </p>
+                ) : null}
               </div>
             ) : null
           }
+
           {
-            keywords.some((k) => k.volume != null) ? (
+            /*
+             * 有 SERP 采样就不再单独列关键词表：上面那张已经含关键词 + 搜索量，
+             * 再叠一张同源的「关键词 / 搜索量」纯属重复。
+             * 只有老数据（没有 seoStanding）才退回这张简表。
+             *
+             * 不渲染 CPC 列：vortex 的 cpc 恒为 null，一列全是「—」比没有还糟。
+             * 也不再渲染 DFS 的 rankDistribution —— 数据源已下线，留着只会显示旧数据。
+             */
+            !seo?.samples?.length && keywords.some((k) => k.volume != null) ? (
               <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
                   <thead class="text-xs text-ink-muted">
                     <tr>
                       <th class="py-2 font-medium">{dict.keywords.term}</th>
                       <th class="whitespace-nowrap py-2 text-right font-medium">{dict.keywords.volume}</th>
-                      <th class="whitespace-nowrap py-2 text-right font-medium">{dict.keywords.cpc}</th>
-                      <th class="whitespace-nowrap py-2 text-right font-medium">{dict.keywords.traffic}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -114,12 +275,6 @@ const channelItems = Object.entries(channelShares)
                         <td class="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">
                           {k.volume ? formatCount(k.volume) : "—"}
                         </td>
-                        <td class="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">
-                          {k.cpc ? `$${k.cpc}` : "—"}
-                        </td>
-                        <td class="whitespace-nowrap py-2.5 text-right tabular-nums text-ink-secondary">
-                          {k.traffic ?? "—"}
-                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -127,24 +282,9 @@ const channelItems = Object.entries(channelShares)
               </div>
             ) : null
           }
+
           {
-            rankDistribution.length ? (
-              <div>
-                <span class="text-xs text-ink-muted">{dict.traffic.rankDistribution}</span>
-                <div class="mt-2">
-                  <Bars
-                    items={rankDistribution.map((r: any) => ({
-                      label: r.label,
-                      value: r.count,
-                      suffix: " 个",
-                    }))}
-                  />
-                </div>
-              </div>
-            ) : null
-          }
-          {
-            !keywords.length && !rankDistribution.length && !ranks?.global && !ranks?.country ? (
+            !seo?.samples?.length && !keywords.length && !ranks?.global && !ranks?.country && !ranks?.category ? (
               <NoData />
             ) : null
           }

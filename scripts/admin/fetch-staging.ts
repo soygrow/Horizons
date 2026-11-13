@@ -23,8 +23,21 @@ import { fetchProductHuntTools, closePHBrowser } from "../fetch/sources/productH
 import { fetchHackerNewsTools } from "../fetch/sources/hackerNews";
 import { fetchFuturepediaTools } from "../fetch/sources/futurepedia";
 import { loadExisting } from "../fetch/dedupe";
-import { extractTrafficMetrics, fetchLergassyMulti, hasApify } from "../fetch/sources/apify";
-import { applyTraffic } from "../fetch/apply-traffic";
+import { hasApify } from "../fetch/sources/apify";
+import { fetchVortexMode, type SimilarwebItem } from "../field-collect/apify";
+import {
+  assertStore,
+  currentPeriod,
+  getRaw,
+  saveRaw,
+  saveTrafficMonths,
+} from "../fetch/collect-store";
+import {
+  applyVortexAdmission,
+  parseVortexBase,
+  snapshotDateOf,
+  type VortexSnapshot,
+} from "../fetch/apply-vortex";
 import { probeAll, fetchSiteMeta } from "./probe";
 import { looksLikeAiProduct } from "../fetch/ai-relevance";
 import { translateInPlace } from "../fetch/translate";
@@ -38,8 +51,28 @@ import {
   type StagingItem,
 } from "./verdict";
 
-/** 与 backfill-traffic.ts 一致的批大小：一次 Actor run 处理 24 个域名 */
-const ENRICH_BATCH = 24;
+/**
+ * 单轮准入最多为多少个站购买 vortex base_data。
+ *
+ * 闸门位置：免费粗筛之后、付费调用之前。超出的**不丢弃**，只是留给下一轮
+ * （它们的 card 已经落库，下一轮会重新进入候选池排队）。
+ *
+ * 为什么需要：Product Hunt 单日爆量时粗筛后可能剩上百个站，
+ * 全买 vortex 就是 $0.2+/轮，且 Actions 45 分钟预算也跑不完。
+ * 30 是按「单站串行 90s × 并发 3」估算的稳妥值。
+ */
+const MAX_VORTEX_BUY = 30;
+
+/**
+ * vortex 并发数。
+ *
+ * 单站一次独立 Actor run（$0.002），3 并发既能把 30 站压到 ~10 分钟，
+ * 又不会因为同时开太多 run 撞 Apify 的账号并发上限。
+ */
+const VORTEX_CONCURRENCY = 3;
+
+/** vortex base_data 参考单价，仅用于日志估算 */
+const VORTEX_BASE_USD = 0.002;
 /** 单次最多抓 200 个：再多 Actions 容易超时，且后台一次审核不过来 */
 const MAX_COUNT = 200;
 /**
@@ -116,38 +149,154 @@ function assertD1(): void {
 /* ------------------------------- 站点存活探测 ------------------------------- */
 /* probeAlive / probeAll 在 ./probe.ts，与 audit-existing.ts 共用同一份规则 */
 
-/* ------------------------------- 流量富化 ------------------------------- */
+/* ------------------------------- 准入采集 ------------------------------- */
+
+/** 固定并发的 worker pool：n 个 worker 从同一个游标取下标，不预先分片 */
+async function runPool<T, R>(
+  items: readonly T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const out = new Array<R>(items.length);
+  let cursor = 0;
+  const size = Math.max(1, Math.min(limit, items.length));
+  await Promise.all(
+    Array.from({ length: size }, async () => {
+      for (;;) {
+        const i = cursor++;
+        if (i >= items.length) return;
+        out[i] = await fn(items[i], i);
+      }
+    }),
+  );
+  return out;
+}
 
 /**
- * 补 Similarweb 流量：没有月访问量的站进不了主榜（只能靠 PH 热度进观察区），
- * 所以新抓的站尽量一次补齐。单域成本近乎为 0（实测 528 次共 $0.0056）。
+ * 准入采集：一次调用拿到判定与后续展示所需的全部流量数据。
+ *
+ * 为什么是 vortex `base_data` 而不是批量 lergassy：
+ *
+ *   - 它是「月访问量 + 渠道 + 关键词 + AI 引荐 + 互动指标」的唯一来源，
+ *     准入买过之后富化阶段只读 `collect_raw`，同一个域名全生命周期只付一次钱；
+ *   - 月度序列可以顺带写进 `traffic_history`，趋势图按月累积、缺月补 0。
+ *
+ * 三阶段执行，且**只有买数据是并发的**：
+ *
+ *   1. 串行查库 —— 命中直接 0 成本，D1 单次查询很快；
+ *   2. 并发买未命中的 —— vortex 单站 40~90s，3 并发把 30 站压到 ~10 分钟；
+ *   3. 串行落库 —— d1-client 顺序执行的设计不变，避免并发写互相等锁。
+ *
+ * 返回 domain → 快照，供 `judge()` 读取可信度信号（dataCoverage / isSmall）。
  */
-async function enrichTraffic(items: AITool[]): Promise<number> {
-  if (items.length === 0) return 0;
+async function collectAdmission(items: AITool[]): Promise<Map<string, VortexSnapshot>> {
+  const out = new Map<string, VortexSnapshot>();
+  if (items.length === 0) return out;
   if (!hasApify()) {
-    console.warn("[staging] 未配置 APIFY_TOKEN，跳过流量富化");
-    return 0;
+    console.warn("[staging] 未配置 APIFY_TOKEN，跳过准入流量采集");
+    return out;
   }
+  // 表缺了就会每轮重复买 vortex，付钱前先挡掉
+  await assertStore();
 
-  let ok = 0;
-  for (let i = 0; i < items.length; i += ENRICH_BATCH) {
-    const chunk = items.slice(i, i + ENRICH_BATCH);
-    const fetched = await fetchLergassyMulti(chunk.map((t) => t.domain));
-    for (const tool of chunk) {
-      const raw = fetched.get(tool.domain.toLowerCase());
-      // undefined = 网络/平台故障，null = 平台确实没有该站数据，两者都不写
-      if (!raw) continue;
-      const metrics = extractTrafficMetrics(raw);
-      if (!metrics?.monthlyVisits) continue;
-      applyTraffic(tool, raw, metrics);
-      tool.collectedAt = new Date().toISOString();
-      ok++;
-    }
+  // 闸门：超出的站不买，card 已落库，下一轮会重新排队
+  const budget = items.slice(0, MAX_VORTEX_BUY);
+  const deferred = items.length - budget.length;
+  if (deferred > 0) {
     console.log(
-      `[staging] 富化进度 ${Math.min(i + ENRICH_BATCH, items.length)}/${items.length}｜成功 ${ok}`,
+      `[staging] 准入上限 ${MAX_VORTEX_BUY} 站/轮，${deferred} 个留待下一轮（不丢弃）`,
     );
   }
-  return ok;
+
+  const period = currentPeriod();
+
+  /* ① 查库：本快照月份已经买过就直接用 */
+  const pending: AITool[] = [];
+  for (const tool of budget) {
+    const hit = await getRaw<SimilarwebItem>(tool.domain, "vortex_base", period);
+    if (hit?.ok && hit.payload) {
+      const snap = parseVortexBase(hit.payload, hit.period || period);
+      applyVortexAdmission(tool, snap);
+      out.set(tool.domain.toLowerCase(), snap);
+      continue;
+    }
+    pending.push(tool);
+  }
+  if (budget.length > pending.length) {
+    console.log(
+      `[staging] vortex 命中缓存 ${budget.length - pending.length} 个（$0 复用），待购买 ${pending.length} 个`,
+    );
+  }
+
+  if (pending.length === 0) return out;
+
+  /* ② 并发购买：外部调用并发，不碰 D1 */
+  type Fetched = {
+    tool: AITool;
+    item: SimilarwebItem | null;
+    snap: VortexSnapshot | null;
+    error?: string;
+  };
+  const fetched = await runPool<AITool, Fetched>(pending, VORTEX_CONCURRENCY, async (tool) => {
+    const r = await fetchVortexMode(tool.domain, "base_data");
+    if (!r.item) return { tool, item: null, snap: null, error: r.error ?? "Actor 返回空数组" };
+    const snap = parseVortexBase(r.item, period);
+    if (snap.monthlyVisits === undefined) {
+      return { tool, item: r.item, snap: null, error: "vortex 未返回月访问量" };
+    }
+    return { tool, item: r.item, snap };
+  });
+
+  /* ③ 串行落库 + 写回 AITool */
+  let spent = 0;
+  let ok = 0;
+  for (const f of fetched) {
+    const domain = f.tool.domain.toLowerCase();
+    if (!f.snap || !f.item) {
+      // 失败也记一行：后台能看出「这个站试过了、失败了」，账目记 0
+      await saveRaw({
+        domain,
+        source: "vortex_base",
+        period,
+        ok: false,
+        payload: null,
+        error: f.error ?? "无数据",
+        costUsd: 0,
+        via: "admission",
+      });
+      // 注意：这个站仍会落进候选池，之后的采集会因「已见过」而跳过。
+      // 要补数据得在后台点「重判」，或把它放进 --domains 手动重抓。
+      console.warn(
+        `[staging] vortex 无数据：${domain}（${f.error ?? "未知"}）—— 已进候选池，需手动重抓`,
+      );
+      continue;
+    }
+
+    await saveRaw({
+      domain,
+      source: "vortex_base",
+      period,
+      ok: true,
+      payload: f.item,
+      error: null,
+      costUsd: VORTEX_BASE_USD,
+      via: "admission",
+    });
+    // 一次写入返回的全部月份：vortex 每次给 3 个月，采两次就能填满 6 格趋势图
+    await saveTrafficMonths(domain, f.snap.months, { snapshotDate: snapshotDateOf() });
+
+    applyVortexAdmission(f.tool, f.snap);
+    f.tool.collectedAt = new Date().toISOString();
+    out.set(domain, f.snap);
+    spent += VORTEX_BASE_USD;
+    ok++;
+  }
+
+  console.log(
+    `[staging] 准入采集完成 ${ok}/${pending.length} 个｜本次花费 ≈$${spent.toFixed(4)}` +
+      `（命中缓存 ${budget.length - pending.length} 个未计费）`,
+  );
+  return out;
 }
 
 /* ------------------------------- 多源合并抓取 ------------------------------- */
@@ -384,8 +533,14 @@ async function main(): Promise<void> {
     console.log(`[staging] A1 粗筛剔除 ${offTopic} 个（名称/简介无 AI 相关词）`);
   }
 
-  const enriched = enrich ? await enrichTraffic(relevant) : 0;
-  console.log(`[staging] 流量判定字段就绪 ${enriched}/${relevant.length}`);
+  // 准入即采集：vortex base_data 是全链路唯一付费的流量来源。
+  // 富化阶段直接读 collect_raw，同一个域名不会再买第二次。
+  const snapshots = enrich
+    ? await collectAdmission(relevant)
+    : new Map<string, VortexSnapshot>();
+  if (enrich) {
+    console.log(`[staging] 流量判定字段就绪 ${snapshots.size}/${relevant.length}`);
+  }
 
   // 第二阶段之前的「判定」：只靠 A1–A4 必需字段定 tier，
   // 不做 DFS 关键词/外链/AI 解读——那部分要等人工确认收录后再手动触发。
@@ -409,7 +564,14 @@ async function main(): Promise<void> {
     : new Map<string, boolean | null>();
   console.log(`[staging] 存活探测 ${needProbe.length} 个`);
   const items: StagingItem[] = fresh.map((t) => {
-    const verdict = judge(t, aliveMap.get(t.domain) ?? null, relevantDomains.has(t.domain));
+    // 第 4 个参数带 Similarweb 可信度：样本不足的站即使数够主榜也进观察区。
+    // 超出准入上限、本轮没采到的站没有快照，judge 走原有的 PH 票兜底逻辑。
+    const verdict = judge(
+      t,
+      aliveMap.get(t.domain) ?? null,
+      relevantDomains.has(t.domain),
+      snapshots.get(t.domain.toLowerCase()),
+    );
     return { ...t, verdict, stage: verdict.tier === "reject" ? "rejected" : "candidate" };
   });
   const tally = { core: 0, watch: 0, reject: 0 };

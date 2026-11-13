@@ -77,6 +77,14 @@ export interface SiteMetrics {
    * 同一天出现大量不同域名即为该原因，此值不能当真实注册时间或产品年龄。
    */
   registeredAtSuspect?: boolean;
+  /**
+   * 所属国家（邮编代码，如 "IN"）与国家名（如 "India"）。
+   * 来源 Similarweb 的 `country` + `countryShare[0].countryName`。
+   * 原来是 DFS 的 domainWeight（域名权重）占着这一格，DFS 下线后换成国家 —— 
+   * 「这个站在哪儿做起来的」比一个第三方权重分更能说明问题。
+   */
+  country?: string;
+  countryName?: string;
 }
 
 /** 02 流量：趋势点（双系列） */
@@ -84,6 +92,14 @@ export interface TrafficTrendPoint {
   date: string;   // YYYY-MM
   total: number;  // 总访问量
   organic: number; // 自然搜索
+  /**
+   * false = 该月没有采集记录，total 是补的 0（不是「零访问」）。
+   *
+   * 趋势图固定画 6 格，缺的月份补 0 占位；如果照常画线和标数值，
+   * 读者会看到一个断崖式「掉到 0」，把「还没累积」误读成「流量归零」。
+   * 前端据此跳过该点的折线与数值标签，只保留横轴月份。
+   */
+  collected?: boolean;
 }
 
 /** 02 流量：渠道 key（哥伦布 10 渠道） */
@@ -110,6 +126,67 @@ export interface Engagement {
 export interface SiteRanks {
   global?: number;  // 全球排名
   country?: number; // 国内排名
+  /**
+   * 行业（Similarweb 类目）内排名。
+   * 低流量站 vortex 常返回 null，此时前端保留格子显示「—」而不是隐藏整卡 ——
+   * 缺一个数就少一块，会让人以为是页面 bug。
+   */
+  category?: number;
+}
+
+/** 单个采样词在 Google 首屏的排名表现 */
+export interface SerpSample {
+  term: string;
+  /** 首屏 20 条内的名次；未进前 20 时缺省（前端显示「未进前 20」） */
+  position?: number;
+  url?: string;
+  title?: string;
+  /** 月搜索量：与 vortex topKeywords 能对上时填，用于给排名一个「值不值钱」的参照 */
+  volume?: number;
+}
+
+/**
+ * 搜索与排名（02）。
+ *
+ * 只保存「我们真的查过」的词：`samples.length` 就是采样数，
+ * 页面上的 TOP10/TOP20 计数必须带「基于 N 个采样词」的 hint，
+ * 否则读者会以为这是全站关键词统计。
+ */
+export interface SeoStanding {
+  samples: SerpSample[];
+  top10: number;
+  top20: number;
+  /** 采样日期 YYYY-MM-DD，SERP 是即时结果，不像 Similarweb 那样按月有效 */
+  sampledAt?: string;
+}
+
+/**
+ * AI 平台引荐流量（02 流量结构里的 AI 引荐段）。
+ *
+ * 只用 `share`（Similarweb 的 genAiTraffic）推算访问量，不用 `aiTrafficVisits` 原值：
+ * 实测两者会自相矛盾（cliputils 的 aiTrafficVisits=0 但 genAiTraffic=2.2%），
+ * 而百分比是页面要展示的那个数，推算值至少和它自洽。
+ */
+export interface AiTraffic {
+  /** 占比 % */
+  share?: number;
+  /** 推算访问量 = round(monthlyVisits × share / 100) */
+  visits?: number;
+  /** 四家分布 %；Similarweb 对小站常全为 null，前端此时显示「—」 */
+  chatgpt?: number;
+  claude?: number;
+  gemini?: number;
+  perplexity?: number;
+}
+
+/** 单个字段的来源，供页面 footer 与后台审计 */
+export interface FieldSource {
+  /** 采集源标识：vortex_base / serp / wayback / html / github … */
+  from: string;
+  /** 采集日期 YYYY-MM-DD */
+  at: string;
+  /** 数据所属周期（Similarweb 快照月份 YYYY-MM；即时源无此值） */
+  period?: string;
 }
 
 /** 03 外链统计 + 明细 */
@@ -407,7 +484,21 @@ export interface AITool {
   moduleInsights?: ModuleInsight;                         // 各模块分析 + so-what（AI）
   trafficMetrics?: TrafficMetrics;                        // 产品表现 8 指标（Apify Similarweb）
   performanceInsight?: PerformanceInsight;                // 01 产品表现结构化分析（高光结论 + 六宫格）
+
+  // V8 搜索可见性与溯源
+  seoStanding?: SeoStanding;         // 02 搜索与排名（采样词排名 + TOP10/20）
+  aiTraffic?: AiTraffic;             // 02 AI 引荐（占比 + 推算访问量）
+  /**
+   * 上线时间可信度。`launchedAt` 一直只有日期没有把握程度，
+   * 而「Wayback 首次快照」和「SERP 里一句发布日期」的可靠度差一个量级。
+   */
+  launchConfidence?: "高" | "中" | "低";
+  /** 字段 → 来源，供 footer 与后台审计（也直接证明「没有重复买」） */
+  sources?: Record<string, FieldSource>;
 }
+
+/** 采集阶段：准入（免费粗筛 + 首次付费）与富化（补剩余字段） */
+export type CollectStage = "admission" | "enrich";
 
 // ---------------------------------------------------------------------------
 // AI 趋势词榜单（/trends）：搜索趋势证据 + 机会判断

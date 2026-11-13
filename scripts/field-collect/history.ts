@@ -40,9 +40,10 @@ function cdxToIso(ts: string | undefined): string | undefined {
  */
 export async function waybackEvidence(domain: string): Promise<WaybackEvidence> {
   const base = "https://web.archive.org/cdx/search/cdx";
-  const first = await httpGet(`${base}?url=${encodeURIComponent(domain)}&output=json&limit=1&fl=timestamp,original,statuscode`, {
-    timeoutMs: 25_000,
-  });
+  const first = await getWithRetry(
+    `${base}?url=${encodeURIComponent(domain)}&output=json&limit=1&fl=timestamp,original,statuscode`,
+    25_000,
+  );
 
   if (!first.ok) return { error: `CDX 请求失败（HTTP ${first.status || "无响应"}）${first.error ? `：${first.error}` : ""}` };
 
@@ -200,6 +201,16 @@ export async function sslEvidence(domain: string): Promise<SslEvidence> {
   }
 }
 
+/** Wayback 的 CDX 偶发 fetch failed（DNS/连接被掐），重试一次就够，别拖长采集时间 */
+async function getWithRetry(url: string, timeoutMs: number): Promise<Awaited<ReturnType<typeof httpGet>>> {
+  let res = await httpGet(url, { timeoutMs });
+  if (!res.ok && (res.status === 0 || res.status >= 500)) {
+    await new Promise((r) => setTimeout(r, 1500));
+    res = await httpGet(url, { timeoutMs });
+  }
+  return res;
+}
+
 /** 递归找 not_before / first_seen 类字段，crt.live 的结构没公开文档，按值找最稳 */
 function collectNotBefore(data: unknown): string[] {
   const out: string[] = [];
@@ -310,7 +321,12 @@ export async function fetchGithubRepo(fullName: string): Promise<GithubRepo> {
 export interface LaunchInputs {
   releaseDate?: string;
   githubCreatedAt?: string;
+  /** WHOIS 注册日（aitdk 副产物）：真实上线不可能早于它 */
+  domainRegisteredAt?: string;
+  /** Wayback 首条记录（可能是 301，只代表域名解析，不代表页面存在） */
   waybackTimestamp?: string;
+  /** Wayback 首个 200 记录：这才是「页面确实存在」的上界 */
+  waybackOkTimestamp?: string;
   commonCrawlTimestamp?: string;
   sslFirstSeen?: string;
 }
@@ -324,45 +340,89 @@ export interface LaunchConclusion {
 
 const dayDiff = (a: string, b: string) => Math.abs(Date.parse(a) - Date.parse(b)) / 86_400_000;
 
+interface LaunchCandidate {
+  date: string;
+  weight: number;
+  label: string;
+  /** 精确值（官方发布日）：不当下界用，直接采信 */
+  exact?: boolean;
+}
+
 /**
  * 多来源推算上线日期。
  *
- * 优先级按证据强度排：官方发布日 > GitHub 建仓日 > 网页存档/爬虫首抓（取更早者）> 证书签发。
- * 不能用「取最早」的简单规则 —— 证书经常比上线早半年（先买域名），
- * 那会把上线日期整体往前拉，反而更不准。
+ * 证据分两类，混在一起比权重是上一版的错误来源：
+ *   下界（真实上线不早于它）：域名注册、证书签发、GitHub 建仓、官方发布日
+ *   上界（真实上线不晚于它）：首次网页存档/爬虫抓取
  *
- * 可信度 = 主证据强度 + 其他来源在 ±1 年内的一致性；单一弱证据（只有证书）一律低。
+ * cliputils 就是这么错的：Wayback 首条是 2026-10-07 的 301（只有域名解析，
+ * 页面还没建），权重却排第一，于是把上线日推到 10-07，比 WHOIS 注册日晚了 80 天；
+ * 同期 SSL 证书 07-19 签发、8 月就有流量，两个证据都指向 7 月。
+ *
+ * 现在的规则：
+ *   1. 存档只用 200 记录（waybackOkTimestamp），301 不参与；
+ *   2. 下界取「最晚」的一个 —— 所有下界都成立之后站点才可能上线；
+ *   3. 上界只用来判断下界是否失真：跨度 ≤90 天加可信度分，缺上界不加分。
  */
 export function concludeLaunchDate(inputs: LaunchInputs): LaunchConclusion {
   const pick = (d?: string) => (d && /^\d{4}-\d{2}-\d{2}/.test(d) ? d.slice(0, 10) : undefined);
 
   const release = pick(inputs.releaseDate);
   const github = pick(inputs.githubCreatedAt);
-  const wayback = pick(inputs.waybackTimestamp);
-  const crawl = pick(inputs.commonCrawlTimestamp);
+  const registered = pick(inputs.domainRegisteredAt);
   const ssl = pick(inputs.sslFirstSeen);
+  const waybackOk = pick(inputs.waybackOkTimestamp) ?? pick(inputs.waybackTimestamp);
+  const crawl = pick(inputs.commonCrawlTimestamp);
 
-  const archive = [wayback, crawl].filter(Boolean).sort()[0];
+  const upper = [waybackOk, crawl].filter((d): d is string => !!d).sort()[0];
 
-  const candidates: { date: string; weight: number; label: string }[] = [];
-  if (release) candidates.push({ date: release, weight: 4, label: "官方发布日" });
-  if (github) candidates.push({ date: github, weight: 3.5, label: "GitHub 建仓" });
-  if (archive) candidates.push({ date: archive, weight: 2.5, label: "首次网页存档/抓取" });
-  if (ssl) candidates.push({ date: ssl, weight: 1, label: "证书首次签发" });
+  const lowers: LaunchCandidate[] = [];
+  if (release) lowers.push({ date: release, weight: 4, label: "官方发布日", exact: true });
+  if (github) lowers.push({ date: github, weight: 3.5, label: "GitHub 建仓" });
+  if (registered) lowers.push({ date: registered, weight: 3.5, label: "域名注册" });
+  if (ssl) lowers.push({ date: ssl, weight: 2.8, label: "证书首次签发" });
 
-  if (!candidates.length) {
-    return { date: null, confidence: "无证据", score: 0, note: "五个来源全部无数据" };
+  if (!lowers.length && !upper) {
+    return { date: null, confidence: "无证据", score: 0, note: "六个来源全部无数据" };
   }
 
-  const primary = [...candidates].sort((a, b) => b.weight - a.weight)[0];
-  const agree = candidates.filter((c) => c !== primary && dayDiff(c.date, primary.date) <= 365);
-  const score = Math.min(100, Math.round(primary.weight * 18 + agree.length * 6));
+  // 只有上界：能说「最晚这天已经在线」，说不出更早，一律低可信
+  if (!lowers.length && upper) {
+    return {
+      date: upper,
+      confidence: "低",
+      score: 40,
+      note: `只有上界证据：首次网页存档/抓取 ${upper}（真实上线可能更早，缺注册日/证书/发布日可校正）`,
+    };
+  }
+
+  const exact = lowers.find((c) => c.exact);
+  // 同一天时取权重更高的那条（cliputils 的域名注册 16:48 与证书 16:06 是同一天，
+  // 按字符串比大小会把「证书」排到前面，主证据就变成了弱证据）
+  const latest = [...lowers].sort((a, b) => {
+    const diff = Date.parse(b.date) - Date.parse(a.date);
+    return diff !== 0 ? diff : b.weight - a.weight;
+  })[0];
+  const primary = exact ?? latest;
+
+  const agree = lowers.filter((c) => c !== primary && dayDiff(c.date, primary.date) <= 45);
+  const gapDays = upper ? dayDiff(upper, primary.date) : null;
+
+  let score = primary.weight * 18 + agree.length * 9;
+  if (gapDays !== null && gapDays <= 90) score += 12;
+  else if (gapDays !== null && gapDays <= 180) score += 6;
+  score = Math.min(100, Math.round(score));
   const confidence = score >= 80 ? "高" : score >= 55 ? "中" : "低";
 
-  const chain = candidates.map((c) => `${c.label} ${c.date}`).join("；");
+  const chain = [
+    ...lowers.map((c) => `${c.label} ${c.date}`),
+    ...(upper ? [`首次网页存档/抓取（上界） ${upper}`] : []),
+  ].join("；");
+
   const note =
-    `主证据：${primary.label}（${primary.date}）` +
-    (agree.length ? `；一致来源 ${agree.length} 个（±1 年内）` : "；无其他来源相互印证") +
+    `主证据：${primary.label}（${primary.date}，${primary.exact ? "精确值" : "下界"}）` +
+    (agree.length ? `；一致下界 ${agree.length} 个（±45 天）` : "；无其它下界相互印证") +
+    (gapDays !== null ? `；上界 ${upper}（相差 ${Math.round(gapDays)} 天）` : "") +
     `。全部证据：${chain}`;
 
   return { date: primary.date, confidence, score, note };

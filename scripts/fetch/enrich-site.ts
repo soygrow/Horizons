@@ -25,20 +25,14 @@ import {
 } from "./sources/site-audit";
 import { detectPricing } from "./sources/pricing";
 import { extractContact } from "./sources/contact";
-import {
-  hasDataForSEO,
-  fetchKeywords,
-  fetchTrafficHistory,
-  fetchBacklinksSummary,
-  fetchCompetitors,
-} from "./sources/dataforseo";
 import { chatJSON, hasLLM } from "./sources/llm";
-import { fetchSimilarwebKeywords } from "./sources/apify";
-import { captureScreenshots } from "./sources/screenshot";
+import { collectSite } from "../field-collect/collect";
+import { applyFields } from "./apply-fields";
+import { readTrafficMonths } from "./collect-store";
 import { readWorkspace, syncCandidates, type ItemStatus } from "../admin/board-items";
 
 /**
- * 单站增强管线：为指定域名的工具补齐 V5/V6 详情页数据（自建爬虫 + DataForSEO + PH + LLM）。
+ * 单站增强管线：为指定域名的工具补齐 V5/V6 详情页数据（自建爬虫 + field-collect + PH + LLM）。
  * 用法：pnpm tsx scripts/fetch/enrich-site.ts --domain picvo.ai [--dry]
  */
 
@@ -172,7 +166,8 @@ const SYSTEM_INSIGHT = `你是面向个人开发者创业者的 AI 产品分析�
 - trafficDecrypt: {overview, sections:[{title,highlights[string×2],insight,takeaway}×3]}，这是「流量情况解密」报告，以「资深增长黑客与连续创业者」视角撰写，语言犀利、直戳本质，让读者有「原来如此」的顿悟感。
   overview 是「流量总览」一段话（定性这个盘的底子、命门与截胡窗口）；sections 固定 3 段，title 带 emoji 前缀与编号、保留小标题结构：
     📊 1. 流量趋势与结构（它是怎么活下来的？）／🌍 2. 地域分布（它在赚谁的钱？）／🔍 3. 搜索与排名（它的命门在哪？）。
-  每段 highlights 给 2 个高光标签（如「点状爆发」「流量寄生」），insight 是数据洞察、takeaway 是创业启发，均须引用给定真实数据（趋势数值、渠道占比、国家份额、关键词量、排名区间）。
+  每段 highlights 给 2 个高光标签（如「点状爆发」「流量寄生」），insight 是数据洞察、takeaway 是创业启发，均须引用给定真实数据（趋势数值、channelShares 渠道占比、geo 国家份额、keywordCount 关键词量、seo.samples 实况排名、aiTraffic AI 引荐占比）。
+  第 3 段必须基于 seo：samples 是实际抽样的关键词排名（position 为 null 表示未进前 20），top10/top20 是命中数，样本量少时用「采样」措辞，不要说成全站排名。rankDistribution 字段已下线，不要引用。
 - observations: {practices[3~4],concerns[2~3],competitors[4~6 个域名]}
 - moduleInsights: {performance:{analysis,soWhat},growth:{analysis,soWhat},keywords:{analysis,soWhat},competition:{analysis,soWhat}}
   其中 performance/growth/keywords/competition 分别对应「产品表现/增长趋势/关键词需求/竞争格局」四个数据模块；analysis 是客观解读（引用具体数字），soWhat 是一句「这对创业者意味着什么」的结论（30 字内）。
@@ -192,7 +187,7 @@ const SYSTEM_OPPORTUNITY = `你是面向个人开发者创业者的创业顾问�
     - trait「特点」：差异化卖点或壁垒信号（如聚合多模型、免费额度、多语言）。
   · wedge：切入点（解决什么），产品形态帮谁解决什么；
   · model：商业模式与卖点（怎么赚钱），靠什么打动用户、怎么收钱；
-  · moat：业务数据匹配度（护城河），结合 DR/域名权重 与 域名注册时间判断是真技术还是早期红利；注意 registeredAt 是「域名首次注册」时间，老域名常被新产品收购（1999 年注册的域名可能对应 2024 年才上线的产品），不能直接当作产品年龄或团队资历，除非另有迹象支持；
+  · moat：业务数据匹配度（护城河），结合自然搜索占比 / 直接访问占比 / 关键词采样排名 与 域名注册时间判断是真技术还是早期红利；不要引用域名权重（数据源已下线）。注意 registeredAt 是「域名首次注册」时间，老域名常被新产品收购（1999 年注册的域名可能对应 2024 年才上线的产品），不能直接当作产品年龄或团队资历，除非另有迹象支持；
   · trafficTruth：流量结构真相（用户从哪来），对比自然搜索与直接访问定性来源；
   · growthEdge：增长势能与软肋（生死局），结合访问量与增长率看爆发点与天花板；
   · newPlayerEntry：新玩家切入点（行动指南），方向必须与 opportunity.verdict 同档：
@@ -217,7 +212,7 @@ function lastPeriod(): string {
 
 async function main(): Promise<void> {
   const domain = parseDomain();
-  /** 只补免费字段：跳过 DataForSEO 与 LLM，仅做页面抓取 + 体检 */
+  /** 只补免费字段：跳过付费采集（vortex/SERP）与 LLM，仅做页面抓取 + 体检 */
   const freeOnly = process.argv.includes("--free-only");
   const dry = process.argv.includes("--dry");
   /** 只补 AI 解读（aiInsight + 四模块 + 流量解密），跳过基础标签与创业洞察，省 token */
@@ -251,7 +246,6 @@ async function main(): Promise<void> {
   let competitors = tool.observations?.competitors ?? [];
   let searchTraffic = tool.searchTraffic;
   let keywordCount = tool.keywordCount;
-  let rankDistribution = tool.rankDistribution ?? [];
   let phUpvotes = tool.phUpvotes;
   let phComments = tool.phComments;
   let pricingPlans = tool.pricing;
@@ -278,22 +272,8 @@ async function main(): Promise<void> {
     console.warn("[enrich-site] 爬虫失败：", e instanceof Error ? e.message : e);
   }
 
-  // 1.5) 官网截图（桌面 + 移动）：免费，--free-only 也照跑
-  //      放在爬虫之后 —— 首页能抓到说明站是通的，这时候截图成功率最高。
-  //      截图失败只告警：Cloudflare 拦截、超时都很常见，不该让整站富化失败。
-  try {
-    const shot = await captureScreenshots(domain, tool.url);
-    if (shot.screenshotDesktopUrl) {
-      tool.screenshotDesktopUrl = shot.screenshotDesktopUrl;
-      tool.screenshotMobileUrl = shot.screenshotMobileUrl;
-      console.log(
-        `[enrich-site] 截图：新拍 ${shot.captured} 张` +
-          `${shot.uploadFailed ? `｜R2 上传失败 ${shot.uploadFailed} 张（本地已留存）` : ""}`,
-      );
-    }
-  } catch (e) {
-    console.warn("[enrich-site] 截图失败：", e instanceof Error ? e.message : e);
-  }
+  // 1.5) 截图不再单独启动浏览器：collectSite 内部用 Playwright 一次性拍好桌面 + 移动，
+  //      这里复用它的产物，省一次 cold start（每站约 2~4 秒）。
 
   // 定价线索
   if (homeHtml) {
@@ -315,133 +295,71 @@ async function main(): Promise<void> {
     siteAudit = { ...siteAudit, techStack: tech, analytics };
   }
 
-  // 2) DataForSEO：流量（clickstream）/ 关键词 / 排名分布 / 外链 / 竞品 / 相关关键词
-  // 注：DFS 只能提供「搜索流量」口径（clickstream_etv），总访问量/渠道占比无来源 → 不采集、不展示
-
-  if (!freeOnly && hasDataForSEO()) {
-    // 逐项补缺：采集期已经拿到的数据不再重复买 DFS。
-    // 采集卡里带 trafficMetrics/trend（Apify 总量）、competitors、backlinks 的条目，
-    // 以前照样全量打 4 个端点，每站白花 $0.18；现在只补真正缺的那几项。
-    const hasTraffic = !!tool.trafficMetrics && (tool.trend?.length ?? 0) >= 2;
-    const hasKeywords = keywords.some((k) => k.volume != null);
-    const hasBacklinks = (backlinks?.total ?? 0) > 0;
-    const hasCompetitors = competitors.length >= 3;
-    const reuse = [
-      hasTraffic ? "流量" : "",
-      hasKeywords ? "关键词" : "",
-      hasBacklinks ? "外链" : "",
-      hasCompetitors ? "竞品" : "",
-    ].filter(Boolean);
-    if (reuse.length) {
-      console.log(`[enrich-site] 已有数据直接复用，跳过 DFS：${reuse.join("/")}`);
-    }
-
-    // .ai 注册表 2017-12 迁移时把存量域名 Creation Date 统一重置为迁移日，
-    // 这批日期不是真实注册时间，打标避免被当成产品年龄。
-    const registeredAtSuspect =
-      !!registeredAt &&
-      /\.ai$/i.test(domain) &&
-      registeredAt >= "2017-12-14" &&
-      registeredAt <= "2017-12-17"
-        ? true
-        : undefined;
-
+  // 2) 采集复用：field-collect 的 73 字段（vortex 已由准入付费，这里命中 collect_raw，$0）
+  //
+  // 与旧 DataForSEO 方案的区别：
+  //   - DFS 给的是「搜索流量」口径，页面展示的是「总访问量」，两套数放一起必然对不上；
+  //   - 同一个域名准入阶段已经买过 vortex 当月快照，再调 DFS 属于重复付费；
+  //   - 渠道结构、国家分布、互动指标、AI 引荐这些 DFS 根本给不了。
+  //
+  // 免费模式跳过：collectSite 的免费步骤（爬虫）上面已经单独做过一遍了。
+  if (!freeOnly) {
     try {
-      // 不调 domain_rank_overview：该端点只返回「当前 location 的单条排名概览」，
-      // 没有 location_name，拿不到国家分布（实测 items 恒为 1 条），此前一直白花 $0.09/站。
-      // 国家分布只有 vortex 能给，无 vortex 时保留旧值或留空。
-      const [kw, histResult, bk, comps] = await Promise.all([
-        hasKeywords ? null : fetchKeywords(domain, 10),
-        hasTraffic ? null : fetchTrafficHistory(domain),
-        hasBacklinks ? null : fetchBacklinksSummary(domain),
-        hasCompetitors ? null : fetchCompetitors(domain, 8),
-      ]);
+      const payload = await collectSite({
+        url: tool.url,
+        jobId: `enrich-${domain}-${Date.now()}`,
+        persist: false,
+      });
+      const history = await readTrafficMonths(domain, { months: 6 });
 
-      if (histResult) {
-        const hist = histResult.history;
-        // 月搜索流量 = 最新一个月的 clickstream_etv（比普通 etv 更接近真实）
-        const last = hist[hist.length - 1];
-        const organic = last?.organic ?? 0;
-        const paid = last ? last.total - last.organic : 0;
-        const total = last?.total ?? 0;
-        searchTraffic = { organic, paid };
+      // 快照月份取月度序列最后一个月，用于 sources.period 溯源
+      const histField = payload.fields.find((f) => f.key === "monthly_visits_history");
+      const lastMonth =
+        Array.isArray(histField?.value) && histField.value.length
+          ? (histField.value[histField.value.length - 1] as { month?: string }).month
+          : undefined;
 
-        const momGrowth = (() => {
-          if (hist.length < 2) return undefined;
-          const prev = hist[hist.length - 2].total;
-          const lastTotal = hist[hist.length - 1].total;
-          if (prev < 1 || lastTotal < 1) return undefined; // 流量过小，环比无意义
-          if (prev <= 0) return undefined;
-          return Math.round(((lastTotal - prev) / prev) * 1000) / 10;
-        })();
+      const applied = applyFields(tool, payload, {
+        at: payload.collectedAt?.slice(0, 10),
+        period: lastMonth,
+        // 保留补 0 的月份：趋势图固定 6 格，滤掉就成了「有几个画几个」，
+        // 新站会显得和老站一样完整。collected=false 让前端把空格画成待累积而不是掉到 0。
+        history,
+      });
+      console.log(
+        `[enrich-site] 字段映射：写入 ${applied.written.length} 项` +
+          `${applied.skipped.length ? `｜保留原值 ${applied.skipped.join("/")}` : ""}` +
+          `｜采集花费 ≈$${payload.cost?.total ?? 0}`,
+      );
 
-        // 权重口径：已有 Ahrefs DR（0~100）优先保留，避免被 DFS rank（0~1000）覆盖造成口径漂移
-        const prevWeight = tool.metrics?.domainWeight;
-        const keepDR = tool.metrics?.domainWeightLabel === "DR" && prevWeight !== undefined;
-        // rank=0 视为「未采到等级」；0 本身是 DR 的有效值，不在此清空
-        const dfsWeight = bk && bk.domainWeight > 0 ? bk.domainWeight : undefined;
-        metrics = {
-          // DFS 给的是「搜索流量」，无搜索流量 ≠ 真的 0 访问，按缺失处理更准确
-          monthlyVisits: total > 0 ? total : undefined,
-          organicVisits: organic > 0 ? organic : undefined,
-          momGrowth,
-          domainWeight: keepDR ? prevWeight : dfsWeight,
-          domainWeightLabel: keepDR ? "DR" : dfsWeight !== undefined ? "权重" : undefined,
-          registeredAt, // 优先 RDAP
-          registeredAtSuspect,
-        };
-        // 趋势优先级：vortex（总访问量，本站已有 ≥2 个月）> DFS 搜索流量历史。
-        // DFS 在无搜索流量时会给全 0 月份，也不能用来覆盖真实趋势。
-        if (hist.some((p) => p.total > 0)) trend = hist;
-        keywordCount = histResult.keywordCount;
-        rankDistribution = histResult.rankDistribution;
-        console.log(
-          `[enrich-site] DFS：月搜索流量=${total}（自然 ${organic} / 付费 ${paid}）｜关键词 ${kw?.length ?? 0}｜排名词 ${keywordCount}｜外链 ${bk?.total ?? "—"}｜竞品 ${comps?.length ?? 0}`,
-        );
-      } else {
-        // 复用了采集的流量：只补注册时间，别把已有的月访问量/环比冲成 undefined
-        metrics = { ...(metrics ?? {}), registeredAt, registeredAtSuspect };
-        console.log(`[enrich-site] DFS：流量沿用采集值（月访问 ${tool.trafficMetrics?.monthlyVisits ?? "—"}）`);
+      if (payload.screenshots.desktop) {
+        tool.screenshotDesktopUrl = payload.screenshots.desktop;
+        tool.screenshotMobileUrl = payload.screenshots.mobile;
+        console.log("[enrich-site] 截图：复用 collectSite 产物");
       }
 
-      if (kw?.length) keywords = kw;
-      if (bk && bk.total > 0) {
-        backlinks = {
-          total: bk.total,
-          totalDofollowShare: bk.totalDofollowShare,
-          refDomains: bk.refDomains,
-          refDofollowShare: bk.refDofollowShare,
-        };
+      // 关键词（含搜索量）来自 vortex topKeywords，DFS 兜底不再需要
+      if (!keywords.some((k) => k.volume != null) && tool.keywords?.length) {
+        keywords = tool.keywords;
+        if (!keywordCount) keywordCount = tool.keywords.length;
       }
-      if (comps?.length) competitors = comps;
+
+      /*
+       * 这些局部变量在第 2) 步之前就取成了旧值，必须同步一次。
+       * 否则结尾的 `tool.trend = trend` / `tool.geoDistribution = geo`
+       * 会把 applyFields 刚写好的 6 个月趋势和地域分布覆盖回去 —— 明明采到了，页面还是空的。
+       */
+      trend = tool.trend;
+      geo = tool.geoDistribution;
+      backlinks = tool.backlinks;
+      searchTraffic = tool.searchTraffic;
+      keywordCount = tool.keywordCount ?? keywordCount;
+      metrics = tool.metrics;
     } catch (e) {
-      console.warn("[enrich-site] DataForSEO 失败：", e instanceof Error ? e.message : e);
+      console.warn("[enrich-site] 采集复用失败：", e instanceof Error ? e.message : e);
     }
   } else {
-    console.log("[enrich-site] 未配置 DataForSEO 凭据，跳过流量/关键词/外链/竞品");
-  }
-
-  // 2.5) 关键词兜底：DFS 欠费/失败时，用 Similarweb 的 topKeywords（含搜索量）。
-  // 只在现有词「全部没有搜索量」时触发（含空数组），DFS 有效数据不被覆盖；
-  // 免费模式跳过，避免占用 Apify 平台额度。
-  if (!freeOnly && !keywords.some((k) => k.volume != null)) {
-    try {
-      const sw = await fetchSimilarwebKeywords(domain);
-      if (sw.length) {
-        keywords = sw;
-        if (!keywordCount) keywordCount = sw.length;
-        console.log(
-          `[enrich-site] 关键词兜底（Similarweb）：${sw.length} 个，最高 ${sw[0].term}（${sw[0].volume}/月）`,
-        );
-      } else {
-        console.log("[enrich-site] 关键词兜底无结果（Apify 额度耗尽或无该站数据），保留原值");
-      }
-    } catch (e) {
-      console.warn(
-        "[enrich-site] 关键词兜底失败：",
-        e instanceof Error ? e.message : e,
-      );
-    }
+    console.log("[enrich-site] 免费模式，跳过 Similarweb 采集复用");
   }
 
   // 3) Product Hunt 信号
@@ -500,8 +418,8 @@ async function main(): Promise<void> {
         // 必须用本轮刚查到的（RDAP 优先）值：这里若读 tool.metrics 的旧值，
         // 后面 {...metrics, ...metricsForLLM} 会用 undefined 把新注册时间冲掉
         registeredAt: registeredAt ?? tool.metrics?.registeredAt,
-        domainWeight: tool.metrics?.domainWeight,
-        domainWeightLabel: tool.metrics?.domainWeightLabel,
+        // 域名权重（DR）来自已下线的 DataForSEO，存量值是冻结的旧快照，
+        // 不喂给模型也不写回，避免它继续出现在新文案里
       }
     : metrics;
 
@@ -521,7 +439,10 @@ async function main(): Promise<void> {
     trend: trend?.slice(-7),
     keywords: keywords?.slice(0, 10),
     keywordCount: keywords?.length ?? keywordCount,
-    rankDistribution,
+    // DFS 的 rankDistribution 已下线，改用 vortex 采样出的 SERP 实况（含排名、采样数）
+    seo: tool.seoStanding ?? null,
+    aiTraffic: tool.aiTraffic ?? null,
+    channelShares: tool.channelShares ?? null,
     geo,
     engagement: tool.engagement ?? null,
     ranks: tool.ranks ?? null,
@@ -646,7 +567,6 @@ async function main(): Promise<void> {
   tool.backlinks = backlinks;
   tool.searchTraffic = searchTraffic;
   tool.keywordCount = keywordCount;
-  tool.rankDistribution = rankDistribution;
   tool.pageStructure = pageStructure;
   tool.siteAudit = siteAudit;
   // 技术栈 / 定价 / 联系方式与 siteAudit 同源（同一次首页抓取），在这里一并写回，

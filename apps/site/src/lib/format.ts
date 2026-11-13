@@ -69,7 +69,16 @@ export const MOM_DISPLAY_CAP = 200;
 /** 环比 % → 展示文本；超阈值截断为 "200%+" */
 export function formatMom(value?: number | null): string {
   if (value === null || value === undefined) return "—";
-  if (value > MOM_DISPLAY_CAP) return `${MOM_DISPLAY_CAP}%+`;
+  if (value > MOM_DISPLAY_CAP) {
+    /*
+     * 超过 200% 后百分数已经读不出量级：cliputils 从 435 涨到 58,351
+     * 是 +13,314%，写成「+13,314%」没人能一眼看懂，写成「↑133 倍」立刻有体感。
+     * 涨幅不到 3 倍时仍用 200%+，因为「↑2 倍」这种精度反而更差。
+     */
+    const times = Math.round(value / 100);
+    if (times >= 3) return `↑${times} 倍`;
+    return `${MOM_DISPLAY_CAP}%+`;
+  }
   return `${value > 0 ? "+" : ""}${value}%`;
 }
 
@@ -77,7 +86,7 @@ export function formatMom(value?: number | null): string {
 export function momCapHint(value?: number | null): string | undefined {
   if (value === null || value === undefined) return undefined;
   if (value <= MOM_DISPLAY_CAP) return undefined;
-  return `上月基数偏小，实际环比 +${value}%`;
+  return `上月基数偏小，实际环比 +${value.toLocaleString("en-US")}%`;
 }
 
 /** 数字缩写：5503 → 5.5K */

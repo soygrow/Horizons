@@ -4,11 +4,14 @@
  * （单调三次平滑 + 面积 + 双系列虚线），保留全部数值标签。
  */
 import { formatCount } from "../../lib/format";
+import { pendingTrendFlags } from "../../lib/data";
 
 interface Point {
   date: string;
   total: number;
   organic: number;
+  /** false = 该月没有采集记录（补 0 占位），不参与连线与数值标签 */
+  collected?: boolean;
 }
 
 interface Props {
@@ -76,14 +79,43 @@ const plotH = H - PAD.top - PAD.bottom;
 const x = (i: number) => PAD.left + (points.length === 1 ? plotW / 2 : (i * plotW) / (points.length - 1));
 const y = (v: number) => H - PAD.bottom - (Math.max(0, v) / yMax) * plotH;
 
-const toCoords = (key: "total" | "organic") =>
-  points.map((p, i) => ({ x: x(i), y: y(p[key] ?? 0) }));
+/**
+ * 按「有数据的连续段」切分折线。
+ *
+ * 趋势固定画 6 格，缺月由 traffic_history 补 0。这些 0 不能参与连线：
+ *   - 补在开头 → 会拉出一条从 0 直冲当月峰值的斜线，读起来像「一个月暴涨几十倍」；
+ *   - 补在末尾 → 折线尾巴砸到 0，读起来像「流量归零」。
+ * 两种情况都是假信号，所以缺口处直接断开，只保留横轴月份。
+ * 判定逻辑（含存量数据没有 collected 标记的情况）集中在 pendingTrendFlags。
+ */
+const flags = pendingTrendFlags(points);
+const runs: number[][] = [];
+let run: number[] = [];
+flags.forEach((isPending, i) => {
+  if (isPending) {
+    if (run.length) runs.push(run);
+    run = [];
+  } else {
+    run.push(i);
+  }
+});
+if (run.length) runs.push(run);
 
-const totalCoords = toCoords("total");
-const organicCoords = toCoords("organic");
-const line = smoothPath(totalCoords);
-const organicLine = smoothPath(organicCoords);
-const area = `${line} L${x(points.length - 1)},${H - PAD.bottom} L${x(0)},${H - PAD.bottom} Z`;
+const toSegments = (key: "total" | "organic") =>
+  runs.map((idx) => {
+    const coords = idx.map((i) => ({ x: x(i), y: y(points[i][key] ?? 0), v: points[i][key] ?? 0 }));
+    return { coords, d: smoothPath(coords) };
+  });
+
+const totalRuns = toSegments("total");
+const organicRuns = toSegments("organic");
+
+/** 面积只在连续段内闭合：跨缺口闭合会把「没采集」画成「0 访问」 */
+const areaOf = (coords: { x: number; y: number }[]): string =>
+  coords.length >= 2
+    ? `${smoothPath(coords)} L${coords[coords.length - 1].x},${H - PAD.bottom} L${coords[0].x},${H - PAD.bottom} Z`
+    : "";
+
 const yTicks = [0, 0.25, 0.5, 0.75, 1].map((r) => r * yMax);
 const labelStep = Math.max(1, Math.ceil(points.length / 8));
 ---
@@ -123,6 +155,8 @@ const labelStep = Math.max(1, Math.ceil(points.length / 8));
           text-anchor="middle"
           class="fill-current text-ink-muted"
           font-size="11"
+          /* 待累积月份：月份照标（读者要知道横轴有这一格），但压暗表示无数据 */
+          opacity={flags[i] ? "0.4" : undefined}
         >
           {p.date.slice(2).replace("-", "/")}
         </text>
@@ -130,35 +164,52 @@ const labelStep = Math.max(1, Math.ceil(points.length / 8));
     )
   }
 
-  <path d={area} class="fill-primary" opacity="0.06"></path>
-  <path d={line} class="stroke-primary" fill="none" stroke-width="2" stroke-linejoin="round"></path>
-
   {
-    !isStars &&
-      points.map((p, i) => (
-        <text
-          x={x(i)}
-          y={Math.max(y(p.total) - 6, PAD.top + 8)}
-          text-anchor="middle"
-          font-size="10"
-          class="fill-current text-ink-secondary"
-        >
-          {formatCount(p.total)}
-        </text>
-      ))
+    totalRuns.map((seg) => (
+      <>
+        {seg.coords.length >= 2 ? <path d={areaOf(seg.coords)} class="fill-primary" opacity="0.06" /> : null}
+        {seg.coords.length >= 2 ? (
+          <path d={seg.d} class="stroke-primary" fill="none" stroke-width="2" stroke-linejoin="round" />
+        ) : (
+          <circle cx={seg.coords[0].x} cy={seg.coords[0].y} r="2.5" class="fill-primary" />
+        )}
+      </>
+    ))
   }
 
   {
-    !isStars && (
-      <path
-        d={organicLine}
-        class="stroke-ocean"
-        fill="none"
-        stroke-width="2"
-        stroke-dasharray="5 3"
-        stroke-linejoin="round"
-      />
-    )
+    !isStars &&
+      totalRuns.map((seg) =>
+        seg.coords.map((c) => (
+          <text
+            x={c.x}
+            y={Math.max(c.y - 6, PAD.top + 8)}
+            text-anchor="middle"
+            font-size="10"
+            class="fill-current text-ink-secondary"
+          >
+            {formatCount(c.v)}
+          </text>
+        )),
+      )
+  }
+
+  {
+    !isStars &&
+      organicRuns.map((seg) =>
+        seg.coords.length >= 2 ? (
+          <path
+            d={seg.d}
+            class="stroke-ocean"
+            fill="none"
+            stroke-width="2"
+            stroke-dasharray="5 3"
+            stroke-linejoin="round"
+          />
+        ) : (
+          <circle cx={seg.coords[0].x} cy={seg.coords[0].y} r="2.5" class="fill-ocean" />
+        ),
+      )
   }
 </svg>
 
