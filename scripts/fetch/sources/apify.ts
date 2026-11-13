@@ -320,7 +320,10 @@ export function extractSimilarwebKeywords(
   for (const k of raw) {
     const term = (k.keyword ?? "").trim();
     if (!term || seen.has(term)) continue;
-    const volume = "searchVolume" in k ? k.searchVolume : k.volume;
+    // 两种口径同一份数据里可能混着出现，两个字段都取，别用 `in` 窄化 ——
+    // 交叉联合类型下 TS 窄不到那一支，取值逻辑本身也不该依赖类型窄化。
+    const kv = k as { volume?: number; searchVolume?: number };
+    const volume = kv.searchVolume ?? kv.volume;
     if (volume == null || volume <= 0) continue;
     seen.add(term);
     out.push({

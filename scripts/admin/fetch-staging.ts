@@ -629,7 +629,9 @@ async function main(): Promise<void> {
       watch: tally.watch,
       reject: tally.reject,
       total,
-      enriched,
+      // 富化已拆到 enrich-staging，本脚本不再统计富化条数；
+      // 键名保留是为了不打断已有日志解析（同上方无新增分支）。
+      enriched: 0,
       requested,
       skipped: Math.max(0, requested - fresh.length),
     }),

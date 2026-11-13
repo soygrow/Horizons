@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { tierOf, visitsOf } from "@horizons/shared";
+import { isBlockedDomain, tierOf, visitsOf } from "@horizons/shared";
 import type { AITool } from "@horizons/shared";
 import "./config"; // 加载 .env.local
 import { extractTrafficMetrics, fetchLergassyMulti } from "./sources/apify";

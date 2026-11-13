@@ -143,6 +143,13 @@ export function sameEvent(titleA: string, titleB: string): boolean {
   return hasEntityAnchor ? ratio >= 0.6 : ratio >= 0.85;
 }
 
+/** 合并中间态：一个事件桶，items[0] 为信号最强的主条目 */
+interface Bucket {
+  items: RawItem[];
+  /** 靠标题相似度（而非同链接）并进来的，留给人工复核 */
+  mergedByTitle: boolean;
+}
+
 export function mergeEvents(rawItems: RawItem[], date: string): Event[] {
   // 信号强的先入桶，作为「主条目」
   const sorted = [...rawItems].sort((a, b) => sourceSignalScore(b) - sourceSignalScore(a));

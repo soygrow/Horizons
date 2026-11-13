@@ -43,6 +43,7 @@ import {
   applySerpReleaseDate,
   applyVortexBase,
   normalizeDensity,
+  normalizeHistory,
   normalizeWhois,
   pickOfficialDate,
   pickSampleKeywords,
