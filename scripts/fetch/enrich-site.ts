@@ -155,9 +155,11 @@ const SYSTEM_BASIC = `你是 AI 工具目录的资深编辑，面向"想创业�
 - descriptionZh: ≤40 字中文一句话描述（做什么、给谁用）；
 - segmentLabel: 6~12 字细分赛道，如「AI 视频生成」；
 - categories: 从 ${CATEGORIES.join("/")} 选 1~3 个（按贴合度排序）；
-- featureTags: 3 个卖点标签（如「品牌驱动」「All In One」「多语言」）；
-- categoryTags: 8~12 个品类词（如「视频制作」「AI 视频生成器」「文字转视频」）；
-- tagGroups: 数组，元素 {label, values: string[]}，label 取「变现方式」「SEO 打法」「成熟度信号」「使用模型」「模型家族」等（有多少给多少，values 各 3~15 个）。
+- featureTags: 3 个卖点标签（如「品牌驱动」「All In One」「多语言」），每个 ≤8 字；
+- categoryTags: 5~8 个品类词（如「视频制作」「AI 视频生成器」「文字转视频」），每个 ≤8 字；
+  不得与 segmentLabel 相同或近义重复，彼此不得近义重复，不要用斜杠/竖线把多个词拼成一个；
+- tagGroups: 数组，元素 {label, values: string[]}，label 从「变现方式」「SEO 打法」「成熟度信号」「使用模型」「模型家族」「流量结构」「目标市场」中取，最多 6 组、每组 3~8 个值、每个值 ≤10 字；
+  只写定性判断，禁止写具体数字、百分比、金额、访问量或排名（这些由采集数据统一在流量板块呈现，写在这里会与精确值冲突）。
 只输出 JSON。`;
 
 const SYSTEM_INSIGHT = `你是面向个人开发者创业者的 AI 产品分析师。基于给定的真实采集数据（流量/关键词/技术栈/收款信号/页面结构），输出客观、可执行的解读。输出 JSON：
@@ -200,6 +202,57 @@ const SYSTEM_OPPORTUNITY = `你是面向个人开发者创业者的创业顾问�
       - 别碰 → 「别碰」「不建议入场」，禁止出现「切细分」「推荐」等鼓励措辞。
   除 overview 外各字段 40~80 字，必须引用给定数据中的具体数值；全文禁止出现「抄」字。
 只输出 JSON。`;
+
+/* ------------------------------ 标签字段清洗 ------------------------------ */
+
+/**
+ * 品类词清洗：去空、去重、去掉与 segmentLabel 完全相同的项。
+ *
+ * prompt 里已经写了「不得与 segmentLabel 重复」，但 LLM 经常还是把赛道名塞进品类词，
+ * 表现就是详情页上 Hero 一行写「AI 短视频剪辑」、下一行标签里又出现同一个词。
+ * 这里做程序兜底：完全相同的直接去掉，长度失控的也丢掉（长句不是品类词）。
+ */
+function normalizeCategoryTags(raw: string[] | undefined, segmentLabel?: string): string[] {
+  const seg = String(segmentLabel ?? "").trim();
+  const out: string[] = [];
+  for (const item of raw ?? []) {
+    const v = String(item ?? "").trim();
+    if (!v || v.length > 12 || v === seg || out.includes(v)) continue;
+    out.push(v);
+    if (out.length >= 8) break;
+  }
+  return out;
+}
+
+/** 含数字、且沾了流量/排名/收入口径的标签：与 03 流量板块的精确值必然冲突 */
+const TRAFFIC_METRIC = /(访问|浏览|占比|排名|收入|营收|美元|万次|%)/;
+
+/**
+ * 标签组清洗：组名与值去空去重，单组最多 8 个值、总计最多 6 组。
+ *
+ * 重点是把「月访问约 1.9 万」「自然搜索占 27.6%」这类量化标签丢掉 ——
+ * 它们和流量板块用的是同一份数据的两种口径，读者一对照就是两个数，伤可信度。
+ * 「免费试用 7 天」这种产品侧的定量描述不在此列（不沾流量口径，保留）。
+ */
+function normalizeTagGroups(raw: TagGroup[] | undefined): TagGroup[] {
+  const out: TagGroup[] = [];
+  for (const g of raw ?? []) {
+    const label = String(g?.label ?? "").trim();
+    if (!label) continue;
+    const values: string[] = [];
+    for (const item of g?.values ?? []) {
+      const v = String(item ?? "").trim();
+      if (!v || v.length > 14 || values.includes(v)) continue;
+      if (/\d/.test(v) && TRAFFIC_METRIC.test(v)) continue;
+      values.push(v);
+      if (values.length >= 8) break;
+    }
+    if (!values.length) continue;
+    if (!out.some((x) => x.label === label)) out.push({ label, values });
+    if (out.length >= 6) break;
+  }
+  return out;
+}
 
 /* --------------------------------- 主流程 --------------------------------- */
 
@@ -500,9 +553,10 @@ async function main(): Promise<void> {
       (CATEGORIES as readonly string[]).includes(c),
     );
   }
-  tool.featureTags = basic.featureTags ?? [];
-  tool.categoryTags = basic.categoryTags ?? [];
-  tool.tagGroups = basic.tagGroups ?? [];
+  tool.featureTags = (basic.featureTags ?? []).slice(0, 3);
+  // 用 tool.segmentLabel（上面刚赋过值）而不是 basic 的，避免 LLM 漏给时丢失去重依据
+  tool.categoryTags = normalizeCategoryTags(basic.categoryTags, tool.segmentLabel);
+  tool.tagGroups = normalizeTagGroups(basic.tagGroups);
   await sleep(300);
   console.log(`[enrich-site] LLM#1 基础：${tool.description}`);
   }

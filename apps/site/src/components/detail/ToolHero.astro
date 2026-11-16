@@ -16,6 +16,22 @@ const heroShots = [
   tool.screenshotMobileUrl ? { src: tool.screenshotMobileUrl, caption: dict.hero.mobile } : null,
 ].filter((s): s is { src: string; caption: string } => s !== null);
 
+/**
+ * 品类标签去重并收口。
+ *
+ * segmentLabel 已经在上方单独一行写明了赛道，categoryTags 里再出现同一个词就是重复，
+ * 直接按文本去掉（近义重复靠富化时的 prompt 约束，前端只兜底完全相同的情况）。
+ * LLM 会给 10~12 个，全渲染要占 3 行，首屏高度会随数据抖动 ——
+ * 只留前 5 个，其余折成 +N，鼠标悬停能看到完整列表。
+ */
+const CATEGORY_SHOWN = 5;
+const segment = String(tool.segmentLabel ?? "").trim();
+const categoryTags: string[] = (tool.categoryTags ?? [])
+  .map((t: string) => String(t ?? "").trim())
+  .filter((t: string, i: number, arr: string[]) => Boolean(t) && t !== segment && arr.indexOf(t) === i);
+const categoryShown = categoryTags.slice(0, CATEGORY_SHOWN);
+const categoryRest = categoryTags.slice(CATEGORY_SHOWN);
+
 const NAV: [string, string][] = [
   ["#performance", dict.anchorNav.performance],
   ["#opportunity", dict.anchorNav.opportunity],
@@ -89,29 +105,23 @@ const NAV: [string, string][] = [
             ) : null
           }
           {
-            tool.categoryTags?.length ? (
+            categoryShown.length ? (
               <div class="flex flex-wrap items-center gap-2">
-                {tool.categoryTags.map((tag: string) => (
+                {categoryShown.map((tag: string) => (
                   <Badge>{tag}</Badge>
                 ))}
+                {categoryRest.length ? (
+                  <span
+                    class="inline-flex h-[22px] w-fit items-center rounded-full border border-dashed border-border px-2.5 text-xs text-ink-muted"
+                    title={categoryRest.join("、")}
+                  >
+                    +{categoryRest.length}
+                  </span>
+                ) : null}
               </div>
             ) : null
           }
-          {/* 标签组（tagGroups）：变现方式 / SEO 打法 / 成熟度信号等，此前只进了 AI 爬虫用 markdown */}
-          {
-            tool.tagGroups?.length ? (
-              <div class="flex flex-col gap-2">
-                {tool.tagGroups.map((g: { label?: string; values?: string[] }) => (
-                  <div class="flex flex-wrap items-center gap-2">
-                    <span class="text-xs text-ink-muted">{g.label}</span>
-                    {(g.values ?? []).map((v: string) => (
-                      <Badge>{v}</Badge>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            ) : null
-          }
+          {/* 标签组（tagGroups）已挪到 04「这门生意」顶部：那是分析结论，不属于首屏该回答的问题 */}
         </div>
       </div>
 
