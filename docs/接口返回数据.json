@@ -1,0 +1,282 @@
+{
+  "searchUrl": "pexo.ai",
+  "url": "https://pexo.ai",
+  "domain": "pexo.ai",
+  "types_included": [
+    "base_data"
+  ],
+  "data_captured_at": "2026-11-16T10:08:08.280578Z",
+  "dataSource": "extension",
+  "rankGlobal": 122144,
+  "country": "US",
+  "countryRank": 64445,
+  "category": "computers_electronics_and_technology/search_engines",
+  "categoryRank": 254,
+  "title": "Connect Pexo to OpenClaw — Generate Videos in Your Chat | Pexo",
+  "description": "Pexoプライバシーポリシー：当社によるお客様のデータの収集、使用および保護方法をご確認ください。",
+  "bounceRate": 0.5225595026715738,
+  "pagesPerVisit": 1.7453648855734998,
+  "timeOnSite": 34.60210905294428,
+  "totalVisits": 462049,
+  "monthlyVisitsDateFormat": {
+    "2026-08-01": 255421,
+    "2026-09-01": 365687,
+    "2026-10-01": 462049
+  },
+  "monthlyVisits": [
+    {
+      "month": "August 2026",
+      "visits": 255421
+    },
+    {
+      "month": "September 2026",
+      "visits": 365687
+    },
+    {
+      "month": "October 2026",
+      "visits": 462049
+    }
+  ],
+  "website_traffic_by_country": [
+    {
+      "country": "US",
+      "countryName": "United States",
+      "share": 0.58608958,
+      "monthly_traffic": [
+        {
+          "date": "2026-08-01T00:00:00",
+          "visits": 149700
+        },
+        {
+          "date": "2026-09-01T00:00:00",
+          "visits": 214325
+        },
+        {
+          "date": "2026-10-01T00:00:00",
+          "visits": 270802
+        }
+      ]
+    },
+    {
+      "country": "IN",
+      "countryName": "India",
+      "share": 0.054689117,
+      "monthly_traffic": [
+        {
+          "date": "2026-08-01T00:00:00",
+          "visits": 13969
+        },
+        {
+          "date": "2026-09-01T00:00:00",
+          "visits": 19999
+        },
+        {
+          "date": "2026-10-01T00:00:00",
+          "visits": 25269
+        }
+      ]
+    },
+    {
+      "country": "BR",
+      "countryName": "Brazil",
+      "share": 0.019517706,
+      "monthly_traffic": [
+        {
+          "date": "2026-08-01T00:00:00",
+          "visits": 4985
+        },
+        {
+          "date": "2026-09-01T00:00:00",
+          "visits": 7137
+        },
+        {
+          "date": "2026-10-01T00:00:00",
+          "visits": 9018
+        }
+      ]
+    },
+    {
+      "country": "DE",
+      "countryName": "Germany",
+      "share": 0.016846675,
+      "monthly_traffic": [
+        {
+          "date": "2026-08-01T00:00:00",
+          "visits": 4303
+        },
+        {
+          "date": "2026-09-01T00:00:00",
+          "visits": 6161
+        },
+        {
+          "date": "2026-10-01T00:00:00",
+          "visits": 7784
+        }
+      ]
+    },
+    {
+      "country": "TW",
+      "countryName": "Taiwan",
+      "share": 0.016798287,
+      "monthly_traffic": [
+        {
+          "date": "2026-08-01T00:00:00",
+          "visits": 4291
+        },
+        {
+          "date": "2026-09-01T00:00:00",
+          "visits": 6143
+        },
+        {
+          "date": "2026-10-01T00:00:00",
+          "visits": 7762
+        }
+      ]
+    }
+  ],
+  "topKeywords": [
+    {
+      "keyword": "pexo",
+      "estimatedValue": 7720,
+      "searchVolume": 6510,
+      "cpc": 3.21
+    },
+    {
+      "keyword": "ai rap video",
+      "estimatedValue": 3660,
+      "searchVolume": 23940,
+      "cpc": null
+    },
+    {
+      "keyword": "libtv",
+      "estimatedValue": 3570,
+      "searchVolume": 134490,
+      "cpc": 3.13
+    },
+    {
+      "keyword": "pexo ai",
+      "estimatedValue": 2290,
+      "searchVolume": 2250,
+      "cpc": 1.74
+    },
+    {
+      "keyword": "claude motion",
+      "estimatedValue": 1550,
+      "searchVolume": 258000,
+      "cpc": null
+    }
+  ],
+  "engagement": {
+    "bounceRate": 0.5225595026715738,
+    "month": 10,
+    "year": 2026,
+    "pagesPerVisit": 1.7453648855734998,
+    "visits": 462049,
+    "timeOnSite": 34.60210905294428,
+    "dateFormat": "2026-10-01T00:00:00"
+  },
+  "socialTraffic": 0.024337399086392365,
+  "searchOrganicTraffic": 0.17361599502787445,
+  "searchPaidTraffic": 0.051501566813628066,
+  "socialOrganicTraffic": 0.019056093927259356,
+  "socialPaidTraffic": 0.00528130515913301,
+  "paidReferralsTraffic": 0.26975344702177567,
+  "referralTraffic": 0.07548864486631375,
+  "searchTraffic": 0.2251175618415025,
+  "directTraffic": 0.11043925534978363,
+  "displayAdsTraffic": 0.28360979991822644,
+  "genAiTraffic": 0.008833415572522405,
+  "mailTraffic": 0.0024204763434833576,
+  "aiTrafficShareChatgpt": 0.11465503167840999,
+  "aiTrafficShareClaude": null,
+  "aiTrafficSharePerplexity": 0.04167089650107037,
+  "aiTrafficShareGemini": 0.07527524686056122,
+  "aiTrafficShareCopilot": null,
+  "aiTrafficShareHistory": [
+    {
+      "date": "2026-08-01T00:00:00",
+      "chatgpt_share": 0.31939853505055593,
+      "claude_share": null,
+      "perplexity_share": 0,
+      "gemini_share": 0.6275447028524094,
+      "copilot_share": null
+    },
+    {
+      "date": "2026-09-01T00:00:00",
+      "chatgpt_share": 0.7822155061114874,
+      "claude_share": null,
+      "perplexity_share": 0.019033936584625384,
+      "gemini_share": 0.12563499228764613,
+      "copilot_share": null
+    },
+    {
+      "date": "2026-10-01T00:00:00",
+      "chatgpt_share": 0.11465503167840999,
+      "claude_share": null,
+      "perplexity_share": 0.04167089650107037,
+      "gemini_share": 0.07527524686056122,
+      "copilot_share": null
+    }
+  ],
+  "aiTrafficSources": [
+    {
+      "source": "chatgpt.com",
+      "rank": 1,
+      "share": 0.11465503167840999,
+      "icon": "https://site-images.similarcdn.com/image?url=chatgpt.com&t=2&s=1&h=a31616ae3cdef12fcfc664127563e6092e7531e7b4c3cde7e0c8c5fd3310dfc0"
+    },
+    {
+      "source": "gemini.google.com",
+      "rank": 2,
+      "share": 0.07527524686056122,
+      "icon": "https://site-images.similarcdn.com/image?url=gemini.google.com&t=2&s=1&h=ec0ae7eb3432025135e3658db1edf54cfa2710c74ca7f113d026db33002def01"
+    },
+    {
+      "source": "perplexity.ai",
+      "rank": 3,
+      "share": 0.04167089650107037,
+      "icon": "https://site-images.similarcdn.com/image?url=perplexity.ai&t=2&s=1&h=f48fa93e79e65eef47bff5b62e7037bccffb0629aecaed2d0c9f2fb25f177362"
+    }
+  ],
+  "aiTrafficVisits": 1455.549,
+  "aiReferralTraffic": 0.0031502060892621914,
+  "aiTopPrompts": [],
+  "aiTopPromptsUnavailableReason": "Site is not allowed for Top Prompts",
+  "aiTrafficDistributionBoundary": "<20K",
+  "countryShare": [
+    {
+      "country": "US",
+      "countryName": "United States",
+      "share": 0.58608958
+    },
+    {
+      "country": "IN",
+      "countryName": "India",
+      "share": 0.054689117
+    },
+    {
+      "country": "BR",
+      "countryName": "Brazil",
+      "share": 0.019517706
+    },
+    {
+      "country": "DE",
+      "countryName": "Germany",
+      "share": 0.016846675
+    },
+    {
+      "country": "TW",
+      "countryName": "Taiwan",
+      "share": 0.016798287
+    }
+  ],
+  "isDataFromGoogleAds": false,
+  "isSmall": false,
+  "dataCoverage": "full",
+  "policy": 0,
+  "previewDesktop": "https://site-images.similarcdn.com/image?url=pexo.ai&t=1&s=1&h=ea273b797ac548566f5e178b24d303eab91e7d6e1a162f383d68d6b6c2e2f0ac",
+  "previewMobile": "https://site-images.similarcdn.com/image?url=pexo.ai&t=4&s=1&h=ea273b797ac548566f5e178b24d303eab91e7d6e1a162f383d68d6b6c2e2f0ac",
+  "snapshotDate": "2026-10-01T00:00:00+00:00",
+  "favicon": "https://site-images.similarcdn.com/image?url=pexo.ai&t=2&s=1&h=ea273b797ac548566f5e178b24d303eab91e7d6e1a162f383d68d6b6c2e2f0ac",
+  "redirect": null
+}
