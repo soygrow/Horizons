@@ -97,6 +97,22 @@ function fmtMonth(m: string | null | undefined): string {
   return m ? m : "—";
 }
 
+/** 热度分：0 表示这条从没算过热度，显示破折号而不是 0.0，免得像是真值 */
+function fmtHeat(n: number | null | undefined): string {
+  return typeof n === "number" && n > 0 ? n.toFixed(1) : "—";
+}
+
+/** 分类最多露两个，多的折成 +N：列表里只需要一眼看出归类，完整信息在对比弹窗 */
+function fmtCats(cats: string[] | undefined): string {
+  if (!cats?.length) return `<span class="text-ink-muted">—</span>`;
+  const shown = cats
+    .slice(0, 2)
+    .map((c) => `<span class="rounded bg-surface-2 px-1.5 py-0.5 text-[11px] text-ink-muted">${esc(c)}</span>`)
+    .join("");
+  const more = cats.length > 2 ? `<span class="ml-1 text-[11px] text-ink-muted">+${cats.length - 2}</span>` : "";
+  return `<div class="flex flex-wrap items-center gap-1">${shown}${more}</div>`;
+}
+
 function stateBadge(s: ListState): string {
   if (s === "updated") {
     return `<span class="rounded-full bg-primary-soft px-2 py-0.5 text-[11px] font-semibold text-primary">已更新</span>`;
@@ -130,7 +146,7 @@ function renderMeta(resp: ListedResp): void {
 function renderRows(): void {
   const body = $("tools-listed-body");
   if (state.items.length === 0) {
-    body.innerHTML = `<tr><td colspan="7" class="px-3 py-8 text-center text-ink-muted">没有符合条件的条目</td></tr>`;
+    body.innerHTML = `<tr><td colspan="9" class="px-3 py-8 text-center text-ink-muted">没有符合条件的条目</td></tr>`;
   } else {
     body.innerHTML = state.items
       .map((r) => {
@@ -144,8 +160,10 @@ function renderRows(): void {
             <div class="font-medium">${esc(r.name)}</div>
             <div class="text-[11px] text-ink-muted">${esc(r.domain)}</div>
           </td>
+          <td class="px-3 py-2">${fmtCats(r.categories)}</td>
           <td class="px-3 py-2 text-right tabular-nums">${fmtVisits(r.monthlyVisits)}</td>
           <td class="px-3 py-2 tabular-nums">${fmtMonth(r.snapshotMonth)}</td>
+          <td class="px-3 py-2 text-right tabular-nums text-ink-muted">${fmtHeat(r.heatScore)}</td>
           <td class="px-3 py-2 text-ink-muted">${r.analyzedAt ? fmtTime(r.analyzedAt) : "—"}</td>
           <td class="px-3 py-2">${stateBadge(r.state)}</td>
         </tr>`;

@@ -839,16 +839,41 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 </div>
               </div>
 
+              <!-- 操作条贴着表头：勾选和「更新数据」的开关离列表越近越不容易漏看，
+                   滚到表格底部才出现按钮的话，长列表里很容易以为这页没有操作 -->
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-2/40 px-4 py-2.5">
+                <div class="flex flex-wrap items-center gap-3 text-xs">
+                  <span id="tools-listed-picked" class="font-medium tabular-nums">已选 0 条</span>
+                  <label class="flex items-center gap-1.5" title="关闭则只重跑文案，沿用现有流量与截图">
+                    <input id="tools-opt-collect" type="checkbox" checked class="accent-primary" />
+                    重新采集（含流量与截图）
+                  </label>
+                  <label class="flex items-center gap-1.5" title="关闭则保留现有文案，只更新数据与截图">
+                    <input id="tools-opt-rewrite" type="checkbox" checked class="accent-primary" />
+                    重跑文案
+                  </label>
+                </div>
+                <button
+                  id="tools-listed-refresh-btn"
+                  type="button"
+                  class="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  更新数据
+                </button>
+              </div>
+
               <div class="overflow-x-auto">
-                <table class="w-full min-w-[860px] text-xs">
+                <table class="w-full min-w-[1020px] text-xs">
                   <thead class="border-b border-border text-left text-ink-muted">
                     <tr>
                       <th class="w-8 px-3 py-2"></th>
                       <th class="w-14 px-3 py-2 font-medium">排名</th>
                       <th class="px-3 py-2 font-medium">名称 / 域名</th>
+                      <th class="px-3 py-2 font-medium">分类</th>
                       <th class="w-24 px-3 py-2 font-medium text-right">月访问</th>
                       <th class="w-24 px-3 py-2 font-medium">流量月</th>
-                      <th class="w-28 px-3 py-2 font-medium">文案时间</th>
+                      <th class="w-16 px-3 py-2 font-medium text-right" title="榜单排序用的热度分">热度</th>
+                      <th class="w-24 px-3 py-2 font-medium">文案时间</th>
                       <th class="w-24 px-3 py-2 font-medium">状态</th>
                     </tr>
                   </thead>
@@ -856,19 +881,9 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 </table>
               </div>
 
-              <div class="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4">
-                <div class="flex flex-wrap items-center gap-3 text-xs">
-                  <span id="tools-listed-picked" class="font-medium tabular-nums">已选 0 条</span>
-                  <label class="flex items-center gap-1.5">
-                    <input id="tools-opt-collect" type="checkbox" checked class="accent-primary" />
-                    重新采集（含流量与截图）
-                  </label>
-                  <label class="flex items-center gap-1.5">
-                    <input id="tools-opt-rewrite" type="checkbox" checked class="accent-primary" />
-                    重跑文案
-                  </label>
-                </div>
-                <div class="flex items-center gap-2 text-xs">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4 text-xs">
+                <span class="text-ink-muted">勾选条目后点上方「更新数据」，结果会出现在「更新待审核」里</span>
+                <div class="flex items-center gap-2">
                   <button
                     id="tools-listed-prev"
                     type="button"
@@ -883,13 +898,6 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                     class="rounded-lg border border-border px-2.5 py-1.5 transition hover:bg-surface-2 disabled:opacity-50"
                   >
                     下一页
-                  </button>
-                  <button
-                    id="tools-listed-refresh-btn"
-                    type="button"
-                    class="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    更新数据
                   </button>
                 </div>
               </div>
