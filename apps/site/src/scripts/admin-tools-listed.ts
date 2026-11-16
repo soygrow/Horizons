@@ -197,7 +197,14 @@ function renderRows(): void {
           <td class="px-3 py-2 text-right">${fmtMom(r.growth)}</td>
           <td class="px-3 py-2 text-right tabular-nums text-ink-muted">${fmtHeat(r.heatScore)}</td>
           <td class="px-3 py-2 text-ink-muted">${r.analyzedAt ? fmtTime(r.analyzedAt) : "—"}</td>
-          <td class="px-3 py-2">${stateBadge(r.state)}</td>
+          <td class="px-3 py-2">
+            <div class="flex items-center gap-1.5">
+              ${stateBadge(r.state)}
+              <button type="button" data-raw-open="${esc(r.domain)}"
+                      class="rounded border border-border px-1 py-0.5 text-[10px] text-ink-muted transition hover:border-border-strong hover:text-ink"
+                      title="看这个域名最近一次采集的接口原文">原文</button>
+            </div>
+          </td>
         </tr>`;
       })
       .join("");
@@ -259,6 +266,9 @@ function renderPending(): void {
         }">
           <span>${beforeVisits} → <strong>${afterVisits}</strong></span>
           <span class="text-ink-muted">${beforeMonth} → ${afterMonth}</span>
+          <button type="button" data-raw-open="${esc(r.domain)}"
+                  class="rounded-md border border-border px-1.5 py-0.5 text-[10px] text-ink-secondary transition hover:border-border-strong hover:text-ink"
+                  title="看这个域名最近一次采集的接口原文：判断是接口没给这个月，还是我们没取到">接口返回</button>
         </div>
       </div>`;
     })
@@ -303,6 +313,154 @@ async function refreshAll(): Promise<void> {
   // 待审核要先拿到线上旧值才能做对比，顺序不能反
   await loadListed();
   await loadPending();
+}
+
+/* ----------------------------- 接口原始返回 ----------------------------- */
+
+interface RawRecord {
+  source: string;
+  period: string | null;
+  ok: boolean;
+  via: string | null;
+  costUsd: number;
+  error: string | null;
+  fetchedAt: string | null;
+  bytes: number;
+  /** 原文超出体积上限，只回了月份摘要 */
+  payloadOmitted: boolean;
+  months: { month: string; visits: number }[];
+  payload: unknown;
+}
+
+interface RawResp {
+  domain: string;
+  records: RawRecord[];
+  history: { month: string; visits: number; source: string | null }[];
+}
+
+function fmtBytes(n: number): string {
+  if (n >= 1024 * 1024) return `${(n / 1024 / 1024).toFixed(1)} MB`;
+  if (n >= 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${n} B`;
+}
+
+/**
+ * 月份序列摊成一行：审核时最常问的就是「接口到底给到哪个月」，
+ * 数字看不出月份，原文一屏放不下，只有这个视图能秒答。
+ */
+function monthsStrip(months: RawRecord["months"]): string {
+  if (months.length === 0) {
+    return `<p class="text-[11px] text-ink-muted">原文里没有月度序列字段（这个源只给单点值）</p>`;
+  }
+  const latest = months[months.length - 1].month;
+  const cells = months
+    .map((m) => {
+      const hot = m.month === latest;
+      return `<div class="flex min-w-[78px] flex-col rounded-lg border px-2 py-1 ${
+        hot ? "border-primary/40 bg-primary-soft" : "border-border"
+      }">
+        <span class="text-[10px] ${hot ? "text-primary" : "text-ink-muted"}">${esc(m.month)}</span>
+        <span class="tabular-nums ${hot ? "font-semibold text-ink" : "text-ink-secondary"}">${fmtVisits(m.visits)}</span>
+      </div>`;
+    })
+    .join("");
+  return `<div class="flex flex-wrap items-center gap-1.5">${cells}</div>`;
+}
+
+function rawRecordBlock(r: RawRecord): string {
+  const meta = [
+    r.period ? `period ${r.period}` : "",
+    r.fetchedAt ? fmtTime(r.fetchedAt) : "",
+    r.costUsd > 0 ? `$${r.costUsd.toFixed(3)}` : "$0",
+    fmtBytes(r.bytes),
+    r.via ? `via ${r.via}` : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  const badge = r.ok
+    ? `<span class="rounded-full bg-primary-soft px-1.5 py-0.5 text-[10px] font-semibold text-primary">成功</span>`
+    : `<span class="rounded-full bg-danger-soft px-1.5 py-0.5 text-[10px] font-semibold text-danger">失败</span>`;
+
+  const json =
+    r.payload === null
+      ? `<p class="mt-2 text-[10px] text-ink-muted">${
+          r.payloadOmitted
+            ? "原文超过 96 KB，没发回前端；可以用 wrangler d1 直接查 collect_raw"
+            : "原文为空或不是 JSON"
+        }</p>`
+      : `<details class="mt-2">
+          <summary class="cursor-pointer text-[11px] text-ink-muted transition hover:text-ink">展开原始 JSON</summary>
+          <pre class="mt-2 max-h-72 overflow-auto rounded-lg bg-surface-2 p-3 text-[11px] leading-relaxed whitespace-pre-wrap break-all">${esc(
+            JSON.stringify(r.payload, null, 2),
+          )}</pre>
+        </details>`;
+
+  return `<section class="rounded-xl border border-border">
+    <header class="flex flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2">
+      <div class="flex items-center gap-1.5"><span class="font-medium">${esc(r.source)}</span>${badge}</div>
+      <span class="text-[10px] text-ink-muted">${esc(meta)}</span>
+    </header>
+    <div class="px-3 py-2">
+      ${r.error ? `<p class="mb-2 text-[11px] text-danger">${esc(r.error)}</p>` : ""}
+      ${monthsStrip(r.months)}
+      ${json}
+    </div>
+  </section>`;
+}
+
+function trafficHistoryBlock(rows: RawResp["history"]): string {
+  if (rows.length === 0) {
+    return `<p class="rounded-xl border border-dashed border-border px-3 py-2 text-[11px] text-ink-muted">
+      traffic_history 里还没有这个域名 —— 趋势图只能靠单点值，月份切换后就会重新数
+    </p>`;
+  }
+  const items = rows
+    .map(
+      (h) =>
+        `<span class="rounded border border-border px-1.5 py-0.5 tabular-nums text-ink-secondary">${esc(h.month)} <strong class="text-ink">${fmtVisits(h.visits)}</strong></span>`,
+    )
+    .join("");
+  return `<section class="rounded-xl border border-border px-3 py-2">
+    <p class="text-[11px] text-ink-muted">库里累积的 traffic_history（趋势图读这个，不是接口原文）</p>
+    <div class="mt-1.5 flex flex-wrap items-center gap-1.5">${items}</div>
+  </section>`;
+}
+
+function closeRaw(): void {
+  const box = $("raw-json");
+  box.classList.add("hidden");
+  box.classList.remove("flex");
+}
+
+/**
+ * 卡片上看到的都是解析后的结果，字段不对劲时无法区分「接口没给」和「我们没取」。
+ * 这个抽屉把 collect_raw 原文和解析出的月份摆在一起，判断依据一次给足。
+ */
+async function showRaw(domain: string): Promise<void> {
+  const box = $("raw-json");
+  const body = $("raw-json-body");
+  $("raw-json-title").textContent = domain;
+  $("raw-json-sub").textContent = "读取采集原文…";
+  body.innerHTML = `<p class="py-8 text-center text-ink-muted">读取中…</p>`;
+  box.classList.remove("hidden");
+  box.classList.add("flex");
+
+  try {
+    const resp = await apiGet<RawResp>(`/tools/raw?domain=${encodeURIComponent(domain)}`);
+    const records = resp.records ?? [];
+    $("raw-json-sub").textContent = records.length
+      ? `${records.length} 个采集源｜traffic_history ${resp.history.length} 个月`
+      : "这个域名还没有采集记录（可能没跑过采集，或被清过）";
+    body.innerHTML = [
+      records.map(rawRecordBlock).join('<div class="h-2"></div>'),
+      trafficHistoryBlock(resp.history),
+    ].join("");
+  } catch (e) {
+    body.innerHTML = `<p class="py-8 text-center text-danger">读取失败：${esc(
+      e instanceof Error ? e.message : String(e),
+    )}</p>`;
+  }
 }
 
 /* -------------------------------- 交互 -------------------------------- */
@@ -351,6 +509,12 @@ function bind(): void {
    */
   $("tools-listed-body").addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
+    // 「原文」按钮得先拦下来，否则会被整行点击吃掉，跳去详情页
+    const rawDomain = target.closest<HTMLElement>("[data-raw-open]")?.dataset.rawOpen;
+    if (rawDomain) {
+      void showRaw(rawDomain);
+      return;
+    }
     if (target.closest("input, a, button")) return;
     const domain = target.closest<HTMLElement>("[data-listed-open]")?.dataset.listedOpen;
     if (domain) window.open(`/tools/${encodeURIComponent(domain)}`, "_blank", "noopener");
@@ -359,6 +523,11 @@ function bind(): void {
   // 待审核整行同理：点一下预览「发布后会是什么样」，不用先点发布再后悔
   $("tools-refresh-list").addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
+    const rawDomain = target.closest<HTMLElement>("[data-raw-open]")?.dataset.rawOpen;
+    if (rawDomain) {
+      void showRaw(rawDomain);
+      return;
+    }
     if (target.closest("a, button")) return;
     const domain = target.closest<HTMLElement>("[data-refresh-open]")?.dataset.refreshOpen;
     if (domain) window.open(`/preview/${encodeURIComponent(domain)}`, "_blank", "noopener");
@@ -392,6 +561,14 @@ function bind(): void {
 
   $("tools-refresh-publish").addEventListener("click", () => {
     void publishRefresh();
+  });
+
+  $("raw-json-close").addEventListener("click", closeRaw);
+  $("raw-json").addEventListener("click", (event) => {
+    if (event.target === $("raw-json")) closeRaw();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !$("raw-json").classList.contains("hidden")) closeRaw();
   });
 }
 

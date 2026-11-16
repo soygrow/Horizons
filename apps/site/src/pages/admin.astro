@@ -1467,6 +1467,29 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
       </main>
     </div>
 
+    <!--
+      采集接口原文（抽屉）
+      页面上看到的是解析后的卡片，字段不对劲时要能一眼分清「接口没给」和「我们没取」。
+    -->
+    <div id="raw-json" class="hidden fixed inset-0 z-50 items-end justify-center bg-black/40 p-0 sm:items-center sm:p-6">
+      <div class="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl border border-border bg-surface sm:rounded-2xl">
+        <div class="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
+          <div class="min-w-0">
+            <h3 id="raw-json-title" class="truncate text-sm font-semibold">接口返回</h3>
+            <p id="raw-json-sub" class="mt-1 truncate text-xs text-ink-muted">—</p>
+          </div>
+          <button
+            id="raw-json-close"
+            type="button"
+            class="shrink-0 rounded-lg border border-border px-2.5 py-1.5 text-xs text-ink-secondary transition hover:border-border-strong hover:text-ink"
+          >
+            关闭
+          </button>
+        </div>
+        <div id="raw-json-body" class="min-h-[10rem] flex-1 overflow-y-auto px-5 py-4 text-xs"></div>
+      </div>
+    </div>
+
     <!-- 待发布工具详情（抽屉） -->
     <div id="tools-detail" class="hidden fixed inset-0 z-40 items-end justify-center bg-black/40 p-0 sm:items-center sm:p-6">
       <div class="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-2xl border border-border bg-surface sm:rounded-2xl">

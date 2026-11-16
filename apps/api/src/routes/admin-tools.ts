@@ -1021,6 +1021,141 @@ tools.get("/field-report", async (c) => {
   return c.json({ report });
 });
 
+/* ------------------------------ 原始接口返回 ------------------------------ */
+
+const RAW_MONTH_NAMES = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december",
+];
+
+/** 月份写法 → `YYYY-MM`，与 scripts/field-collect/mapping.ts 的 toMonthKey 同口径 */
+function rawMonthKey(raw: unknown): string | null {
+  const s = String(raw ?? "").trim();
+  const iso = /^(\d{4})[-/](\d{1,2})/.exec(s);
+  if (iso) return `${iso[1]}-${iso[2].padStart(2, "0")}`;
+  const en = /^([A-Za-z]+)\s+(\d{4})$/.exec(s);
+  if (en) {
+    const idx = RAW_MONTH_NAMES.indexOf(en[1].toLowerCase());
+    if (idx >= 0) return `${en[2]}-${String(idx + 1).padStart(2, "0")}`;
+  }
+  return null;
+}
+
+/**
+ * 采集原文里的月度访问量。
+ *
+ * 三种形态并存，少认一种就会得出「接口没给这个月」的错误结论 ——
+ * vortex 是英文月名 + ISO key 双份（DateFormat 更直接），lergassy 是 ISO 数组。
+ */
+function rawMonthsOf(payload: unknown): { month: string; visits: number }[] {
+  const byMonth = new Map<string, number>();
+  const push = (month: unknown, visits: unknown): void => {
+    const key = rawMonthKey(month);
+    const v = Number(visits);
+    if (key && Number.isFinite(v)) byMonth.set(key, v);
+  };
+  if (payload && typeof payload === "object") {
+    const obj = payload as Record<string, unknown>;
+    const dateFormat = obj.monthlyVisitsDateFormat;
+    if (dateFormat && typeof dateFormat === "object" && !Array.isArray(dateFormat)) {
+      for (const [k, v] of Object.entries(dateFormat as Record<string, unknown>)) push(k, v);
+    }
+    for (const key of ["monthlyVisits", "monthlyVisitsHistory"]) {
+      const arr = obj[key];
+      if (!Array.isArray(arr)) continue;
+      for (const row of arr) {
+        const r = row as { month?: unknown; date?: unknown; visits?: unknown };
+        push(r.month ?? r.date, r.visits);
+      }
+    }
+  }
+  return [...byMonth.entries()]
+    .map(([month, visits]) => ({ month, visits }))
+    .sort((a, b) => a.month.localeCompare(b.month));
+}
+
+/** 原文超过这个体积就不回前端了，免得一个后台接口吐几百 KB */
+const RAW_PAYLOAD_LIMIT = 96_000;
+
+interface RawRow {
+  source: string;
+  period: string;
+  ok: number;
+  payload: string | null;
+  error: string | null;
+  cost_usd: number;
+  via: string | null;
+  fetched_at: number;
+}
+
+/**
+ * 审核用的「接口到底返回了什么」。
+ *
+ * 卡片上看到的是解析后的结果，字段缺失时无法区分「接口没给」和「我们没取」——
+ * 例如流量月停在 9 月，可能是接口只到 9 月，也可能是英文月名被丢掉了。
+ * 这里把 collect_raw 原文摆出来，并把月度序列算好一起给，
+ * 顺带带上 traffic_history（库里的累积值），两边一比就知道断在哪一环。
+ */
+tools.get("/raw", async (c) => {
+  const domain = (c.req.query("domain") ?? "").trim().toLowerCase();
+  if (!domain) return c.json({ error: "missing_domain" }, 400);
+
+  const { results } = await c.env.DB.prepare(
+    "SELECT source, period, ok, payload, error, cost_usd, via, fetched_at " +
+      "FROM collect_raw WHERE domain = ? ORDER BY fetched_at DESC LIMIT 24",
+  )
+    .bind(domain)
+    .all<RawRow>();
+
+  // 同一个源只留最新一条：vortex_base 每月一行，历史月份的原文价值不大
+  const seen = new Set<string>();
+  const records = [];
+  for (const row of results ?? []) {
+    if (seen.has(row.source)) continue;
+    seen.add(row.source);
+
+    const bytes = row.payload?.length ?? 0;
+    let parsed: unknown = null;
+    let json: unknown = null;
+    if (row.payload) {
+      try {
+        parsed = JSON.parse(row.payload);
+      } catch {
+        parsed = null;
+      }
+      // 解析成功且体积可接受才把原文发回去；超大的保留月份摘要就够判断了
+      if (parsed !== null && bytes <= RAW_PAYLOAD_LIMIT) json = parsed;
+    }
+
+    records.push({
+      source: row.source,
+      period: row.period || null,
+      ok: row.ok === 1,
+      via: row.via,
+      costUsd: row.cost_usd ?? 0,
+      error: row.error,
+      fetchedAt: row.fetched_at ? new Date(row.fetched_at).toISOString() : null,
+      bytes,
+      /** 原文被体积上限挡掉了（前端据此提示「只给了月份摘要」） */
+      payloadOmitted: parsed !== null && json === null,
+      months: rawMonthsOf(parsed),
+      payload: json,
+    });
+  }
+
+  const hist = await c.env.DB.prepare(
+    "SELECT month, visits, source FROM traffic_history WHERE domain = ? ORDER BY month DESC LIMIT 12",
+  )
+    .bind(domain)
+    .all<{ month: string; visits: number; source: string | null }>();
+
+  return c.json({
+    domain,
+    records,
+    history: (hist.results ?? []).reverse(),
+  });
+});
+
 /**
  * 发布预览：给「这次发布会发生什么」一个完整交代。
  * 三块内容——新增（enriched 待发）、下榜（存量重判结果）、榜单前后条数。
