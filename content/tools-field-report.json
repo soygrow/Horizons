@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-16T14:49:04.252Z",
-  "total": 14,
+  "generatedAt": "2026-11-16T15:00:01.191Z",
+  "total": 13,
   "itemsWithIssues": 7,
   "dimensions": [
     {
@@ -10,7 +10,7 @@
       "missingRatio": 0,
       "missingDomains": [],
       "invalid": 6,
-      "invalidRatio": 43,
+      "invalidRatio": 46,
       "invalidSamples": [
         {
           "domain": "claudeduet.com",
@@ -52,7 +52,7 @@
       "key": "trafficMetrics.monthlyVisits",
       "label": "月访问量",
       "missing": 2,
-      "missingRatio": 14,
+      "missingRatio": 15,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -65,7 +65,7 @@
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
       "missing": 3,
-      "missingRatio": 21,
+      "missingRatio": 23,
       "missingDomains": [
         "claudeduet.com",
         "kixy.ai",
@@ -79,7 +79,7 @@
       "key": "metrics.registeredAt",
       "label": "域名注册时间",
       "missing": 9,
-      "missingRatio": 64,
+      "missingRatio": 69,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -99,7 +99,7 @@
       "key": "trafficMetrics.organicSearchVisits",
       "label": "自然搜索流量",
       "missing": 11,
-      "missingRatio": 79,
+      "missingRatio": 85,
       "missingDomains": [
         "agenthunt.io",
         "alsona.com",
@@ -121,7 +121,7 @@
       "key": "geoDistribution",
       "label": "地区分布",
       "missing": 2,
-      "missingRatio": 14,
+      "missingRatio": 15,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -133,10 +133,9 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 11,
-      "missingRatio": 79,
+      "missing": 10,
+      "missingRatio": 77,
       "missingDomains": [
-        "testsigma.com",
         "agenthunt.io",
         "claudeduet.com",
         "kixy.ai",
@@ -149,10 +148,10 @@
         "xmind.com"
       ],
       "invalid": 1,
-      "invalidRatio": 7,
+      "invalidRatio": 8,
       "invalidSamples": [
         {
-          "domain": "cekura.ai",
+          "domain": "pexo.ai",
           "reason": "全部关键词缺搜索量（只有词）"
         }
       ]
@@ -161,7 +160,7 @@
       "key": "observations.competitors",
       "label": "竞品",
       "missing": 5,
-      "missingRatio": 36,
+      "missingRatio": 38,
       "missingDomains": [
         "claudeduet.com",
         "quest.app",
@@ -176,10 +175,9 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 10,
-      "missingRatio": 71,
+      "missing": 9,
+      "missingRatio": 69,
       "missingDomains": [
-        "testsigma.com",
         "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
@@ -198,7 +196,7 @@
       "key": "pageStructure",
       "label": "页面结构",
       "missing": 9,
-      "missingRatio": 64,
+      "missingRatio": 69,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -218,7 +216,7 @@
       "key": "screenshotDesktopUrl",
       "label": "官网截图",
       "missing": 10,
-      "missingRatio": 71,
+      "missingRatio": 77,
       "missingDomains": [
         "agenthunt.io",
         "alsona.com",
@@ -239,7 +237,7 @@
       "key": "siteAudit",
       "label": "站点体检",
       "missing": 9,
-      "missingRatio": 64,
+      "missingRatio": 69,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -259,7 +257,7 @@
       "key": "aiInsight",
       "label": "AI 叙事",
       "missing": 9,
-      "missingRatio": 64,
+      "missingRatio": 69,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -279,7 +277,7 @@
       "key": "performanceInsight",
       "label": "AI 判断",
       "missing": 9,
-      "missingRatio": 64,
+      "missingRatio": 69,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -299,25 +297,11 @@
   "entryIssues": [],
   "items": [
     {
-      "domain": "testsigma.com",
-      "name": "Testsigma",
+      "domain": "pexo.ai",
+      "name": "Pexo",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 319039,
-      "gapCount": 2,
-      "gaps": [
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "cekura.ai",
-      "name": "Cekura Bench",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 73228,
+      "monthlyVisits": 462049,
       "gapCount": 0,
       "gaps": [],
       "issueCount": 1,
