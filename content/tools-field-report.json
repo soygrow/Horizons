@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-16T04:38:23.149Z",
+  "generatedAt": "2026-11-16T08:57:18.747Z",
   "total": 13,
   "itemsWithIssues": 6,
   "dimensions": [
@@ -64,10 +64,9 @@
     {
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
-      "missing": 4,
-      "missingRatio": 31,
+      "missing": 3,
+      "missingRatio": 23,
       "missingDomains": [
-        "jonzi.ai",
         "claudeduet.com",
         "kixy.ai",
         "wanaka.app"
@@ -137,7 +136,7 @@
       "missing": 11,
       "missingRatio": 85,
       "missingDomains": [
-        "jonzi.ai",
+        "heyvid.ai",
         "agenthunt.io",
         "claudeduet.com",
         "kixy.ai",
@@ -172,10 +171,9 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 10,
-      "missingRatio": 77,
+      "missing": 9,
+      "missingRatio": 69,
       "missingDomains": [
-        "jonzi.ai",
         "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
@@ -253,7 +251,27 @@
     },
     {
       "key": "aiInsight",
-      "label": "AI 解读",
+      "label": "AI 叙事",
+      "missing": 9,
+      "missingRatio": 69,
+      "missingDomains": [
+        "agenthunt.io",
+        "claudeduet.com",
+        "maxma.com",
+        "quest.app",
+        "rerun.io",
+        "teamily.com",
+        "tobira.ai",
+        "wanaka.app",
+        "xmind.com"
+      ],
+      "invalid": 0,
+      "invalidRatio": 0,
+      "invalidSamples": []
+    },
+    {
+      "key": "performanceInsight",
+      "label": "AI 判断",
       "missing": 9,
       "missingRatio": 69,
       "missingDomains": [
@@ -275,16 +293,14 @@
   "entryIssues": [],
   "items": [
     {
-      "domain": "jonzi.ai",
-      "name": "Reels schneiden lassen mit KI",
-      "tier": "core",
+      "domain": "heyvid.ai",
+      "name": "Heyvid",
+      "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 19222,
-      "gapCount": 3,
+      "monthlyVisits": 155870,
+      "gapCount": 1,
       "gaps": [
-        "trafficMetrics.monthlyVisitsGrowth",
-        "keywords",
-        "pricing"
+        "keywords"
       ],
       "issueCount": 0,
       "issues": []
@@ -295,7 +311,7 @@
       "tier": "watch",
       "stage": "approved",
       "monthlyVisits": 9792,
-      "gapCount": 8,
+      "gapCount": 9,
       "gaps": [
         "metrics.registeredAt",
         "trafficMetrics.organicSearchVisits",
@@ -304,7 +320,8 @@
         "pageStructure",
         "screenshotDesktopUrl",
         "siteAudit",
-        "aiInsight"
+        "aiInsight",
+        "performanceInsight"
       ],
       "issueCount": 0,
       "issues": []
@@ -328,7 +345,7 @@
       "name": "Claude Duet",
       "tier": "watch",
       "stage": "approved",
-      "gapCount": 12,
+      "gapCount": 13,
       "gaps": [
         "trafficMetrics.monthlyVisits",
         "trafficMetrics.monthlyVisitsGrowth",
@@ -341,7 +358,8 @@
         "pageStructure",
         "screenshotDesktopUrl",
         "siteAudit",
-        "aiInsight"
+        "aiInsight",
+        "performanceInsight"
       ],
       "issueCount": 1,
       "issues": [
@@ -385,7 +403,7 @@
       "tier": "core",
       "stage": "approved",
       "monthlyVisits": 89336,
-      "gapCount": 8,
+      "gapCount": 9,
       "gaps": [
         "metrics.registeredAt",
         "trafficMetrics.organicSearchVisits",
@@ -394,7 +412,8 @@
         "pageStructure",
         "screenshotDesktopUrl",
         "siteAudit",
-        "aiInsight"
+        "aiInsight",
+        "performanceInsight"
       ],
       "issueCount": 1,
       "issues": [
@@ -411,7 +430,7 @@
       "tier": "watch",
       "stage": "approved",
       "monthlyVisits": 1317,
-      "gapCount": 9,
+      "gapCount": 10,
       "gaps": [
         "metrics.registeredAt",
         "trafficMetrics.organicSearchVisits",
@@ -421,7 +440,8 @@
         "pageStructure",
         "screenshotDesktopUrl",
         "siteAudit",
-        "aiInsight"
+        "aiInsight",
+        "performanceInsight"
       ],
       "issueCount": 1,
       "issues": [
@@ -438,7 +458,7 @@
       "tier": "core",
       "stage": "approved",
       "monthlyVisits": 54018,
-      "gapCount": 8,
+      "gapCount": 9,
       "gaps": [
         "metrics.registeredAt",
         "trafficMetrics.organicSearchVisits",
@@ -447,7 +467,8 @@
         "pageStructure",
         "screenshotDesktopUrl",
         "siteAudit",
-        "aiInsight"
+        "aiInsight",
+        "performanceInsight"
       ],
       "issueCount": 1,
       "issues": [
@@ -464,7 +485,7 @@
       "tier": "core",
       "stage": "approved",
       "monthlyVisits": 4244,
-      "gapCount": 9,
+      "gapCount": 10,
       "gaps": [
         "metrics.registeredAt",
         "trafficMetrics.organicSearchVisits",
@@ -474,7 +495,8 @@
         "pageStructure",
         "screenshotDesktopUrl",
         "siteAudit",
-        "aiInsight"
+        "aiInsight",
+        "performanceInsight"
       ],
       "issueCount": 0,
       "issues": []
@@ -485,7 +507,7 @@
       "tier": "core",
       "stage": "approved",
       "monthlyVisits": 2949,
-      "gapCount": 9,
+      "gapCount": 10,
       "gaps": [
         "metrics.registeredAt",
         "trafficMetrics.organicSearchVisits",
@@ -495,7 +517,8 @@
         "pageStructure",
         "screenshotDesktopUrl",
         "siteAudit",
-        "aiInsight"
+        "aiInsight",
+        "performanceInsight"
       ],
       "issueCount": 0,
       "issues": []
@@ -505,7 +528,7 @@
       "name": "Wanaka Studio",
       "tier": "watch",
       "stage": "approved",
-      "gapCount": 12,
+      "gapCount": 13,
       "gaps": [
         "trafficMetrics.monthlyVisits",
         "trafficMetrics.monthlyVisitsGrowth",
@@ -518,7 +541,8 @@
         "pageStructure",
         "screenshotDesktopUrl",
         "siteAudit",
-        "aiInsight"
+        "aiInsight",
+        "performanceInsight"
       ],
       "issueCount": 1,
       "issues": [
@@ -535,7 +559,7 @@
       "tier": "core",
       "stage": "approved",
       "monthlyVisits": 1109852,
-      "gapCount": 8,
+      "gapCount": 9,
       "gaps": [
         "metrics.registeredAt",
         "trafficMetrics.organicSearchVisits",
@@ -544,7 +568,8 @@
         "pageStructure",
         "screenshotDesktopUrl",
         "siteAudit",
-        "aiInsight"
+        "aiInsight",
+        "performanceInsight"
       ],
       "issueCount": 1,
       "issues": [
