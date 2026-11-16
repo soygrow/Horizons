@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-16T08:57:18.747Z",
+  "generatedAt": "2026-11-16T10:09:01.683Z",
   "total": 13,
-  "itemsWithIssues": 6,
+  "itemsWithIssues": 7,
   "dimensions": [
     {
       "key": "description",
@@ -133,10 +133,9 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 11,
-      "missingRatio": 85,
+      "missing": 10,
+      "missingRatio": 77,
       "missingDomains": [
-        "heyvid.ai",
         "agenthunt.io",
         "claudeduet.com",
         "kixy.ai",
@@ -148,9 +147,14 @@
         "wanaka.app",
         "xmind.com"
       ],
-      "invalid": 0,
-      "invalidRatio": 0,
-      "invalidSamples": []
+      "invalid": 1,
+      "invalidRatio": 8,
+      "invalidSamples": [
+        {
+          "domain": "pexo.ai",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
     },
     {
       "key": "observations.competitors",
@@ -293,17 +297,21 @@
   "entryIssues": [],
   "items": [
     {
-      "domain": "heyvid.ai",
-      "name": "Heyvid",
+      "domain": "pexo.ai",
+      "name": "Pexo",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 155870,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
+      "monthlyVisits": 462049,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
     },
     {
       "domain": "agenthunt.io",
