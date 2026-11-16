@@ -25,10 +25,13 @@ interface ListedItem {
   rank: number;
   tier: string | null;
   monthlyVisits: number | null;
+  /** 上月访问量，API 用环比倒推（流量源只给本月值 + 环比） */
+  prevVisits: number | null;
+  /** 月环比增长 % */
+  growth: number | null;
   snapshotMonth: string | null;
   analyzedAt: string | null;
   collectedAt: string | null;
-  categories: string[];
   heatScore: number;
   state: ListState;
 }
@@ -102,15 +105,25 @@ function fmtHeat(n: number | null | undefined): string {
   return typeof n === "number" && n > 0 ? n.toFixed(1) : "—";
 }
 
-/** 分类最多露两个，多的折成 +N：列表里只需要一眼看出归类，完整信息在对比弹窗 */
-function fmtCats(cats: string[] | undefined): string {
-  if (!cats?.length) return `<span class="text-ink-muted">—</span>`;
-  const shown = cats
-    .slice(0, 2)
-    .map((c) => `<span class="rounded bg-surface-2 px-1.5 py-0.5 text-[11px] text-ink-muted">${esc(c)}</span>`)
-    .join("");
-  const more = cats.length > 2 ? `<span class="ml-1 text-[11px] text-ink-muted">+${cats.length - 2}</span>` : "";
-  return `<div class="flex flex-wrap items-center gap-1">${shown}${more}</div>`;
+/**
+ * 月环比：更新数据后判断「这次抓得对不对」的主要依据。
+ *
+ * 月翻倍或腰斩在真实流量里不常见，更常见的是抓错了站（同名子域、跳转页）。
+ * 所以 ±100% 以上的值标黄而不是按涨跌染色 —— 先当疑似异常看，别直接当利好。
+ */
+function fmtMom(g: number | null | undefined): string {
+  if (typeof g !== "number" || !Number.isFinite(g)) {
+    return `<span class="text-ink-muted">—</span>`;
+  }
+  const text = `${g > 0 ? "+" : ""}${g.toFixed(1)}%`;
+  if (Math.abs(g) >= 100) {
+    return (
+      `<span class="font-semibold tabular-nums text-accent" ` +
+      `title="环比 ${text}，波动超过 ±100%，确认一下是不是抓错了站">${text}</span>`
+    );
+  }
+  const cls = g > 0 ? "text-primary" : g < 0 ? "text-danger" : "text-ink-muted";
+  return `<span class="tabular-nums ${cls}">${text}</span>`;
 }
 
 function stateBadge(s: ListState): string {
@@ -160,9 +173,16 @@ function renderRows(): void {
             <div class="font-medium">${esc(r.name)}</div>
             <div class="text-[11px] text-ink-muted">${esc(r.domain)}</div>
           </td>
-          <td class="px-3 py-2">${fmtCats(r.categories)}</td>
-          <td class="px-3 py-2 text-right tabular-nums">${fmtVisits(r.monthlyVisits)}</td>
+          <td class="px-3 py-2 text-right">
+            <div class="tabular-nums">${fmtVisits(r.monthlyVisits)}</div>
+            ${
+              r.prevVisits != null
+                ? `<div class="text-[11px] tabular-nums text-ink-muted">上月 ${fmtVisits(r.prevVisits)}</div>`
+                : ""
+            }
+          </td>
           <td class="px-3 py-2 tabular-nums">${fmtMonth(r.snapshotMonth)}</td>
+          <td class="px-3 py-2 text-right">${fmtMom(r.growth)}</td>
           <td class="px-3 py-2 text-right tabular-nums text-ink-muted">${fmtHeat(r.heatScore)}</td>
           <td class="px-3 py-2 text-ink-muted">${r.analyzedAt ? fmtTime(r.analyzedAt) : "—"}</td>
           <td class="px-3 py-2">${stateBadge(r.state)}</td>

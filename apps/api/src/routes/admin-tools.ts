@@ -726,6 +726,8 @@ interface ListedRow {
   name: string;
   url: string | null;
   visits: number | null;
+  /** 月环比增长 %，用来倒推上月访问量 */
+  growth: number | null;
   snapshot: string | null;
   analyzed_at: string | null;
   collected_at: string | null;
@@ -744,6 +746,7 @@ async function readListed(db: D1Database): Promise<{ version: string; rows: List
     .prepare(
       `SELECT l.item_key, l.rank, l.tier, l.name, l.url,
               json_extract(l.card, '$.trafficMetrics.monthlyVisits') AS visits,
+              json_extract(l.card, '$.trafficMetrics.monthlyVisitsGrowth') AS growth,
               json_extract(l.card, '$.trafficMetrics.snapshotMonth') AS snapshot,
               json_extract(l.card, '$.aiInsight.analyzedAt') AS analyzed_at,
               json_extract(l.card, '$.collectedAt') AS collected_at,
@@ -789,6 +792,16 @@ tools.get("/listed", async (c) => {
       : r.snapshot >= target
         ? "updated"
         : "stale";
+    /*
+     * 上月访问量：流量源只给「本月值 + 环比 %」，没有历史序列，
+     * 所以用 visits / (1 + growth/100) 倒推。环比 ≤ -100% 时公式无意义（分母 ≤ 0），
+     * 只给 null 让前端显示破折号。
+     */
+    const prevVisits =
+      r.visits != null && r.growth != null && r.growth > -100
+        ? Math.round(r.visits / (1 + r.growth / 100))
+        : null;
+
     return {
       domain: r.item_key,
       name: r.name,
@@ -796,6 +809,8 @@ tools.get("/listed", async (c) => {
       rank: r.rank,
       tier: r.tier,
       monthlyVisits: r.visits,
+      prevVisits,
+      growth: r.growth,
       snapshotMonth: r.snapshot,
       analyzedAt: r.analyzed_at,
       collectedAt: r.collected_at,
