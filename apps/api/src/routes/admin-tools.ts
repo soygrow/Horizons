@@ -26,11 +26,16 @@ import {
 } from "../lib/github";
 import { readBoardStats, type BoardStats } from "../lib/board-stats";
 import {
+  deletePublished,
   expireStaleEnriching,
+  expireStalePublishing,
   hasWorkspace,
   listWorkspace,
   markEnriching,
+  markPublishing,
   listEnrichingItems,
+  PUBLISH_TIMEOUT_MS,
+  releasePublishing,
   setItemsStatus,
 } from "../lib/board-items";
 import { readReport } from "../lib/reports";
@@ -130,6 +135,31 @@ async function refreshJob(env: Env, cfg: GhConfig | null, row: JobRow): Promise<
   return { ...row, status, run_url: run.html_url ?? row.run_url, updated_at: now };
 }
 
+/**
+ * 发布任务终结时，把被占住的条目落成最终态。
+ *
+ * 成功由流水线自己写 published（只有它知道哪些真的进了榜），这里只处理失败：
+ * 把 publishing 退回 publish_failed，让后台能重新选中再发一次 —— 否则条目会
+ * 一直挂在「发布中」，既发不出去也删不掉。
+ */
+async function settlePublishJob(env: Env, job: JobRow, prevStatus: string): Promise<void> {
+  if (job.kind !== "publish") return;
+  if (job.status !== "failure" && job.status !== "cancelled") return;
+  if (job.status === prevStatus) return;
+
+  let domains: string[] = [];
+  try {
+    const p = JSON.parse(job.params) as { domains?: unknown };
+    if (Array.isArray(p.domains)) {
+      domains = p.domains.filter((d): d is string => typeof d === "string" && d.length > 0);
+    }
+  } catch {
+    // 老任务可能没有 params：退回该榜全部「发布中」，宁可多退不可卡住
+  }
+  const n = await releasePublishing(env.DB, "tools", domains).catch(() => 0);
+  if (n > 0) console.log(`[publish] 任务${job.status}，${n} 条退回「发布失败」可重发`);
+}
+
 async function listJobs(env: Env, limit: number): Promise<JobRow[]> {
   const { results } = await env.DB.prepare(
     "SELECT * FROM tool_jobs ORDER BY created_at DESC LIMIT ?",
@@ -177,11 +207,16 @@ tools.get("/jobs", async (c) => {
     .filter((r) => r.status === "queued" || r.status === "running")
     .slice(0, 10);
   const refreshed = new Map<string, JobRow>();
+  const settled: Promise<void>[] = [];
   await Promise.all(
     live.map(async (r) => {
-      refreshed.set(r.id, await refreshJob(c.env, cfg, r));
+      const next = await refreshJob(c.env, cfg, r);
+      refreshed.set(r.id, next);
+      // 发布任务刚判死：顺手把条目从「发布中」退回，前端下一次刷新就能重发
+      settled.push(settlePublishJob(c.env, next, r.status));
     }),
   );
+  await Promise.all(settled);
   return c.json({ jobs: rows.map((r) => refreshed.get(r.id) ?? r) });
 });
 
@@ -257,7 +292,9 @@ tools.get("/jobs/:id", async (c) => {
     .all<JobRow>();
   const row = results?.[0];
   if (!row) return c.json({ error: "not_found" }, 404);
-  return c.json({ job: await refreshJob(c.env, ghConfig(c.env), row) });
+  const job = await refreshJob(c.env, ghConfig(c.env), row);
+  await settlePublishJob(c.env, job, row.status);
+  return c.json({ job });
 });
 
 /**
@@ -323,6 +360,17 @@ tools.get("/staging", async (c) => {
     if (expired > 0) console.log(`[staging] ${expired} 条富化超时，已标记失败`);
   }
 
+  // 发布同理：流水线卡死时不能让条目永远停在「发布中」，否则既发不出去也删不掉
+  const publishRun = await c.env.DB.prepare(
+    "SELECT created_at FROM tool_jobs WHERE kind='publish' AND status IN ('queued','running')" +
+      " ORDER BY created_at DESC LIMIT 1",
+  ).first<{ created_at: number }>();
+  const publishStale = !publishRun || Date.now() - publishRun.created_at > PUBLISH_TIMEOUT_MS;
+  if (publishStale) {
+    const released = await expireStalePublishing(c.env.DB, "tools").catch(() => 0);
+    if (released > 0) console.log(`[staging] ${released} 条发布超时，已退回「发布失败」`);
+  }
+
   const ws = await listWorkspace<Record<string, unknown> & TierInput>(c.env.DB, "tools");
   const { updatedAt } = ws;
   const all = ws.items;
@@ -337,7 +385,7 @@ tools.get("/staging", async (c) => {
 
   const stageOf = (t: Record<string, unknown>): string => (t.stage as string) ?? "candidate";
 
-  const rows = all
+  const filtered = all
     .map((t) => {
       const verdict = t.verdict as { tier?: string; reason?: string } | undefined;
       return {
@@ -368,10 +416,17 @@ tools.get("/staging", async (c) => {
       if (tierFilter === "approved") {
         return r.stage === "approved" || r.stage === "enriching" || r.stage === "enrich_failed";
       }
-      if (tierFilter === "enriched") return r.stage === "enriched";
+      // 「可发榜」含发布失败的（点一下就能重发），发布中/已发榜单独筛
+      if (tierFilter === "enriched") return r.stage === "enriched" || r.stage === "publish_failed";
       if (tierFilter === "enrich_failed") return r.stage === "enrich_failed";
+      if (tierFilter === "published") return r.stage === "published";
       return true;
     });
+
+  // 已发榜的排在最后：它们等人工点「处理完成」，不该盖住还在等发布的条目
+  const rows = [...filtered].sort(
+    (a, b) => Number(a.stage === "published") - Number(b.stage === "published"),
+  );
 
   const start = (page - 1) * pageSize;
   return c.json({
@@ -387,11 +442,36 @@ tools.get("/staging", async (c) => {
     enriching: all.filter((t) => stageOf(t) === "enriching").length,
     enrichFailed: all.filter((t) => stageOf(t) === "enrich_failed").length,
     enriched: all.filter((t) => stageOf(t) === "enriched").length,
+    // 发布三态单独计数：发布中占位、发布失败可重发、已发榜等「处理完成」
+    publishing: all.filter((t) => stageOf(t) === "publishing").length,
+    publishFailed: all.filter((t) => stageOf(t) === "publish_failed").length,
+    published: all.filter((t) => stageOf(t) === "published").length,
     rejected: rejectedList.length,
     page,
     pageSize,
     items: rows.slice(start, start + pageSize),
   });
+});
+
+/**
+ * 「处理完成」：把发布成功的条目从后台队列移除。
+ *
+ * 发布成功不会自动消失 —— 条目停在 published 让后台仍能看到「发布成功」。
+ * 只有人确认线上没问题、点了这个按钮才真正删掉：自动删的话，万一构建失败
+ * 或者上线后发现问题，后台就什么都看不见了。
+ */
+tools.post("/staging/done", async (c) => {
+  let domains: string[] = [];
+  try {
+    const body = (await c.req.json()) as { domains?: unknown };
+    domains = normalizeDomainInput(body?.domains);
+  } catch {
+    return c.json({ error: "bad_request", detail: "body 必须是 JSON" }, 400);
+  }
+  if (!domains.length) return c.json({ error: "bad_request", detail: "缺少 domains" }, 400);
+
+  const removed = await deletePublished(c.env.DB, "tools", domains);
+  return c.json({ removed, skipped: domains.length - removed });
 });
 
 /** 单条详情：完整 AITool（含流量明细、分类、原始链接等） */
@@ -683,8 +763,10 @@ tools.get("/publish/preview", async (c) => {
   const enriched = items.filter((t) => stageOf(t) === "enriched").length;
   const approved = items.filter((t) => stageOf(t) === "approved").length;
   const candidates = items.filter((t) => stageOf(t) === "candidate").length;
+  // 发布失败的也能再发一次，一起算进「可发榜」
+  const publishFailed = items.filter((t) => stageOf(t) === "publish_failed").length;
   // 只有已富化的条目才会被 publish-tools.ts 合并进榜单
-  const pending = enriched;
+  const pending = enriched + publishFailed;
   const s = (stats ?? undefined) as
     | { candidates?: number; listed?: number; qualified?: number; target?: number }
     | undefined;
@@ -709,6 +791,7 @@ tools.get("/publish/preview", async (c) => {
     pending,
     approved,
     enriched,
+    publishFailed,
     candidates,
     rejected: ws.rejected.length,
     stats,
@@ -760,6 +843,24 @@ tools.post("/publish", async (c) => {
   const id = crypto.randomUUID();
   const now = Date.now();
 
+  /*
+   * 先占住条目再派发：后台立刻能显示「发布中」，刷新也不会丢。
+   * 脚本读队列时认 publishing（与 enriched 同一档），所以这一步不影响实际发出什么。
+   * 没有可发的就当场拒绝 —— 否则点了按钮毫无反应，看不出是状态不对还是任务没起来。
+   */
+  const marked = await markPublishing(c.env.DB, "tools", domains).catch(() => 0);
+  if (marked === 0) {
+    return c.json(
+      {
+        error: "nothing_to_publish",
+        detail: domains.length
+          ? "选中的条目不在可发榜状态（可能正在发布或已发榜）"
+          : "队列里没有可发榜的条目",
+      },
+      409,
+    );
+  }
+
   let run: WorkflowRun | null;
   try {
     run = await dispatchWorkflow(cfg, PUBLISH_WORKFLOW, {
@@ -770,6 +871,8 @@ tools.post("/publish", async (c) => {
       drops: drops ? "1" : "0",
     });
   } catch (e) {
+    // 派发失败要立刻退回占位，否则条目卡在「发布中」得等 60 分钟超时才能重发
+    await releasePublishing(c.env.DB, "tools", domains).catch(() => 0);
     return c.json(
       { error: "dispatch_failed", detail: e instanceof Error ? e.message : String(e) },
       502,

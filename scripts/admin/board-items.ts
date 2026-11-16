@@ -18,6 +18,9 @@ import { createD1Client, d1Configured, type D1Client } from "./d1-client";
  *   enriching      富化中（派发时写入，期间不能重复选、不能被发布带走）
  *   enriched       富化成功，可发榜
  *   enrich_failed  富化失败（脚本报错 / 超过 ENRICH_TIMEOUT_MS 没回）
+ *   publishing     发布中（后台派发时写入，脚本照常认它）
+ *   publish_failed 发布失败（日志里能看到原因，后台可重新选中再发）
+ *   published      已上线，等人工在后台点「处理完成」
  *   rejected       已拒绝
  */
 export type ItemStatus =
@@ -26,6 +29,9 @@ export type ItemStatus =
   | "enriching"
   | "enriched"
   | "enrich_failed"
+  | "publishing"
+  | "publish_failed"
+  | "published"
   | "rejected";
 
 /**
@@ -258,6 +264,8 @@ export async function listCandidates<T = unknown>(
  * 卡片里存的是采集当时的旧 stage，所以用 status 覆盖后再返回。
  *
  * rejected 单独返回：它不参与发布，只用于采集端跳过已拒的域名。
+ * published 直接跳过：已经上线了，留在库里只是为了让人在后台看到「发布成功」，
+ * 绝不能再次进入发布队列（否则同一批会被重复合并进榜单）。
  */
 export async function readWorkspace<T = Record<string, unknown>>(
   board: string,
@@ -271,17 +279,47 @@ export async function readWorkspace<T = Record<string, unknown>>(
       rejected.push(r.itemKey);
       continue;
     }
+    if (r.status === "published") continue;
     if (r.card) items.push({ ...r.card, stage: r.status });
   }
   return { items, rejected };
 }
 
-/** 发布完成后清空该榜工作区（与原来清空 staging 文件等价） */
+/**
+ * 把本次发布的条目标记为已上线。
+ *
+ * 必须在清空工作区之前调用：clearCandidates 只删非 published 的行，
+ * 这些刚标记的行会留下来，后台才能显示「发布成功」等人工确认。
+ */
+export async function markPublished(board: string, domains: readonly string[]): Promise<number> {
+  if (domains.length === 0) return 0;
+  const client = openClient();
+  if (!client) return 0;
+  let changed = 0;
+  const now = Date.now();
+  for (let i = 0; i < domains.length; i += 100) {
+    const chunk = domains.slice(i, i + 100);
+    try {
+      const res = await client.query(
+        `UPDATE board_items SET status='published', updated_at=? WHERE board=? AND item_key IN (${chunk
+          .map(() => "?")
+          .join(",")})`,
+        [now, board, ...chunk],
+      );
+      changed += res.changes;
+    } catch (e) {
+      console.warn("[items] 标记已发布失败：", e);
+    }
+  }
+  return changed;
+}
+
+/** 发布完成后清空该榜工作区（与原来清空 staging 文件等价），保留等确认的已发布行 */
 export async function clearCandidates(board: string): Promise<void> {
   const client = openClient();
   if (!client) return;
   try {
-    await client.query("DELETE FROM board_items WHERE board=?", [board]);
+    await client.query("DELETE FROM board_items WHERE board=? AND status<>'published'", [board]);
   } catch (e) {
     console.warn("[items] 清空候选池失败：", e);
   }

@@ -69,8 +69,19 @@ interface StagingRow {
   tier: "core" | "watch" | "reject" | null;
   /** 采集时的判定理由，例如「A4 月访问 320 < 1,000」 */
   reason: string | null;
-  /** enriching / enrich_failed 是富化引入的中间态：占位中，以及失败后可重试 */
-  stage: "candidate" | "approved" | "enriching" | "enriched" | "enrich_failed" | "published";
+  /**
+   * enriching / enrich_failed 是富化引入的中间态：占位中，以及失败后可重试。
+   * publishing / publish_failed / published 是发布三态：已提交、失败可重发、已上线待清理。
+   */
+  stage:
+    | "candidate"
+    | "approved"
+    | "enriching"
+    | "enriched"
+    | "enrich_failed"
+    | "publishing"
+    | "publish_failed"
+    | "published";
   /** 富化后仍缺的页面维度（key 列表） */
   fieldGaps: string[];
   rejected: boolean;
@@ -87,6 +98,12 @@ interface StagingResp {
   /** 富化失败的条数（可重试） */
   enrichFailed?: number;
   enriched: number;
+  /** 发布中（被占住，不可重复选） */
+  publishing?: number;
+  /** 发布失败（可重新选中再发） */
+  publishFailed?: number;
+  /** 已发榜（等人工点「处理完成」） */
+  published?: number;
   rejected: number;
   page: number;
   pageSize: number;
@@ -104,6 +121,8 @@ interface PreviewResp {
   pending: number;
   approved: number;
   enriched: number;
+  /** 上次发布失败、这次会一起重发的条数 */
+  publishFailed?: number;
   candidates: number;
   rejected: number;
   estimate: { candidatesAfter: number; listedBefore: number; listedAfter?: number; dropCount?: number } | null;
@@ -218,8 +237,12 @@ function stageBadge(stage: StagingRow["stage"]): string {
       return `<span class="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-semibold text-accent">可发榜</span>`;
     case "enrich_failed":
       return `<span class="rounded-full bg-danger-soft px-2 py-0.5 text-[11px] font-semibold text-danger" title="富化失败，勾选后可以重试（会再次计费）">富化失败</span>`;
+    case "publishing":
+      return `<span class="rounded-full bg-primary-soft px-2 py-0.5 text-[11px] font-semibold text-primary animate-pulse" title="发布任务已提交，跑完自动更新">发布中</span>`;
+    case "publish_failed":
+      return `<span class="rounded-full bg-danger-soft px-2 py-0.5 text-[11px] font-semibold text-danger" title="发布失败，勾选后可以重新发布">发布失败</span>`;
     case "published":
-      return `<span class="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] font-semibold text-ink-muted">已发榜</span>`;
+      return `<span class="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-semibold text-accent" title="已上线。确认没问题后点「处理完成」，这条才会从后台消失">发布成功</span>`;
     default:
       return `<span class="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-ink-muted">待确认</span>`;
   }
@@ -460,6 +483,7 @@ function syncEnrichButton(jobs: Job[]): void {
 
 function renderJobs(jobs: Job[]): void {
   const box = $("tools-jobs");
+  const prevStatus = new Map(state.jobs.map((j) => [j.id, j.status]));
   state.jobs = jobs;
   syncEnrichButton(jobs);
   if (!jobs.length) {
@@ -469,6 +493,23 @@ function renderJobs(jobs: Job[]): void {
 
   // 轮询看全量，别因为被截断就停了
   schedulePolling(jobs.some((j) => j.status === "queued" || j.status === "running"));
+
+  /*
+   * 任务刚结束：条目的最终状态是后端最后一刻才落库的（发布成功由流水线写 published，
+   * 失败由 /jobs 退回 publish_failed），这一轮并发拉到的 staging 可能还是旧值。
+   * 稍等一拍再拉一次，界面才能立刻从「发布中」翻成「发布成功 / 发布失败」。
+   */
+  const justSettled = jobs.some(
+    (j) =>
+      (j.status === "success" || j.status === "failure" || j.status === "cancelled") &&
+      (prevStatus.get(j.id) === "queued" || prevStatus.get(j.id) === "running"),
+  );
+  if (justSettled) {
+    window.setTimeout(() => {
+      void loadStaging();
+      void loadOverview();
+    }, 1200);
+  }
 
   const { rows, hidden } = pickRecentJobs(jobs);
 
@@ -558,27 +599,40 @@ function renderStaging(data: StagingResp): void {
   } else {
     body.innerHTML = data.items
       .map((row) => {
-        // 富化中的条目已被任务占住：再选一次就是重复付费，直接禁掉
-        const busy = row.stage === "enriching";
-        const checked = state.selected.has(row.domain) && !busy ? " checked" : "";
+        // 富化中/发布中的条目已被任务占住（再选就是重复付费或重复发布），
+        // 已发榜的等人工点「处理完成」收尾 —— 这三种都不参与勾选
+        const locked =
+          row.stage === "enriching" || row.stage === "publishing" || row.stage === "published";
+        const checked = state.selected.has(row.domain) && !locked ? " checked" : "";
+        const lockTitle =
+          row.stage === "enriching"
+            ? "富化进行中，不能重复选择"
+            : row.stage === "publishing"
+              ? "发布进行中，不能重复选择"
+              : "已发布成功，点「处理完成」后才会移出列表";
         const reason = row.rejected ? "已拒绝：不再抓取" : (row.reason ?? "—");
-        const missing =
-          row.stage === "approved" || row.stage === "enriched" || row.stage === "enrich_failed"
-            ? row.fieldGaps.length
-              ? `${row.fieldGaps.length} 项`
-              : "完整"
-            : row.stage === "enriching"
-              ? "富化中"
-              : "—";
+        // 富化过的（含发布三态）都能看到缺失字段，方便回查当初富化得怎么样
+        const enrichedStage =
+          row.stage === "enriched" ||
+          row.stage === "enrich_failed" ||
+          row.stage === "publishing" ||
+          row.stage === "publish_failed" ||
+          row.stage === "published";
+        const missing = enrichedStage
+          ? row.fieldGaps.length
+            ? `${row.fieldGaps.length} 项`
+            : "完整"
+          : row.stage === "enriching"
+            ? "富化中"
+            : "—";
         // 富化过的条目才有预览页（构建期从 D1 导出）；没富化的打开抽屉就够了
-        const previewable =
-          row.stage === "enriched" || row.stage === "enriching" || row.stage === "enrich_failed";
+        const previewable = enrichedStage || row.stage === "enriching";
         const nameCell = previewable
           ? `<a href="/preview/${esc(row.domain)}" target="_blank" rel="noopener" class="block max-w-full truncate font-medium text-primary hover:underline" title="在新窗口预览详情页（与线上同一套布局，需管理员登录）">${esc(row.name)}</a>`
           : `<button type="button" data-tool-open="${esc(row.domain)}" class="block max-w-full truncate text-left font-medium text-ink hover:text-primary">${esc(row.name)}</button>`;
         return `<tr class="transition hover:bg-surface-2/50">
             <td class="px-2 py-2.5">
-              <input type="checkbox" data-tool-select="${esc(row.domain)}" class="h-3.5 w-3.5 rounded border-border"${checked}${busy ? " disabled title=\"富化进行中，不能重复选择\"" : ""} aria-label="选择 ${esc(row.name)}" />
+              <input type="checkbox" data-tool-select="${esc(row.domain)}" class="h-3.5 w-3.5 rounded border-border"${checked}${locked ? ` disabled title="${esc(lockTitle)}"` : ""} aria-label="选择 ${esc(row.name)}" />
             </td>
             <td class="max-w-[240px] px-4 py-2.5">
               ${nameCell}
@@ -597,13 +651,22 @@ function renderStaging(data: StagingResp): void {
             <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${missing}</td>
             <td class="whitespace-nowrap px-4 py-2.5 text-right">
               ${
-                // 富化完成的才能发布：单条发布不用先回顶部勾选，少一步操作
-                row.stage === "enriched"
-                  ? `<button type="button" data-tool-publish="${esc(row.domain)}" class="mr-3 text-xs font-medium text-primary hover:underline">发布</button>`
-                  : ""
+                // 可发布 = 富化完成，或上次发布失败（点一下就是重发，不必先回顶部勾选）
+                row.stage === "enriched" || row.stage === "publish_failed"
+                  ? `<button type="button" data-tool-publish="${esc(row.domain)}" class="mr-3 text-xs font-medium text-primary hover:underline">${row.stage === "publish_failed" ? "重新发布" : "发布"}</button>`
+                  : row.stage === "publishing"
+                    ? `<span class="mr-3 text-xs text-primary">发布中…</span>`
+                    : row.stage === "published"
+                      ? `<button type="button" data-tool-done="${esc(row.domain)}" class="mr-3 text-xs font-medium text-accent hover:underline" title="确认线上没问题后点这里，这条才会从后台消失">处理完成</button>`
+                      : ""
               }
               <button type="button" data-tool-open="${esc(row.domain)}" class="text-xs text-ink-muted hover:text-primary hover:underline">详情</button>
-              <button type="button" data-tool-reject="${esc(row.domain)}" data-tool-rejected="${row.rejected}" class="ml-3 text-xs text-ink-muted transition hover:text-danger">${row.rejected ? "恢复" : "拒绝"}</button>
+              ${
+                // 发布中/已发榜的条目不给拒绝入口：状态是流水线写的，直接拒会打架
+                locked
+                  ? ""
+                  : `<button type="button" data-tool-reject="${esc(row.domain)}" data-tool-rejected="${row.rejected}" class="ml-3 text-xs text-ink-muted transition hover:text-danger">${row.rejected ? "恢复" : "拒绝"}</button>`
+              }
             </td>
           </tr>`;
       })
@@ -683,8 +746,11 @@ function renderPreview(data: PreviewResp): void {
   btn.textContent = `发布到榜单（${data.pending}）`;
 
   const e = data.estimate;
+  const retry = data.publishFailed ?? 0;
   const parts = [
-    picked ? `已选 ${picked} 个，将只发布其中已富化的条目` : `将发布全部 ${data.pending} 个已富化条目`,
+    picked
+      ? `已选 ${picked} 个，将只发布其中已富化的条目`
+      : `将发布全部 ${data.pending} 个已富化条目${retry ? `（含 ${retry} 个上次失败的重发）` : ""}`,
   ];
   if (e) {
     if (e.dropCount) parts.push(`同时下榜 ${e.dropCount} 条`);
@@ -954,7 +1020,7 @@ async function enrichDomains(domains: string[]): Promise<void> {
  * 发布是唯一会改动线上榜单的动作，所以给两次确认：第一次说清范围，第二次说清后果。
  */
 async function publishDomains(domains: string[]): Promise<boolean> {
-  const total = state.staging?.enriched ?? 0;
+  const total = (state.staging?.enriched ?? 0) + (state.staging?.publishFailed ?? 0);
   const scope = domains.length ? `选中的 ${domains.length} 个` : `全部 ${total} 个可发榜条目`;
 
   if (
@@ -972,13 +1038,21 @@ async function publishDomains(domains: string[]): Promise<boolean> {
     return false;
   }
 
-  await apiPost("/tools/publish", { note: `后台发布 ${scope}`, domains });
+  try {
+    await apiPost("/tools/publish", { note: `后台发布 ${scope}`, domains });
+  } catch (e) {
+    window.alert(`发布失败：${e instanceof Error ? e.message : String(e)}`);
+    // 状态可能已被别处改过（另一个窗口点了发布），拉一次真实状态，免得按钮一直点不动
+    void loadStaging();
+    void loadPreview();
+    return false;
+  }
   state.selected.clear();
   void loadJobs();
   void loadStaging();
   void loadPreview();
   window.alert(
-    `已提交发布：${scope}。\n构建约 2–5 分钟上线；发布成功后这些条目会从队列移除，上方任务列表能看到进度。`,
+    `已提交发布：${scope}。\n\n构建约 2–5 分钟，期间列表里这些条目标「发布中」。\n完成后变成「发布成功」，确认线上没问题再点「处理完成」把这条移出后台。`,
   );
   return true;
 }
@@ -1039,7 +1113,8 @@ function bind(): void {
     if (btn.disabled) return;
     // 勾了提交勾选的（后端只放行已富化的），没勾提交全部可发榜的
     const picked = [...state.selected];
-    const total = state.staging?.enriched ?? 0;
+    // 发布失败待重发的也算可发榜，否则「全量发布」会被这个前置检查拦掉
+    const total = (state.staging?.enriched ?? 0) + (state.staging?.publishFailed ?? 0);
     if (!picked.length && !total) {
       window.alert("没有可发榜的条目：先富化，阶段变成「可发榜」之后才能发布。");
       return;
@@ -1103,6 +1178,38 @@ function bind(): void {
       return;
     }
 
+    /*
+     * 行内「处理完成」：发布成功不会自动消失，得人确认线上没问题后手动收尾。
+     * 二次确认是必须的 —— 删掉后要看这条的历史只能去榜单 JSON 里翻。
+     */
+    const done = target.closest<HTMLElement>("[data-tool-done]");
+    if (done?.dataset.toolDone) {
+      const domain = done.dataset.toolDone;
+      if (
+        !window.confirm(
+          `确认「${domain}」已经上线且一切正常？\n\n点「确定」后这条会从后台队列移除，线上榜单不受影响。`,
+        )
+      ) {
+        return;
+      }
+      done.setAttribute("disabled", "true");
+      void apiPost<{ removed: number; skipped: number }>("/tools/staging/done", { domains: [domain] })
+        .then((r) => {
+          if (!r.removed) {
+            window.alert("这条不在「发布成功」状态，没有删除。刷新一下看最新状态。");
+            done.removeAttribute("disabled");
+            return;
+          }
+          void loadStaging();
+          void loadOverview();
+        })
+        .catch((e) => {
+          done.removeAttribute("disabled");
+          window.alert(`操作失败：${e instanceof Error ? e.message : String(e)}`);
+        });
+      return;
+    }
+
     const reject = target.closest<HTMLElement>("[data-tool-reject]");
     if (reject?.dataset.toolReject) {
       const domain = reject.dataset.toolReject;
@@ -1132,9 +1239,12 @@ function bind(): void {
     const on = (event.target as HTMLInputElement).checked;
     state.selected.clear();
     if (on) {
-      // 跳过富化中的行：它们已被任务占用，勾进来会被后端当成重复富化
+      // 跳过富化中/发布中的行（已被任务占用）和已发榜的行（等人工点「处理完成」）
       for (const row of state.staging?.items ?? []) {
-        if (row.stage !== "enriching") state.selected.add(row.domain);
+        if (row.stage === "enriching" || row.stage === "publishing" || row.stage === "published") {
+          continue;
+        }
+        state.selected.add(row.domain);
       }
     }
     syncEnrichButton(state.jobs);

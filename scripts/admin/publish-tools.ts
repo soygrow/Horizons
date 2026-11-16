@@ -23,7 +23,13 @@ import path from "node:path";
 import { compareByToolScore, computeToolScore, tierOf } from "@horizons/shared";
 import type { AITool } from "@horizons/shared";
 import { syncBoardToD1 } from "./board-sync";
-import { clearCandidates, readWorkspace, syncCandidates, type ItemStatus } from "./board-items";
+import {
+  clearCandidates,
+  markPublished,
+  readWorkspace,
+  syncCandidates,
+  type ItemStatus,
+} from "./board-items";
 import type { PublishRow } from "./publish-board";
 import { statsLine, writeToolStats } from "./tool-stats";
 import type { StagingFile, StagingItem } from "./verdict";
@@ -194,7 +200,12 @@ async function main(): Promise<void> {
       duplicates.push(item.domain);
       continue;
     }
-    const ready = item.stage === "enriched" || (includeApproved && item.stage === "approved");
+    // publishing 是后台派发时写入的占位状态，本质就是「已富化、正在发」，必须照发，
+// 否则后台一点发布就把自己的条目挡在门外
+    const ready =
+      item.stage === "enriched" ||
+      item.stage === "publishing" ||
+      (includeApproved && item.stage === "approved");
     if (!ready) {
       notReady.push(`${item.domain}(${item.stage ?? "无状态"})`);
       continue;
@@ -254,6 +265,10 @@ async function main(): Promise<void> {
   const published = new Set(accepted.map((t) => t.domain));
   const remaining = staging.items.filter((i) => !published.has(i.domain));
 
+  // 先标「已发榜」再重建队列，顺序不能反：clearCandidates 只删非 published 的行。
+  // 这些行留在库里，后台才能显示「发布成功」，等人工点「处理完成」再清掉。
+  if (published.size) await markPublished("tools", [...published]);
+
   // 重建 D1 工作区：只剩「没发出去的条目 + 拒绝名单」，后台看到的就是真实剩余量
   if (staging.items.length > 0 || staging.rejected.length > 0) {
     await clearCandidates("tools");
@@ -287,6 +302,11 @@ async function main(): Promise<void> {
       `${drops.domains.size ? `，其中下榜 ${drops.domains.size}` : ""}）`,
   );
   console.log(`[publish] 队列剩余 ${remaining.length} 个待处理`);
+  if (accepted.length) {
+    console.log(
+      `[publish] ${accepted.length} 条已标记「发布成功」，等后台点「处理完成」才真正移出队列`,
+    );
+  }
   console.log(`[publish] ${statsLine(stats)}`);
   console.log(
     JSON.stringify({

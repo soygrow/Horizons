@@ -15,6 +15,9 @@
  *   enriching     富化中（派发时写入，期间不可重复选择、不参与发布）
  *   enriched      富化成功
  *   enrich_failed 富化失败（脚本报错，或超过 ENRICH_TIMEOUT_MS 没回）
+ *   publishing    发布中（派发发布任务时写入，脚本仍认它，跑完覆盖成 published）
+ *   publish_failed 发布失败（流水线挂了，条目退回可发榜，能再次选中重发）
+ *   published     发布成功，等人工点「处理完成」才从队列移除
  *   rejected      已拒绝
  */
 export type ItemStatus =
@@ -23,6 +26,9 @@ export type ItemStatus =
   | "enriching"
   | "enriched"
   | "enrich_failed"
+  | "publishing"
+  | "publish_failed"
+  | "published"
   | "rejected";
 
 /**
@@ -59,6 +65,109 @@ export async function expireStaleEnriching(db: D1Database, board: string): Promi
  * SQLite 的 UPDATE 不支持 LIMIT，只能这么写。
  * 已被别的任务占住的 enriching 不会被重复命中（WHERE 限定了 approved）。
  */
+/**
+ * 发布超时：超过 60 分钟还停在 publishing 就判失败。
+ *
+ * 与富化超时同理 —— 发布流水线卡住（dispatch 失败、run 被取消、worker 挂掉）时
+ * 条目会永远停在「发布中」，既不能重发也不会消失，只能人工改库。
+ * 60 分钟对齐 publish workflow 本身的上限。
+ */
+export const PUBLISH_TIMEOUT_MS = 60 * 60 * 1000;
+
+/** 把卡住的「发布中」标记为失败，返回改动行数 */
+export async function expireStalePublishing(db: D1Database, board: string): Promise<number> {
+  const now = Date.now();
+  const res = await db
+    .prepare(
+      "UPDATE board_items SET status='publish_failed', updated_at=? " +
+        "WHERE board=? AND status='publishing' AND updated_at < ?",
+    )
+    .bind(now, board, now - PUBLISH_TIMEOUT_MS)
+    .run();
+  return res.meta?.changes ?? 0;
+}
+
+/**
+ * 派发发布任务时占住条目：enriched / publish_failed → publishing。
+ *
+ * 先写库再 dispatch，后台立刻就能看到「发布中」，刷新页面也不会丢。
+ * 脚本读队列时同样认 publishing，所以这一步不影响真正发出去的内容。
+ * domains 为空表示「队列里所有可发榜的」。
+ */
+export async function markPublishing(
+  db: D1Database,
+  board: string,
+  domains: readonly string[],
+): Promise<number> {
+  const now = Date.now();
+  if (domains.length === 0) {
+    const res = await db
+      .prepare(
+        "UPDATE board_items SET status='publishing', updated_at=? " +
+          "WHERE board=? AND status IN ('enriched','publish_failed')",
+      )
+      .bind(now, board)
+      .run();
+    return res.meta?.changes ?? 0;
+  }
+  const stmt = db.prepare(
+    "UPDATE board_items SET status='publishing', updated_at=? " +
+      "WHERE board=? AND item_key=? AND status IN ('enriched','publish_failed')",
+  );
+  const results = await db.batch(domains.map((d) => stmt.bind(now, board, d)));
+  return results.reduce((sum, r) => sum + (r.meta?.changes ?? 0), 0);
+}
+
+/**
+ * 发布失败：publishing / published → publish_failed，让人能重新选中再发一次。
+ *
+ * 为什么连 published 也退：脚本是先写 aitools.json、标 published，最后才由 workflow
+ * 提交推送。推送那一步挂了，条目在后台看着是「发布成功」，线上其实没有 —— 只有退回
+ * 才看得出来。误退的代价很小：重发时脚本按域名去重，已进榜的会跳过。
+ * domains 为空表示该榜所有「发布中/已发榜」的都退回（任务没记 domains 时的兜底）。
+ */
+export async function releasePublishing(
+  db: D1Database,
+  board: string,
+  domains: readonly string[],
+): Promise<number> {
+  const now = Date.now();
+  if (domains.length === 0) {
+    const res = await db
+      .prepare(
+        "UPDATE board_items SET status='publish_failed', updated_at=? " +
+          "WHERE board=? AND status IN ('publishing','published')",
+      )
+      .bind(now, board)
+      .run();
+    return res.meta?.changes ?? 0;
+  }
+  const stmt = db.prepare(
+    "UPDATE board_items SET status='publish_failed', updated_at=? " +
+      "WHERE board=? AND item_key=? AND status IN ('publishing','published')",
+  );
+  const results = await db.batch(domains.map((d) => stmt.bind(now, board, d)));
+  return results.reduce((sum, r) => sum + (r.meta?.changes ?? 0), 0);
+}
+
+/**
+ * 「处理完成」：把已发布成功的条目从队列删掉，后台不再显示。
+ *
+ * 只删 published 的行 —— 前端传错域名也不会误删还在队列里的条目。
+ */
+export async function deletePublished(
+  db: D1Database,
+  board: string,
+  domains: readonly string[],
+): Promise<number> {
+  if (domains.length === 0) return 0;
+  const stmt = db.prepare(
+    "DELETE FROM board_items WHERE board=? AND item_key=? AND status='published'",
+  );
+  const results = await db.batch(domains.map((d) => stmt.bind(board, d)));
+  return results.reduce((sum, r) => sum + (r.meta?.changes ?? 0), 0);
+}
+
 export async function markEnriching(
   db: D1Database,
   board: string,
