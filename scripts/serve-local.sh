@@ -4,7 +4,7 @@
 #
 # 目标：一条命令得到「和线上同一份构建产物」的本地站点，页面永远是最新代码。
 # 固定要素（保证每次结果一致）：
-#   端口 4321、产物目录 apps/site/dist、日志 .local/、每次全量重建 dist。
+#   端口 4321、构建目录 apps/site/dist（静态资产在 dist/client）、日志 .local/、每次全量重建 dist。
 #
 # 用法：
 #   bash scripts/serve-local.sh              # 重算数据 → 全量构建 → 重启本地服务 → 验收
@@ -32,7 +32,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-DIST="$ROOT/apps/site/dist"
+BUILD_DIR="$ROOT/apps/site/dist"
 STATE="$ROOT/.local"
 SERVER="$ROOT/scripts/local/static-server.mjs"
 LOG="$STATE/server.log"
@@ -132,9 +132,14 @@ if [ "$BUILD" = "1" ]; then
   fi
   ok "构建完成"
 else
-  [ -f "$DIST/index.html" ] || die "dist 为空，去掉 --no-build 先构建一次"
+  [ -f "$BUILD_DIR/index.html" ] || [ -f "$BUILD_DIR/client/index.html" ] || die "dist 为空，去掉 --no-build 先构建一次"
   warn "跳过数据生成与构建（--no-build）"
 fi
+
+# 接入 @astrojs/cloudflare 后，静态资产落在 dist/client、SSR chunk 落在 dist/server，
+# 本地服务只该对外提供前者；没有 client 时退回 dist（未接适配器的旧结构）
+DIST="$BUILD_DIR"
+if [ -d "$BUILD_DIR/client" ]; then DIST="$BUILD_DIR/client"; fi
 
 # ---------- 产物完整性断言（防止“只部署了一部分页面”） ----------
 # 频道清单与 apps/site/src/pages 对应；新增频道时同步补在这里

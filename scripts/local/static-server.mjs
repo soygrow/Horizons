@@ -14,10 +14,12 @@
  * 用法：node scripts/local/static-server.mjs <distDir> <port>
  */
 import { createServer, request as httpRequest } from "node:http";
-import { createReadStream, promises as fsp } from "node:fs";
+import { createReadStream, existsSync, promises as fsp } from "node:fs";
 import path from "node:path";
 
-const root = path.resolve(process.argv[2] ?? "apps/site/dist");
+/** 接适配器后静态资产在 dist/client（SSR chunk 在 dist/server 里，不该被当静态文件对外） */
+const rawRoot = path.resolve(process.argv[2] ?? "apps/site/dist");
+const root = existsSync(path.join(rawRoot, "client")) ? path.join(rawRoot, "client") : rawRoot;
 const port = Number(process.argv[3] ?? process.env.PORT ?? 4321);
 
 /** /api/* 转给本地 wrangler dev（apps/api）；未启动时返回 502，不影响静态页面 */

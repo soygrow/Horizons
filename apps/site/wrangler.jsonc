@@ -15,6 +15,11 @@
     }
   ],
   "assets": {
+    // 这里的 ./dist 只是构建前的占位：接上 @astrojs/cloudflare 后产物分成
+    // dist/client（静态资产）与 dist/server（SSR chunk），adapter 会生成
+    // dist/server/wrangler.json 把 directory 指到 ../client 并保留本文件的其余配置。
+    // 所以部署请始终用 `wrangler deploy`（它读 .wrangler/deploy/config.json 转指过去），
+    // 不要手工改成本目录或用 `wrangler deploy --assets`。
     "directory": "./dist",
     // 保持与现有站一致的 URL 形态（无尾斜杠，不做 301）
     "html_handling": "drop-trailing-slash",

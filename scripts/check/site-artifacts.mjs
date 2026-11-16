@@ -5,14 +5,20 @@
  * 目的：把「只部署了一部分页面」「数据塌成 0 条」「SEO 策略被改坏」这几类事故
  * 拦在发布之前，而不是等用户看到空白页才发现。
  *
- * 用法：node scripts/check/site-artifacts.mjs [--dist apps/site/dist]
+ * 用法：node scripts/check/site-artifacts.mjs（产物目录自动识别 apps/site/dist/client 或 apps/site/dist）
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
-const DIST = path.join(ROOT, "apps/site/dist");
+const BUILD_DIR = path.join(ROOT, "apps/site/dist");
+/*
+ * 接入 @astrojs/cloudflare 后构建产物分成 dist/client（静态资产）与 dist/server（SSR chunk），
+ * 只有 client 会被当作静态资产上传。断言的对象始终是「最终对外的那批文件」，
+ * 所以有 client 就用它，没有则退回 dist（未接适配器时的旧结构）。
+ */
+const DIST = existsSync(path.join(BUILD_DIR, "client")) ? path.join(BUILD_DIR, "client") : BUILD_DIR;
 const MANIFEST = path.join(ROOT, "content/dist/manifest.json");
 
 /** 必须存在的频道（新增频道时同步补这里；与 scripts/serve-local.sh 的 CHANNELS 一致） */
