@@ -10,7 +10,7 @@ import Pending from "../Pending.astro";
 import TrafficTrendChart from "../TrafficTrendChart.astro";
 import { getDict, format as tf } from "../../../lib/i18n";
 import { formatNum } from "../../../lib/format";
-import { channelSharesPct, countryLabel, pendingTrendFlags, toPercent } from "../../../lib/data";
+import { channelSharesPct, countryLabel, pendingTrendFlags, toPercent, trendFromMetrics } from "../../../lib/data";
 
 interface Props {
   tool: Record<string, any>;
@@ -19,7 +19,7 @@ interface Props {
 const dict = getDict("zh");
 const { tool } = Astro.props;
 
-const trend: any[] = tool.trend ?? [];
+const rawTrend: any[] = tool.trend ?? [];
 const geo: any[] = tool.geoDistribution ?? [];
 const ranks = tool.ranks;
 const keywords: any[] = tool.keywords ?? [];
@@ -51,6 +51,17 @@ const keywordCount: number | undefined =
  * 趋势图按同一套判定跳过着色与标签，不会画出掉到 0 的假断崖。
  */
 const TREND_MONTHS = 6;
+/*
+ * 库里可能存着「整段补 0」的 trend：traffic_history 没写成的月份被补 0 后
+ * 整段覆盖过真实值，一个真实点都不剩，这里只能显示「暂无历史数据」。
+ * 这类数据用当月访问量合成 6 格再画——只有一个月的数据也画得出来，
+ * 其余月份落回基线，读者能看出「这个月才起量」，不用等半年才凑齐曲线。
+ */
+const trend: any[] = (() => {
+  const flags = pendingTrendFlags(rawTrend);
+  const hasReal = rawTrend.some((p, i) => !flags[i] && (p.total ?? 0) > 0);
+  return hasReal ? rawTrend : trendFromMetrics(tool as never, TREND_MONTHS);
+})();
 const pendingFlags = pendingTrendFlags(trend);
 const collectedPoints = trend.filter((_, i) => !pendingFlags[i] && (trend[i]?.total ?? 0) > 0);
 const pendingMonths = Math.max(0, TREND_MONTHS - collectedPoints.length, pendingFlags.filter(Boolean).length);

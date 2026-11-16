@@ -49,6 +49,42 @@ const round2 = (v: number) => Math.round(v * 100) / 100;
 const pctOf = (total: number | undefined, pct: number | undefined) =>
   total !== undefined && pct !== undefined ? Math.round((total * pct) / 100) : undefined;
 
+/** YYYY-MM 平移 n 个月（用 UTC 日构造，避免本地时区把月份推到相邻时刻） */
+function shiftMonthKey(key: string, delta: number): string {
+  const [y, m] = key.split("-").map(Number);
+  const d = new Date(Date.UTC(y, m - 1 + delta, 1));
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
+/**
+ * 稀疏月度记录 → 固定 6 格，末格对齐「最后一个有数的月份」。
+ *
+ * 不能直接用 readTrafficMonths 的 6 格：它按「今天」往前数，vortex 数据滞后一个月时
+ * 末格就是还没出数的空月，曲线最后一段会画成掉到 0 的假断崖。
+ * 以有数的月份为锚点重铺，前面缺的格子补 0 并标 collected:false，前端画成「待累积」。
+ */
+function trailingTrend(
+  byMonth: Map<string, number>,
+  lastMonth: string,
+  organicShare: number | undefined,
+  count = 6,
+): TrafficTrendPoint[] {
+  return Array.from({ length: count }, (_, i) => {
+    const date = shiftMonthKey(lastMonth, -(count - 1 - i));
+    const visits = byMonth.get(date);
+    return visits === undefined || visits <= 0
+      ? { date, total: 0, organic: 0, collected: false }
+      : {
+          date,
+          total: visits,
+          // organic 是「用当前自然搜索占比反推每个月」的近似值：vortex 不给逐月渠道。
+          // 图例上要写清是推算，否则会被当成实测。
+          organic: pctOf(visits, organicShare) ?? 0,
+          collected: true,
+        };
+  });
+}
+
 /**
  * vortex 的占比字段是 0~1 小数（0.42 = 42%），而 types 与页面统一按百分数（0~100）消费。
  * 少这一次换算会同时错两处：42% 显示成 0.42%，按占比反推的绝对量也小 100 倍。
@@ -243,17 +279,26 @@ export function applyFields(
     opts.history ??
     arr<{ month: string; visits: number; collected?: boolean }>("monthly_visits_history") ??
     [];
-  if (hist.length) {
-    // organic 是「用当前自然搜索占比反推每个月」的近似值：vortex 不给逐月渠道。
-    // 图例上要写清是推算，否则会被当成实测。
-    tool.trend = hist.slice(-6).map<TrafficTrendPoint>((m) => ({
-      date: m.month,
-      total: m.visits,
-      organic: pctOf(m.visits, organicShare) ?? 0,
-      // 缺省视为有值：老数据没有这个标记，不能因此被当成「未累积」而整段隐藏
-      collected: m.collected !== false,
-    }));
+  /*
+   * 只有真采到月份时才覆盖 trend。
+   *
+   * hist 是 traffic_history 补齐到 6 格的结果，缺月是 0 + collected:false；
+   * 表里一行都没有时它就是「6 个 0」。这种空壳直接覆盖会抹掉上一次采集的真实曲线
+   * （详情页随即变成「暂无历史数据」），所以先看有没有真值：
+   *   有真值 —— 以最后一个有数的月份为末格重铺 6 格
+   *   没真值 —— 保留原有 trend；连原值都没有时，用当月访问量铺出一条从 0 起量的曲线
+   */
+  const realMonths = hist
+    .filter((m) => m.collected !== false && m.visits > 0)
+    .sort((a, b) => a.month.localeCompare(b.month));
+  if (realMonths.length) {
+    const byMonth = new Map(realMonths.map((m) => [m.month, m.visits]));
+    tool.trend = trailingTrend(byMonth, realMonths[realMonths.length - 1].month, organicShare);
     mark("trend", "traffic_history", opts.period);
+  } else if (!tool.trend?.some((p) => (p.total ?? 0) > 0) && visits !== undefined && opts.period) {
+    // 历史表还没攒到数据的新站：单月也要占满 6 格，否则图上只有一个孤点
+    tool.trend = trailingTrend(new Map([[opts.period, visits]]), opts.period, organicShare);
+    mark("trend", "vortex_base（当月单点）", opts.period);
   }
 
   /* ------------------------------ 地域分布 ------------------------------ */

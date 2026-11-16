@@ -28,7 +28,7 @@ import { extractContact } from "./sources/contact";
 import { chatJSON, hasLLM } from "./sources/llm";
 import { collectSite } from "../field-collect/collect";
 import { applyFields } from "./apply-fields";
-import { readTrafficMonths } from "./collect-store";
+import { readTrafficMonths, saveTrafficMonths } from "./collect-store";
 import { readWorkspace, syncCandidates, type ItemStatus } from "../admin/board-items";
 
 /**
@@ -385,6 +385,27 @@ async function main(): Promise<void> {
         persist: false,
         force,
       });
+      /*
+       * 先把本轮拿到的月度序列落进 traffic_history，再读 6 格窗口。
+       *
+       * 顺序反了会永远读到上一轮的表：vortex 一次只给 3 个月，缺的 6 格靠这张表
+       * 逐月累积。更新链路以前完全不写表，曲线就永远停在「5 个 0 + 当月」；
+       * 写入后每刷新一次补几个月，6 格会自己长满。
+       */
+      const histField = payload.fields.find((f) => f.key === "monthly_visits_history");
+      const payloadMonths = Array.isArray(histField?.value)
+        ? (histField.value as { month?: string; visits?: number }[])
+        : [];
+      await saveTrafficMonths(
+        domain,
+        payloadMonths
+          .filter(
+            (m): m is { month: string; visits: number } =>
+              typeof m.month === "string" && typeof m.visits === "number",
+          )
+          .map((m) => ({ month: m.month, visits: m.visits })),
+        { source: "vortex_base", snapshotDate: new Date().toISOString().slice(0, 10) },
+      );
       const history = await readTrafficMonths(domain, { months: 6 });
 
       /*
@@ -393,12 +414,12 @@ async function main(): Promise<void> {
        * 直接取末项会让 monthlyVisits 是 10 月的值、snapshotMonth 却标成 11 月，
        * 后台与详情页的「数据快照」就跟采集结果对不上了。
        */
-      const histField = payload.fields.find((f) => f.key === "monthly_visits_history");
-      const lastMonth = Array.isArray(histField?.value)
-        ? ([...histField.value] as { month?: string; visits?: number }[])
-            .reverse()
-            .find((m) => typeof m.visits === "number" && m.visits > 0)?.month
-        : undefined;
+      const lastMonth = payloadMonths
+        .filter((m) => typeof m.visits === "number" && m.visits > 0)
+        .map((m) => m.month)
+        .filter((m): m is string => typeof m === "string")
+        .sort()
+        .pop();
 
       const applied = applyFields(tool, payload, {
         at: payload.collectedAt?.slice(0, 10),

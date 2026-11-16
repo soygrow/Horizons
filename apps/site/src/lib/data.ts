@@ -275,6 +275,43 @@ export function pendingTrendFlags(points: { total?: number; collected?: boolean 
   return flags;
 }
 
+/** YYYY-MM 平移 n 个月 */
+function shiftMonthKey(key: string, delta: number): string {
+  const [y, m] = key.split("-").map(Number);
+  const d = new Date(Date.UTC(y, m - 1 + delta, 1));
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
+/**
+ * 用当月访问量合成一条 6 个月趋势：只有快照那个月有值，其余补 0 并标 collected:false。
+ *
+ * 兜的是这一类坏数据：`traffic_history` 里没写成的月份被补 0 后整段覆盖过 trend，
+ * 结果一个真实点都不剩，详情页只能显示「暂无历史数据」。
+ * 单月也有单月的画法——前面几个月落回基线，读者能看出「这个月才起量」，
+ * 往后每月采集补一格，曲线会自然长出来。
+ */
+export function trendFromMetrics(
+  tool: AITool,
+  count = 6,
+): { date: string; total: number; organic: number; collected: boolean }[] {
+  const tm = tool.trafficMetrics;
+  const visits = tm?.monthlyVisits ?? tool.metrics?.monthlyVisits;
+  const month = tm?.snapshotMonth ?? tool.dataSnapshot?.period;
+  if (!visits || visits <= 0 || !month || !/^\d{4}-\d{2}$/.test(month)) return [];
+
+  const organic = tm?.organicSearchVisits && tm.organicSearchVisits > 0 ? tm.organicSearchVisits : 0;
+  return Array.from({ length: count }, (_, i) => {
+    const date = shiftMonthKey(month, -(count - 1 - i));
+    const isSnapshot = date === month;
+    return {
+      date,
+      total: isSnapshot ? visits : 0,
+      organic: isSnapshot ? organic : 0,
+      collected: isSnapshot,
+    };
+  });
+}
+
 /**
  * 上线时间：launchedAt（Wayback 首快照）优先，回退域名注册时间。
  * 注册时间不可信（如 .ai 2017-12 注册局迁移日）时不回退，避免把迁移日当成上线时间。
