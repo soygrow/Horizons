@@ -54,6 +54,12 @@ const MAX_COUNT = 200;
 const MAX_PAGE_SIZE = 100;
 /** 指定网站单次上限，与 scripts/admin/fetch-staging.ts 的 MAX_MANUAL 保持一致 */
 const MAX_MANUAL_DOMAINS = 50;
+/**
+ * 线上更新单批上限。
+ * Actions 单 job 60 分钟硬上限，重采一条 60~90 秒，30 条已经压线；
+ * 后台会按这个数把一次选择拆成多批串行排队。
+ */
+const MAX_REFRESH_DOMAINS = 30;
 
 /**
  * 清洗后台「指定网站」输入。
@@ -378,12 +384,19 @@ tools.get("/staging", async (c) => {
 
   const q = (c.req.query("q") ?? "").trim().toLowerCase();
   const tierFilter = c.req.query("tier") ?? "all";
+  /**
+   * 来源隔离：「数据抓取」只看 new，「线上榜单」只看 refresh。
+   * 两个 tab 的待审条目绝不混在一个列表里。
+   */
+  const source = c.req.query("source") ?? "all";
   const page = Math.max(1, Number(c.req.query("page") ?? 1) || 1);
   const pageSize = Math.min(Math.max(1, Number(c.req.query("pageSize") ?? 50) || 50), MAX_PAGE_SIZE);
 
   const rejectedSet = new Set(rejectedList.map((d) => d.toLowerCase()));
 
   const stageOf = (t: Record<string, unknown>): string => (t.stage as string) ?? "candidate";
+  const kindOf = (t: Record<string, unknown>): "new" | "refresh" =>
+    t.kind === "refresh" ? "refresh" : "new";
 
   const filtered = all
     .map((t) => {
@@ -402,12 +415,14 @@ tools.get("/staging", async (c) => {
         tier: verdict?.tier ?? tierOf(t),
         reason: verdict?.reason ?? null,
         stage: stageOf(t),
+        kind: kindOf(t),
         // 一律按当前卡片实时算：存值只反映上次富化那一刻，采集入库的条目根本没有
         fieldGaps: fieldGapsOf(t),
         rejected: rejectedSet.has(String(t.domain).toLowerCase()),
       };
     })
     .filter((r) => {
+      if (source !== "all" && r.kind !== source) return false;
       if (q && !r.domain.toLowerCase().includes(q) && !r.name.toLowerCase().includes(q)) return false;
       if (tierFilter === "qualified") return r.tier === "core" || r.tier === "watch";
       if (tierFilter === "unqualified") return r.tier === "reject";
@@ -447,6 +462,17 @@ tools.get("/staging", async (c) => {
     publishFailed: all.filter((t) => stageOf(t) === "publish_failed").length,
     published: all.filter((t) => stageOf(t) === "published").length,
     rejected: rejectedList.length,
+    // 「线上榜单」tab 顶部的「更新待审核」红点：只算 refresh 且已跑完的
+    refreshPending: all.filter(
+      (t) =>
+        kindOf(t) === "refresh" &&
+        (stageOf(t) === "enriched" || stageOf(t) === "publish_failed"),
+    ).length,
+    refreshPublished: all.filter((t) => kindOf(t) === "refresh" && stageOf(t) === "publishing")
+      .length,
+    newPending: all.filter(
+      (t) => kindOf(t) === "new" && (stageOf(t) === "enriched" || stageOf(t) === "publish_failed"),
+    ).length,
     page,
     pageSize,
     items: rows.slice(start, start + pageSize),
@@ -684,6 +710,234 @@ tools.post("/enrich", async (c) => {
   return c.json({ job: results?.[0] ?? null });
 });
 
+/* ---------------------------- 线上榜单（D1） ---------------------------- */
+
+/** 数据源月更，最近完整月 = 当前月 - 1 */
+function targetSnapshotMonth(): string {
+  const now = new Date();
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
+interface ListedRow {
+  item_key: string;
+  rank: number;
+  tier: string | null;
+  name: string;
+  url: string | null;
+  visits: number | null;
+  snapshot: string | null;
+  analyzed_at: string | null;
+  collected_at: string | null;
+  cats: string | null;
+  heat: number | null;
+}
+
+/** 当前版本的已发布工具榜，card 里的字段用 json_extract 只取需要的（不拉 25KB detail） */
+async function readListed(db: D1Database): Promise<{ version: string; rows: ListedRow[] }> {
+  const ver = await db
+    .prepare("SELECT val FROM app_config WHERE key='config.current_version'")
+    .first<{ val: string }>();
+  if (!ver?.val) return { version: "", rows: [] };
+
+  const { results } = await db
+    .prepare(
+      `SELECT l.item_key, l.rank, l.tier, l.name, l.url,
+              json_extract(l.card, '$.trafficMetrics.monthlyVisits') AS visits,
+              json_extract(l.card, '$.trafficMetrics.snapshotMonth') AS snapshot,
+              json_extract(l.card, '$.aiInsight.analyzedAt') AS analyzed_at,
+              json_extract(l.card, '$.collectedAt') AS collected_at,
+              json_extract(l.card, '$.categories') AS cats,
+              json_extract(l.card, '$.heatScore') AS heat
+         FROM board_listed l
+        WHERE l.version = ? AND l.board = 'tools'
+        ORDER BY l.rank ASC`,
+    )
+    .bind(ver.val)
+    .all<ListedRow>();
+
+  return { version: ver.val, rows: results ?? [] };
+}
+
+/**
+ * 线上榜单列表：210 条已发布条目 + 快照月，用于挑「该更新的那些」。
+ *
+ * 这条路径只读 D1 —— 不碰 content/aitools.json（7.7MB，Worker 读不了也解析不了）。
+ */
+tools.get("/listed", async (c) => {
+  const { version, rows } = await readListed(c.env.DB);
+  if (!version) {
+    return c.json({
+      version: "",
+      target: targetSnapshotMonth(),
+      total: 0,
+      items: [],
+      message: "库里还没有发布过工具榜，先到「数据抓取」发一次",
+    });
+  }
+
+  const target = targetSnapshotMonth();
+  const q = (c.req.query("q") ?? "").trim().toLowerCase();
+  const statusFilter = c.req.query("status") ?? "all";
+  const page = Math.max(1, Number(c.req.query("page") ?? 1) || 1);
+  const pageSize = Math.min(Math.max(1, Number(c.req.query("pageSize") ?? 50) || 50), MAX_PAGE_SIZE);
+
+  const decorated = rows.map((r) => {
+    // 从没抓到流量的站没有 snapshotMonth，永远「无数据」，反复跑只是白花钱
+    const state: "stale" | "updated" | "nodata" = !r.snapshot
+      ? "nodata"
+      : r.snapshot >= target
+        ? "updated"
+        : "stale";
+    return {
+      domain: r.item_key,
+      name: r.name,
+      url: r.url,
+      rank: r.rank,
+      tier: r.tier,
+      monthlyVisits: r.visits,
+      snapshotMonth: r.snapshot,
+      analyzedAt: r.analyzed_at,
+      collectedAt: r.collected_at,
+      categories: r.cats ? (JSON.parse(r.cats) as string[]).slice(0, 3) : [],
+      heatScore: r.heat ?? 0,
+      state,
+    };
+  });
+
+  const filtered = decorated.filter((r) => {
+    if (q && !r.domain.includes(q) && !r.name.toLowerCase().includes(q)) return false;
+    if (statusFilter === "stale") return r.state === "stale";
+    if (statusFilter === "updated") return r.state === "updated";
+    if (statusFilter === "nodata") return r.state === "nodata";
+    return true;
+  });
+
+  const start = (page - 1) * pageSize;
+  return c.json({
+    version,
+    target,
+    total: filtered.length,
+    all: decorated.length,
+    stale: decorated.filter((r) => r.state === "stale").length,
+    updated: decorated.filter((r) => r.state === "updated").length,
+    nodata: decorated.filter((r) => r.state === "nodata").length,
+    page,
+    pageSize,
+    items: filtered.slice(start, start + pageSize),
+  });
+});
+
+/** 单条对比：线上旧值 vs 工作区里的重采结果（待审核时才存在） */
+tools.get("/listed/:domain", async (c) => {
+  const domain = c.req.param("domain").toLowerCase();
+  const { version, rows } = await readListed(c.env.DB);
+  const listed = rows.find((r) => r.item_key.toLowerCase() === domain);
+  if (!listed) return c.json({ error: "not_listed", message: "该域名不在当前线上榜单" }, 404);
+
+  const ws = await listWorkspace<Record<string, unknown>>(c.env.DB, "tools");
+  const fresh = ws.items.find((t) => String(t.domain).toLowerCase() === domain) ?? null;
+  const freshKind = fresh && fresh.kind === "refresh" ? "refresh" : fresh ? "new" : null;
+
+  const pick = (t: Record<string, unknown> | null) => {
+    if (!t) return null;
+    const traffic = t.trafficMetrics as { monthlyVisits?: number; snapshotMonth?: string } | undefined;
+    const ai = t.aiInsight as { analyzedAt?: string; summary?: string } | undefined;
+    return {
+      name: (t.name as string) ?? null,
+      monthlyVisits: traffic?.monthlyVisits ?? null,
+      snapshotMonth: traffic?.snapshotMonth ?? null,
+      analyzedAt: ai?.analyzedAt ?? null,
+      summary: ai?.summary ?? null,
+      stage: (t.stage as string) ?? null,
+      kind: (t.kind as string) ?? null,
+    };
+  };
+
+  return c.json({
+    version,
+    domain,
+    before: {
+      name: listed.name,
+      rank: listed.rank,
+      monthlyVisits: listed.visits,
+      snapshotMonth: listed.snapshot,
+      analyzedAt: listed.analyzed_at,
+      summary: null,
+    },
+    after: pick(fresh),
+    /** 只有重采结果真的落在工作区里才谈得上发布 */
+    reviewable: Boolean(fresh) && freshKind === "refresh",
+  });
+});
+
+/**
+ * 触发「线上更新」：把选中的已发布条目重采一遍。
+ *
+ * 回填工作区（refresh-prepare）与富化（enrich-staging）都在 Actions 里跑，
+ * 走的是和新条目**完全相同**的采集代码 —— 采集口径不能有两套。
+ */
+tools.post("/refresh", async (c) => {
+  const cfg = ghConfig(c.env);
+  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 503);
+
+  let body: { domains?: unknown; collect?: unknown; rewrite?: unknown; note?: unknown } = {};
+  try {
+    body = (await c.req.json()) as typeof body;
+  } catch {
+    return c.json({ error: "invalid_json" }, 400);
+  }
+
+  const domains = normalizeDomainInput(body.domains).slice(0, MAX_REFRESH_DOMAINS);
+  if (!domains.length) return c.json({ error: "empty_domains" }, 400);
+
+  // 两个开关：重新采集（含流量与截图）/ 重跑文案。都关等于什么也不做。
+  const collect = body.collect !== false;
+  const rewrite = body.rewrite !== false;
+  if (!collect && !rewrite) {
+    return c.json({ error: "nothing_to_do", message: "「重新采集」和「重跑文案」至少选一个" }, 400);
+  }
+
+  const id = crypto.randomUUID();
+  const now = Date.now();
+
+  let run: WorkflowRun | null;
+  try {
+    run = await dispatchWorkflow(cfg, ENRICH_WORKFLOW, {
+      domains: domains.join(","),
+      limit: String(MAX_REFRESH_DOMAINS),
+      kind: "refresh",
+      // 数据源月更，命中一个月缓存等于白跑 —— 线上更新一律强刷
+      force: String(collect),
+      no_llm: String(!rewrite),
+      insight_only: String(!collect),
+      job_id: id,
+    });
+  } catch (e) {
+    return c.json(
+      { error: "dispatch_failed", detail: e instanceof Error ? e.message : String(e) },
+      502,
+    );
+  }
+
+  await c.env.DB.prepare(
+    `INSERT INTO tool_jobs (id, kind, status, params, gh_run_id, run_url, created_at, updated_at)
+     VALUES (?, 'refresh', ?, ?, ?, ?, ?, ?)`,
+  )
+    .bind(
+      id,
+      run ? mapStatus(run, "queued") : "queued",
+      JSON.stringify({ domains, collect, rewrite, note: typeof body.note === "string" ? body.note : "" }),
+      run?.id ?? null,
+      run?.html_url ?? null,
+      now,
+      now,
+    )
+    .run();
+
+  return c.json({ job: { id, kind: "refresh", status: "queued", count: domains.length } });
+});
+
 /**
  * 触发存量重判：重新体检已上榜的条目，找出该下榜的。
  * 默认刷新流量 + 探活；关掉流量刷新可以只用现有数据重算（$0）。
@@ -827,10 +1081,18 @@ tools.post("/publish", async (c) => {
   let domains: string[] = [];
   // 默认执行下榜清单（清单由「重判存量」产出，且脚本侧会校验 24 小时保鲜期）
   let drops = true;
+  // 发布口按来源分开：新条目走「数据抓取」，更新条目走「线上榜单」
+  let kind: "new" | "refresh" | undefined;
   try {
-    const body = (await c.req.json()) as { note?: unknown; domains?: unknown; drops?: unknown };
+    const body = (await c.req.json()) as {
+      note?: unknown;
+      domains?: unknown;
+      drops?: unknown;
+      kind?: unknown;
+    };
     if (typeof body?.note === "string") note = body.note.slice(0, 120);
     if (body?.drops === false) drops = false;
+    if (body?.kind === "new" || body?.kind === "refresh") kind = body.kind;
     const raw = Array.isArray(body?.domains) ? body.domains : body?.domains ? [body.domains] : [];
     domains = raw
       .filter((d): d is string => typeof d === "string" && d.length > 0)
@@ -848,7 +1110,7 @@ tools.post("/publish", async (c) => {
    * 脚本读队列时认 publishing（与 enriched 同一档），所以这一步不影响实际发出什么。
    * 没有可发的就当场拒绝 —— 否则点了按钮毫无反应，看不出是状态不对还是任务没起来。
    */
-  const marked = await markPublishing(c.env.DB, "tools", domains).catch(() => 0);
+  const marked = await markPublishing(c.env.DB, "tools", domains, kind).catch(() => 0);
   if (marked === 0) {
     return c.json(
       {
@@ -869,6 +1131,7 @@ tools.post("/publish", async (c) => {
       // 空串 = 发布全部 enriched 条目；否则只发选中域名
       domains: domains.join(","),
       drops: drops ? "1" : "0",
+      kind: kind ?? "new",
     });
   } catch (e) {
     // 派发失败要立刻退回占位，否则条目卡在「发布中」得等 60 分钟超时才能重发

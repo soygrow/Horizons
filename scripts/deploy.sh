@@ -62,7 +62,8 @@ else
   ok "工作区干净"
 fi
 
-for f in content/github.json content/aitools.json; do
+# aitools.json 不在这里检查：它已不入库，由下面 data 步骤的 hydrate 从 D1 还原
+for f in content/github.json; do
   [ -s "$f" ] || { echo "缺少数据文件 $f" >&2; exit 1; }
 done
 ok "数据文件就绪"

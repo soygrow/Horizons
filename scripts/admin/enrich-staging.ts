@@ -162,8 +162,17 @@ export function buildFieldReport(items: StagingItem[]): FieldReport {
 async function main(): Promise<void> {
   const dry = process.argv.includes("--dry");
   const freeOnly = process.argv.includes("--free-only");
+  /** 线上更新：强制重采，绕过 field-collect 的一个月缓存，否则跑完数据不变 */
+  const force = process.argv.includes("--force");
+  /** 只采集 / 只跑文案（两个开关关掉另一侧时由后台传下来） */
+  const noLlm = process.argv.includes("--no-llm");
+  const insightOnly = process.argv.includes("--insight-only");
   const only = parseDomains();
-  const limit = Number(arg("limit") ?? 10);
+  /** 按来源过滤：两个后台 tab 的数据互不交叉 */
+  const rawKind = arg("kind");
+  const kind = rawKind === "new" || rawKind === "refresh" ? rawKind : null;
+  // 更新一条要重采整站，跑得比新条目慢，默认给更大的批量
+  const limit = Number(arg("limit") ?? (kind === "refresh" ? 25 : 10));
 
   // 上一轮跑飞的条目先放出来：否则它们一直占着 enriching，
   // 既不能重选，也不会进发布队列，只能人工改库
@@ -172,6 +181,7 @@ async function main(): Promise<void> {
   const staging = await readWorkspace<StagingItem>("tools");
   const targets = staging.items.filter((i) => {
     if (!i?.domain) return false;
+    if (kind && (i.kind ?? "new") !== kind) return false;
     if (only) return only.has(i.domain);
     // enriching 必须认：后台派发时已经把状态从 approved 改成了 enriching，
     // 这里只挑 approved 的话，按钮点下去脚本一条都挑不到。
@@ -182,8 +192,9 @@ async function main(): Promise<void> {
   const picked = Number.isFinite(limit) && limit > 0 ? targets.slice(0, limit) : targets;
 
   console.log(
-    `[enrich-staging] 队列 ${staging.items.length}｜待富化 ${targets.length}｜本次处理 ${picked.length}` +
-      `${freeOnly ? "｜仅免费字段" : ""}${dry ? "｜dry-run" : ""}`,
+    `[enrich-staging]${kind ? ` 来源 ${kind}` : ""} 队列 ${staging.items.length}｜待富化 ${targets.length}｜本次处理 ${picked.length}` +
+      `${force ? "｜强制重采" : ""}${freeOnly ? "｜仅免费字段" : ""}` +
+      `${noLlm ? "｜跳过文案" : ""}${insightOnly ? "｜仅重跑文案" : ""}${dry ? "｜dry-run" : ""}`,
   );
 
   if (picked.length === 0) {
@@ -207,6 +218,9 @@ async function main(): Promise<void> {
   for (const tool of picked) {
     const args = ["exec", "tsx", "scripts/fetch/enrich-site.ts", "--domain", tool.domain, "--staging"];
     if (freeOnly) args.push("--free-only");
+    if (force) args.push("--force");
+    if (noLlm) args.push("--no-llm");
+    if (insightOnly) args.push("--insight-only");
     console.log(`\n[enrich-staging] → ${tool.domain}`);
     const res = spawnSync("pnpm", args, {
       cwd: ROOT,
@@ -243,6 +257,8 @@ async function main(): Promise<void> {
       name: i.name,
       url: i.url ?? `https://${i.domain}`,
       status: (i.stage ?? "candidate") as ItemStatus,
+      // 不传就会被打回 new：线上更新条目必须保住 refresh 来源
+      kind: i.kind === "refresh" ? ("refresh" as const) : ("new" as const),
       judge: i.verdict,
       card: i,
     })),

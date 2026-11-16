@@ -81,7 +81,9 @@ async function saveTools(tools: AITool[]): Promise<void> {
   }
   // 候选池在 D1：只回写当前这一条。整队列重灌会覆盖后台刚做的确认/拒绝
   const domain = parseDomain();
-  const tool = tools.find((t) => t.domain === domain) as (AITool & { stage?: string }) | undefined;
+  const tool = tools.find((t) => t.domain === domain) as
+    | (AITool & { stage?: string; kind?: string })
+    | undefined;
   if (!tool) return;
   await syncCandidates("tools", [
     {
@@ -90,6 +92,8 @@ async function saveTools(tools: AITool[]): Promise<void> {
       url: tool.url ?? `https://${domain}`,
       // stage 沿用库里的现值，富化只更新卡片内容
       status: (tool.stage ?? "candidate") as ItemStatus,
+      // 不回传 kind 的话，线上更新条目会被打回 new，两个 tab 就串了
+      kind: tool.kind === "refresh" ? "refresh" : "new",
       card: tool,
     },
   ]);
@@ -275,6 +279,14 @@ async function main(): Promise<void> {
   const insightOnly = process.argv.includes("--insight-only");
   /** 只补创业洞察（performanceInsight / opportunity 等），跳过基础标签与解读 */
   const oppOnly = process.argv.includes("--opp-only");
+  /** 只采集、不重跑文案（三段 LLM 全跳过），用于「刷新截图/流量但文案已定稿」 */
+  const noLlm = process.argv.includes("--no-llm");
+  /**
+   * 强制重采：field-collect 对同域名有一个月缓存（数据源月更，重复买没意义）。
+   * 但「线上更新」要的正是把上个月的数据换成这个月，命中缓存等于跑了个寂寞 ——
+   * 所以后台点更新时一律带 --force。
+   */
+  const force = process.argv.includes("--force");
   const analysisOnly =
     process.argv.includes("--analysis-only") || insightOnly || oppOnly;
   console.log(`[enrich-site] 目标：${domain}${dry ? "（dry-run）" : ""}`);
@@ -371,6 +383,7 @@ async function main(): Promise<void> {
         url: tool.url,
         jobId: `enrich-${domain}-${Date.now()}`,
         persist: false,
+        force,
       });
       const history = await readTrafficMonths(domain, { months: 6 });
 
@@ -536,7 +549,7 @@ async function main(): Promise<void> {
     phComments,
   };
 
-  if (!analysisOnly) {
+  if (!analysisOnly && !noLlm) {
   // 调用 1：基础标签
   const basic = await chatJSON<{
     descriptionZh?: string;
@@ -565,7 +578,7 @@ async function main(): Promise<void> {
   }
 
   // 调用 2：AI 解读 + 观察（完全替换，不保留旧值；--opp-only 时跳过）
-  if (!oppOnly) {
+  if (!oppOnly && !noLlm) {
     const insight = await chatJSON<{
       aiInsight?: AiInsight;
       observations?: Observations;
@@ -586,7 +599,7 @@ async function main(): Promise<void> {
   }
 
   // 调用 3：创业洞察（--insight-only 时跳过，只补解读）
-  if (!insightOnly) {
+  if (!insightOnly && !noLlm) {
     const opp = await chatJSON<{
       opportunity?: OpportunityScore;
       monetizationBlueprint?: MonetizationBlueprint;

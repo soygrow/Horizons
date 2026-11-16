@@ -98,23 +98,27 @@ export async function markPublishing(
   db: D1Database,
   board: string,
   domains: readonly string[],
+  /** 限定来源：在「线上榜单」点发布不能把「数据抓取」的待发新条目一起占住 */
+  kind?: "new" | "refresh",
 ): Promise<number> {
   const now = Date.now();
+  const kindSql = kind ? " AND kind=?" : "";
+  const kindArgs: string[] = kind ? [kind] : [];
   if (domains.length === 0) {
     const res = await db
       .prepare(
         "UPDATE board_items SET status='publishing', updated_at=? " +
-          "WHERE board=? AND status IN ('enriched','publish_failed')",
+          `WHERE board=? AND status IN ('enriched','publish_failed')${kindSql}`,
       )
-      .bind(now, board)
+      .bind(now, board, ...kindArgs)
       .run();
     return res.meta?.changes ?? 0;
   }
   const stmt = db.prepare(
     "UPDATE board_items SET status='publishing', updated_at=? " +
-      "WHERE board=? AND item_key=? AND status IN ('enriched','publish_failed')",
+      `WHERE board=? AND item_key=? AND status IN ('enriched','publish_failed')${kindSql}`,
   );
-  const results = await db.batch(domains.map((d) => stmt.bind(now, board, d)));
+  const results = await db.batch(domains.map((d) => stmt.bind(now, board, d, ...kindArgs)));
   return results.reduce((sum, r) => sum + (r.meta?.changes ?? 0), 0);
 }
 
@@ -231,6 +235,8 @@ export async function listEnrichingItems(
 interface BoardItemRow {
   item_key: string;
   status: string;
+  /** new / refresh；老数据为 NULL，按 new 处理 */
+  kind: string | null;
   name: string;
   url: string | null;
   cats: string | null;
@@ -271,7 +277,7 @@ export async function listWorkspace<T = Record<string, unknown>>(
 ): Promise<BoardWorkspace<T>> {
   const { results } = await db
     .prepare(
-      "SELECT item_key, status, name, url, cats, judge, card, updated_at FROM board_items WHERE board=? ORDER BY updated_at DESC",
+      "SELECT item_key, status, kind, name, url, cats, judge, card, updated_at FROM board_items WHERE board=? ORDER BY updated_at DESC",
     )
     .bind(board)
     .all<BoardItemRow>();
@@ -292,10 +298,18 @@ export async function listWorkspace<T = Record<string, unknown>>(
       // status 列才是唯一真相：卡片里的 stage 是采集时的旧值，必须覆盖掉，
       // 否则后台点了「确认收录」再刷新还是待审
       (card as Record<string, unknown>).stage = row.status;
+      // kind 同理以列为准：卡片里的值可能来自上一次富化
+      (card as Record<string, unknown>).kind = row.kind === "refresh" ? "refresh" : "new";
       items.push(card);
     } else {
       // 没有卡片时至少保留可用的最小结构，避免后台整行消失
-      items.push({ itemKey: row.item_key, name: row.name, url: row.url, stage: row.status } as T);
+      items.push({
+        itemKey: row.item_key,
+        name: row.name,
+        url: row.url,
+        stage: row.status,
+        kind: row.kind ?? "new",
+      } as T);
     }
   }
 

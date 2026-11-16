@@ -581,6 +581,20 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
             </article>
           </div>
 
+          <nav class="flex items-center gap-1" aria-label="工具榜视图">
+            <button type="button" data-tools-view="fetch" data-active="true" class="admin-subtab">
+              数据抓取
+            </button>
+            <button type="button" data-tools-view="listed" class="admin-subtab">
+              线上榜单
+              <span
+                id="tools-refresh-badge"
+                class="ml-1 hidden rounded-full bg-danger-soft px-1.5 py-0.5 text-[10px] font-semibold text-danger"
+              ></span>
+            </button>
+          </nav>
+
+          <div id="tools-view-fetch" class="space-y-4">
           <article class="rounded-2xl border border-border bg-surface">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
               <div>
@@ -760,11 +774,127 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
             </div>
             <p class="mt-2 text-[11px] leading-relaxed text-ink-muted">
               发布按钮在上方「待发布」表格的工具栏里。只有阶段为「可发榜」的条目会被发布，
-              其余状态自动跳过；发布后合并进
-              <code class="rounded bg-surface-2 px-1 py-0.5">content/aitools.json</code>
+              其余状态自动跳过；发布后写入
+              <code class="rounded bg-surface-2 px-1 py-0.5">D1 榜单快照</code>
               并自动触发站点构建，未发布的条目继续留在队列里。
             </p>
           </article>
+          </div>
+
+          <!-- 线上榜单：直接读 D1 里当前版本的已发布条目。
+               更新走的是和新条目完全相同的采集链路（回填工作区 → enrich-staging → enrich-site），
+               结果先落「更新待审核」，人工对比新旧数值后才会覆盖线上。 -->
+          <div id="tools-view-listed" hidden class="space-y-4">
+            <article class="rounded-2xl border border-border bg-surface">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+                <div>
+                  <h2 class="text-sm font-semibold">更新待审核</h2>
+                  <p id="tools-refresh-meta" class="mt-1 text-xs text-ink-muted">
+                    还没有重采结果。在下方列表勾选条目后点「更新数据」。
+                  </p>
+                </div>
+                <button
+                  id="tools-refresh-publish"
+                  type="button"
+                  class="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled
+                >
+                  发布更新
+                </button>
+              </div>
+              <div id="tools-refresh-list" class="divide-y divide-border"></div>
+            </article>
+
+            <article class="rounded-2xl border border-border bg-surface">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+                <div>
+                  <h2 class="text-sm font-semibold">线上榜单</h2>
+                  <p id="tools-listed-meta" class="mt-1 text-xs text-ink-muted">
+                    正在读取…
+                  </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <select
+                    id="tools-listed-status"
+                    class="rounded-lg border border-border bg-surface px-2 py-1.5 text-xs"
+                  >
+                    <option value="all">全部</option>
+                    <option value="stale">未更新</option>
+                    <option value="updated">已更新</option>
+                    <option value="nodata">无流量数据</option>
+                  </select>
+                  <input
+                    id="tools-listed-search"
+                    type="search"
+                    placeholder="搜索名称或域名"
+                    class="w-44 rounded-lg border border-border bg-surface px-2 py-1.5 text-xs"
+                  />
+                  <button
+                    id="tools-listed-selectpage"
+                    type="button"
+                    class="rounded-lg border border-border px-2.5 py-1.5 text-xs transition hover:bg-surface-2"
+                  >
+                    全选本页
+                  </button>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="w-full min-w-[860px] text-xs">
+                  <thead class="border-b border-border text-left text-ink-muted">
+                    <tr>
+                      <th class="w-8 px-3 py-2"></th>
+                      <th class="w-14 px-3 py-2 font-medium">排名</th>
+                      <th class="px-3 py-2 font-medium">名称 / 域名</th>
+                      <th class="w-24 px-3 py-2 font-medium text-right">月访问</th>
+                      <th class="w-24 px-3 py-2 font-medium">流量月</th>
+                      <th class="w-28 px-3 py-2 font-medium">文案时间</th>
+                      <th class="w-24 px-3 py-2 font-medium">状态</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tools-listed-body" class="divide-y divide-border"></tbody>
+                </table>
+              </div>
+
+              <div class="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4">
+                <div class="flex flex-wrap items-center gap-3 text-xs">
+                  <span id="tools-listed-picked" class="font-medium tabular-nums">已选 0 条</span>
+                  <label class="flex items-center gap-1.5">
+                    <input id="tools-opt-collect" type="checkbox" checked class="accent-primary" />
+                    重新采集（含流量与截图）
+                  </label>
+                  <label class="flex items-center gap-1.5">
+                    <input id="tools-opt-rewrite" type="checkbox" checked class="accent-primary" />
+                    重跑文案
+                  </label>
+                </div>
+                <div class="flex items-center gap-2 text-xs">
+                  <button
+                    id="tools-listed-prev"
+                    type="button"
+                    class="rounded-lg border border-border px-2.5 py-1.5 transition hover:bg-surface-2 disabled:opacity-50"
+                  >
+                    上一页
+                  </button>
+                  <span id="tools-listed-page" class="tabular-nums text-ink-muted">1 / 1</span>
+                  <button
+                    id="tools-listed-next"
+                    type="button"
+                    class="rounded-lg border border-border px-2.5 py-1.5 transition hover:bg-surface-2 disabled:opacity-50"
+                  >
+                    下一页
+                  </button>
+                  <button
+                    id="tools-listed-refresh-btn"
+                    type="button"
+                    class="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    更新数据
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
         </section>
 
         <!-- 趋势榜：拉取 → 审核候选词 → 看位次变化再发布。
@@ -1389,6 +1519,22 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
       }
       .admin-tab[data-active="true"] {
         border-color: var(--c-primary);
+        color: var(--c-ink);
+      }
+      /* 二级 tab：分段控件。一级 tab 是底部下划线，层级不能再撞 */
+      .admin-subtab {
+        border-radius: 0.5rem;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--c-ink-muted);
+        transition: background 0.15s ease, color 0.15s ease;
+      }
+      .admin-subtab:hover {
+        color: var(--c-ink);
+      }
+      .admin-subtab[data-active="true"] {
+        background: var(--c-surface-2);
         color: var(--c-ink);
       }
     </style>

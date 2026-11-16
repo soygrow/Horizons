@@ -14,6 +14,7 @@
 /* -------------------------------- 基础工具 -------------------------------- */
 
 import { $, apiGet, apiPost, debounce, esc, fmtNum, fmtTime } from "./admin-shared";
+import { mountToolsListed } from "./admin-tools-listed";
 
 function fmtVisits(n: number | null | undefined): string {
   if (typeof n !== "number" || !Number.isFinite(n) || n <= 0) return "—";
@@ -1032,7 +1033,7 @@ async function publishDomains(domains: string[]): Promise<boolean> {
   }
   if (
     !window.confirm(
-      `再确认一次：发布后会合并进 content/aitools.json 并触发站点构建，约 2–5 分钟上线。\n\n确认发布？`,
+      `再确认一次：发布后会写入线上榜单（D1 新版本）并触发站点构建，约 2–5 分钟上线。\n\n确认发布？`,
     )
   ) {
     return false;
@@ -1462,6 +1463,10 @@ function bind(): void {
 
 /** 首次切到页签时挂载；重复调用只刷新数据 */
 export function mountAdminTools(): void {
+  // 二级 tab（数据抓取 / 线上榜单）的绑定放在独立的模块里，
+  // 这个文件已经 1400 多行，再塞一个表格渲染器就没人读得动了
+  mountToolsListed();
+
   if (state.mounted) {
     void loadOverview();
     void loadJobs();

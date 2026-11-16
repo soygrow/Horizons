@@ -53,6 +53,13 @@ content/backup/
 # 前端派生数据（由 scripts/build/web-data.mjs 生成）
 content/github-web.json
 
+# AI 工具榜：唯一真源是 D1 的当前版本快照（board_listed + board_listed_details）。
+# 这里的文件只是构建缓存，每次 `pnpm data` 由 scripts/admin/hydrate-tools.ts
+# 从库里还原，不入库 —— 否则后台改库与仓库文件会变成两份会分叉的真源。
+content/aitools.json
+# 发布脚本写给 CI 的报告（判断要不要重建站点），不是数据
+content/tools-publish.json
+
 # Astro 静态站（apps/site）构建产物与类型缓存
 apps/site/dist/
 apps/site/.astro/

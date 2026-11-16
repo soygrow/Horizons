@@ -35,6 +35,17 @@ export type ItemStatus =
   | "rejected";
 
 /**
+ * 条目来源：新增 or 线上更新。
+ *
+ * 两个后台 tab 的数据在库里就要分开 —— 否则在「线上榜单」点发布，
+ * 会把「数据抓取」里还没审核的新条目一起发上线。
+ *
+ *   new     采集到的新工具 → 发布时追加进榜单
+ *   refresh 线上已有条目的重采结果 → 发布时覆盖同域名条目
+ */
+export type ItemKind = "new" | "refresh";
+
+/**
  * 富化超时：单条超过 10 分钟还停在 enriching 就判失败。
  *
  * 富化是逐条起子进程，正常一条几分钟。超过这个时长要么 workflow 被取消、
@@ -83,6 +94,8 @@ export interface BoardItemInput {
   url?: string | null;
   cats?: readonly string[] | null;
   status?: ItemStatus;
+  /** 条目来源；缺省 new（采集写入的都是新条目） */
+  kind?: ItemKind;
   /** 采集期判定，约 200B */
   judge?: unknown;
   /** 完整条目，后台读出来原样还原 */
@@ -90,10 +103,10 @@ export interface BoardItemInput {
 }
 
 /**
- * D1 单条语句最多 100 个绑定参数，board_items 每行 9 个（含 updated_at）
- * → 每批 11 行 = 99 个，正好卡在上限内。
+ * D1 单条语句最多 100 个绑定参数，board_items 每行 10 个（含 kind 与 updated_at）
+ * → 每批 10 行 = 100 个，正好卡在上限内。
  */
-const ROWS_PER_STATEMENT = 11;
+const ROWS_PER_STATEMENT = 10;
 
 function openClient(): D1Client | null {
   if (!d1Configured()) return null;
@@ -129,13 +142,14 @@ export async function syncCandidates(
   try {
     for (let i = 0; i < items.length; i += ROWS_PER_STATEMENT) {
       const chunk = items.slice(i, i + ROWS_PER_STATEMENT);
-      const rows = chunk.map(() => "(?,?,?,?,?,?,?,?,?)").join(",");
+      const rows = chunk.map(() => "(?,?,?,?,?,?,?,?,?,?)").join(",");
       const params: unknown[] = [];
 
       for (const it of chunk) {
         params.push(
           board,
           it.itemKey,
+          it.kind ?? "new",
           it.status ?? "candidate",
           it.name,
           it.url ?? null,
@@ -147,9 +161,10 @@ export async function syncCandidates(
       }
 
       await client.query(
-        `INSERT INTO board_items (board, item_key, status, name, url, cats, judge, card, updated_at)
+        `INSERT INTO board_items (board, item_key, kind, status, name, url, cats, judge, card, updated_at)
          VALUES ${rows}
          ON CONFLICT (board, item_key) DO UPDATE SET
+           kind = excluded.kind,
            status = excluded.status,
            name = excluded.name,
            url = excluded.url,
@@ -233,16 +248,17 @@ export async function rejectCandidate(board: string, itemKey: string): Promise<b
 export async function listCandidates<T = unknown>(
   board: string,
   status?: ItemStatus,
-): Promise<Array<{ itemKey: string; status: string; name: string; card: T | null }>> {
+): Promise<Array<{ itemKey: string; status: string; kind: string; name: string; card: T | null }>> {
   const client = openClient();
   if (!client) return [];
   try {
     const sql = status
-      ? "SELECT item_key, status, name, card FROM board_items WHERE board=? AND status=? ORDER BY updated_at DESC"
-      : "SELECT item_key, status, name, card FROM board_items WHERE board=? ORDER BY updated_at DESC";
+      ? "SELECT item_key, status, kind, name, card FROM board_items WHERE board=? AND status=? ORDER BY updated_at DESC"
+      : "SELECT item_key, status, kind, name, card FROM board_items WHERE board=? ORDER BY updated_at DESC";
     const res = await client.query<{
       item_key: string;
       status: string;
+      kind: string | null;
       name: string;
       card: string | null;
     }>(sql, status ? [board, status] : [board]);
@@ -250,6 +266,8 @@ export async function listCandidates<T = unknown>(
     return (res.results ?? []).map((r) => ({
       itemKey: r.item_key,
       status: r.status,
+      // 迁移前的行 kind 为 NULL（列刚加上），按新增处理，历史行为不变
+      kind: r.kind ?? "new",
       name: r.name,
       card: r.card ? (JSON.parse(r.card) as T) : null,
     }));
@@ -269,10 +287,10 @@ export async function listCandidates<T = unknown>(
  */
 export async function readWorkspace<T = Record<string, unknown>>(
   board: string,
-): Promise<{ items: Array<T & { stage?: string }>; rejected: string[] }> {
+): Promise<{ items: Array<T & { stage?: string; kind?: string }>; rejected: string[] }> {
   const rows = await listCandidates<T & { stage?: string }>(board);
 
-  const items: Array<T & { stage?: string }> = [];
+  const items: Array<T & { stage?: string; kind?: string }> = [];
   const rejected: string[] = [];
   for (const r of rows) {
     if (r.status === "rejected") {
@@ -280,7 +298,7 @@ export async function readWorkspace<T = Record<string, unknown>>(
       continue;
     }
     if (r.status === "published") continue;
-    if (r.card) items.push({ ...r.card, stage: r.status });
+    if (r.card) items.push({ ...r.card, stage: r.status, kind: r.kind });
   }
   return { items, rejected };
 }

@@ -3,7 +3,9 @@ name: Enrich Tools (staging)
 # 后台「开始富化」按钮的落点。
 # 只处理 stage=approved（人工已确认收录）的候选，补流量/渠道/AI 引荐/SERP
 # 与 LLM 解读，然后生成 content/tools-field-report.json 供后台看完整度。
-# **不碰** content/aitools.json，所以不会触发站点重建。
+# 只写 D1 工作区（board_items），不动榜单快照，所以不会影响线上页面。
+# 榜单数据已不入库：content/aitools.json 由构建时从 D1 还原，只有
+# publish-tools 发布新版本后才需要重建站点。
 #
 # 需要的仓库 Secrets：
 #   APIFY_TOKEN             vortex（准入已付费，富化命中 collect_raw 为 $0）+ SERP
@@ -21,9 +23,25 @@ on:
         required: false
         default: ""
       limit:
-        description: "本次最多富化多少条（1-20）"
+        description: "本次最多处理多少条（1-30；60 分钟硬上限，一条要 60~90 秒）"
         required: false
         default: "10"
+      kind:
+        description: "来源：new=新条目 / refresh=线上更新（两个后台 tab 的分界线）"
+        required: false
+        default: "new"
+      force:
+        description: "强制重采（绕过 field-collect 的一个月缓存）"
+        type: boolean
+        default: false
+      no_llm:
+        description: "只采集、不重跑文案（三段 LLM 全跳过）"
+        type: boolean
+        default: false
+      insight_only:
+        description: "只重跑文案、不采集（跳过 Playwright/vortex/apify）"
+        type: boolean
+        default: false
       free_only:
         description: "仅免费字段（跳过付费采集与 LLM）"
         type: boolean
@@ -73,9 +91,18 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: |
-          ARGS="--limit ${{ inputs.limit }}"
+          # 线上更新：先把榜单快照回填成工作区条目（kind=refresh），
+          # 之后走的是和新条目完全相同的富化链路，采集口径不会分叉。
+          if [ "${{ inputs.kind }}" = "refresh" ]; then
+            pnpm tsx scripts/admin/refresh-prepare.ts --domains "${{ inputs.domains }}"
+          fi
+
+          ARGS="--limit ${{ inputs.limit }} --kind ${{ inputs.kind }}"
           if [ -n "${{ inputs.domains }}" ]; then ARGS="$ARGS --domains ${{ inputs.domains }}"; fi
           if [ "${{ inputs.free_only }}" = "true" ]; then ARGS="$ARGS --free-only"; fi
+          if [ "${{ inputs.force }}" = "true" ]; then ARGS="$ARGS --force"; fi
+          if [ "${{ inputs.no_llm }}" = "true" ]; then ARGS="$ARGS --no-llm"; fi
+          if [ "${{ inputs.insight_only }}" = "true" ]; then ARGS="$ARGS --insight-only"; fi
           pnpm tsx scripts/admin/enrich-staging.ts $ARGS
 
       - name: 提交富化结果
@@ -97,8 +124,12 @@ jobs:
       # 预览页是构建期从 D1 导出 staging 条目生成的（/preview/{domain}），
       # 不重建的话富化完点「工具名」看到的还是上一版数据。
       # 富化提交只改 content/tools-field-report.json，不在 deploy-site 的 paths 里，
-      # 不会自动触发，必须显式 dispatch。
+      # 不会自动触发，必须显式 dispatch。refresh 批次（线上条目重采集）连预览页
+      # 都不需要刷新，故跳过。
       - name: 触发站点构建（刷新预览页）
+        # 线上更新只改 D1 工作区，后台对比走接口读库；
+        # 每批都重建一次站点纯属浪费（9 批 = 9 次部署）。
+        if: inputs.kind != 'refresh'
         env:
           BOT_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
         run: |

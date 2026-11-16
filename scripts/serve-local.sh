@@ -104,9 +104,14 @@ if [ "$BUILD" = "1" ]; then
   wait_external_builds
 fi
 [ -d "$ROOT/node_modules" ] || die "依赖未安装：先在仓库根执行 pnpm install"
-for f in content/aitools.json content/github.json content/trends.json; do
+for f in content/github.json content/trends.json; do
   [ -s "$f" ] || die "缺少数据文件 $f"
 done
+# aitools.json 已不入库：BUILD=1 时会由 data 步骤从 D1 还原；
+# 不构建时（直接 astro dev）只能沿用上一次的缓存。
+if [ ! -s content/aitools.json ] && [ "$BUILD" != "1" ]; then
+  die "缺少 content/aitools.json：先执行 pnpm --filter @horizons/site run data（需 D1 凭据）"
+fi
 ok "依赖与数据文件就绪"
 
 # ---------- 构建（每次全量重建，杜绝残留旧页面） ----------

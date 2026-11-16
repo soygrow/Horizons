@@ -1,8 +1,11 @@
 name: Publish Tools
 
-# 后台「更新榜单」按钮的落点：把 content/tools-staging.json 合并进 content/aitools.json，
-# 然后显式触发 Deploy Site（用默认 GITHUB_TOKEN 提交时，push 事件不会触发其它 workflow，
-# 所以这里必须显式 dispatch 一次）。
+# 后台「更新榜单」按钮的落点：把 D1 工作区里已富化的条目合并进 D1 榜单快照
+# （新版本，最后切指针生效），然后显式触发 Deploy Site。
+#
+# 第二期起 content/aitools.json 不入库（.gitignore）：榜单唯一真源是 D1，
+# 站点构建时由 scripts/admin/hydrate-tools.ts 从当前版本还原。所以
+# 「有没有变更」不能再看 git diff，改由发布脚本的 --report 报告判定。
 #
 # 需要的仓库 Secrets：
 #   ADMIN_BOT_TOKEN  选填；PAT（contents:write + actions:write）。配了才能自动构建上线；
@@ -23,6 +26,10 @@ on:
         description: "同时执行下榜清单（1=是，0=否；清单来自重判存量）"
         required: false
         default: "1"
+      kind:
+        description: "发布来源：new=新条目（追加）/ refresh=线上更新（覆盖同域名）"
+        required: false
+        default: "new"
       job_id:
         description: "后台任务 ID（仅回显）"
         required: false
@@ -62,12 +69,12 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: |
-          ARGS=""
+          ARGS="--kind ${{ inputs.kind }} --report content/tools-publish.json"
           if [ -n "${{ inputs.domains }}" ]; then ARGS="$ARGS --domains ${{ inputs.domains }}"; fi
           if [ "${{ inputs.drops }}" = "1" ]; then ARGS="$ARGS --drops"; fi
           pnpm tsx scripts/admin/publish-tools.ts $ARGS
 
-      - name: 提交榜单数据
+      - name: 提交统计快照
         id: commit
         env:
           # tool-stats 会把统计快照写进 D1，后台概览读库
@@ -80,18 +87,20 @@ jobs:
           # 榜单文件已变，统计快照必须跟着重建，否则后台概览会停在旧数字
           pnpm exec tsx scripts/admin/tool-stats.ts
           pnpm exec tsx scripts/admin/board-stats.ts
-          # 候选池已迁到 D1（b44dd1b），仓库里不再有 tools-staging.json。
-          # 继续 git add 一个不存在的路径会让整步 exit 128，发布直接失败。
-          git add content/aitools.json content/tools-stats.json content/board-stats.json
+          # 榜单数据不再入库（唯一真源是 D1），这里只提交统计快照。
+          # 候选池也早已迁到 D1，仓库里没有 tools-staging.json。
+          git add content/tools-stats.json content/board-stats.json
           if git diff --cached --quiet; then
-            echo "::notice::没有可发布的条目，未产生提交"
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
+            echo "::notice::统计快照无变化"
+          else
+            msg="${{ inputs.note }}"
+            git commit -m "chore(tools): 刷新榜单统计${msg:+（${msg}）}"
+            git push
           fi
-          msg="${{ inputs.note }}"
-          git commit -m "feat(tools): 发布新工具到榜单${msg:+（${msg}）}"
-          git push
-          echo "changed=true" >> "$GITHUB_OUTPUT"
+          # 是否要重建站点只看发布报告：git diff 只反映统计文件，与榜单是否真的变了无关
+          changed=$(node -e 'const r=require("./content/tools-publish.json");const n=(r.added||0)+(r.updated||0)+(r.dropped||0);process.stdout.write(n>0?"true":"false")')
+          echo "榜单变更：${changed}（详见 content/tools-publish.json）"
+          echo "changed=${changed}" >> "$GITHUB_OUTPUT"
 
       # GITHUB_TOKEN 提交不会触发 push 型 workflow，这里显式触发部署；
       # 配了 ADMIN_BOT_TOKEN 时用它，保证 dispatch 生效。

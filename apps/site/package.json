@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "data": "node ../../scripts/build/web-data.mjs && tsx --tsconfig tsconfig.json ../../scripts/build/artifacts.ts && node ../../scripts/build/field-health.mjs && tsx --tsconfig tsconfig.json ../../scripts/build/preview-tools.ts",
+    "data": "tsx --tsconfig tsconfig.json ../../scripts/admin/hydrate-tools.ts && node ../../scripts/build/web-data.mjs && tsx --tsconfig tsconfig.json ../../scripts/build/artifacts.ts && node ../../scripts/build/field-health.mjs && tsx --tsconfig tsconfig.json ../../scripts/build/preview-tools.ts",
     "deploy": "pnpm data && astro build && wrangler deploy"
   },
   "dependencies": {
