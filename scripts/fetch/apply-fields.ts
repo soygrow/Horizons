@@ -219,6 +219,14 @@ export function applyFields(
         ? { monthlyPageviews: Math.round(visits * num("pages_per_visit")!) }
         : {}),
       ...(opts.period ? { snapshotMonth: opts.period } : {}),
+      /*
+       * 来源标注跟着这段数据走。
+       *
+       * 上面是 spread 旧值的，所以上一版若被 lergassy 兜底写过，actor 会原样残留 ——
+       * Pexo 就是这样：数据明明来自 vortex_base（含 10 月），actor 却还写着 lergassy，
+       * 排查时很容易得出「这个源只到 9 月」的错误结论。
+       */
+      actor: "vortex_data/similarweb-scraper",
     };
     mark("trafficMetrics", "vortex_base", opts.period);
   }
