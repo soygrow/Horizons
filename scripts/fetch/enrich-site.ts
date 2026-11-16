@@ -163,16 +163,19 @@ const SYSTEM_BASIC = `你是 AI 工具目录的资深编辑，面向"想创业�
 只输出 JSON。`;
 
 const SYSTEM_INSIGHT = `你是面向个人开发者创业者的 AI 产品分析师。基于给定的真实采集数据（流量/关键词/技术栈/收款信号/页面结构），输出客观、可执行的解读。输出 JSON：
-- aiInsight: {question,intro,before,now,comparison,audiences[3],hooks[{title,desc}×4],willingness{level:"低"|"中等"|"高",score:1|2|3,reason},growthDriver,acquisition,trafficQuality,moat,moatBadge,monetization,monetizationBadge}
-  其中 before/now/comparison 是「以前/现在/相比之下」三段；growthDriver 讲增长驱动；acquisition 讲获客打法；moat 讲竞争壁垒（moatBadge 一个 2~6 字标签）；monetization 讲收费模式（monetizationBadge 如「证据明确」）。
+- aiInsight: {question,intro,before,now,comparison,audiences[3],hooks[{title,desc}×4],willingness{level:"低"|"中等"|"高",score:1|2|3,reason}}
+  其中 before/now/comparison 是「以前/现在/相比之下」三段叙事，只讲用户处境的变化，不写数据结论。
+  不要写 growthDriver / acquisition / moat / monetization / trafficQuality —— 增长、获客、壁垒、收费四个主题由 performanceInsight 统一负责，
+  同一个页面出现两套同题判断时，两段文案必然互相打脸（曾出现「护城河尚未形成」与「壁垒在工作流整合」相邻同屏）。
 - trafficDecrypt: {overview, sections:[{title,highlights[string×2],insight,takeaway}×3]}，这是「流量情况解密」报告，以「资深增长黑客与连续创业者」视角撰写，语言犀利、直戳本质，让读者有「原来如此」的顿悟感。
   overview 是「流量总览」一段话（定性这个盘的底子、命门与截胡窗口）；sections 固定 3 段，title 带 emoji 前缀与编号、保留小标题结构：
     📊 1. 流量趋势与结构（它是怎么活下来的？）／🌍 2. 地域分布（它在赚谁的钱？）／🔍 3. 搜索与排名（它的命门在哪？）。
   每段 highlights 给 2 个高光标签（如「点状爆发」「流量寄生」），insight 是数据洞察、takeaway 是创业启发，均须引用给定真实数据（趋势数值、channelShares 渠道占比、geo 国家份额、keywordCount 关键词量、seo.samples 实况排名、aiTraffic AI 引荐占比）。
   第 3 段必须基于 seo：samples 是实际抽样的关键词排名（position 为 null 表示未进前 20），top10/top20 是命中数，样本量少时用「采样」措辞，不要说成全站排名。rankDistribution 字段已下线，不要引用。
 - observations: {practices[3~4],concerns[2~3],competitors[4~6 个域名]}
-- moduleInsights: {performance:{analysis,soWhat},growth:{analysis,soWhat},keywords:{analysis,soWhat},competition:{analysis,soWhat}}
-  其中 performance/growth/keywords/competition 分别对应「产品表现/增长趋势/关键词需求/竞争格局」四个数据模块；analysis 是客观解读（引用具体数字），soWhat 是一句「这对创业者意味着什么」的结论（30 字内）。
+- moduleInsights: {keywords:{analysis,soWhat},competition:{analysis,soWhat}}
+  只写「关键词需求」与「竞争格局」两个模块（分别对应 03 流量板块的两块卡片）；analysis 是客观解读（引用具体数字），soWhat 是一句「这对创业者意味着什么」的结论（30 字内）。
+  不再输出 performance / growth：产品表现与增长趋势已由 01 板块的 7 格指标和 performanceInsight 覆盖，再解读一遍只是把同样的话说第三次。
 只输出 JSON。`;
 
 const SYSTEM_OPPORTUNITY = `你是面向个人开发者创业者的创业顾问。基于给定数据，输出「这个赛道/产品值不值得入场」的行动建议。输出 JSON：
@@ -268,7 +271,7 @@ async function main(): Promise<void> {
   /** 只补免费字段：跳过付费采集（vortex/SERP）与 LLM，仅做页面抓取 + 体检 */
   const freeOnly = process.argv.includes("--free-only");
   const dry = process.argv.includes("--dry");
-  /** 只补 AI 解读（aiInsight + 四模块 + 流量解密），跳过基础标签与创业洞察，省 token */
+  /** 只补 AI 解读（aiInsight + 关键词/竞争两模块 + 流量解密），跳过基础标签与创业洞察，省 token */
   const insightOnly = process.argv.includes("--insight-only");
   /** 只补创业洞察（performanceInsight / opportunity 等），跳过基础标签与解读 */
   const oppOnly = process.argv.includes("--opp-only");

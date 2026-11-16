@@ -1,9 +1,18 @@
 ---
-/** 01 产品表现 */
+/**
+ * 01 产品表现
+ *
+ * 这一块只回答「它现在多大、增长多快」：7 格指标 + 四要素画像 + 3 张判断卡。
+ *
+ * 曾经这里还渲染 aiInsight（875px）与 moduleInsights.performance/growth（219px），
+ * 三套 AI 文案讲的是同一批主题（增长 / 获客 / 壁垒 / 变现），占本板块 83% 的高度，
+ * 把 7 格真实数据压到 82px（4%）。删掉后 2054px → 682px。
+ * 别再「补渲染位」：这两块数据仍留在 JSON 里供 site-markdown 使用，
+ * 但同一主题只能有一个字段所有者（见 scripts/fetch/enrich-site.ts 的 prompt 分工）。
+ */
 import SectionHeader from "../SectionHeader.astro";
 import Stat from "../Stat.astro";
 import InsightCard from "../InsightCard.astro";
-import Badge from "../Badge.astro";
 import { getDict, format as tf } from "../../../lib/i18n";
 import { formatDate, formatMom, formatNum, momCapHint, isLaunchPlausible } from "../../../lib/format";
 import {
@@ -25,8 +34,6 @@ const m = tool.metrics;
 const tm = tool.trafficMetrics;
 const ranks = tool.ranks;
 const pi = tool.performanceInsight;
-const ai = tool.aiInsight;
-const mi = tool.moduleInsights;
 const ds = tool.dataSnapshot;
 const collectedAt = tool.collectedAt;
 const fmtTime = (s?: string) => (s ? s.slice(0, 19).replace("T", " ") : "");
@@ -63,19 +70,6 @@ const launchedAt = isLaunchPlausible(launchedRaw) ? launchedRaw : undefined;
 const launchedEstimated = launchedAt !== undefined && tool.launchedAtEstimated === true;
 const launchedUnknown = !!launchedRaw && !launchedAt;
 
-/** aiInsight 的「以前 / 现在 / 相比之下」三格与「增长 / 获客 / 壁垒 / 收费」四卡 */
-const aiTriad = [
-  { k: dict.aiInsight.before, v: ai?.before },
-  { k: dict.aiInsight.now, v: ai?.now },
-  { k: dict.aiInsight.comparison, v: ai?.comparison },
-].filter((x) => x.v);
-
-const aiCards: { k: string; v?: string; badge?: string }[] = [
-  { k: dict.aiInsight.growthDriver, v: ai?.growthDriver },
-  { k: dict.aiInsight.acquisition, v: ai?.acquisition },
-  { k: dict.aiInsight.moat, v: ai?.moat, badge: ai?.moatBadge },
-  { k: dict.aiInsight.monetization, v: ai?.monetization, badge: ai?.monetizationBadge },
-].filter((x) => x.v);
 ---
 
 <section id="performance" class="flex scroll-mt-36 flex-col gap-10">
@@ -188,24 +182,11 @@ const aiCards: { k: string; v?: string; badge?: string }[] = [
       </dl>
     </div>
 
-    <div class="grid gap-4 md:grid-cols-3">
-      <InsightCard
-        title={dict.performanceInsight.wedge}
-        sub={dict.performanceInsight.wedgeSub}
-        text={pi?.wedge}
-      />
-      <InsightCard
-        title={dict.performanceInsight.model}
-        sub={dict.performanceInsight.modelSub}
-        text={pi?.model}
-      />
-      <InsightCard
-        title={dict.performanceInsight.moat}
-        sub={dict.performanceInsight.moatSub}
-        text={pi?.moat}
-      />
-    </div>
-
+    {/*
+      只留与「产品表现」直接相关的三张：数据是什么样（流量真相）、往哪走（增长势能）、
+      好不好抢（护城河）。wedge / model / newPlayerEntry 是「值不值得做」和「怎么变现」
+      的结论，属于 02、04 两个板块，挤在 01 里只会让读者在看数据的半途被迫做判断题。
+    */}
     <div class="grid gap-4 md:grid-cols-3">
       <InsightCard
         title={dict.performanceInsight.trafficTruth}
@@ -218,151 +199,11 @@ const aiCards: { k: string; v?: string; badge?: string }[] = [
         text={pi?.growthEdge}
       />
       <InsightCard
-        title={dict.performanceInsight.newPlayerEntry}
-        sub={dict.performanceInsight.newPlayerEntrySub}
-        text={pi?.newPlayerEntry}
-        tag={pi?.entryTag}
+        title={dict.performanceInsight.moat}
+        sub={dict.performanceInsight.moatSub}
+        text={pi?.moat}
       />
     </div>
   </div>
 
-  {/*
-    各模块 AI 补充分析（moduleInsights）。
-    同样是「有数据、无渲染位」的那批字段：performance / growth 归 01 区，
-    keywords / competition 归 03 区，各取各的。
-  */}
-  {
-    [mi?.performance, mi?.growth].some((x) => x?.analysis) ? (
-      <div class="flex flex-col gap-3">
-        <h3 class="text-sm font-semibold text-ink">{dict.moduleInsight.label}</h3>
-        <div class="grid gap-4 md:grid-cols-2">
-          {[mi?.performance, mi?.growth]
-            .filter((x) => x?.analysis)
-            .map((x: { analysis?: string; soWhat?: string }) => (
-              <div class="rounded-xl border border-border bg-surface p-5">
-                <p class="text-xs font-medium text-ink-muted">{dict.moduleInsight.analysis}</p>
-                <p class="mt-1.5 text-sm leading-relaxed text-ink-secondary">{x.analysis}</p>
-                {x.soWhat ? (
-                  <>
-                    <p class="mt-3 text-xs font-medium text-ink-muted">
-                      {dict.moduleInsight.soWhat}
-                    </p>
-                    <p class="mt-1 text-sm leading-relaxed text-ink">{x.soWhat}</p>
-                  </>
-                ) : null}
-              </div>
-            ))}
-        </div>
-      </div>
-    ) : null
-  }
-
-  {/*
-    AI 解读（aiInsight）。
-    历史数据里 209 条全部有这块内容，但此前只进了 site-markdown 给 AI 爬虫读，
-    人类页面从来没有渲染过 —— 数据白存。这里补上渲染位，无内容时整块不出现。
-  */}
-  {
-    ai && (ai.question || ai.intro || ai.growthDriver) ? (
-      <div class="rounded-2xl border border-border bg-surface p-6">
-        <div class="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span class="h-4 w-1 rounded-full bg-primary" aria-hidden="true" />
-          <h3 class="text-sm font-semibold text-ink">{dict.aiInsight.label}</h3>
-          {ai.analyzedAt ? (
-            <span class="text-xs text-ink-muted">
-              {tf(dict.aiInsight.analyzedAt, { time: ai.analyzedAt })}
-            </span>
-          ) : null}
-          {ai.confidence !== undefined ? (
-            <span class="text-xs text-ink-muted">
-              {tf(dict.aiInsight.confidence, { value: ai.confidence })}
-            </span>
-          ) : null}
-        </div>
-
-        {ai.question ? (
-          <p class="text-lg leading-relaxed font-medium text-ink">{ai.question}</p>
-        ) : null}
-        {ai.intro ? (
-          <p class="mt-2 text-sm leading-relaxed text-ink-secondary">{ai.intro}</p>
-        ) : null}
-
-        {
-          aiTriad.length ? (
-            <div class="mt-5 grid gap-4 sm:grid-cols-3">
-              {aiTriad.map(({ k, v }) => (
-                <div class="rounded-xl border border-border bg-surface-2 p-4">
-                  <p class="text-xs font-medium text-ink-muted">{k}</p>
-                  <p class="mt-1.5 text-sm leading-relaxed text-ink">{v}</p>
-                </div>
-              ))}
-            </div>
-          ) : null
-        }
-
-        {
-          ai.audiences?.length ? (
-            <div class="mt-5">
-              <p class="text-xs font-medium text-ink-muted">{dict.aiInsight.audiences}</p>
-              <div class="mt-2 flex flex-wrap gap-2">
-                {ai.audiences.map((a: string) => (
-                  <Badge>{a}</Badge>
-                ))}
-              </div>
-            </div>
-          ) : null
-        }
-
-        {
-          ai.hooks?.length ? (
-            <div class="mt-5">
-              <p class="text-xs font-medium text-ink-muted">{dict.aiInsight.hooks}</p>
-              <ul class="mt-2 flex flex-col gap-2">
-                {ai.hooks.map((h: { title?: string; desc?: string }) => (
-                  <li class="text-sm leading-relaxed text-ink-secondary">
-                    <span class="font-medium text-ink">{h.title}</span>
-                    {h.desc ? ` · ${h.desc}` : ""}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null
-        }
-
-        {
-          ai.willingness?.level ? (
-            <div class="mt-5 flex flex-wrap items-center gap-2 text-sm">
-              <span class="text-xs font-medium text-ink-muted">{dict.aiInsight.willingness}</span>
-              <Badge>
-                {ai.willingness.level === "高"
-                  ? dict.aiInsight.willingnessHigh
-                  : ai.willingness.level === "中等"
-                    ? dict.aiInsight.willingnessMid
-                    : dict.aiInsight.willingnessLow}
-              </Badge>
-              {ai.willingness.reason ? (
-                <span class="text-ink-secondary">{ai.willingness.reason}</span>
-              ) : null}
-            </div>
-          ) : null
-        }
-
-        {
-          aiCards.length ? (
-            <div class="mt-5 grid gap-4 md:grid-cols-2">
-              {aiCards.map(({ k, v, badge }) => (
-                <div class="rounded-xl border border-border bg-surface-2 p-4">
-                  <div class="flex flex-wrap items-center gap-2">
-                    <p class="text-xs font-medium text-ink-muted">{k}</p>
-                    {badge ? <Badge>{badge}</Badge> : null}
-                  </div>
-                  <p class="mt-1.5 text-sm leading-relaxed text-ink">{v}</p>
-                </div>
-              ))}
-            </div>
-          ) : null
-        }
-      </div>
-    ) : null
-  }
 </section>

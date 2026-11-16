@@ -78,7 +78,7 @@ export const zh = {
     pending: "待接入",
   },
   performanceInsight: {
-    highlightTag: "AI解读",
+    highlightTag: "AI 解读",
     what: "是什么",
     pain: "解决什么痛点",
     can: "能干什么",
@@ -97,6 +97,11 @@ export const zh = {
     newPlayerEntrySub: "行动指南",
     pending: "分析生成中",
   },
+  /**
+   * aiInsight 词条：页面已无渲染位（01 板块瘦身时删掉了「AI 解读」整块）。
+   * 数据仍在 JSON 里、由 site-markdown 输出给 AI 爬虫，词条留着方便后台/未来复用；
+   * 判断类结论请用上面的 performanceInsight 词条，两者不要再同屏出现。
+   */
   aiInsight: {
     label: "AI 解读",
     analyzedAt: "分析于 {time}",

@@ -77,7 +77,12 @@ function syncedRecently(tool: AITool): boolean {
 
 function isMissing(tool: AITool, mode: "traffic" | "analysis" | "all"): boolean {
   const noTraffic = !tool.trafficMetrics?.monthlyVisits;
-  const noAnalysis = !tool.aiInsight;
+  /**
+   * 分析阶段的产出分两半：aiInsight（叙事 + 客群）与 performanceInsight（判断结论）。
+   * 任一缺失都算没跑完 —— 只判 aiInsight 会让「有叙事、无判断」的条目永远停在半成品，
+   * 而页面 01 板块渲染的恰恰是 performanceInsight。
+   */
+  const noAnalysis = !tool.aiInsight || !tool.performanceInsight;
   if (mode === "traffic") return noTraffic && !syncedRecently(tool);
   if (mode === "analysis") return noAnalysis && !syncedRecently(tool);
   return (noTraffic || noAnalysis) && !syncedRecently(tool);

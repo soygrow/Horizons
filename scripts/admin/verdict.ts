@@ -421,16 +421,36 @@ export const FIELD_DIMENSIONS: readonly FieldDimension[] = [
   },
   {
     key: "aiInsight",
-    label: "AI 解读",
+    label: "AI 叙事",
     check: (t) => {
       const a = t.aiInsight;
       if (!a) return null;
-      const parts = [a.intro, a.before, a.now, a.growthDriver, a.acquisition, a.moat].filter(
+      // 只查叙事字段：增长/获客/壁垒/收费已归 performanceInsight，新数据里必然为空，
+      // 还按老字段判会把「合格的叙事」误判成「无实质段落」
+      const parts = [a.intro, a.before, a.now, a.comparison].filter(
         (s): s is string => typeof s === "string" && s.trim().length > 0,
       );
-      if (parts.length === 0) return "AI 解读无实质段落";
+      if (parts.length === 0) return "AI 叙事无实质段落";
       const tooShort = parts.filter((s) => plainLength(s) < 20);
-      return tooShort.length === parts.length ? "AI 解读段落过短" : null;
+      return tooShort.length === parts.length ? "AI 叙事段落过短" : null;
+    },
+  },
+  {
+    key: "performanceInsight",
+    label: "AI 判断",
+    check: (t) => {
+      const p = t.performanceInsight;
+      if (!p) return null;
+      const filled = (s?: string) => typeof s === "string" && s.trim().length > 0;
+      const four = [p.overview?.what, p.overview?.pain, p.overview?.can, p.overview?.trait];
+      // 01 板块只渲染这三张卡，缺了就是页面空洞
+      const cards = [p.trafficTruth, p.growthEdge, p.moat];
+      const missingFour = four.filter((s) => !filled(s)).length;
+      const missingCards = cards.filter((s) => !filled(s)).length;
+      if (missingFour === four.length && missingCards === cards.length) return "AI 判断无实质内容";
+      if (missingFour) return `四要素缺 ${missingFour} 项`;
+      if (missingCards) return `01 判断卡缺 ${missingCards} 张`;
+      return null;
     },
   },
 ];

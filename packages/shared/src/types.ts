@@ -207,6 +207,13 @@ export interface BacklinkStats {
 }
 
 /** AI 解读（8 段） */
+/**
+ * AI 叙事解读（只管「用户处境」这一层：痛点、钩子、客群、付费意愿）。
+ *
+ * 判断类结论（增长 / 获客 / 壁垒 / 收费）已统一归 PerformanceInsight，
+ * 这里下面四个字段只剩历史数据在用：新富化不再生成，
+ * 页面也不再渲染它们（曾与 PerformanceInsight 同题双写，导致相邻两段结论互相矛盾）。
+ */
 export interface AiInsight {
   analyzedAt?: string;      // 分析于 2026-10
   confidence?: number;      // AI 置信度 %
@@ -218,12 +225,19 @@ export interface AiInsight {
   audiences?: string[];     // 帮的是谁
   hooks?: { title: string; desc: string }[]; // 靠什么打动人
   willingness?: { level: "低" | "中等" | "高"; score?: 1 | 2 | 3; reason?: string };
+  /** @deprecated 归 PerformanceInsight.growthEdge，仅历史数据 */
   growthDriver?: string;    // AI 解读 · 增长驱动
+  /** @deprecated 归 PerformanceInsight.newPlayerEntry，仅历史数据 */
   acquisition?: string;     // AI 解读 · 获客打法
+  /** @deprecated 仅历史数据 */
   trafficQuality?: string;  // 流量质量段
+  /** @deprecated 归 PerformanceInsight.moat，仅历史数据 */
   moat?: string;            // AI 解读 · 竞争壁垒
+  /** @deprecated 仅历史数据 */
   moatBadge?: string;       // 如「浅层封装」
+  /** @deprecated 归 PerformanceInsight.model，仅历史数据 */
   monetization?: string;    // AI 解读 · 收费模式
+  /** @deprecated 仅历史数据 */
   monetizationBadge?: string; // 如「证据明确」
 }
 
@@ -364,8 +378,17 @@ export interface PerformanceInsight {
 }
 
 /** 各数据模块的分析结论 + 「这对你意味着什么」so-what */
+/**
+ * 各数据模块的补充分析。
+ *
+ * 只有 keywords / competition 还渲染在 03 流量板块；
+ * performance / growth 的渲染位已随 01 板块瘦身一起删除（新富化也不再生成），
+ * 字段留在这里只为兼容历史数据，读取处不需要判空之外的处理。
+ */
 export interface ModuleInsight {
+  /** @deprecated 01 板块已删渲染位，仅历史数据 */
   performance?: { analysis?: string; soWhat?: string };
+  /** @deprecated 01 板块已删渲染位，仅历史数据 */
   growth?: { analysis?: string; soWhat?: string };
   keywords?: { analysis?: string; soWhat?: string };
   competition?: { analysis?: string; soWhat?: string };

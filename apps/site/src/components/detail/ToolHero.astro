@@ -22,7 +22,8 @@ const heroShots = [
  * segmentLabel 已经在上方单独一行写明了赛道，categoryTags 里再出现同一个词就是重复，
  * 直接按文本去掉（近义重复靠富化时的 prompt 约束，前端只兜底完全相同的情况）。
  * LLM 会给 10~12 个，全渲染要占 3 行，首屏高度会随数据抖动 ——
- * 只留前 5 个，其余折成 +N，鼠标悬停能看到完整列表。
+ * 只留前 5 个，其余折成 +N：点一下展开、再点收起（脚本见 scripts/detail.ts）。
+ * 折叠的标签仍以 hidden 形式在 DOM 里，悬停 title 也能看到，不依赖 JS。
  */
 const CATEGORY_SHOWN = 5;
 const segment = String(tool.segmentLabel ?? "").trim();
@@ -106,17 +107,26 @@ const NAV: [string, string][] = [
           }
           {
             categoryShown.length ? (
-              <div class="flex flex-wrap items-center gap-2">
+              <div class="flex flex-wrap items-center gap-2" data-tag-collapse>
                 {categoryShown.map((tag: string) => (
                   <Badge>{tag}</Badge>
                 ))}
+                {/* 折叠的标签照样进 DOM：只挂在 title 里的话，触屏和爬虫都拿不到 */}
+                {categoryRest.map((tag: string) => (
+                  <span class="hidden" data-tag-rest>
+                    <Badge>{tag}</Badge>
+                  </span>
+                ))}
                 {categoryRest.length ? (
-                  <span
-                    class="inline-flex h-[22px] w-fit items-center rounded-full border border-dashed border-border px-2.5 text-xs text-ink-muted"
+                  <button
+                    type="button"
+                    data-tag-more
+                    aria-expanded="false"
+                    class="inline-flex h-[22px] w-fit cursor-pointer items-center rounded-full border border-dashed border-border px-2.5 text-xs text-ink-muted transition hover:border-primary/50 hover:text-ink"
                     title={categoryRest.join("、")}
                   >
                     +{categoryRest.length}
-                  </span>
+                  </button>
                 ) : null}
               </div>
             ) : null

@@ -88,6 +88,33 @@ export function initToolDetail() {
     });
   }
 
+  /**
+   * 品类标签折叠：点 +N 展开其余标签，再点收起。
+   * 之前 +N 只是个 span，最多挂个 title —— 长得像按钮却点不动，
+   * 触屏上更是连提示都没有，等于把 7 个标签藏了起来。
+   */
+  document.querySelectorAll<HTMLElement>("[data-tag-collapse]").forEach((box) => {
+    const btn = box.querySelector<HTMLButtonElement>("[data-tag-more]");
+    if (!btn) return;
+    const rest = [...box.querySelectorAll<HTMLElement>("[data-tag-rest]")];
+    const total = rest.length;
+    let open = false;
+
+    const paint = () => {
+      for (const el of rest) el.classList.toggle("hidden", !open);
+      btn.textContent = open ? "收起" : `+${total}`;
+      btn.setAttribute("aria-expanded", String(open));
+      // 展开后完整列表已在眼前，tooltip 反而挡住标签，收起时再挂回去
+      if (open) btn.removeAttribute("title");
+      else btn.title = rest.map((el) => (el.textContent || "").trim()).filter(Boolean).join("、");
+    };
+
+    btn.addEventListener("click", () => {
+      open = !open;
+      paint();
+    });
+  });
+
   // 截图放大：点击缩略图查看原图
   document.querySelectorAll<HTMLButtonElement>("[data-lightbox]").forEach((btn) => {
     btn.addEventListener("click", () => {

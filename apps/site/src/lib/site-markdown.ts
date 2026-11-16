@@ -235,18 +235,61 @@ export function buildSiteMarkdown(tool: AITool): string {
     L.push("");
   }
 
-  if (ai) {
-    L.push("## AI 分析");
+  /*
+   * AI 判断（performanceInsight）与 AI 分析（aiInsight）分工输出，同一主题只写一次。
+   *
+   * 以前这里只输出 aiInsight，页面上渲染的却是 performanceInsight，
+   * 两份文案各写一遍「增长 / 获客 / 壁垒 / 变现」，复制出去的内容和页面看到的还对不上。
+   * 现在：判断结论（四要素 + 六条结论）走 performanceInsight，
+   * aiInsight 只留它独有的叙事部分（痛点三段、钩子、客群、付费意愿）。
+   */
+  const pi = tool.performanceInsight;
+  if (pi) {
+    L.push("## AI 判断");
     L.push("");
-    if (ai.intro) {
-      L.push("### 核心痛点与价值主张");
+    const ov = pi.overview ?? {};
+    const four: [string, string | undefined][] = [
+      ["是什么", ov.what],
+      ["解决什么痛点", ov.pain],
+      ["能干什么", ov.can],
+      ["特点", ov.trait],
+    ];
+    for (const [k, v] of four) if (v) L.push(`- ${k}: ${v}`);
+    L.push("");
+
+    const blocks: [string, string | undefined][] = [
+      ["流量真相", pi.trafficTruth],
+      ["增长势能", pi.growthEdge],
+      ["护城河", pi.moat],
+      ["切入点", pi.wedge],
+      ["商业模式", pi.model],
+      ["新玩家切入点", pi.newPlayerEntry],
+    ];
+    for (const [k, v] of blocks) {
+      if (!v) continue;
+      L.push(`### ${k}`);
       L.push("");
-      L.push(ai.intro);
-      if (ai.before) L.push(ai.before);
-      if (ai.now) L.push(ai.now);
-      if (ai.comparison) L.push(ai.comparison);
-      if (ai.hooks?.length)
-        for (const h of ai.hooks) L.push(`- ${h.title}：${h.desc}`);
+      L.push(v);
+      L.push("");
+    }
+    if (pi.entryTag) L.push(`> 结论：${pi.entryTag}`);
+    L.push("");
+  }
+
+  if (ai) {
+    L.push("## AI 分析（叙事）");
+    L.push("");
+    if (ai.question) {
+      L.push(ai.question);
+      L.push("");
+    }
+    if (ai.intro) L.push(ai.intro);
+    for (const seg of [ai.before, ai.now, ai.comparison]) if (seg) L.push(seg);
+    if (ai.intro || ai.before || ai.now || ai.comparison) L.push("");
+    if (ai.hooks?.length) {
+      L.push("### 卖点钩子");
+      L.push("");
+      for (const h of ai.hooks) L.push(`- ${h.title}：${h.desc}`);
       L.push("");
     }
     if (ai.audiences?.length) {
@@ -254,36 +297,10 @@ export function buildSiteMarkdown(tool: AITool): string {
       L.push("");
       for (const a2 of ai.audiences) L.push(`- ${a2}`);
       if (ai.willingness)
-        L.push(
-          `客群付费意愿：${ai.willingness.level}。${ai.willingness.reason ?? ""}`,
-        );
+        L.push(`客群付费意愿：${ai.willingness.level}。${ai.willingness.reason ?? ""}`);
       L.push("");
     }
-    if (ai.growthDriver) {
-      L.push("### 增长驱动");
-      L.push("");
-      L.push(ai.growthDriver);
-      L.push("");
-    }
-    if (ai.acquisition) {
-      L.push("### 获客打法");
-      L.push("");
-      L.push(ai.acquisition);
-      if (ai.trafficQuality) L.push(ai.trafficQuality);
-      L.push("");
-    }
-    if (ai.moat) {
-      L.push(`### 竞争壁垒${ai.moatBadge ? `（${ai.moatBadge}）` : ""}`);
-      L.push("");
-      L.push(ai.moat);
-      L.push("");
-    }
-    if (ai.monetization) {
-      L.push(`### 收费模式${ai.monetizationBadge ? `（${ai.monetizationBadge}）` : ""}`);
-      L.push("");
-      L.push(ai.monetization);
-      L.push("");
-    }
+    // growthDriver / acquisition / moat / monetization 已由 performanceInsight 输出，此处不再重复
     if (ai.analyzedAt) L.push(`> 分析时间：${ai.analyzedAt}`);
   }
 
