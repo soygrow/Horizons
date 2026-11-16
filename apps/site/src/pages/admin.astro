@@ -806,14 +806,25 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                     还没有重采结果。在下方列表勾选条目后点「更新数据」。
                   </p>
                 </div>
-                <button
-                  id="tools-refresh-publish"
-                  type="button"
-                  class="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
-                  disabled
-                >
-                  发布更新
-                </button>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span id="tools-refresh-build-state" class="text-[11px] text-ink-muted"></span>
+                  <button
+                    id="tools-refresh-build"
+                    type="button"
+                    title="预览页是构建期产物：重采只改数据库，点这里重建整站才能看到新数据（约 20 分钟，线上内容不变）"
+                    class="rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    刷新预览页
+                  </button>
+                  <button
+                    id="tools-refresh-publish"
+                    type="button"
+                    class="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled
+                  >
+                    发布更新
+                  </button>
+                </div>
               </div>
               <div id="tools-refresh-list" class="divide-y divide-border"></div>
             </article>

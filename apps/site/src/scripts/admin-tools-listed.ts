@@ -67,6 +67,9 @@ interface PendingResp {
 /**
  * 与 API 的 MAX_REFRESH_DOMAINS 保持一致：Actions 单 job 60 分钟，
  * 重采一条 60~90 秒，超过 30 条必须拆批。
+ *
+ * 拆批是前端的责任：API 遇到超过 30 条会直接 400（以前是静默 slice 掉尾巴，
+ * 勾 50 条只有 30 条真跑），所以这里的循环必须真的把每一批都发出去。
  */
 const BATCH = 30;
 
@@ -239,7 +242,15 @@ function renderPending(): void {
   }
 
   const failed = state.pending.filter((r) => r.stage === "publish_failed").length;
-  meta.textContent = `${state.pending.length} 条已重采完成${failed ? `（${failed} 条发布失败可重发）` : ""}，点名字预览待发布页面，确认后点「发布更新」`;
+  /*
+   * 预览页是构建期产物（/preview 由 D1 工作区导出后静态生成），重采完不会立刻变，
+   * 要等富化 workflow 末尾那次 Deploy Site 跑完（约 20 分钟）。不写清楚，
+   * 审核员看到「预览还是 9 月、接口返回已是 10 月」只会以为是采集没生效。
+   * 下面那行「旧 → 新」读的是库里的卡片，一定是本次采集的最新值。
+   */
+  meta.textContent =
+    `${state.pending.length} 条已重采完成${failed ? `（${failed} 条发布失败可重发）` : ""}，` +
+    `下方「旧 → 新」读的是库里最新值；预览页要等构建完成才是新数据，可点右上「刷新预览页」按需构建`;
   badge.textContent = String(state.pending.length);
   badge.classList.remove("hidden");
   btn.disabled = false;
@@ -257,7 +268,7 @@ function renderPending(): void {
         <div class="min-w-0">
           <a href="/preview/${esc(r.domain)}" target="_blank" rel="noopener"
              class="font-medium text-primary hover:underline"
-             title="在新窗口预览待发布详情页（与线上同一套布局，需管理员登录）">${esc(r.name)}</a>
+             title="在新窗口预览待发布详情页（与线上同一套布局，需管理员登录；页面是构建产物，重采后要点「刷新预览页」构建一次才是新数据）">${esc(r.name)}</a>
           <span class="ml-2 text-[11px] text-ink-muted">${esc(r.domain)}</span>
           ${pendingBadge(r.stage)}
         </div>
@@ -309,10 +320,102 @@ async function loadPending(): Promise<void> {
   }
 }
 
+/* ----------------------------- 预览页重建 ----------------------------- */
+
+interface BuildRun {
+  id: number;
+  status: string;
+  conclusion: string | null;
+  html_url: string;
+  created_at?: string;
+}
+
+const BUILD_RUNNING = new Set(["queued", "requested", "waiting", "pending", "in_progress"]);
+
+/**
+ * 构建轮询只留一条链：切页签、点刷新都会重新调 loadBuildState，
+ * 不先清掉旧定时器的话，构建期间会叠出好几条 30 秒轮询。
+ */
+let buildPollTimer: number | undefined;
+function scheduleBuildPoll(): void {
+  window.clearTimeout(buildPollTimer);
+  buildPollTimer = window.setTimeout(() => void loadBuildState(), 30_000);
+}
+
+/**
+ * 「刷新预览页」按钮的状态。
+ *
+ * 预览页是构建期产物，重采只改 D1；enrich-tools 的 refresh 批次不再自动构建，
+ * 所以「现在能不能看新数据」只能在这里告诉管理员。状态取最近一次 deploy-site run。
+ */
+async function loadBuildState(): Promise<void> {
+  window.clearTimeout(buildPollTimer);
+  const box = $("tools-refresh-build-state");
+  const btn = $<HTMLButtonElement>("tools-refresh-build");
+  if (!box || !btn) return;
+
+  try {
+    const { run } = await apiGet<{ run: BuildRun | null }>("/tools/refresh-preview");
+    if (!run) {
+      box.textContent = "预览页：从未重建";
+      btn.disabled = false;
+      return;
+    }
+    if (BUILD_RUNNING.has(run.status)) {
+      box.innerHTML = `<a href="${esc(run.html_url)}" target="_blank" rel="noopener" class="text-primary hover:underline">构建中，约 20 分钟</a>`;
+      btn.disabled = true;
+      // 构建要 20 分钟，别让「构建中」永远挂着：30 秒后自己再看一眼
+      scheduleBuildPoll();
+      return;
+    }
+    btn.disabled = false;
+    if (run.conclusion === "success") {
+      box.textContent = `预览页：${fmtTime(run.created_at)} 构建完成`;
+    } else {
+      const word = run.conclusion === "cancelled" ? "被取消" : "失败";
+      box.innerHTML = `<a href="${esc(run.html_url)}" target="_blank" rel="noopener" class="text-danger hover:underline">上次构建${word}</a>`;
+    }
+  } catch {
+    // 读不到构建状态不影响审核，按钮照常可点
+    box.textContent = "";
+    btn.disabled = false;
+  }
+}
+
+async function buildPreview(): Promise<void> {
+  if (
+    !window.confirm(
+      "将重新构建整站以刷新预览页，约 20 分钟。\n" +
+        "构建期间线上页面完全不受影响（内容是上一版，和现在一样），只是预览页要等构建完才有新数据。\n\n确认开始？",
+    )
+  ) {
+    return;
+  }
+
+  const btn = $<HTMLButtonElement>("tools-refresh-build");
+  const box = $("tools-refresh-build-state");
+  btn.disabled = true;
+  box.textContent = "正在提交…";
+  try {
+    const { run } = await apiPost<{ run: BuildRun | null }>("/tools/refresh-preview", {});
+    box.innerHTML = run
+      ? `<a href="${esc(run.html_url)}" target="_blank" rel="noopener" class="text-primary hover:underline">构建中，约 20 分钟</a>`
+      : "已提交，稍后自动刷新状态";
+    scheduleBuildPoll();
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    box.textContent = "";
+    window.alert(msg.includes("正在构建") ? msg : `提交失败：${msg}`);
+    void loadBuildState();
+  }
+}
+
 async function refreshAll(): Promise<void> {
   // 待审核要先拿到线上旧值才能做对比，顺序不能反
   await loadListed();
   await loadPending();
+  // 构建状态与列表无关，别让它拖慢主列表
+  void loadBuildState();
 }
 
 /* ----------------------------- 接口原始返回 ----------------------------- */
@@ -559,6 +662,10 @@ function bind(): void {
     void submitRefresh();
   });
 
+  $("tools-refresh-build").addEventListener("click", () => {
+    void buildPreview();
+  });
+
   $("tools-refresh-publish").addEventListener("click", () => {
     void publishRefresh();
   });
@@ -597,20 +704,51 @@ async function submitRefresh(): Promise<void> {
   }
 
   const btn = $("tools-listed-refresh-btn") as HTMLButtonElement;
+  const meta = $("tools-refresh-meta");
+  const chunks: string[][] = [];
+  for (let i = 0; i < domains.length; i += BATCH) chunks.push(domains.slice(i, i + BATCH));
+
   btn.disabled = true;
+  const submitted: string[] = [];
+  const failures: string[] = [];
   try {
-    await apiPost("/tools/refresh", { domains, collect, rewrite });
-    state.picked.clear();
-    renderRows();
-    notifyJobs();
-    $("tools-refresh-meta").textContent =
-      `已提交 ${domains.length} 条，预计 ${minutes} 分钟。跑完会自动出现在这里，「数据抓取」那边不会出现这些条目。`;
-    // Actions 起跑要十几秒，先给个反馈再定时拉
-    window.setTimeout(() => void refreshAll(), 30_000);
-  } catch (e) {
-    window.alert(`提交失败：${e instanceof Error ? e.message : String(e)}`);
+    for (let i = 0; i < chunks.length; i++) {
+      const batch = chunks[i];
+      // 每批提交要十几秒才返回，多批时不给进度就像卡死了
+      if (chunks.length > 1) {
+        meta.textContent = `正在提交第 ${i + 1}/${chunks.length} 批（${batch.length} 条）…`;
+      }
+      try {
+        await apiPost("/tools/refresh", { domains: batch, collect, rewrite });
+        submitted.push(...batch);
+        notifyJobs();
+      } catch (e) {
+        // 一批失败就停：后面几批大概率同一原因（超限/令牌/配额），
+        // 继续发只会堆出一串失败任务，还得逐条排查
+        failures.push(`第 ${i + 1} 批（${batch.length} 条）：${e instanceof Error ? e.message : String(e)}`);
+        break;
+      }
+    }
   } finally {
     btn.disabled = false;
+  }
+
+  // 只摘掉真正提交上去的勾选：失败那批留着，用户点一下就能重试
+  for (const d of submitted) state.picked.delete(d);
+  renderRows();
+
+  const remain = domains.length - submitted.length;
+  meta.textContent = failures.length
+    ? `已提交 ${submitted.length}/${domains.length} 条，${remain} 条未提交。未提交的仍保持勾选，可直接重试。`
+    : `已提交 ${submitted.length} 条${chunks.length > 1 ? `（分 ${chunks.length} 批串行）` : ""}，预计 ${minutes} 分钟。跑完会自动出现在这里，「数据抓取」那边不会出现这些条目。`;
+
+  if (failures.length) {
+    window.alert(`提交未全部成功：\n${failures.join("\n")}\n\n已完成 ${submitted.length} 条，剩余 ${remain} 条保持勾选。`);
+  }
+
+  if (submitted.length) {
+    // Actions 起跑要十几秒，先给个反馈再定时拉
+    window.setTimeout(() => void refreshAll(), 30_000);
   }
 }
 

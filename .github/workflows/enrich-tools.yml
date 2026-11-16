@@ -121,14 +121,17 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "::notice::富化完成，请到后台查看字段完整度后再选择发榜"
 
-      # 预览页是构建期从 D1 导出 staging 条目生成的（/preview/{domain}），
+      # 预览页是构建期从 D1 导出工作区条目生成的（/preview/{domain}），
       # 不重建的话富化完点「工具名」看到的还是上一版数据。
       # 富化提交只改 content/tools-field-report.json，不在 deploy-site 的 paths 里，
-      # 不会自动触发，必须显式 dispatch。refresh 批次（线上条目重采集）连预览页
-      # 都不需要刷新，故跳过。
+      # 不会自动触发，必须显式 dispatch。
+      #
+      # refresh 批次（线上条目重采集）不在这里构建：整站一次 20 分钟，而多数更新
+      # 根本没人看预览，自动构建纯属烧机时。需要看预览时，由后台「更新待审核」
+      # 里的「刷新预览页」按钮按需 dispatch（POST /api/admin/tools/refresh-preview），
+      # 按钮上带构建状态，重复点击不会掐掉正在跑的构建。
+      # 新条目（kind=new）保持自动构建：那条路是「富化完就要人工审核发榜」。
       - name: 触发站点构建（刷新预览页）
-        # 线上更新只改 D1 工作区，后台对比走接口读库；
-        # 每批都重建一次站点纯属浪费（9 批 = 9 次部署）。
         if: inputs.kind != 'refresh'
         env:
           BOT_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
@@ -140,4 +143,4 @@ jobs:
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/deploy-site.yml/dispatches" \
             -d '{"ref":"main"}' | head -c 400
           echo
-          echo "::notice::已请求 Deploy Site，预览页几分钟后可看"
+          echo "::notice::已请求 Deploy Site，整站构建约 20 分钟，之后预览页即为本次富化的数据"

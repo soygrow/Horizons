@@ -49,6 +49,8 @@ const FETCH_WORKFLOW = "fetch-tools.yml";
 const ENRICH_WORKFLOW = "enrich-tools.yml";
 const PUBLISH_WORKFLOW = "publish-tools.yml";
 const AUDIT_WORKFLOW = "audit-tools.yml";
+/** 整站构建（预览页是构建期产物，重采只改 D1，不重建就看不到新数据） */
+const DEPLOY_WORKFLOW = "deploy-site.yml";
 
 const MAX_COUNT = 200;
 const MAX_PAGE_SIZE = 100;
@@ -909,8 +911,29 @@ tools.post("/refresh", async (c) => {
     return c.json({ error: "invalid_json" }, 400);
   }
 
-  const domains = normalizeDomainInput(body.domains).slice(0, MAX_REFRESH_DOMAINS);
+  const domains = normalizeDomainInput(body.domains);
   if (!domains.length) return c.json({ error: "empty_domains" }, 400);
+  /*
+   * 超限必须报错，不能 slice 掉尾巴。
+   *
+   * 以前这里是 `.slice(0, MAX_REFRESH_DOMAINS)`：勾 50 条只有前 30 条真的进了
+   * Actions，剩下 20 条静默消失，后台还照样提示「已提交 50 条」，一小时也等不到。
+   * 拆批由前端做（每批一次请求，enrich-tools 的 concurrency 会串行排队），
+   * 这里只守「单个 Actions job 跑得完」这条硬约束。
+   */
+  if (domains.length > MAX_REFRESH_DOMAINS) {
+    return c.json(
+      {
+        error: "too_many_domains",
+        max: MAX_REFRESH_DOMAINS,
+        received: domains.length,
+        message: `单批最多 ${MAX_REFRESH_DOMAINS} 条（Actions 单次 60 分钟跑不完更多），请分 ${Math.ceil(
+          domains.length / MAX_REFRESH_DOMAINS,
+        )} 批提交`,
+      },
+      400,
+    );
+  }
 
   // 两个开关：重新采集（含流量与截图）/ 重跑文案。都关等于什么也不做。
   const collect = body.collect !== false;
@@ -957,6 +980,58 @@ tools.post("/refresh", async (c) => {
     .run();
 
   return c.json({ job: { id, kind: "refresh", status: "queued", count: domains.length } });
+});
+
+/** GitHub 把排队/预热中的 run 也报成这些状态，都算「还没跑完」 */
+const RUNNING_STATUS = new Set(["queued", "requested", "waiting", "pending", "in_progress"]);
+
+/**
+ * 预览页重建（按需）。
+ *
+ * /preview/{domain} 是 astro build 从 D1 工作区导出的静态 HTML，重采只改库不改
+ * 页面。自动重建太贵（整站约 20 分钟，且多数更新没人看预览），改成管理员点一次。
+ * GET 拿最近一次构建状态给按钮用，POST 才真的 dispatch。
+ */
+tools.get("/refresh-preview", async (c) => {
+  const cfg = ghConfig(c.env);
+  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 503);
+  try {
+    return c.json({ run: await latestRun(cfg, DEPLOY_WORKFLOW) });
+  } catch (e) {
+    return c.json(
+      { error: "github_unreachable", detail: e instanceof Error ? e.message : String(e) },
+      502,
+    );
+  }
+});
+
+tools.post("/refresh-preview", async (c) => {
+  const cfg = ghConfig(c.env);
+  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 503);
+
+  /*
+   * 正在构建就别再发一次：deploy-site 是 cancel-in-progress: true，
+   * 后触发的会把跑到一半的那次掐掉重来 —— 等于白等一个 20 分钟。
+   */
+  const current = await latestRun(cfg, DEPLOY_WORKFLOW).catch(() => null);
+  if (current && RUNNING_STATUS.has(current.status)) {
+    return c.json(
+      { error: "already_running", run: current, message: "站点正在构建，等这次跑完再看预览" },
+      409,
+    );
+  }
+
+  let run: WorkflowRun | null;
+  try {
+    run = await dispatchWorkflow(cfg, DEPLOY_WORKFLOW, {});
+  } catch (e) {
+    return c.json(
+      { error: "dispatch_failed", detail: e instanceof Error ? e.message : String(e) },
+      502,
+    );
+  }
+
+  return c.json({ run });
 });
 
 /**
