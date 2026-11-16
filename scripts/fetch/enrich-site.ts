@@ -27,6 +27,7 @@ import { detectPricing } from "./sources/pricing";
 import { extractContact } from "./sources/contact";
 import { chatJSON, hasLLM } from "./sources/llm";
 import { collectSite } from "../field-collect/collect";
+import { normalizeHistory } from "../field-collect/mapping";
 import { applyFields } from "./apply-fields";
 import { readTrafficMonths, saveTrafficMonths } from "./collect-store";
 import { readWorkspace, syncCandidates, type ItemStatus } from "../admin/board-items";
@@ -393,9 +394,22 @@ async function main(): Promise<void> {
        * 写入后每刷新一次补几个月，6 格会自己长满。
        */
       const histField = payload.fields.find((f) => f.key === "monthly_visits_history");
-      const payloadMonths = Array.isArray(histField?.value)
+      const fieldMonths = Array.isArray(histField?.value)
         ? (histField.value as { month?: string; visits?: number }[])
         : [];
+      /*
+       * 归一化字段偶尔是 null（actor 换了月序列的形态就会这样），只认它会得出
+       * 「本轮没采到月份」的错误结论：snapshotMonth 停在上一版、trend 不更新，
+       * 但 monthly_visits 已经写成本月数值 —— 页面「数据快照」和数字就对不上了
+       * （Pexo 那次就是：数值是 10 月的 462049，标签还是 2026-09）。
+       * 所以退回 vortex 原始回包再解析一次，两种形态都要吃。
+       */
+      const rawBase = payload.raw?.similarwebBase as
+        | { monthlyVisitsDateFormat?: unknown; monthlyVisits?: unknown }
+        | undefined;
+      const payloadMonths = fieldMonths.length
+        ? fieldMonths
+        : normalizeHistory(rawBase?.monthlyVisitsDateFormat ?? rawBase?.monthlyVisits);
       await saveTrafficMonths(
         domain,
         payloadMonths

@@ -1,7 +1,7 @@
 import type { AITool } from "@horizons/shared";
 import { formatCount } from "./format";
 // 别名避免与本文件里的局部变量 countryLabel（国名文本）撞名
-import { channelSharesPct, countryLabel as regionName, pendingTrendFlags, toPercent } from "./data";
+import { channelSharesPct, countryLabel as regionName, pendingTrendFlags, toPercent } from "./tool-fields";
 
 function fmtDuration(sec?: number | null): string {
   if (sec === null || sec === undefined) return "0s";

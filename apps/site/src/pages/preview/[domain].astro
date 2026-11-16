@@ -1,14 +1,20 @@
 ---
 /**
- * 待发布条目的详情预览页。
+ * 待发布条目的详情预览页（按需渲染）。
  *
- * 和线上 /tools/[domain] 用**同一批组件**渲染，只有数据来源不同
- * （这里读 content/dist/tools/preview/*.json，由 scripts/build/preview-tools.ts
- * 从 D1 的 board_items 导出）。这样「审核时看到的样子」就是「上线后的样子」，
- * 不会出现预览一套模板、线上另一套模板的漂移。
+ * 和线上 /tools/[domain] 用**同一批组件**渲染，只有数据来源不同：
+ * 这里请求进来时现场查 D1 的 board_items.card，拿到什么就渲染什么。
+ * 「审核时看到的样子」＝「这条数据现在真实的样子」，数据改完刷新即生效。
  *
- * 只在后台内部使用：Base 里非白名单路径自动 noindex，sitemap 也不收录。
+ * 以前是构建期由 scripts/build/preview-tools.ts 导出 JSON 再预渲染，
+ * 于是「刷新预览」= 重新构建整站（20 分钟）。改成按需渲染后这条路由
+ * 完全脱离构建：发布流程不再需要为预览等构建。
+ *
+ * 只在后台内部使用：Worker 里先校验管理员 session 才放行到这里，
+ * Base 里非白名单路径自动 noindex，sitemap 也不收录。
  */
+export const prerender = false;
+
 import Base from "../../layouts/Base.astro";
 import ToolHero from "../../components/detail/ToolHero.astro";
 import PerformanceSection from "../../components/detail/sections/PerformanceSection.astro";
@@ -18,19 +24,18 @@ import BusinessSection from "../../components/detail/sections/BusinessSection.as
 import PlaybookSection from "../../components/detail/sections/PlaybookSection.astro";
 import IdeasSection from "../../components/detail/sections/IdeasSection.astro";
 import { buildSiteMarkdown } from "../../lib/site-markdown";
+import { env } from "cloudflare:workers";
 
-export async function getStaticPaths() {
-  const mods = import.meta.glob("../../../../../content/dist/tools/preview/*.json", {
-    eager: true,
-  }) as Record<string, { data: Record<string, any> }>;
-  return Object.values(mods).map((mod) => ({
-    params: { domain: mod.data.domain },
-    props: { tool: mod.data },
-  }));
-}
-
-const { tool } = Astro.props as { tool: Record<string, any> };
-const markdown = buildSiteMarkdown(tool as never);
+/**
+ * 哪些状态值得预览。
+ *
+ * `candidate` 必须在内：采集落库后 stage 就是 candidate，
+ * 只收 enriched 的话「后台刚采完 → 点预览」永远打不开 ——
+ * 而审核员恰恰是在这一步判断这条要不要继续富化。
+ * `rejected` / `published` 排除：判定不收录的没有预览价值，
+ * 已发布的直接看线上页（那里才是读者会看到的最终形态）。
+ */
+const PREVIEW_STAGES = new Set(["candidate", "enriched", "enriching", "enrich_failed"]);
 
 const STAGE_LABEL: Record<string, string> = {
   candidate: "刚采集完，仅流量与排名已落库",
@@ -38,15 +43,69 @@ const STAGE_LABEL: Record<string, string> = {
   enriching: "富化进行中，部分字段还会变",
   enrich_failed: "富化失败，下面可能是残缺数据",
 };
-const stage = String(tool.stage ?? "enriched");
+
+/** D1 只用到「按主键取一行」，这里不引 @cloudflare/workers-types 的全局类型 */
+interface D1Like {
+  prepare(sql: string): {
+    bind(...values: unknown[]): {
+      first<T = Record<string, unknown>>(): Promise<T | null>;
+    };
+  };
+}
+
+interface BoardRow {
+  card?: string | Record<string, unknown> | null;
+  status?: string;
+}
+
+const { domain } = Astro.params;
+const db = (env as { DB?: D1Like }).DB;
+
+let tool: Record<string, any> | null = null;
+let stage = "enriched";
+
+if (domain && db) {
+  const row = await db
+    .prepare("SELECT card, status FROM board_items WHERE board = ? AND item_key = ?")
+    .bind("tools", domain)
+    .first<BoardRow>()
+    .catch(() => null);
+
+  const status = String(row?.status ?? "");
+  if (row?.card && PREVIEW_STAGES.has(status)) {
+    try {
+      tool =
+        typeof row.card === "string"
+          ? (JSON.parse(row.card) as Record<string, any>)
+          : (row.card as Record<string, any>);
+      stage = status;
+    } catch {
+      tool = null;
+    }
+  }
+}
+
+/*
+ * 查不到就 404，不要 fallback 到静态产物：
+ * 条目已发布/被清理时，宁可明确「没有这条预览」，也不给一个过期的旧卡片。
+ */
+if (!tool) {
+  return new Response("预览不存在：条目可能已发布、被清理，或域名有误。", {
+    status: 404,
+    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+  });
+}
+
+const data = tool;
+const markdown = buildSiteMarkdown(data as never);
 ---
 
-<Base title={`[预览] ${tool.name ?? tool.domain} - 值不值得做`} description={tool.description} noindex={true}>
+<Base title={`[预览] ${data.name ?? data.domain} - 值不值得做`} description={data.description} noindex={true}>
   {/* 预览条：一眼看出这不是线上页面，并且能直接跳回后台 */}
   <div class="border-b border-primary/30 bg-primary-soft">
     <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-xs text-primary sm:px-6">
       <span class="rounded-full bg-primary px-2 py-0.5 font-semibold text-white">预览</span>
-      <span class="font-medium">{tool.domain}</span>
+      <span class="font-medium">{data.domain}</span>
       <span class="text-primary/80">· {STAGE_LABEL[stage] ?? stage}</span>
       <span class="text-primary/60">· 尚未发布到榜单 · 仅管理员可见</span>
       <a href="/admin" class="ml-auto font-medium underline underline-offset-2 hover:no-underline">返回后台</a>
@@ -54,15 +113,15 @@ const stage = String(tool.stage ?? "enriched");
   </div>
 
   <div class="flex flex-col">
-    <ToolHero tool={tool} markdown={markdown} />
+    <ToolHero tool={data} markdown={markdown} />
 
     <div class="mx-auto flex max-w-7xl flex-col gap-16 px-4 py-12 sm:px-6">
-      <PerformanceSection tool={tool} />
-      <OpportunitySection tool={tool} />
-      <TrafficSection tool={tool} />
-      <BusinessSection tool={tool} />
-      <PlaybookSection tool={tool} />
-      <IdeasSection tool={tool} />
+      <PerformanceSection tool={data} />
+      <OpportunitySection tool={data} />
+      <TrafficSection tool={data} />
+      <BusinessSection tool={data} />
+      <PlaybookSection tool={data} />
+      <IdeasSection tool={data} />
     </div>
   </div>
 

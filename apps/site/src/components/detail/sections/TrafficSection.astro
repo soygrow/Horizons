@@ -10,7 +10,7 @@ import Pending from "../Pending.astro";
 import TrafficTrendChart from "../TrafficTrendChart.astro";
 import { getDict, format as tf } from "../../../lib/i18n";
 import { formatNum } from "../../../lib/format";
-import { channelSharesPct, countryLabel, pendingTrendFlags, toPercent, trendFromMetrics } from "../../../lib/data";
+import { channelSharesPct, countryLabel, pendingTrendFlags, toPercent, trendFromMetrics } from "../../../lib/tool-fields";
 
 interface Props {
   tool: Record<string, any>;
@@ -64,7 +64,6 @@ const trend: any[] = (() => {
 })();
 const pendingFlags = pendingTrendFlags(trend);
 const collectedPoints = trend.filter((_, i) => !pendingFlags[i] && (trend[i]?.total ?? 0) > 0);
-const pendingMonths = Math.max(0, TREND_MONTHS - collectedPoints.length, pendingFlags.filter(Boolean).length);
 
 // channelShares 已是百分数，直接按占比降序画九根条
 const channelItems = Object.entries(channelShares)
@@ -120,7 +119,6 @@ const aiProviders = [
       <SubCard title={dict.traffic.trend}>
         <span slot="extra" class="text-sm text-ink-muted">
           {tf(dict.traffic.monthsRange, { count: TREND_MONTHS })}
-          {pendingMonths > 0 ? `（${pendingMonths} 个月待累积）` : ""}
         </span>
         {
           /* 只有一个有数月份时也画：画一个点 + 数值，比一句「暂无历史」更有信息量 */

@@ -3,13 +3,18 @@
  *
  * 1. /screenshots/*  —— 截图体积大（数百张），存在 R2 里，构建产物保持轻量，
  *    URL 仍是 /screenshots/<domain>.png，数据与页面无需改动。
- * 2. /preview/*      —— 后台预览页是构建期从 D1 导出的**未发布**内容，
- *    不能公开。这里校验 session cookie（和 /api/admin 同一张 admin_sessions 表），
- *    未登录一律 302 回 /admin 登录，登录后自动跳回来。
+ * 2. /preview/*      —— 后台预览页，**按需渲染**（Astro SSR）直接查 D1 的未发布条目。
+ *    不能公开，所以先校验 session cookie（和 /api/admin 同一张 admin_sessions 表），
+ *    未登录一律 302 回 /admin 登录，登录后自动跳回来；通过后才交给 Astro 渲染。
  *
  * 预览鉴权必须放在 Worker，而不是靠 noindex 或藏在 /admin 路径下：
- * 静态资产是公开可取的，只要 HTML 进得了 dist，谁都能直接拿。
+ * 鉴权不通过时不能产生任何 HTML，否则未发布内容等于公开。
+ *
+ * 其余路径是纯静态资产：wrangler.jsonc 的 run_worker_first 只把这两类路径
+ * 引进 Worker，所以这里的 ASSETS.fetch 只是兜底，不会成为性能瓶颈。
  */
+import { handle } from "@astrojs/cloudflare/handler";
+
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
   IMAGES: { get(key: string): Promise<R2ObjectLike | null> };
@@ -84,7 +89,12 @@ function privateResponse(res: Response): Response {
   return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
 }
 
-async function servePreview(request: Request, env: Env, url: URL): Promise<Response> {
+async function servePreview(
+  request: Request,
+  env: Env,
+  ctx: ExecutionContextLike,
+  url: URL,
+): Promise<Response> {
   if (!(await isAdminSession(request, env))) {
     const next = encodeURIComponent(url.pathname + url.search);
     return new Response(null, {
@@ -92,18 +102,33 @@ async function servePreview(request: Request, env: Env, url: URL): Promise<Respo
       headers: { location: `${ADMIN_PAGE}?next=${next}`, "cache-control": "no-store" },
     });
   }
-  return privateResponse(await env.ASSETS.fetch(request));
+  return privateResponse(await handle(request, env as never, ctx as never));
 }
 
 /* --------------------------------- 入口 --------------------------------- */
 
+/** Astro 的 SSR 只要 waitUntil；这里不引 workers-types 的全局声明 */
+interface ExecutionContextLike {
+  waitUntil(promise: Promise<unknown>): void;
+  passThroughOnException?(): void;
+}
+
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContextLike): Promise<Response> {
     const url = new URL(request.url);
 
-    if (isPreviewPath(url.pathname)) return servePreview(request, env, url);
+    if (isPreviewPath(url.pathname)) return servePreview(request, env, ctx, url);
 
-    if (!url.pathname.startsWith(SHOT_PREFIX)) return env.ASSETS.fetch(request);
+    /*
+     * 交给 Astro 的 SSR 入口，而不是直接 ASSETS.fetch。
+     * 构建期 adapter 会起一个 workerd 预渲染服务器、通过内部路径向本 Worker
+     * 索取静态路由表；把请求直接甩给 ASSETS 会让它拿到 404（构建就断在这）。
+     * 生产环境其余路径由 run_worker_first 白名单挡在 Worker 之外，
+     * 走不到这里，静态直出的性能不受影响。
+     */
+    if (!url.pathname.startsWith(SHOT_PREFIX)) {
+      return handle(request, env as never, ctx as never);
+    }
 
     if (request.method !== "GET" && request.method !== "HEAD") {
       return new Response("Method Not Allowed", { status: 405 });

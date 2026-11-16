@@ -5,6 +5,8 @@
   // 其余请求原样交给静态资产。数据里的路径仍是 /screenshots/<domain>.png，未改动。
   "main": "./src/worker.ts",
   "compatibility_date": "2026-10-01",
+  // /preview 走 Astro SSR runtime，需要 Node 兼容层（async_hooks、crypto、buffer 等）
+  "compatibility_flags": ["nodejs_compat"],
   // 2026-10-29 切换：新站接管主域，旧 Next 站（horizons-web）不再持有该路由
   "routes": [
     {
