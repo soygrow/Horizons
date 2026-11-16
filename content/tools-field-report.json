@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-13T12:53:21.968Z",
+  "generatedAt": "2026-11-16T04:38:23.149Z",
   "total": 13,
   "itemsWithIssues": 6,
   "dimensions": [
@@ -67,9 +67,9 @@
       "missing": 4,
       "missingRatio": 31,
       "missingDomains": [
-        "kixy.ai",
-        "claudeduet.com",
         "jonzi.ai",
+        "claudeduet.com",
+        "kixy.ai",
         "wanaka.app"
       ],
       "invalid": 0,
@@ -137,10 +137,10 @@
       "missing": 11,
       "missingRatio": 85,
       "missingDomains": [
-        "kixy.ai",
+        "jonzi.ai",
         "agenthunt.io",
         "claudeduet.com",
-        "jonzi.ai",
+        "kixy.ai",
         "maxma.com",
         "quest.app",
         "rerun.io",
@@ -175,9 +175,9 @@
       "missing": 10,
       "missingRatio": 77,
       "missingDomains": [
+        "jonzi.ai",
         "agenthunt.io",
         "claudeduet.com",
-        "jonzi.ai",
         "maxma.com",
         "quest.app",
         "rerun.io",
@@ -275,15 +275,16 @@
   "entryIssues": [],
   "items": [
     {
-      "domain": "kixy.ai",
-      "name": "Kixy",
+      "domain": "jonzi.ai",
+      "name": "Reels schneiden lassen mit KI",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 71843,
-      "gapCount": 2,
+      "monthlyVisits": 19222,
+      "gapCount": 3,
       "gaps": [
         "trafficMetrics.monthlyVisitsGrowth",
-        "keywords"
+        "keywords",
+        "pricing"
       ],
       "issueCount": 0,
       "issues": []
@@ -365,16 +366,15 @@
       "issues": []
     },
     {
-      "domain": "jonzi.ai",
-      "name": "Reels schneiden lassen mit KI",
+      "domain": "kixy.ai",
+      "name": "Kixy",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 19222,
-      "gapCount": 3,
+      "monthlyVisits": 71843,
+      "gapCount": 2,
       "gaps": [
         "trafficMetrics.monthlyVisitsGrowth",
-        "keywords",
-        "pricing"
+        "keywords"
       ],
       "issueCount": 0,
       "issues": []
