@@ -136,6 +136,16 @@ function stateBadge(s: ListState): string {
   return `<span class="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-semibold text-accent">未更新</span>`;
 }
 
+/**
+ * 通知工具榜层面的「运行记录」刷新。
+ *
+ * 任务列表的加载与轮询都在 admin-tools.ts（只有看见 running 任务才会开 12 秒轮询）；
+ * 这边提交完不发信号的话，顶部那 4 行要等下一次手动刷新/切页签才会出现新任务。
+ */
+function notifyJobs(): void {
+  window.dispatchEvent(new CustomEvent("horizons:jobs-changed"));
+}
+
 /** 待审核条目的阶段标签：可发布 / 发布失败可重发 */
 function pendingBadge(stage: string): string {
   return stage === "publish_failed"
@@ -392,6 +402,7 @@ async function submitRefresh(): Promise<void> {
     await apiPost("/tools/refresh", { domains, collect, rewrite });
     state.picked.clear();
     renderRows();
+    notifyJobs();
     $("tools-refresh-meta").textContent =
       `已提交 ${domains.length} 条，预计 ${minutes} 分钟。跑完会自动出现在这里，「数据抓取」那边不会出现这些条目。`;
     // Actions 起跑要十几秒，先给个反馈再定时拉
@@ -422,6 +433,7 @@ async function publishRefresh(): Promise<void> {
     // 不传 domains：脚本会按 --kind refresh 自己挑，不会碰到新条目
     await apiPost("/tools/publish", { kind: "refresh", note: `线上更新 ${n} 条` });
     $("tools-refresh-meta").textContent = "发布任务已提交，跑完会从「更新待审核」消失。";
+    notifyJobs();
     window.setTimeout(() => void refreshAll(), 30_000);
   } catch (e) {
     btn.disabled = false;

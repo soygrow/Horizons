@@ -594,6 +594,20 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
             </button>
           </nav>
 
+          <!-- 运行记录放在两个页签之间：抓取、更新、发布、重判都要跑 GitHub Actions，
+               结果只挂在内层视图里的话，切到「线上榜单」提交完就什么都看不见了。
+               这块的轮询挂在工具榜这一级，与外层视图无关。 -->
+          <article class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-2.5">
+              <div class="flex items-center gap-2">
+                <h2 class="text-sm font-semibold">运行记录</h2>
+                <span id="tools-jobs-meta" class="text-[11px] text-ink-muted">最近 4 次</span>
+              </div>
+              <span class="text-[11px] text-ink-muted">有任务在跑时每 12 秒自动刷新</span>
+            </div>
+            <div id="tools-jobs"></div>
+          </article>
+
           <div id="tools-view-fetch" class="space-y-4">
           <article class="rounded-2xl border border-border bg-surface">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
@@ -659,7 +673,6 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
               </span>
             </label>
             <p id="tools-fetch-estimate" class="px-4 pb-4 text-[11px] leading-relaxed text-ink-muted">—</p>
-            <div id="tools-jobs" class="border-t border-border"></div>
           </article>
 
           <article class="rounded-2xl border border-border bg-surface">

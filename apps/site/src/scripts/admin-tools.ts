@@ -347,13 +347,21 @@ function kindLabelOf(kind: string): string {
       return "重判";
     case "publish":
       return "发布";
+    case "refresh":
+      // 线上榜单的「更新数据」也是走采集链路，混排在同一块里得让人认出来
+      return "更新";
     default:
       return kind;
   }
 }
 
-/** 任务列表只展示最近几次：历史累积会把这一块撑得很长，日志本来就能去 Actions 翻 */
-const JOB_ROWS_VISIBLE = 3;
+/**
+ * 任务列表只展示最近几次：历史累积会把这一块撑得很长，日志本来就能去 Actions 翻。
+ *
+ * 这块常驻在两个页签上方，行数直接决定首屏高度，所以宁少勿多。
+ * 4 行是为了让「抓取」和「更新」同时跑时都能露出来，不用滚动。
+ */
+const JOB_ROWS_VISIBLE = 4;
 
 function pickRecentJobs(jobs: Job[]): { rows: Job[]; hidden: number } {
   const isActive = (j: Job) => j.status === "queued" || j.status === "running";
@@ -361,7 +369,7 @@ function pickRecentJobs(jobs: Job[]): { rows: Job[]; hidden: number } {
   const finished = jobs.filter((j) => !isActive(j));
   // 固定 JOB_ROWS_VISIBLE 行：运行中的优先占前几位，但不再因为它「有几个」而放宽行数。
   // 之前是 Math.max(JOB_ROWS_VISIBLE, active.length)，队列里一旦有 queued 僵尸，
-  // 点一次抓取就从 3 行变 4 行、刷新后又缩回 3 行 —— 行数必须只由常量决定。
+  // 行数就会跟着涨、刷新后又缩回去 —— 行数必须只由常量决定。
   const rows = [...active, ...finished].slice(0, JOB_ROWS_VISIBLE);
   return { rows, hidden: jobs.length - rows.length };
 }
@@ -482,13 +490,24 @@ function syncEnrichButton(jobs: Job[]): void {
       : "";
 }
 
+/** 卡片头的「最近 N 次」：带上运行中数量，一眼知道要不要等它跑完 */
+function syncJobsMeta(jobs: Job[]): void {
+  const el = $("tools-jobs-meta");
+  if (!el) return;
+  const active = jobs.filter((j) => j.status === "queued" || j.status === "running").length;
+  el.textContent = active
+    ? `最近 ${JOB_ROWS_VISIBLE} 次 · 运行中 ${active}`
+    : `最近 ${JOB_ROWS_VISIBLE} 次`;
+}
+
 function renderJobs(jobs: Job[]): void {
   const box = $("tools-jobs");
   const prevStatus = new Map(state.jobs.map((j) => [j.id, j.status]));
   state.jobs = jobs;
   syncEnrichButton(jobs);
+  syncJobsMeta(jobs);
   if (!jobs.length) {
-    box.innerHTML = `<p class="px-4 py-4 text-xs text-ink-muted">还没有任务。点上面的「开始抓取」会在这里显示进度。</p>`;
+    box.innerHTML = `<p class="px-4 py-4 text-xs text-ink-muted">还没有任务。在下方点「开始抓取」或「更新数据」，进度会显示在这里。</p>`;
     return;
   }
 
@@ -1059,6 +1078,13 @@ async function publishDomains(domains: string[]): Promise<boolean> {
 }
 
 function bind(): void {
+  /*
+   * 「线上榜单」提交更新/发布后要让顶部运行记录立刻出现「运行中」。
+   * 任务列表的轮询归这个模块管，那边提交完没有 loadJobs 的机会，
+   * 所以由它发事件、这里接住 —— 比把 loadJobs 挂到 window 上干净。
+   */
+  window.addEventListener("horizons:jobs-changed", () => void loadJobs());
+
   $("tools-fetch-count").addEventListener("change", updateFetchEstimate);
   $("tools-fetch-enrich").addEventListener("change", updateFetchEstimate);
   // input 而不是 change：粘贴一长串域名时要立刻反映条数，等失焦才更新会让人以为没生效
