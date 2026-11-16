@@ -408,6 +408,12 @@ tools.get("/staging", async (c) => {
         description: (t.description as string) ?? null,
         phUpvotes: (t.phUpvotes as number) ?? 0,
         monthlyVisits: t.trafficMetrics?.monthlyVisits ?? t.metrics?.monthlyVisits ?? null,
+        /*
+         * 「更新待审核」要比对「9 月 → 10 月」这种月份变化，没有这个字段前端只能显示
+         * 破折号（旧值 2026-09 → — 看起来像新月没数据）。与线上榜单列同源取 snapshotMonth。
+         */
+        snapshotMonth:
+          (t.trafficMetrics as { snapshotMonth?: string } | undefined)?.snapshotMonth ?? null,
         heatScore: (t.heatScore as number) ?? 0,
         categories: ((t.categories as string[]) ?? []).slice(0, 3),
         firstSeenAt: (t.firstSeenAt as string) ?? null,

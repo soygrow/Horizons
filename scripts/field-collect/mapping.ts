@@ -40,16 +40,60 @@ export interface MonthPoint {
   visits: number;
 }
 
-/** vortex 的 monthlyVisits 可能是 [{month,visits}] 也可能直接是数字，统一成升序数组 */
-export function normalizeHistory(raw: SimilarwebItem["monthlyVisits"] | LergassyItem["monthlyVisitsHistory"]): MonthPoint[] {
-  if (!Array.isArray(raw)) return [];
-  const points: MonthPoint[] = [];
-  for (const row of raw) {
-    const month = String((row as { month?: string }).month ?? "").slice(0, 7);
-    const visits = Number((row as { visits?: number }).visits ?? NaN);
-    if (/^\d{4}-\d{2}$/.test(month) && Number.isFinite(visits)) points.push({ month, visits });
+const MONTH_NAMES = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december",
+];
+
+/**
+ * 月份写法 → `YYYY-MM`，认三种：
+ *   `2026-10-01` / `2026-10`（ISO，DateFormat 与 lergassy 都这么给）
+ *   `October 2026`（vortex 的 monthlyVisits 用英文月名）
+ *
+ * 以前只认前 7 位是 `YYYY-MM` 的写法，英文月名会被静默丢弃：
+ * heyvid 的 3 个月整段消失 → history 为 null → 快照月份退回旧值，
+ * 页面上就出现「2026-09 挂着 10 月的访问量」这种月份和数值对不上的数据。
+ */
+function toMonthKey(raw: unknown): string | null {
+  const s = String(raw ?? "").trim();
+  const iso = /^(\d{4})[-/](\d{1,2})/.exec(s);
+  if (iso) return `${iso[1]}-${iso[2].padStart(2, "0")}`;
+  const en = /^([A-Za-z]+)\s+(\d{4})$/.exec(s);
+  if (en) {
+    const idx = MONTH_NAMES.indexOf(en[1].toLowerCase());
+    if (idx >= 0) return `${en[2]}-${String(idx + 1).padStart(2, "0")}`;
   }
-  return points.sort((a, b) => a.month.localeCompare(b.month));
+  return null;
+}
+
+/**
+ * 历史月度访问量统一成升序数组。
+ *
+ * 两种结构都要吃：
+ *   `monthlyVisits:      [{ month: "August 2026", visits: 70469 }]`
+ *   `monthlyVisitsDateFormat: { "2026-10-01": 155870 }`
+ * 后者是 actor 直接给的 ISO key，最省解析，优先用它。
+ */
+export function normalizeHistory(raw: unknown): MonthPoint[] {
+  const byMonth = new Map<string, number>();
+  const push = (month: unknown, visits: unknown): void => {
+    const key = toMonthKey(month);
+    const v = Number(visits);
+    if (key && Number.isFinite(v)) byMonth.set(key, v);
+  };
+
+  if (Array.isArray(raw)) {
+    for (const row of raw) {
+      push((row as { month?: unknown }).month, (row as { visits?: unknown }).visits);
+    }
+  } else if (raw && typeof raw === "object") {
+    // DateFormat 形态：{ "2026-08-01": 70469, ... }
+    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) push(k, v);
+  }
+
+  return [...byMonth.entries()]
+    .map(([month, visits]) => ({ month, visits }))
+    .sort((a, b) => a.month.localeCompare(b.month));
 }
 
 /** 环比/三月增长：分母为 0 或不足期数时返回 null（不编造 0%） */
@@ -69,7 +113,9 @@ export function fmtSignedPct(v: number | null): string {
 /* ------------------------------- vortex 映射 ------------------------------- */
 
 export function applyVortexBase(fields: FieldBag, item: SimilarwebItem, source: string): void {
-  const history = normalizeHistory(item.monthlyVisits);
+  // DateFormat 是 { "2026-10-01": 155870 } 形态，key 已是 ISO，优先用它；
+  // 退回 monthlyVisits 时才需要解析英文月名。
+  const history = normalizeHistory(item.monthlyVisitsDateFormat ?? item.monthlyVisits);
   const latest = history.length ? history[history.length - 1].visits : undefined;
 
   fields.setNumber("monthly_visits", item.totalVisits ?? latest, { actualSource: source });

@@ -28,6 +28,17 @@ export function esc(value: unknown): string {
 const p2 = (n: number) => String(n).padStart(2, "0");
 
 export function fmtTime(ms: number | string | null | undefined): string {
+  /*
+   * 精度只到月/日的值不能当时间戳解析：
+   * `Date.parse("2026-11")` 是 11-01T00:00:00Z，东八区渲染成「11-01 08:00」，
+   * 看上去像 11 月 1 日早上分析的，其实原始数据只到「哪个月」。
+   * 这类值原样显示，别用假时分把自己骗了。
+   */
+  if (typeof ms === "string") {
+    const s = ms.trim();
+    if (/^\d{4}-\d{2}$/.test(s)) return s;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s.slice(5);
+  }
   const v = typeof ms === "string" ? Date.parse(ms) : ms;
   if (typeof v !== "number" || !Number.isFinite(v) || v <= 0) return "—";
   const d = new Date(v);

@@ -609,7 +609,9 @@ async function main(): Promise<void> {
     if (insight.aiInsight) {
       tool.aiInsight = {
         ...insight.aiInsight,
-        analyzedAt: new Date().toISOString().slice(0, 7),
+        // 完整时间戳：以前只写到 `YYYY-MM`，前端把它当日期解析，月初 00:00Z 在东八区
+        // 就显示成「11-01 08:00」——看着像 11 月 1 日分析的，其实只精确到月。
+        analyzedAt: new Date().toISOString(),
       };
     }
     if (insight.moduleInsights) tool.moduleInsights = insight.moduleInsights;

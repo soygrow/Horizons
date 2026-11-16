@@ -512,7 +512,9 @@ export async function collectSite(opts: CollectSiteOptions): Promise<CollectPayl
         else sources.push({ name: "vortex base_data（命中 collect_raw，$0）", ok: true, ms: 0 });
 
         // 月度序列按月累积：vortex 一次给 3 个月，页面要 6 个月，缺月补 0
-        const hist = normalizeHistory(base.item.monthlyVisits);
+        const hist = normalizeHistory(
+          base.item.monthlyVisitsDateFormat ?? base.item.monthlyVisits,
+        );
         if (hist.length) {
           await saveTrafficMonths(domain, hist, {
             snapshotDate: new Date().toISOString().slice(0, 10),
