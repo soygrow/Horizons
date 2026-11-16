@@ -174,13 +174,15 @@ function renderRows(): void {
     body.innerHTML = state.items
       .map((r) => {
         const checked = state.picked.has(r.domain) ? "checked" : "";
-        return `<tr class="hover:bg-surface-2/60">
+        return `<tr data-listed-open="${esc(r.domain)}" class="cursor-pointer hover:bg-surface-2/60">
           <td class="px-3 py-2">
             <input type="checkbox" data-listed-pick="${esc(r.domain)}" ${checked} class="accent-primary" />
           </td>
           <td class="px-3 py-2 tabular-nums text-ink-muted">#${r.rank}</td>
           <td class="px-3 py-2">
-            <div class="font-medium">${esc(r.name)}</div>
+            <a href="/tools/${esc(r.domain)}" target="_blank" rel="noopener"
+               class="block max-w-full truncate font-medium text-primary hover:underline"
+               title="在新窗口打开线上详情页">${esc(r.name)}</a>
             <div class="text-[11px] text-ink-muted">${esc(r.domain)}</div>
           </td>
           <td class="px-3 py-2 text-right">
@@ -230,7 +232,7 @@ function renderPending(): void {
   }
 
   const failed = state.pending.filter((r) => r.stage === "publish_failed").length;
-  meta.textContent = `${state.pending.length} 条已重采完成${failed ? `（${failed} 条发布失败可重发）` : ""}，点名字可看对比，确认后点「发布更新」`;
+  meta.textContent = `${state.pending.length} 条已重采完成${failed ? `（${failed} 条发布失败可重发）` : ""}，点名字预览待发布页面，确认后点「发布更新」`;
   badge.textContent = String(state.pending.length);
   badge.classList.remove("hidden");
   btn.disabled = false;
@@ -244,9 +246,11 @@ function renderPending(): void {
       const afterMonth = fmtMonth(r.snapshotMonth ?? null);
       // 用颜色标出「确实变了」，没变的条目一眼看出来是先不急着发的
       const changed = beforeVisits !== afterVisits || beforeMonth !== afterMonth;
-      return `<div class="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-xs">
+      return `<div data-refresh-open="${esc(r.domain)}" class="flex cursor-pointer flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-xs hover:bg-surface-2/60">
         <div class="min-w-0">
-          <span class="font-medium">${esc(r.name)}</span>
+          <a href="/preview/${esc(r.domain)}" target="_blank" rel="noopener"
+             class="font-medium text-primary hover:underline"
+             title="在新窗口预览待发布详情页（与线上同一套布局，需管理员登录）">${esc(r.name)}</a>
           <span class="ml-2 text-[11px] text-ink-muted">${esc(r.domain)}</span>
           ${pendingBadge(r.stage)}
         </div>
@@ -339,6 +343,25 @@ function bind(): void {
     if (box.checked) state.picked.add(domain);
     else state.picked.delete(domain);
     syncPicked();
+  });
+
+  /*
+   * 行可点：这条列表的用途是「核对线上到底长什么样」，
+   * 勾选框和名字链接各管各的，其余区域整行都算，不用瞄准。
+   */
+  $("tools-listed-body").addEventListener("click", (event) => {
+    const target = event.target as HTMLElement;
+    if (target.closest("input, a, button")) return;
+    const domain = target.closest<HTMLElement>("[data-listed-open]")?.dataset.listedOpen;
+    if (domain) window.open(`/tools/${encodeURIComponent(domain)}`, "_blank", "noopener");
+  });
+
+  // 待审核整行同理：点一下预览「发布后会是什么样」，不用先点发布再后悔
+  $("tools-refresh-list").addEventListener("click", (event) => {
+    const target = event.target as HTMLElement;
+    if (target.closest("a, button")) return;
+    const domain = target.closest<HTMLElement>("[data-refresh-open]")?.dataset.refreshOpen;
+    if (domain) window.open(`/preview/${encodeURIComponent(domain)}`, "_blank", "noopener");
   });
 
   $("tools-listed-selectpage").addEventListener("click", () => {

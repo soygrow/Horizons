@@ -25,6 +25,17 @@ const channels = [
       换个入口试试：
     </p>
 
+    {/*
+      从后台点进 /preview/<domain> 却撞到 404 的常见原因不是链接写错，
+      而是这条待发布数据还没参与过站点构建（预览页是构建期从工作区导出的）。
+      这里说明一句，省得去查链接。
+    */}
+    <p id="nf-preview-tip" class="mt-3 hidden max-w-xl text-sm leading-relaxed text-ink-secondary">
+      <span id="nf-preview-domain" class="font-medium text-ink"></span>
+      的预览页还没生成：待发布条目在站点构建时才导出，刚跑完「更新数据」的要等下一次构建。
+      可以先回 <a href="/admin" class="text-primary underline underline-offset-2 hover:no-underline">后台</a> 核对字段。
+    </p>
+
     <div class="mt-8 flex flex-wrap items-center justify-center gap-2 text-sm">
       {
         channels.map((c) => (
@@ -45,4 +56,17 @@ const channels = [
       <SearchInput action="/tools" placeholder="搜索工具名称 / 关键词" />
     </div>
   </section>
+
+  <script>
+    // 停在 /preview/<domain> 上时，把通用 404 换成「预览还没生成」的说法
+    const hit = /^\/preview\/([^/]+)\/?$/.exec(location.pathname);
+    if (hit) {
+      const heading = document.querySelector("h1");
+      if (heading) heading.textContent = "这个预览页还没生成";
+      const tip = document.getElementById("nf-preview-tip");
+      const domain = document.getElementById("nf-preview-domain");
+      if (domain) domain.textContent = decodeURIComponent(hit[1]);
+      tip?.classList.remove("hidden");
+    }
+  </script>
 </Base>
