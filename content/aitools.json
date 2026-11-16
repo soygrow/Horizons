@@ -190911,5 +190911,755 @@
     },
     "launchedAt": "2018-08-29T03:50:13Z",
     "launchedAtBasis": "wayback"
+  },
+  {
+    "id": "tool-manual-jonzi-ai",
+    "name": "Reels schneiden lassen mit KI",
+    "domain": "jonzi.ai",
+    "url": "https://jonzi.ai",
+    "description": "AI 自动剪辑 Reels，去停顿加字幕配乐，直接发布 Instagram",
+    "descriptionSource": "ai",
+    "categories": [
+      "Video",
+      "Automation",
+      "Marketing"
+    ],
+    "industry": "人工智能",
+    "heatScore": 0,
+    "phUpvotes": null,
+    "phComments": null,
+    "hnPoints": null,
+    "firstSeenAt": "2026-11-13T15:56:58.019Z",
+    "collectedAt": "2026-11-16T04:38:22.385Z",
+    "verified": "pending",
+    "sourceType": "manual",
+    "sourceUrl": "https://jonzi.ai",
+    "metrics": {
+      "monthlyVisits": 19222,
+      "country": "ID",
+      "countryName": "Indonesia",
+      "organicShare": 27.6,
+      "organicVisits": 5296,
+      "registeredAt": "2026-09-22",
+      "directVisits": 8121
+    },
+    "trafficMetrics": {
+      "monthlyVisits": 19222,
+      "snapshotMonth": "2026-10",
+      "organicSearchVisits": 5296,
+      "directVisits": 8121,
+      "referralVisits": 2314,
+      "socialVisits": 1609,
+      "avgVisitDurationSec": 2173,
+      "monthlyPageviews": 318884
+    },
+    "ranks": {
+      "global": 943609,
+      "country": 39040,
+      "category": null
+    },
+    "verdict": {
+      "tier": "core",
+      "reason": "月访问 19,222 ≥ 10,000",
+      "checks": {
+        "a1": true,
+        "a2": true,
+        "a3": true,
+        "a4": true
+      },
+      "monthlyVisits": 19222
+    },
+    "stage": "enriched",
+    "engagement": {
+      "bounceRate": 16.8,
+      "pagesPerVisit": 16.59,
+      "durationSec": 2173
+    },
+    "channelShares": {
+      "direct": 42.25,
+      "organicSearch": 27.55,
+      "referral": 12.04,
+      "displayAds": 2.93,
+      "email": 2.9,
+      "affiliates": 1.9,
+      "paidSearch": 0.6,
+      "aiAssistants": 1.46,
+      "organicSocial": 8.37
+    },
+    "trend": [
+      {
+        "date": "2026-06",
+        "total": 0,
+        "organic": 0,
+        "collected": false
+      },
+      {
+        "date": "2026-07",
+        "total": 0,
+        "organic": 0,
+        "collected": false
+      },
+      {
+        "date": "2026-08",
+        "total": 0,
+        "organic": 0,
+        "collected": false
+      },
+      {
+        "date": "2026-09",
+        "total": 0,
+        "organic": 0,
+        "collected": false
+      },
+      {
+        "date": "2026-10",
+        "total": 19222,
+        "organic": 5296,
+        "collected": true
+      },
+      {
+        "date": "2026-11",
+        "total": 0,
+        "organic": 0,
+        "collected": false
+      }
+    ],
+    "geoDistribution": [
+      {
+        "country": "ID",
+        "share": 100
+      }
+    ],
+    "aiTraffic": {
+      "share": 1.46,
+      "visits": 281
+    },
+    "launchedAt": "2026-09-22",
+    "launchConfidence": "高",
+    "sources": {
+      "metrics.monthlyVisits": {
+        "from": "vortex_base",
+        "at": "2026-11-16"
+      },
+      "metrics.organicShare": {
+        "from": "vortex_base",
+        "at": "2026-11-16"
+      },
+      "metrics.country": {
+        "from": "vortex_base",
+        "at": "2026-11-16"
+      },
+      "trafficMetrics": {
+        "from": "vortex_base",
+        "at": "2026-11-16"
+      },
+      "metrics.registeredAt": {
+        "from": "whois",
+        "at": "2026-11-16"
+      },
+      "ranks.global": {
+        "from": "vortex_base",
+        "at": "2026-11-16"
+      },
+      "ranks.country": {
+        "from": "vortex_base",
+        "at": "2026-11-16"
+      },
+      "engagement": {
+        "from": "vortex_base",
+        "at": "2026-11-16"
+      },
+      "channelShares": {
+        "from": "vortex_base",
+        "at": "2026-11-16"
+      },
+      "trend": {
+        "from": "traffic_history",
+        "at": "2026-11-16"
+      },
+      "geoDistribution": {
+        "from": "vortex_base",
+        "at": "2026-11-16"
+      },
+      "aiTraffic": {
+        "from": "vortex_base",
+        "at": "2026-11-16"
+      },
+      "launchedAt": {
+        "from": "多来源推算",
+        "at": "2026-11-16"
+      },
+      "launchConfidence": {
+        "from": "多来源推算",
+        "at": "2026-11-16"
+      }
+    },
+    "screenshotDesktopUrl": "/screenshots/fieldcollect-jonzi.ai-desktop.png",
+    "screenshotMobileUrl": "/screenshots/fieldcollect-jonzi.ai-mobile.png",
+    "segmentLabel": "AI 短视频剪辑",
+    "featureTags": [
+      "一键成片",
+      "直发 Instagram",
+      "免费试用"
+    ],
+    "categoryTags": [
+      "AI 视频剪辑",
+      "短视频制作",
+      "Reels 剪辑",
+      "自动字幕",
+      "AI 视频编辑器",
+      "内容创作工具",
+      "社媒发布工具",
+      "视频去停顿",
+      "AI 脚本生成",
+      "B-roll 生成",
+      "轮播图制作",
+      "创作者工具"
+    ],
+    "tagGroups": [
+      {
+        "label": "变现方式",
+        "values": [
+          "订阅制",
+          "免费试用 7 天",
+          "分层套餐",
+          "App 内付费"
+        ]
+      },
+      {
+        "label": "SEO 打法",
+        "values": [
+          "德语长尾词",
+          "场景化落地页",
+          "FAQ 结构化数据",
+          "竞品对比页",
+          "用户证言内容"
+        ]
+      },
+      {
+        "label": "成熟度信号",
+        "values": [
+          "月访问约 1.9 万",
+          "自然搜索占 27.6%",
+          "直接访问占 42%",
+          "结构化数据完整",
+          "多产品线布局",
+          "Claude 集成"
+        ]
+      },
+      {
+        "label": "使用模型",
+        "values": [
+          "Claude",
+          "ChatGPT"
+        ]
+      },
+      {
+        "label": "流量结构",
+        "values": [
+          "直接访问为主",
+          "自然搜索",
+          "社媒引流",
+          "AI 助手导流"
+        ]
+      },
+      {
+        "label": "目标市场",
+        "values": [
+          "德语区",
+          "印尼流量为主",
+          "Instagram 创作者"
+        ]
+      }
+    ],
+    "aiInsight": {
+      "question": "Jonzi AI 靠「德语区 Reels 剪辑」这个切口，能不能在 AI 视频编辑的红海里撕开一道口子？",
+      "intro": "Jonzi 是一个德语市场的 AI Reels 剪辑工具，主打「上传→自动去停顿/加字幕/Hook/音乐/Zoom→直接发 Instagram」，7 天免费试用。站点 2026-10 单月 1.9 万访问，但关键词库为 0、SEO 采样缺失、地域流量 100% 来自印尼，与其德语定位严重错位。",
+      "before": "以前做短视频剪辑，要么自己啃 CapCut/Premiere 学剪辑逻辑，要么外包给剪辑师按条付费，周期以天计、沟通成本高。",
+      "now": "现在 Jonzi 把「去停顿、加字幕、配 Hook、上音乐、做 Zoom」打包成一条 AI 流水线，宣称 3 分钟内出片，还能在 Claude 里直接调用，并一键发 Instagram。",
+      "comparison": "相比通用剪辑器，它把「剪辑决策」交给 AI，把「发布」做成闭环；相比 Opus Clip 等英文产品，它押注德语区本地化，但流量结构显示它还没真正吃到德语搜索红利。",
+      "audiences": [
+        "德语区个人创作者与 UGC 博主",
+        "中小品牌社媒运营/一人内容团队",
+        "想批量做 Reels 但不会剪辑的创业者"
+      ],
+      "hooks": [
+        {
+          "title": "3 分钟出片",
+          "desc": "把「剪辑」从技能变成一句话指令，降低 Reels 生产门槛。"
+        },
+        {
+          "title": "Claude 内直接调用",
+          "desc": "寄生 AI 助手生态，抢「对话即剪辑」的新入口。"
+        },
+        {
+          "title": "德语本地化",
+          "desc": "标题、文案、FAQ 全德语，瞄准被英文工具忽视的 DACH 市场。"
+        },
+        {
+          "title": "发布闭环",
+          "desc": "App 内直接发 Instagram，省掉导出-上传的断点。"
+        }
+      ],
+      "willingness": {
+        "level": "中等",
+        "score": 2,
+        "reason": "有明确订阅计划页与 7 天试用，支付转化率约 2.5%、客单约 25 美元，说明有付费意愿但尚未验证规模；关键词库为 0，需求侧证据薄弱。"
+      },
+      "growthDriver": "增长主要靠 direct 42.25% 与 organic social 8.37% 的自传播/社媒导流，organic search 仅 27.55% 且关键词库为 0，说明当前不是搜索驱动，而是产品内分享与早期种子用户拉动。",
+      "acquisition": "打法偏向「社媒内容+免费试用+Claude 生态寄生」：用德语落地页承接，靠 Instagram 发布闭环形成使用即传播；但 paid search 仅 0.6%、affiliates 1.9%，投放与联盟几乎未启动。",
+      "moat": "壁垒在于「德语本地化+Claude 集成+发布闭环」的组合，而非单点 AI 能力；剪辑 AI 本身易被复制，真正的护城河是工作流嵌入与语言市场先发。",
+      "moatBadge": "本地化工作流",
+      "monetization": "订阅制：页面有「Wähle jetzt deinen Plan」计划选择与 7 天免费试用，按约 25 美元客单估算，属 SaaS 月费模式。",
+      "monetizationBadge": "证据明确",
+      "analyzedAt": "2026-11"
+    },
+    "moduleInsights": {
+      "performance": {
+        "analysis": "月访问 19,222，跳出率 16.8%、页均 16.59 页、停留 2,173 秒，engagement 数据异常优异，但结合 100% 印尼流量与德语定位，更像非目标流量或测试流量。",
+        "soWhat": "漂亮指标先验真，别被假繁荣骗了。"
+      },
+      "growth": {
+        "analysis": "trend 仅 2026-10 单月有数据，前后未采集；direct 42.25% 托底，organic social 8.37%，paid search 0.6%，增长结构偏「自传播+直接访问」，缺乏可复制的付费或搜索引擎。",
+        "soWhat": "没有搜索和投放的增长，天花板很低。"
+      },
+      "keywords": {
+        "analysis": "keywordCount 为 0、seo 为 null，无关键词采样与排名样本；aiTraffic 仅 1.46%（281 访问），在搜索与 AI 引荐两条入口均无存在感。",
+        "soWhat": "关键词为零，等于需求入口为零。"
+      },
+      "competition": {
+        "analysis": "对手覆盖 Opus Clip、CapCut、Descript、VEED、Submagic、Klap 等通用与垂直剪辑工具，Jonzi 的差异点是德语本地化+Claude 集成+Instagram 发布闭环，但 AI 剪辑能力本身同质化严重。",
+        "soWhat": "拼不过通用工具，就拼语言与工作流。"
+      }
+    },
+    "observations": {
+      "practices": [
+        "用「3 分钟出片」把复杂剪辑压缩成一句话价值主张，落地页 H1 直接给结果。",
+        "把 FAQPage 与 SoftwareApplication 结构化数据做全，利于搜索与 AI 摘要抓取。",
+        "在 Claude 内提供调用入口，寄生 AI 助手生态抢新入口。",
+        "7 天免费试用+计划页前置，降低付费决策门槛。"
+      ],
+      "concerns": [
+        "关键词库为 0、SEO 采样缺失，搜索获客能力未验证。",
+        "地域 100% 印尼与德语定位严重错配，流量质量存疑。",
+        "direct 占比 42.25% 过高，新客获取结构不健康。"
+      ],
+      "competitors": [
+        "opus.pro",
+        "capcut.com",
+        "descript.com",
+        "veed.io",
+        "submagic.co",
+        "klap.app"
+      ]
+    },
+    "trafficDecrypt": {
+      "overview": "这个盘的底子很怪：1.9 万月访问里 direct 占 42.25%、organic search 27.55%，但关键词库为 0、SEO 采样缺失，地域却是 100% 印尼——一个德语产品，流量几乎全来自印尼，这不是「增长」，更像「错配」。命门在于它没有搜索资产，截胡窗口在于：谁先拿下德语「Reels schneiden KI」这类词，谁就能把它按在地上。",
+      "sections": [
+        {
+          "title": "📊 1. 流量趋势与结构（它是怎么活下来的？）",
+          "highlights": [
+            "点状爆发",
+            "直接访问托底"
+          ],
+          "insight": "trend 里只有 2026-10 一个月有采集数据（19,222 访问，organic 5,296），前后月份均为 0/未采集，说明这是单点快照而非连续增长曲线；channelShares 中 direct 42.25% 一家独大，organic search 27.55%，referral 12.04%、organic social 8.37%，paid search 仅 0.6%——它靠直接访问和社媒活着，不是靠投放或搜索。",
+          "takeaway": "没有连续趋势数据就别谈增长曲线；direct 占比过高往往意味着「老用户/内部流量」撑场，新客获取能力存疑。"
+        },
+        {
+          "title": "🌍 2. 地域分布（它在赚谁的钱？）",
+          "highlights": [
+            "地域错配",
+            "德语市场空转"
+          ],
+          "insight": "geo 显示 ID（印尼）占 100%，而站点 pageLang 是 de、标题文案全德语——流量来源与产品定位完全脱节。engagement 却异常漂亮：bounceRate 16.8%、pagesPerVisit 16.59、durationSec 2173（约 36 分钟），这种「低跳出+超长停留」更像爬虫/代理/内部测试流量，而非真实德语用户行为。",
+          "takeaway": "地域 100% 单国且与语言错配时，先怀疑流量质量再谈市场；德语区才是它该赚的钱，但数据里一分没体现。"
+        },
+        {
+          "title": "🔍 3. 搜索与排名（它的命门在哪？）",
+          "highlights": [
+            "搜索资产为零",
+            "AI 引荐微弱"
+          ],
+          "insight": "keywords 为空、keywordCount 为 0、seo 字段为 null，意味着没有可用的关键词采样与排名样本（top10/top20 无从谈起）；aiTraffic 仅 1.46%（281 访问），AI 助手引荐几乎可忽略。一个主打「KI 剪辑」的产品，在搜索和 AI 引荐两条新入口上都没有存在感，命门就是「没有可被检索的需求入口」。",
+          "takeaway": "关键词库为 0 是最大警报：没有搜索资产，增长只能靠买量或社媒，而它 paid search 只有 0.6%——等于两条腿都没迈开。"
+        }
+      ]
+    },
+    "opportunity": {
+      "score": 58,
+      "verdict": "谨慎",
+      "reason": "德语区 AI 短视频剪辑工具需求真实（月访问 1.9 万、直接访问 42%、停留 36 分钟），但关键词采样为 0、外链数据缺失、支付信号未检出，正面竞争风险高，只适合切垂直细分。",
+      "dimensions": [
+        {
+          "label": "竞争度",
+          "score": 55,
+          "note": "关键词采样数为 0、竞品列表为空，说明尚未形成可观测的 SEO 竞争格局；但 AI 剪辑赛道巨头林立，德语区已有本地化玩家，正面进入需差异化。"
+        },
+        {
+          "label": "变现成熟度",
+          "score": 50,
+          "note": "页面有「Wähle jetzt deinen Plan」定价区块与「7 Tage kostenlos」试用，但 paymentDetected 为空、支付转化率仅 2.5%、AOV 25 美元，变现路径存在但未验证。"
+        },
+        {
+          "label": "增长可复制性",
+          "score": 62,
+          "note": "月访问 19222、自然搜索 5296（27.6%）、直接访问 8121（42.25%）、自然社交 8.37%，流量结构健康；但关键词数为 0，SEO 增长尚未起量，复制需靠社媒与产品驱动。"
+        },
+        {
+          "label": "技术门槛",
+          "score": 55,
+          "note": "技术栈仅 Caddy，页面 2075 词、31 条内链、结构化数据含 SoftwareApplication 与 FAQPage，说明是轻量前端 + AI API 调用型产品，门槛中等偏低，易被复制。"
+        },
+        {
+          "label": "启动成本",
+          "score": 68,
+          "note": "注册时间 2026-09-22 显示产品极新，单页 2075 词、7 张图片、无分析工具，MVP 可用现成 AI 视频 API 快速搭建，启动成本低。"
+        }
+      ]
+    },
+    "monetizationBlueprint": {
+      "model": "SaaS 订阅制 + 免费试用转付费，按套餐分层收费",
+      "tiers": [
+        "7 天免费试用（全功能体验）",
+        "基础版：单条视频剪辑、自动字幕、去停顿",
+        "专业版：Hook、B-Roll、音乐、Zoom、直接发布 Instagram",
+        "团队/创作者版：批量生产、多账号、周内容规划"
+      ],
+      "paymentDetected": [
+        "页面存在「Wähle jetzt deinen Plan」定价区块",
+        "提供 7 天免费试用作为转化钩子",
+        "支付转化率 2.5%、客单价约 25 美元（数据推算）"
+      ],
+      "pricingAdvice": "以 25 美元 AOV 为锚，德语区创作者对 19~29 欧元/月接受度较高；建议设 3 档（19/29/49 欧元），用「7 天免费 + 首月折扣」拉转化，并把直接发布 Instagram 作为付费墙核心卖点。",
+      "paymentConversionRate": 0.025,
+      "revenueAov": 25
+    },
+    "growthPlaybook": {
+      "coldStart": "先用德语创作者社群（Instagram Reels、TikTok 德语区）做种子用户，以「3 分钟出片」为钩子，配合 7 天免费试用收集反馈，快速迭代字幕与 Hook 模板。",
+      "channels": [
+        "德语区 Instagram/TikTok 创作者内容营销（自然社交已占 8.37%）",
+        "SEO 长尾词：Reels schneiden、Untertitel KI、Video Editor Deutsch（当前关键词为 0，是空白机会）",
+        "与德语区营销博主、播客做联盟分销（affiliates 已占 1.9%）",
+        "在 Claude/ChatGPT 生态做集成入口（页面已提「Jonzi arbeitet auch in Claude」）"
+      ],
+      "copyable": [
+        "借鉴其「7 天免费试用 + 定价区块前置」的转化结构",
+        "参考其「三步骤从素材到发布」的落地页叙事框架",
+        "复用其结构化数据（SoftwareApplication + FAQPage）提升搜索展现",
+        "参考其直接发布 Instagram 的闭环设计，降低用户操作摩擦"
+      ],
+      "avoid": [
+        "别只做通用剪辑，正面硬刚 CapCut/Descript 等巨头",
+        "别忽视德语区本地化细节（字幕、Hook 文案需德语语境）",
+        "别在无支付验证前重投广告（paidSearch 仅 0.6%）",
+        "别把域名注册时间当产品资历，该站 2026-09 才注册，产品极新"
+      ]
+    },
+    "buildBlueprint": {
+      "techStack": [
+        "前端：Next.js / SvelteKit + Tailwind",
+        "后端：Node.js / Python FastAPI",
+        "部署：Caddy 反向代理（参考其技术栈）",
+        "视频处理：FFmpeg + 云端转码",
+        "数据库：PostgreSQL + Redis"
+      ],
+      "thirdParty": [
+        "OpenAI Whisper / GPT 用于字幕与脚本",
+        "Claude API 用于 Hook 与文案生成",
+        "视频生成/剪辑 API（如 Runway、Shotstack）",
+        "Instagram Graph API 用于直接发布",
+        "Stripe 用于订阅收款"
+      ],
+      "mvpScope": "上传视频→AI 去停顿/加字幕→加 Hook 与音乐→导出并一键发布 Instagram，含 7 天试用与 3 档订阅页。",
+      "devTime": "4~6 周（1~2 人全栈）",
+      "monthlyCost": "约 300~800 美元（AI API + 云存储 + 转码 + 域名）"
+    },
+    "ideaSparks": [
+      {
+        "title": "德语区播客切片工具",
+        "angle": "换场景",
+        "why": "把长播客自动切成 Reels 短视频，复用其去停顿与字幕能力，切入播客主这一未被覆盖人群。",
+        "source": "源自其「Pausen, Ähms und doppelte Sätze raus」的剪辑定位"
+      },
+      {
+        "title": "面向德语中小企业的招聘短视频生成器",
+        "angle": "换人群",
+        "why": "HR 用模板化 Hook 与字幕快速产出招聘 Reels，客单价更高、订阅更稳定。",
+        "source": "源自其「Erstelle deinen Content für die ganze Woche in unter 60 Minuten」的批量内容能力"
+      },
+      {
+        "title": "按条付费的剪辑代运营",
+        "angle": "换商业模式",
+        "why": "不做订阅，按条收费 + 人工审核，服务不愿学工具的本地商家。",
+        "source": "源自其 25 美元 AOV 与 2.5% 转化率，说明订阅转化有门槛"
+      },
+      {
+        "title": "法语/西语区本地化版本",
+        "angle": "换语区",
+        "why": "德语区已验证需求，法语、西语区同类工具稀缺，复制本地化打法可抢先。",
+        "source": "源自其 pageLang 为 de、geo 显示 100% 印尼流量的错配信号"
+      },
+      {
+        "title": "免费剪辑 + 素材库/音乐付费",
+        "angle": "换收费",
+        "why": "剪辑免费引流，靠版权音乐与 B-Roll 素材包订阅变现，降低首单门槛。",
+        "source": "源自其「Musik und Zoom drauf」与「B-Roll」功能点"
+      },
+      {
+        "title": "纯 Claude/ChatGPT 插件形态",
+        "angle": "换技术路线",
+        "why": "不做独立 App，以对话式插件嵌入 AI 助手，用户一句话出片，获客借力平台。",
+        "source": "源自其页面「Jonzi arbeitet auch in Claude」的集成尝试"
+      }
+    ],
+    "performanceInsight": {
+      "overview": {
+        "what": "Jonzi AI 是面向德语区创作者的 AI 短视频剪辑工具，以网页 App 形态提供 Reels 自动剪辑与发布。",
+        "pain": "创作者苦于手动剪辑耗时、停顿与口误多、字幕与 Hook 制作繁琐，它用 AI 一键完成。",
+        "can": "自动去停顿与重复句、生成字幕与 Hook、加音乐与 Zoom、直接发布 Instagram。",
+        "trait": "德语本地化、7 天免费试用、可嵌入 Claude 使用，主打 3 分钟出片。"
+      },
+      "wedge": "以「3 分钟内把原始视频变成可发布 Reels」切入，帮德语区个人创作者与小型营销团队省去手动剪辑与字幕时间。",
+      "model": "订阅制 SaaS，7 天免费试用转付费，按套餐分层收月费，核心卖点是直接发布 Instagram 的闭环与批量周内容生产。",
+      "moat": "域名 2026-09-22 注册、产品极新；自然搜索占 27.6%、直接访问 42.25%，说明已有品牌复访但 SEO 尚未起量，关键词采样为 0，护城河更多是早期德语本地化红利而非技术壁垒。",
+      "trafficTruth": "直接访问 42.25% 为主、自然搜索 27.55% 次之、自然社交 8.37%，流量偏品牌复访与社媒导入，AI 助手仅 1.46%，搜索来源仍薄弱。",
+      "growthEdge": "月访问 19222、跳出率仅 16.8%、页均 16.59 页、停留 2173 秒，用户粘性极强是爆发点；但关键词为 0、地理流量 100% 来自印尼与德语定位错配，是增长天花板与软肋。",
+      "newPlayerEntry": "别正面照抄通用剪辑，切德语区播客切片、HR 招聘视频或法语/西语区本地化，用免费剪辑 + 素材付费降低首单门槛，并补足 SEO 长尾词空白。",
+      "entryTag": "谨慎·切细分"
+    },
+    "keywords": [],
+    "pageStructure": {
+      "title": "Reels schneiden lassen mit KI · Jonzi AI",
+      "metaDescription": "Jonzi schneidet deine Reels mit KI: Pausen raus, Untertitel, Hook, Musik und Zoom drauf. KI-Video-Editor als App, posten direkt auf Instagram. 7 Tage kostenlos.",
+      "canonical": "https://jonzi.ai/",
+      "h1": [
+        "Lass deine Videos schneiden. In unter 3 Minuten."
+      ],
+      "h2": [
+        "Das sagen andere Nutzer von Jonzi AI",
+        "Sag, was du brauchst. Dein Studio macht den Rest.",
+        "Drei Schritte vom Rohvideo zum Post",
+        "Selbst schneiden, Cutter, ChatGPT/Claude oder Jonzi",
+        "Jonzi arbeitet auch in Claude",
+        "Hör es von ihnen selbst",
+        "Wähle jetzt deinen Plan",
+        "Was du vor dem Test wissen willst",
+        "Erstelle deinen Content für die ganze Woche in unter 60 Minuten.",
+        "Produkt",
+        "Alternativen",
+        "Rechtliches"
+      ],
+      "h3": [
+        "Pausen, Ähms und doppelte Sätze raus. Untertitel und Hook drauf.",
+        "Ein Satz rein. Fertiges B-Roll raus.",
+        "Karussells in deinem Look, in unter 10 Minuten.",
+        "Ideen, Hooks und Skripte, die dich kennen.",
+        "Erkenne die Ausreißer in deiner Nische.",
+        "Direkt aus der App auf Instagram.",
+        "Hochladen. Jonzi macht den Rest.",
+        "Anpassen, wenn du willst",
+        "Direkt aus der App posten"
+      ],
+      "internalLinks": [
+        {
+          "text": "Jonzi AI",
+          "url": "https://jonzi.ai/#top"
+        },
+        {
+          "text": "Stimmen",
+          "url": "https://jonzi.ai/#stimmen"
+        },
+        {
+          "text": "Funktionen",
+          "url": "https://jonzi.ai/#funktionen"
+        },
+        {
+          "text": "So geht's",
+          "url": "https://jonzi.ai/#ablauf"
+        },
+        {
+          "text": "Preis",
+          "url": "https://jonzi.ai/#preis"
+        },
+        {
+          "text": "Fragen",
+          "url": "https://jonzi.ai/#fragen"
+        },
+        {
+          "text": "Für Business",
+          "url": "https://jonzi.ai/business"
+        },
+        {
+          "text": "So funktioniert's",
+          "url": "https://jonzi.ai/#ablauf"
+        },
+        {
+          "text": "Jonzi AI",
+          "url": "https://jonzi.ai/"
+        },
+        {
+          "text": "Funktionen",
+          "url": "https://jonzi.ai/#funktionen"
+        },
+        {
+          "text": "So geht's",
+          "url": "https://jonzi.ai/#ablauf"
+        },
+        {
+          "text": "Preise",
+          "url": "https://jonzi.ai/#preis"
+        },
+        {
+          "text": "Fragen",
+          "url": "https://jonzi.ai/#fragen"
+        },
+        {
+          "text": "Für Business",
+          "url": "https://jonzi.ai/business"
+        },
+        {
+          "text": "CapCut-Alternative",
+          "url": "https://jonzi.ai/alternativen/capcut-alternative"
+        },
+        {
+          "text": "Edits-Alternative",
+          "url": "https://jonzi.ai/alternativen/edits-alternative"
+        },
+        {
+          "text": "InShot-Alternative",
+          "url": "https://jonzi.ai/alternativen/inshot-alternative"
+        },
+        {
+          "text": "Canva-Alternative",
+          "url": "https://jonzi.ai/alternativen/canva-alternative"
+        },
+        {
+          "text": "Captions-Alternative",
+          "url": "https://jonzi.ai/alternativen/captions-alternative"
+        },
+        {
+          "text": "OpusClip-Alternative",
+          "url": "https://jonzi.ai/alternativen/opusclip-alternative"
+        },
+        {
+          "text": "Submagic-Alternative",
+          "url": "https://jonzi.ai/alternativen/submagic-alternative"
+        },
+        {
+          "text": "CutAI-Alternative",
+          "url": "https://jonzi.ai/alternativen/cutai-alternative"
+        },
+        {
+          "text": "Statt Cutter",
+          "url": "https://jonzi.ai/alternativen/cutter-alternative"
+        },
+        {
+          "text": "Alle Alternativen",
+          "url": "https://jonzi.ai/alternativen/"
+        },
+        {
+          "text": "Impressum",
+          "url": "https://jonzi.ai/rechtliches/impressum"
+        },
+        {
+          "text": "Datenschutz",
+          "url": "https://jonzi.ai/rechtliches/datenschutz"
+        },
+        {
+          "text": "AGB",
+          "url": "https://jonzi.ai/rechtliches/agb"
+        },
+        {
+          "text": "Verträge hier kündigen",
+          "url": "https://jonzi.ai/rechtliches/kuendigen"
+        },
+        {
+          "text": "Support",
+          "url": "https://jonzi.ai/support"
+        },
+        {
+          "text": "Cookie-Einstellungen",
+          "url": "https://jonzi.ai/#"
+        },
+        {
+          "text": "Datenschutzerklärung",
+          "url": "https://jonzi.ai/rechtliches/datenschutz"
+        }
+      ],
+      "outboundLinks": [
+        {
+          "text": "Login",
+          "url": "https://studio.jonzi.ai/bereich"
+        },
+        {
+          "text": "Kostenlos starten",
+          "url": "https://studio.jonzi.ai/start"
+        },
+        {
+          "text": "7 Tage kostenlos Content erstellen",
+          "url": "https://studio.jonzi.ai/start"
+        },
+        {
+          "text": "7 Tage kostenlos Content erstellen",
+          "url": "https://studio.jonzi.ai/start"
+        },
+        {
+          "text": "7 Tage kostenlos Content erstellen",
+          "url": "https://studio.jonzi.ai/start"
+        },
+        {
+          "text": "7 Tage kostenlos Content erstellen",
+          "url": "https://studio.jonzi.ai/start"
+        },
+        {
+          "text": "7 Tage kostenlos Content erstellen",
+          "url": "https://studio.jonzi.ai/start"
+        },
+        {
+          "text": "7 Tage kostenlos testen",
+          "url": "https://studio.jonzi.ai/start?plan=starter&amp;takt=m"
+        },
+        {
+          "text": "7 Tage kostenlos testen",
+          "url": "https://studio.jonzi.ai/start?plan=studio&amp;takt=m"
+        },
+        {
+          "text": "7 Tage kostenlos testen",
+          "url": "https://studio.jonzi.ai/start?plan=pro&amp;takt=m"
+        }
+      ]
+    },
+    "siteAudit": {
+      "techStack": [
+        "Caddy"
+      ],
+      "wordCount": 2075,
+      "pageLang": "de",
+      "internalLinks": 31,
+      "outboundLinks": 12,
+      "images": 7,
+      "imagesMissingAlt": 0,
+      "structuredData": [
+        "SoftwareApplication",
+        "FAQPage"
+      ],
+      "outboundDomains": [
+        "studio.jonzi.ai"
+      ],
+      "analytics": []
+    },
+    "techStack": [
+      "Caddy"
+    ],
+    "dataSnapshot": {
+      "period": "2026-10",
+      "syncedAt": "2026-11-16 04:38:22"
+    },
+    "enrichedAt": "2026-11-16T04:38:23.147Z",
+    "fieldGaps": [
+      "trafficMetrics.monthlyVisitsGrowth",
+      "keywords",
+      "pricing"
+    ]
   }
 ]
