@@ -16,7 +16,7 @@ import { $, apiGet, apiPost, debounce, esc, fmtTime } from "./admin-shared";
 
 /* --------------------------------- 类型 --------------------------------- */
 
-type ListState = "stale" | "updated" | "nodata";
+type ListState = "stale" | "updated" | "nodata" | "publishing" | "failed";
 
 interface ListedItem {
   domain: string;
@@ -154,14 +154,24 @@ function fmtMom(g: number | null | undefined): string {
   return `<span class="tabular-nums ${cls}">${text}</span>`;
 }
 
+/**
+ * 状态徽章：绿=已更新（版本已是最新）、黄=更新中（正在跑）、红=失败。
+ * 未更新和无流量走中性灰 —— 它们不是结果，用绿色会让人误以为已经完事了。
+ */
 function stateBadge(s: ListState): string {
+  if (s === "publishing") {
+    return `<span class="rounded-full bg-warning-soft px-2 py-0.5 text-[11px] font-semibold text-warning" title="正在发布/更新，跑完会自动变成已更新">更新中</span>`;
+  }
+  if (s === "failed") {
+    return `<span class="rounded-full bg-danger-soft px-2 py-0.5 text-[11px] font-semibold text-danger" title="上一次发布失败，条目已退回可重发">失败</span>`;
+  }
   if (s === "updated") {
-    return `<span class="rounded-full bg-primary-soft px-2 py-0.5 text-[11px] font-semibold text-primary">已更新</span>`;
+    return `<span class="rounded-full bg-success-soft px-2 py-0.5 text-[11px] font-semibold text-success">已更新</span>`;
   }
   if (s === "nodata") {
     return `<span class="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] font-semibold text-ink-muted" title="这个站从没抓到过流量，反复跑只会白花钱">无流量</span>`;
   }
-  return `<span class="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-semibold text-accent">未更新</span>`;
+  return `<span class="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] font-semibold text-ink-secondary">未更新</span>`;
 }
 
 /**
@@ -224,15 +234,11 @@ function fillVersionOptions(resp: ListedResp): void {
 function renderRows(): void {
   const body = $("tools-listed-body");
   if (state.items.length === 0) {
-    body.innerHTML = `<tr><td colspan="10" class="px-3 py-8 text-center text-ink-muted">没有符合条件的条目</td></tr>`;
+    body.innerHTML = `<tr><td colspan="11" class="px-3 py-8 text-center text-ink-muted">没有符合条件的条目</td></tr>`;
   } else {
     body.innerHTML = state.items
       .map((r) => {
         const checked = state.picked.has(r.domain) ? "checked" : "";
-        /*
-         * 访问量副行写「版本 · 上月值」：这个数到底是哪个月的，比单独一列版本号更不容易看错，
-         * 也省下一列宽度留给简介。
-         */
         const ver = fmtVersion(r.snapshotVersion);
         const prevText = r.prevVisits != null ? `上月 ${fmtVisits(r.prevVisits)}` : "无上月";
         return `<tr data-listed-open="${esc(r.domain)}" class="cursor-pointer align-top transition hover:bg-surface-2/60">
@@ -254,10 +260,11 @@ function renderRows(): void {
                 : `<span class="text-ink-muted">—</span>`
             }
           </td>
+          <td class="whitespace-nowrap px-3 py-2.5 pt-3 text-right tabular-nums ${r.snapshotVersion == null ? "text-ink-muted" : "text-ink-secondary"}"
+              title="版本 ${ver} = ${esc(fmtMonth(r.snapshotMonth))} 的流量数据">${ver}</td>
           <td class="whitespace-nowrap px-3 py-2.5 pt-3 text-right">
             <div class="font-medium tabular-nums">${fmtVisits(r.monthlyVisits)}</div>
-            <div class="text-[11px] tabular-nums text-ink-muted"
-                 title="版本 ${ver} = ${esc(fmtMonth(r.snapshotMonth))} 的流量数据">${ver} · ${prevText}</div>
+            <div class="text-[11px] tabular-nums text-ink-muted">${prevText}</div>
           </td>
           <td class="px-3 py-2.5 pt-3 text-right">${fmtMom(r.growth)}</td>
           <td class="px-3 py-2.5 pt-3 text-right tabular-nums text-ink-muted">${fmtHeat(r.heatScore)}</td>
@@ -348,6 +355,18 @@ function renderPending(): void {
 
 /* -------------------------------- 加载 -------------------------------- */
 
+/*
+ * 有「更新中」的条目就定时重拉：一轮跑批十几分钟，不轮询的话黄色会一直挂着，
+ * 得手动刷新才知道跑完没有。没有 publishing 就自动停。
+ */
+let listedPollTimer: number | undefined;
+
+function scheduleListedPoll(): void {
+  window.clearTimeout(listedPollTimer);
+  if (!state.items.some((r) => r.state === "publishing")) return;
+  listedPollTimer = window.setTimeout(() => void loadListed(), 30_000);
+}
+
 async function loadListed(): Promise<void> {
   try {
     const resp = await apiGet<ListedResp>(
@@ -362,6 +381,7 @@ async function loadListed(): Promise<void> {
     fillVersionOptions(resp);
     renderMeta(resp);
     renderRows();
+    scheduleListedPoll();
   } catch (e) {
     $("tools-listed-meta").textContent = `读取失败：${e instanceof Error ? e.message : String(e)}`;
   }

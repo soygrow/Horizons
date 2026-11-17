@@ -137,7 +137,7 @@ export async function dispatchWorkflow(
   cfg: GhConfig,
   workflow: string,
   inputs: Record<string, string>,
-): Promise<WorkflowRun | null> {
+): Promise<WorkflowRun> {
   const before = await latestRun(cfg, workflow);
   const res = await ghFetch(cfg, `/repos/${cfg.repo}/actions/workflows/${workflow}/dispatches`, {
     method: "POST",
@@ -148,12 +148,20 @@ export async function dispatchWorkflow(
     throw new Error(`dispatch_${res.status}:${detail.slice(0, 200)}`);
   }
 
-  for (let i = 0; i < 3; i++) {
-    await new Promise((r) => setTimeout(r, 1200));
+  /*
+   * dispatch 只回 204，run id 得靠对比「最新 run」反查，而 GitHub 建 run 有秒级延迟。
+   * 原先只等 3×1.2s≈3.6 秒，赶上 GitHub 侧慢一点就拿不到 —— 调用方于是写进一行
+   * gh_run_id 为空的任务：回源查不到它、也不会判失败，永远停在「排队中」。
+   *
+   * 现在拉到约 11 秒；仍未出现就抛错，让调用方按「派发失败」处理（不写库、释放占位），
+   * 而不是留下一条永远不会动的记录。
+   */
+  for (let i = 0; i < 6; i++) {
+    await new Promise((r) => setTimeout(r, i === 0 ? 1000 : 2000));
     const now = await latestRun(cfg, workflow);
     if (now && (!before || now.id !== before.id)) return now;
   }
-  return null;
+  throw new Error("dispatch_unconfirmed:GitHub 已接收请求但未创建运行，请重试");
 }
 
 export function mapStatus(run: WorkflowRun | null, fallback: string): string {

@@ -127,9 +127,30 @@ interface JobRow {
 }
 
 
+/** 没有 run id 的行，留多久还算「刚派发」；超过就判死（run 偶尔建得慢） */
+const ORPHAN_GRACE_MS = 2 * 60 * 1000;
+
 async function refreshJob(env: Env, cfg: GhConfig | null, row: JobRow): Promise<JobRow> {
-  if (!cfg || !row.gh_run_id) return row;
   if (["success", "failure", "cancelled"].includes(row.status)) return row;
+
+  /*
+   * 没有 run id 就无从回源：这类行是 dispatch 那一步没反查到运行编号留下的，
+   * 查不到状态、也不会自己变失败，会永远占着「排队中」，前端还一直每 12 秒轮询。
+   * 给两分钟宽限后直接判死，让被占住的条目退回可重发。
+   */
+  if (!row.gh_run_id) {
+    if (Date.now() - row.created_at < ORPHAN_GRACE_MS) return row;
+    const now = Date.now();
+    const error = "dispatch_unconfirmed";
+    await env.DB.prepare(
+      "UPDATE tool_jobs SET status = 'failure', error = ?, updated_at = ? WHERE id = ?",
+    )
+      .bind(error, now, row.id)
+      .run();
+    return { ...row, status: "failure", error, updated_at: now };
+  }
+
+  if (!cfg) return row;
 
   const run = await fetchRun(cfg, row.gh_run_id);
   if (!run) return row;
@@ -732,6 +753,15 @@ function targetSnapshotMonth(): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
+/**
+ * 线上榜单条目的状态。
+ *
+ * publishing = 正在发布/更新（黄）；failed = 上次发布失败（红）；
+ * updated = 版本已是最新（绿）；stale = 数据还是旧的（灰）；
+ * nodata = 从没抓到过流量（灰，反复跑只会白花钱）。
+ */
+type ListedState = "publishing" | "failed" | "updated" | "stale" | "nodata";
+
 interface ListedRow {
   item_key: string;
   rank: number;
@@ -804,6 +834,20 @@ tools.get("/listed", async (c) => {
    * 而 '2026-09' 这种字符串只适合相等判断，算差距得先拆年月。
    */
   const targetVersion = Number(target.replace("-", ""));
+
+  /*
+   * 本轮正在跑 / 上一次跑失败的条目。
+   *
+   * 这些状态只在工作区（board_items）里，榜单快照没有，所以要单独查一次。
+   * 跑批中的条目快照还是上个月的，光看版本号会显示成「未更新」，看不出它其实在跑。
+   * enriching 是采集/富化，publishing 是发布，对后台来说都是「更新中」。
+   */
+  const { results: procs } = await c.env.DB.prepare(
+    "SELECT item_key, status FROM board_items WHERE board = 'tools' AND status IN ('enriching','publishing','publish_failed')",
+  ).all<{ item_key: string; status: string }>();
+  const procStatus = new Map<string, string>();
+  for (const p of procs ?? []) procStatus.set(p.item_key.toLowerCase(), p.status);
+
   const q = (c.req.query("q") ?? "").trim().toLowerCase();
   const versionFilter = (c.req.query("version") ?? "all").trim();
   const statusFilter = c.req.query("status") ?? "all";
@@ -811,12 +855,21 @@ tools.get("/listed", async (c) => {
   const pageSize = Math.min(Math.max(1, Number(c.req.query("pageSize") ?? 50) || 50), MAX_PAGE_SIZE);
 
   const decorated = rows.map((r) => {
-    // 从没抓到流量的站没有 snapshotMonth，永远「无数据」，反复跑只是白花钱
-    const state: "stale" | "updated" | "nodata" = !r.snapshot
-      ? "nodata"
-      : r.snapshot >= target
-        ? "updated"
-        : "stale";
+    const proc = procStatus.get(r.item_key.toLowerCase());
+    /*
+     * 优先级：更新中 > 失败 > 版本是否最新 > 有没有数据。
+     * 「更新中」排在最前：发布还没回写快照，按版本判会显示成「未更新」，看不出它在跑。
+     */
+    const state: ListedState =
+      proc === "publishing" || proc === "enriching"
+        ? "publishing"
+        : proc === "publish_failed"
+          ? "failed"
+          : !r.snapshot
+            ? "nodata"
+            : r.snapshot >= target
+              ? "updated"
+              : "stale";
     /*
      * 上月访问量：流量源只给「本月值 + 环比 %」，没有历史序列，
      * 所以用 visits / (1 + growth/100) 倒推。环比 ≤ -100% 时公式无意义（分母 ≤ 0），

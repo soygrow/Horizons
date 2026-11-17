@@ -31,6 +31,8 @@ interface Job {
   status: string;
   params: string;
   run_url: string | null;
+  /** 失败原因，后端存的可能是错误码（dispatch_unconfirmed 等） */
+  error?: string | null;
   created_at: number;
 }
 
@@ -501,6 +503,15 @@ function syncEnrichButton(jobs: Job[]): void {
       : "";
 }
 
+/** 任务失败原因悬停提示：后端存的是错误码，翻成人话 */
+function jobErrorHint(job: Job): string {
+  const e = job.error ?? "";
+  if (e.startsWith("dispatch_unconfirmed")) {
+    return "GitHub 已收到请求但没创建运行，本次没有真正启动，可以直接重试";
+  }
+  return e || "没有关联的运行记录";
+}
+
 /** 卡片头的「最近 N 次」：带上运行中数量，一眼知道要不要等它跑完 */
 function syncJobsMeta(jobs: Job[]): void {
   const el = $("tools-jobs-meta");
@@ -569,9 +580,10 @@ function renderJobs(jobs: Job[]): void {
           return kindLabelOf(job.kind);
         }
       })();
+      // 没有 run_url 的多半是派发没被确认：破折号上挂个悬停说明，别让人以为只是没日志
       const link = job.run_url
         ? `<a href="${esc(job.run_url)}" target="_blank" rel="noopener" class="text-primary hover:underline">日志</a>`
-        : "—";
+        : `<span class="cursor-help" title="${esc(jobErrorHint(job))}">—</span>`;
       return `<div class="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2.5 text-xs last:border-b-0">
           <span class="w-14 shrink-0 text-ink-muted">${kindLabelOf(job.kind)}</span>
           <span class="min-w-0 flex-1 truncate text-ink-secondary">${esc(params)}</span>
