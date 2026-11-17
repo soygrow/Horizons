@@ -7,11 +7,9 @@ import {
 import {
   OPPORTUNITY_WEIGHTS,
   TREND_WEIGHTS,
-  getRelatedTrends,
   sourceKindLabels,
   trendCategoryLabels,
-  trendDataMode,
-} from "../../lib/trends";
+} from "../../lib/trends-meta";
 
 interface Props {
   trend: any;
@@ -19,10 +17,16 @@ interface Props {
   scored: boolean;
   tv: number;
   op: number;
+  /**
+   * 「相近趋势」与数据集模式由调用方传入，不在这里查榜单。
+   * 预览页是 SSR，一旦侧栏自己去读 content/trends.json，
+   * 整份 5MB 榜单就会被打进 Worker bundle。
+   */
+  related: any[];
+  dataMode: string;
 }
 
-const { trend, samples, scored, tv, op } = Astro.props;
-const related = getRelatedTrends(trend, 4);
+const { trend, samples, scored, tv, op, related, dataMode } = Astro.props;
 
 const trendRows = TREND_WEIGHTS.map((w) => ({
   label: w.label,
@@ -134,7 +138,7 @@ const oppRows = OPPORTUNITY_WEIGHTS.map((w) => ({
           ["数据快照", formatDateShort(trend.updatedAt)],
           ["地区", trend.region],
           ["采样点", `${samples} 个 / 步长 ${trend.series.stepDays} 天`],
-          ["数据集", trendDataMode === "seed" ? "结构演示（seed）" : "生产采集（live）"],
+          ["数据集", dataMode === "seed" ? "结构演示（seed）" : "生产采集（live）"],
         ].map(([k, v]) => (
           <div class="flex items-center justify-between gap-3">
             <dt class="text-ink-muted">{k}</dt>

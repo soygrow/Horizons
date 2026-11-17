@@ -534,6 +534,7 @@ function renderStaging(data: StagingResp): void {
           <td class="px-4 py-2.5">${status}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-right">
             <button type="button" data-trend-open="${esc(row.slug)}" class="text-xs text-primary hover:underline">详情</button>
+            <a href="/preview/trend/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener" class="ml-3 text-xs text-primary hover:underline" title="在新窗口预览详情页（与线上同一套布局，需管理员登录）">预览</a>
             <button type="button" data-trend-reject="${esc(row.slug)}" data-trend-rejected="${row.rejected}" class="ml-3 text-xs text-ink-muted transition hover:text-danger">${row.rejected ? "恢复" : "拒绝"}</button>
           </td>
         </tr>`;
@@ -680,6 +681,40 @@ async function loadOverview(): Promise<void> {
     $("trends-setup").classList.remove("hidden");
     $("trends-setup-missing").textContent = `读取失败：${e instanceof Error ? e.message : String(e)}`;
   }
+}
+
+/** 单次富化的词数上限，与后端 admin-trends.ts 的 60 保持一致 */
+const ENRICH_BATCH = 60;
+
+/** 任务终态；refreshJob 从 GitHub 拿回来只会是这三种之一，另加 skipped 兜底 */
+const JOB_TERMINAL = new Set(["success", "failure", "cancelled", "skipped"]);
+
+/**
+ * 等某个任务跑到终态。
+ *
+ * 只在「还有下一批」时调用：同一 concurrency group 里 GitHub 只留一个排队任务，
+ * 连发会互相顶掉。轮询 jobs 接口即可（服务端 listJobs 每次都去 GitHub 现查状态）。
+ * 超时后抛错，让用户知道其余批次没派出去，而不是按钮转圈到底。
+ */
+async function waitJobDone(id: string): Promise<void> {
+  if (!id) return;
+  // 60 词约 30 分钟，留到 45 分钟；再久说明 workflow 卡了，不该继续堵着用户
+  const deadline = Date.now() + 45 * 60_000;
+  while (Date.now() < deadline) {
+    await new Promise((r) => window.setTimeout(r, 15_000));
+    const data = await apiGet<{ jobs: Job[] }>("/trends/jobs?limit=8").catch(() => null);
+    if (!data) continue;
+    renderJobs(data.jobs ?? []);
+    const job = (data.jobs ?? []).find((j) => j.id === id);
+    if (!job) return; // 记录被挤出前 8 条，无从判断，别无限等
+    if (!JOB_TERMINAL.has(job.status)) continue;
+    void loadStaging();
+    if (job.status !== "success") {
+      throw new Error(`上一批执行${job.status === "cancelled" ? "被取消" : "失败"}，剩余批次未派发`);
+    }
+    return;
+  }
+  throw new Error("等待上一批超时（45 分钟），剩余批次未派发");
 }
 
 async function loadJobs(): Promise<void> {
@@ -950,24 +985,39 @@ function bind(): void {
     const slugs = [...state.selected];
     if (slugs.length === 0) return;
     /*
-     * 后端单次最多 60 个（分批富化更容易定位失败），全选跨页时会超。
-     * 前端自己按 60 切批串行派发，用户不用手动分页勾。
+     * 单批 60：后端上限也是 60，且富化 workflow 超时 40 分钟
+     * （60 词 × 每词一次 LLM ≈ 30 分钟），再大会被腰斩。
      */
     const batches: string[][] = [];
-    for (let i = 0; i < slugs.length; i += 60) batches.push(slugs.slice(i, i + 60));
+    for (let i = 0; i < slugs.length; i += ENRICH_BATCH) {
+      batches.push(slugs.slice(i, i + ENRICH_BATCH));
+    }
     const ok = window.confirm(
-      `将富化 ${slugs.length} 个词${batches.length > 1 ? `（分 ${batches.length} 批派发）` : ""}。\n\n`
+      `将富化 ${slugs.length} 个词${batches.length > 1 ? `（分 ${batches.length} 批，逐批串行跑）` : ""}。\n\n`
         + `每词一次 LLM 调用；缺相关查询的词会补一次 Trends 请求。\n`
         + `富化只写候选池，线上榜单不受影响。`,
     );
     if (!ok) return;
     btn.disabled = true;
     let sent = 0;
+    let done = 0;
     try {
       for (let i = 0; i < batches.length; i++) {
-        btn.textContent = batches.length > 1 ? `提交中…（${i + 1}/${batches.length} 批）` : "提交中…";
-        await apiPost("/trends/enrich", { slugs: batches[i] });
-        sent += batches[i].length;
+        btn.textContent =
+          batches.length > 1 ? `富化中…（第 ${i + 1}/${batches.length} 批）` : "提交中…";
+        const resp = await apiPost<{ jobId?: string; count?: number }>("/trends/enrich", {
+          slugs: batches[i],
+        });
+        sent += resp.count ?? batches[i].length;
+        done = i + 1;
+        for (const s of batches[i]) state.selected.delete(s);
+        void loadJobs();
+        /*
+         * 四条流水线共用 concurrency group = trends-staging，而 GitHub 对同一 group
+         * 只保留**一个**排队任务：连着派三批，第 2 批的 pending 会被第 3 批顶掉，
+         * 那批词就永远不会跑（还不报错）。所以除最后一批外，必须等这一批真正结束。
+         */
+        if (i < batches.length - 1 && resp.jobId) await waitJobDone(resp.jobId);
       }
       state.selected.clear();
       btn.textContent = `已提交 ${sent} 个`;
@@ -983,7 +1033,9 @@ function bind(): void {
       const msg = e instanceof Error ? e.message : String(e);
       // 409 = 这批还在富化中，不是失败；把已派发的部分说清楚
       window.alert(
-        sent > 0 ? `已提交 ${sent} 个，第 ${sent / 60 + 1} 批失败：${msg}` : `提交失败：${msg}`,
+        sent > 0
+          ? `已提交 ${sent} 个（前 ${done} 批），第 ${done + 1} 批有中断：${msg}`
+          : `提交失败：${msg}`,
       );
       syncEnrichBtn();
     }

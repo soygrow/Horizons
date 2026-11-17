@@ -16,8 +16,12 @@ on:
         required: false
         default: ""
 
+# 采集、富化、发布、回滚四条流水线都会写 content/trends-staging.json 并 push 同一个分支。
+# 分成不同 group 时它们能同时跑：后 push 的会被拒（non-fast-forward），
+# 或先跑完的把对方刚写的候选/富化结果覆盖掉。统一到一个 group 强制串行，
+# 排队等待远好过丢一批已经花过 LLM 费用的结果。
 concurrency:
-  group: enrich-trends
+  group: trends-staging
   cancel-in-progress: false
 
 jobs:
@@ -29,6 +33,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          # 浅克隆不允许 rebase，push 被抢先时就没法自动重试
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v6
         with:
@@ -67,4 +74,9 @@ jobs:
           fi
           ready=$(node -e "const d=require('./content/trends-staging.json');console.log(d.items.filter(t=>!t.enrichStatus).length)")
           git commit -m "feat(trends): 富化候选词（已富化 ${ready} 个）"
-          git push
+          # 同 group 已串行，但人工推送或其它 workflow 仍可能抢先；被拒就 rebase 重试一次
+          if ! git push; then
+            echo "::warning::push 被拒，rebase 后重试"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}"
+            git push
+          fi

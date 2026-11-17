@@ -1,0 +1,328 @@
+---
+/**
+ * 趋势详情页的主体（不含 <Base> 外壳与预览条）。
+ *
+ * 线上 /trends/[slug]（构建期预渲染）与 /preview/trend/[slug]（SSR 查 D1）
+ * 共用这一个组件，保证「审核时看到的样子」＝「发布后读者看到的样子」。
+ * 因此所有数据都必须由调用方以 props 传入，这里不读 content/trends.json。
+ */
+import SectionHeader from "./SectionHeader.astro";
+import Stat from "./Stat.astro";
+import TrendStatusBadge from "./TrendStatusBadge.astro";
+import TrendConfidenceBadge from "./TrendConfidenceBadge.astro";
+import ClaimTypeBadge from "./ClaimTypeBadge.astro";
+import TrendInterestChart from "./TrendInterestChart.astro";
+import TrendSidebar from "./TrendSidebar.astro";
+import { formatDate, formatDateShort } from "../../lib/format";
+import {
+  daysSinceFrom,
+  formatGrowth,
+  growthTone,
+  hasEnoughData,
+  intentLabels,
+  opportunityScore,
+  opportunityTypeMeta,
+  seriesPoints,
+  systemVerdict,
+  trendCategoryLabels,
+  trendMetrics,
+  trendScore,
+  verdictMeta,
+} from "../../lib/trends-meta";
+
+interface Props {
+  trend: any;
+  /** 相近趋势：线上页由榜单算，预览页传空数组（候选词还没有稳定的同类关系） */
+  related?: any[];
+  /** seed / live，侧栏「数据集」那一行要显示 */
+  dataMode?: string;
+  /** 计算「首次发现 N 天前」的基准时间，默认用该条目自己的快照时间 */
+  snapshot?: string;
+}
+
+const { trend, related = [], dataMode = "live", snapshot = trend.updatedAt } = Astro.props;
+
+const m = trendMetrics(trend);
+const points = seriesPoints(trend);
+const scored = hasEnoughData(trend);
+const tv = trendScore(trend);
+const op = opportunityScore(trend);
+const verdict = systemVerdict(trend);
+const seenDays = daysSinceFrom(trend.firstSeenAt, snapshot);
+
+const confidenceNote =
+  trend.confidence === "high"
+    ? "多时点 + 跨源"
+    : trend.confidence === "medium"
+      ? "有趋势证据但样本有限"
+      : "观测点不足";
+---
+
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+  <div class="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+    <a href="/trends" class="hover:text-ink">AI 趋势词榜单</a>
+    <span>/</span>
+    <span class="text-ink-secondary">{trend.normalizedName}</span>
+    <span class="ml-auto rounded-full border border-border bg-surface px-2.5 py-1">
+      快照 {formatDateShort(trend.updatedAt)}
+    </span>
+  </div>
+
+  <!-- Hero -->
+  <div class="mt-4 rounded-2xl border border-border bg-surface p-6">
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+      <div class="min-w-0 flex-1">
+        <div class="flex flex-wrap items-center gap-2">
+          <TrendStatusBadge status={trend.status} />
+          <TrendConfidenceBadge confidence={trend.confidence} />
+          <span class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-secondary">
+            {trendCategoryLabels[trend.category]}
+          </span>
+          <span class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] text-ink-muted">
+            地区 {trend.region}
+          </span>
+        </div>
+
+        <h1 class="mt-3 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+          {trend.normalizedName}
+        </h1>
+        <p class="mt-1 font-mono text-sm text-ink-muted">{trend.keyword}</p>
+
+        <p class="mt-4 max-w-3xl text-sm leading-relaxed text-ink-secondary">{trend.why}</p>
+
+        <div class="mt-4 flex flex-wrap items-center gap-3 text-xs">
+          <span class={`rounded-full border px-2.5 py-1 font-medium ${verdict.cls}`}>
+            系统建议：{verdict.label}
+          </span>
+          <span class={`tabular-nums ${growthTone(m.growth7)}`}>
+            近 7 天 {formatGrowth(m.growth7)}
+          </span>
+          {seenDays !== null ? <span class="text-ink-muted">首次发现 {seenDays} 天前</span> : null}
+          <span class="text-ink-muted">可信度依据：{confidenceNote}</span>
+        </div>
+      </div>
+
+      <div class="flex shrink-0 gap-3">
+        {
+          [
+            { label: "趋势强度", sub: "回答：是否值得关注", value: tv, tone: "text-ink" },
+            { label: "机会潜力", sub: "回答：是否值得投入", value: op, tone: "text-emerald-500" },
+          ].map((c) => (
+            <div class="w-full rounded-xl border border-border bg-surface p-4 sm:w-40">
+              <div class="text-xs text-ink-muted">{c.label}</div>
+              {scored ? (
+                <div class="mt-1 flex items-baseline gap-1">
+                  <span class={`text-3xl font-bold tabular-nums ${c.tone}`}>{c.value.toFixed(0)}</span>
+                  <span class="text-xs text-ink-muted">/100</span>
+                </div>
+              ) : (
+                <div class="mt-1 text-sm font-medium text-ink-muted">数据不足</div>
+              )}
+              <div class="mt-1 text-[11px] leading-snug text-ink-muted">{c.sub}</div>
+              <div class="mt-2 h-1 w-full overflow-hidden rounded-full bg-surface-2">
+                <div
+                  class="h-full rounded-full bg-primary"
+                  style={`width: ${scored ? `${Math.min(100, Math.max(3, c.value))}%` : "0%"}`}
+                />
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- 指标条 -->
+  <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+    <Stat label="近 7 天均值" value={m.recent7 === null ? "—" : String(m.recent7)} hint="最近 7 个采样点的平均相对热度" />
+    <Stat
+      label="近 30 天变化"
+      value={formatGrowth(m.growth30)}
+      hint="最近 7 点均值相对最初 7 点均值的变化"
+      tone={growthTone(m.growth30)}
+    />
+    <Stat label="历史基线" value={m.baseline === null ? "—" : String(m.baseline)} hint="最近 7 点之前的均值，用于判断是否真的高于历史水平" />
+    <Stat label="爆发峰值" value={String(m.peak)} hint={`出现在 ${formatDate(m.peakDate)}`} />
+    <Stat label="高于基线" value={`${m.aboveBaseline}/${m.window}`} hint="近 14 个采样点中高于历史基线的点数，用于判断持续性" />
+    <Stat label="采样点" value={`${m.samples}`} hint={`步长 ${trend.series.stepDays} 天，覆盖约 ${m.spanDays} 天`} />
+    <Stat label="首次发现" value={formatDateShort(trend.firstSeenAt)} hint="第一次采集成功的时间，不随后续更新覆盖" />
+    <Stat label="最近采集" value={formatDateShort(trend.lastSeenAt)} hint="最近一次成功采集该词的时间" />
+  </div>
+
+  <div class="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div class="flex flex-col gap-10">
+      <!-- 01 趋势证据 -->
+      <section class="flex flex-col gap-4">
+        <SectionHeader
+          no="01"
+          title="趋势证据"
+          desc="近 30 天搜索热度、历史基线与峰值。数值是 Google Trends 归一化后的相对热度（0–100），不是搜索次数。"
+        />
+        <div class="rounded-2xl border border-border bg-surface p-5">
+          <TrendInterestChart points={points} baseline={m.baseline} peakDate={m.peakDate} />
+          <div class="mt-4 grid gap-2 border-t border-border pt-4 text-xs leading-relaxed text-ink-muted sm:grid-cols-2">
+            <p>
+              采样：{formatDate(trend.series.start)} 起，每 {trend.series.stepDays} 天 1 个点，共 {m.samples} 个点。 基线
+              {m.baseline ?? "—"}，峰值 {m.peak}（{formatDate(m.peakDate)}）。
+            </p>
+            <p>
+              近 {m.window} 点中有 {m.aboveBaseline} 点高于基线，近 7 天均值 {m.recent7 ?? "—"}。
+              {scored ? "采样点充足，可参与评分。" : "采样点少于 14 个，暂不评分。"}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 事件与原因 -->
+      <section class="flex flex-col gap-4">
+        <SectionHeader
+          no="02"
+          title="事件与原因"
+          desc="与趋势时间对应的事件。时间接近不等于因果，因此每条结论都标注证据等级与发布日期。"
+        />
+        <div class="flex flex-col gap-3">
+          {
+            (trend.evidence ?? []).map((e: any) => (
+              <div class="rounded-2xl border border-border bg-surface p-5">
+                <div class="flex flex-wrap items-center gap-2">
+                  <ClaimTypeBadge type={e.claimType} />
+                  {e.date ? <span class="text-xs tabular-nums text-ink-muted">{e.date}</span> : null}
+                </div>
+                <p class="mt-2 text-sm font-medium leading-relaxed text-ink">{e.claim}</p>
+                {e.detail ? (
+                  <p class="mt-1.5 text-xs leading-relaxed text-ink-secondary">{e.detail}</p>
+                ) : null}
+                <div class="mt-3 flex flex-wrap gap-2">
+                  {(e.sources ?? []).map((s: any) => (
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="rounded-lg border border-border bg-surface-2 px-2 py-1 text-[11px] text-ink-secondary transition hover:border-primary/40 hover:text-primary"
+                    >
+                      {s.label} ↗
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- 03 搜索意图 -->
+      <section class="flex flex-col gap-4">
+        <SectionHeader
+          no="03"
+          title="用户需求与搜索意图"
+          desc="把相关搜索词按意图聚类，回答「人们究竟在找什么」，而不是只看热度高低。"
+        />
+        <div class="rounded-2xl border border-border bg-surface p-5">
+          {trend.intentSummary ? (
+            <p class="text-sm leading-relaxed text-ink-secondary">{trend.intentSummary}</p>
+          ) : null}
+          <ul class="mt-4 flex flex-col gap-4">
+            {
+              (trend.intents ?? []).map((it: any) => (
+                <li>
+                  <div class="flex items-center gap-3">
+                    <span class="w-16 shrink-0 text-xs font-medium text-ink">
+                      {intentLabels[it.intent] ?? it.intent}
+                    </span>
+                    <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2">
+                      <div
+                        class="h-full rounded-full bg-primary/70"
+                        style={`width: ${Math.min(100, it.share ?? 0)}%`}
+                      />
+                    </div>
+                    <span class="w-9 shrink-0 text-right text-xs tabular-nums text-ink-muted">
+                      {it.share !== undefined ? `${it.share}%` : "—"}
+                    </span>
+                  </div>
+                  <div class="mt-2 flex flex-wrap gap-1.5 pl-[4.75rem]">
+                    {(it.queries ?? []).map((q: string) => (
+                      <span class="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 text-[11px] text-ink-secondary">
+                        {q}
+                      </span>
+                    ))}
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+
+      <!-- 04 机会分析 -->
+      <section class="flex flex-col gap-4">
+        <SectionHeader
+          no="04"
+          title="机会分析"
+          desc="依据真实搜索意图、现有产品与竞争情况给出方向。每条机会都写明依据与工作量，不做「任何热词都成立」的通用建议。"
+        />
+        <div class="grid gap-3 sm:grid-cols-2">
+          {
+            (trend.opportunities ?? []).map((o: any) => (
+              <div class="flex flex-col rounded-2xl border border-border bg-surface p-5">
+                <div class="flex items-center justify-between gap-2">
+                  <span
+                    class={`rounded-full border px-2 py-0.5 text-[11px] font-medium ${opportunityTypeMeta[o.type]?.cls ?? ""}`}
+                  >
+                    {opportunityTypeMeta[o.type]?.label ?? o.type}
+                  </span>
+                  {o.effort ? <span class="text-[11px] text-ink-muted">约 {o.effort}</span> : null}
+                </div>
+                <h3 class="mt-3 text-sm font-semibold leading-snug text-ink">{o.title}</h3>
+                <p class="mt-2 flex-1 text-xs leading-relaxed text-ink-secondary">{o.why}</p>
+                {o.evidence ? (
+                  <p class="mt-3 border-t border-border pt-2 text-[11px] text-ink-muted">
+                    依据：{o.evidence}
+                  </p>
+                ) : null}
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- 05 下一步行动 -->
+      <section class="flex flex-col gap-4">
+        <SectionHeader
+          no="05"
+          title="下一步行动"
+          desc="明确建议现在做什么，并给出依据与不确定性。不确定性不会被隐藏。"
+        />
+        <div class="flex flex-col gap-3">
+          {
+            (trend.actions ?? []).map((a: any) => (
+              <div class="rounded-2xl border border-border bg-surface p-5">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span
+                    class={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${verdictMeta[a.verdict]?.cls ?? ""}`}
+                  >
+                    {verdictMeta[a.verdict]?.label ?? a.verdict}
+                  </span>
+                </div>
+                <p class="mt-2 text-sm font-medium leading-relaxed text-ink">{a.action}</p>
+                <p class="mt-1.5 text-xs leading-relaxed text-ink-secondary">依据：{a.reason}</p>
+                {a.uncertainty ? (
+                  <p class="mt-1 text-xs leading-relaxed text-ink-muted">不确定性：{a.uncertainty}</p>
+                ) : null}
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <p class="rounded-2xl border border-dashed border-border p-4 text-xs leading-relaxed text-ink-muted">
+        口径说明：Google Trends 展示的是归一化相对热度，不能转换为月搜索量，因此这里不提供「月搜索次数」。 低基线会放大增长率，基线为
+        0 或采样不足时显示「—」。
+        {dataMode === "seed"
+          ? " 当前条目属于结构演示数据（seed），用于验证字段与页面结构，接入真实采集后自动切换。"
+          : ""}
+      </p>
+    </div>
+
+    <TrendSidebar trend={trend} samples={m.samples} scored={scored} tv={tv} op={op} related={related} dataMode={dataMode} />
+  </div>
+</div>

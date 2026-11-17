@@ -1,0 +1,116 @@
+---
+/**
+ * 待发布趋势词的详情预览页（按需渲染）。
+ *
+ * 和线上 /trends/[slug] 用**同一个** TrendBody 渲染，只有数据来源不同：
+ * 请求进来时现场查 D1 的 board_items.card，拿到什么就渲染什么。
+ * 「审核时看到的样子」＝「这条候选现在真实的样子」，改完数据刷新即生效，
+ * 不需要为预览等一次整站构建。
+ *
+ * 只在后台内部使用：站点 Worker 对 /preview/* 统一校验管理员会话后才放行，
+ * Base 里非白名单路径自动 noindex，sitemap 也不收录。
+ */
+export const prerender = false;
+
+import Base from "../../../layouts/Base.astro";
+import TrendBody from "../../../components/detail/TrendBody.astro";
+import { env } from "cloudflare:workers";
+
+/**
+ * 哪些状态值得预览。
+ *
+ * `candidate` 必须在内：采集落库后 stage 就是 candidate，只收 enriched 的话
+ * 「刚采完 → 点预览」永远打不开，而审核员恰恰在这一步判断要不要继续富化。
+ * `rejected` 排除（判定不收录的没有预览价值），`published` 也排除
+ * （已发布的直接看线上页，那里才是读者最终看到的形态）。
+ */
+const PREVIEW_STAGES = new Set(["candidate", "enriched", "enriching", "enrich_failed"]);
+
+const STAGE_LABEL: Record<string, string> = {
+  candidate: "刚采集完，内容字段还没富化",
+  enriched: "富化完成，等待发布",
+  enriching: "富化进行中，部分字段还会变",
+  enrich_failed: "富化失败，下面可能是残缺数据",
+};
+
+interface D1Like {
+  prepare(sql: string): {
+    bind(...values: unknown[]): {
+      first<T = Record<string, unknown>>(): Promise<T | null>;
+    };
+  };
+}
+
+interface BoardRow {
+  card?: string | Record<string, unknown> | null;
+  status?: string;
+}
+
+const { slug } = Astro.params;
+const db = (env as { DB?: D1Like }).DB;
+
+let trend: Record<string, any> | null = null;
+let stage = "enriched";
+
+if (slug && db) {
+  /*
+   * 候选池的 item_key 是「关键词小写」（采集时用它做去重），而详情页的
+   * canonical 是 slug，两者不一定相同（关键词带空格/大写）。
+   * 所以按卡片里的 slug 查，而不是按主键。
+   */
+  const row = await db
+    .prepare(
+      `SELECT card, status FROM board_items
+       WHERE board = 'trends' AND json_extract(card, '$.slug') = ?
+       LIMIT 1`,
+    )
+    .bind(slug)
+    .first<BoardRow>()
+    .catch(() => null);
+
+  const status = String(row?.status ?? "");
+  if (row?.card && PREVIEW_STAGES.has(status)) {
+    try {
+      trend =
+        typeof row.card === "string"
+          ? (JSON.parse(row.card) as Record<string, any>)
+          : (row.card as Record<string, any>);
+      stage = status;
+    } catch {
+      trend = null;
+    }
+  }
+}
+
+/*
+ * 查不到就 404，不 fallback 到已发布的静态产物：
+ * 条目可能刚被发布/拒绝/清理，宁可明确「没有这条预览」，
+ * 也不给一个和库里对不上的旧页面。
+ */
+if (!trend) {
+  return new Response("预览不存在：该词可能已发布、被拒绝或已清理，或 slug 有误。", {
+    status: 404,
+    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+  });
+}
+
+const data = trend;
+---
+<Base
+  title={`[预览] ${data.normalizedName ?? data.keyword} 趋势分析`}
+  description={data.why ?? `「${data.keyword}」的趋势预览`}
+  noindex={true}
+>
+  {/* 预览条：一眼看出这不是线上页面，并且能直接跳回后台 */}
+  <div class="border-b border-primary/30 bg-primary-soft">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-xs text-primary sm:px-6">
+      <span class="rounded-full bg-primary px-2 py-0.5 font-semibold text-white">预览</span>
+      <span class="font-medium">{data.keyword}</span>
+      <span class="text-primary/80">· {STAGE_LABEL[stage] ?? stage}</span>
+      <span class="text-primary/60">· 尚未发布到榜单 · 仅管理员可见</span>
+      <a href="/admin" class="ml-auto font-medium underline underline-offset-2 hover:no-underline">返回后台</a>
+    </div>
+  </div>
+
+  <TrendBody trend={data} related={[]} dataMode="live" snapshot={data.updatedAt} />
+</Base>
