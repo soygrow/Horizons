@@ -211,8 +211,13 @@ tools.get("/jobs", async (c) => {
   // 一旦队列里积下 queued 僵尸（run 早结束但状态没同步），前端按活跃数算展示条数时
   // 会多出一行 —— 点一次抓取变 4 条、刷新后又缩回 3 条，就是这个原因。
   // 上限 10 只是防极端情况下一次性打太多 GitHub 请求。
+  /*
+   * 只排除三种终态，而不是只挑 queued/running：
+   * 库里可能残留旧版本写进来的 pending（GitHub 的中间态被原样落库），
+   * 按白名单筛就永远捞不到它，那一行会一直卡在「排队中」。
+   */
   const live = rows
-    .filter((r) => r.status === "queued" || r.status === "running")
+    .filter((r) => r.status !== "success" && r.status !== "failure" && r.status !== "cancelled")
     .slice(0, 10);
   const refreshed = new Map<string, JobRow>();
   const settled: Promise<void>[] = [];
@@ -736,6 +741,8 @@ interface ListedRow {
   visits: number | null;
   /** 月环比增长 %，用来倒推上月访问量 */
   growth: number | null;
+  /** 一句话简介，表格里截断显示，完整内容走 title */
+  descr: string | null;
   snapshot: string | null;
   analyzed_at: string | null;
   collected_at: string | null;
@@ -753,6 +760,7 @@ async function readListed(db: D1Database): Promise<{ version: string; rows: List
   const { results } = await db
     .prepare(
       `SELECT l.item_key, l.rank, l.tier, l.name, l.url,
+              json_extract(l.card, '$.description') AS descr,
               json_extract(l.card, '$.trafficMetrics.monthlyVisits') AS visits,
               json_extract(l.card, '$.trafficMetrics.monthlyVisitsGrowth') AS growth,
               json_extract(l.card, '$.trafficMetrics.snapshotMonth') AS snapshot,
@@ -788,7 +796,16 @@ tools.get("/listed", async (c) => {
   }
 
   const target = targetSnapshotMonth();
+  /*
+   * 版本号 = 流量月去掉横线（2026-10 → 202610）。
+   *
+   * 不落库：卡片里本来就有 snapshotMonth，任何需要比较「新旧」的地方现算即可。
+   * 用数字是为了让「202609 < 202610」自动成立 —— 跨年也不会错（202612 < 202701），
+   * 而 '2026-09' 这种字符串只适合相等判断，算差距得先拆年月。
+   */
+  const targetVersion = Number(target.replace("-", ""));
   const q = (c.req.query("q") ?? "").trim().toLowerCase();
+  const versionFilter = (c.req.query("version") ?? "all").trim();
   const statusFilter = c.req.query("status") ?? "all";
   const page = Math.max(1, Number(c.req.query("page") ?? 1) || 1);
   const pageSize = Math.min(Math.max(1, Number(c.req.query("pageSize") ?? 50) || 50), MAX_PAGE_SIZE);
@@ -814,12 +831,15 @@ tools.get("/listed", async (c) => {
       domain: r.item_key,
       name: r.name,
       url: r.url,
+      description: r.descr,
       rank: r.rank,
       tier: r.tier,
       monthlyVisits: r.visits,
       prevVisits,
       growth: r.growth,
       snapshotMonth: r.snapshot,
+      /** 流量月的版本号，缺数据为 null（前端据此筛选、排序、判断是否落后） */
+      snapshotVersion: r.snapshot ? Number(r.snapshot.replace("-", "")) : null,
       analyzedAt: r.analyzed_at,
       collectedAt: r.collected_at,
       categories: r.cats ? (JSON.parse(r.cats) as string[]).slice(0, 3) : [],
@@ -830,16 +850,39 @@ tools.get("/listed", async (c) => {
 
   const filtered = decorated.filter((r) => {
     if (q && !r.domain.includes(q) && !r.name.toLowerCase().includes(q)) return false;
+    // version 是主筛选（按流量月版本号）；status 保留给旧页面，两者同时出现时以 version 为准
+    if (versionFilter !== "all") {
+      if (versionFilter === "none") return r.snapshotVersion === null;
+      const want = Number(versionFilter);
+      return Number.isFinite(want) ? r.snapshotVersion === want : true;
+    }
     if (statusFilter === "stale") return r.state === "stale";
     if (statusFilter === "updated") return r.state === "updated";
     if (statusFilter === "nodata") return r.state === "nodata";
     return true;
   });
 
+  /*
+   * 出现过的版本号清单（全量统计，不受分页影响），给前端做下拉选项。
+   * 每月跑一轮后这里自然多一行，不需要改任何代码。
+   */
+  const versionCount = new Map<number, number>();
+  for (const r of decorated) {
+    if (r.snapshotVersion == null) continue;
+    versionCount.set(r.snapshotVersion, (versionCount.get(r.snapshotVersion) ?? 0) + 1);
+  }
+  const versions = [...versionCount.entries()]
+    .map(([version, count]) => ({ version, count }))
+    .sort((a, b) => b.version - a.version);
+
   const start = (page - 1) * pageSize;
   return c.json({
     version,
     target,
+    /** 当前该抓到的版本号（202610）；快照版本低于它就算落后 */
+    targetVersion,
+    /** 榜单里出现过的所有版本及条数，按版本倒序 */
+    versions,
     total: filtered.length,
     all: decorated.length,
     stale: decorated.filter((r) => r.state === "stale").length,

@@ -200,6 +200,17 @@ const state = {
 
 /* -------------------------------- 渲染 ---------------------------------- */
 
+/**
+ * 未终结的任务。
+ *
+ * 不能只写 `queued || running`：GitHub 在 run 创建初期会返回 pending，
+ * 后端旧版本会把它原样落库，于是库里就有 pending 这种第四种状态 ——
+ * 按 queued/running 判活跃的话，它既不会触发 12 秒轮询、也不会排到列表最前，
+ * 但 statusBadge 的 default 又把它渲染成「排队中」，看起来就是「永远排队」。
+ */
+const LIVE_JOB_STATUS = new Set(["queued", "running", "requested", "waiting", "pending", "in_progress"]);
+const isLiveJob = (status: string): boolean => LIVE_JOB_STATUS.has(status);
+
 function statusBadge(status: string): { label: string; cls: string } {
   switch (status) {
     case "success":
@@ -364,7 +375,7 @@ function kindLabelOf(kind: string): string {
 const JOB_ROWS_VISIBLE = 4;
 
 function pickRecentJobs(jobs: Job[]): { rows: Job[]; hidden: number } {
-  const isActive = (j: Job) => j.status === "queued" || j.status === "running";
+  const isActive = (j: Job) => isLiveJob(j.status);
   const active = jobs.filter(isActive);
   const finished = jobs.filter((j) => !isActive(j));
   // 固定 JOB_ROWS_VISIBLE 行：运行中的优先占前几位，但不再因为它「有几个」而放宽行数。
@@ -449,7 +460,7 @@ function canEnrich(row: StagingRow): boolean {
 function syncEnrichButton(jobs: Job[]): void {
   const btn = $("tools-enrich-btn") as HTMLButtonElement;
   const running = jobs.find(
-    (j) => j.kind === "enrich" && (j.status === "queued" || j.status === "running"),
+    (j) => j.kind === "enrich" && isLiveJob(j.status),
   );
 
   // 刚跑完：条目状态是脚本最后一步才写库的，最后一次轮询未必赶上，
@@ -494,7 +505,7 @@ function syncEnrichButton(jobs: Job[]): void {
 function syncJobsMeta(jobs: Job[]): void {
   const el = $("tools-jobs-meta");
   if (!el) return;
-  const active = jobs.filter((j) => j.status === "queued" || j.status === "running").length;
+  const active = jobs.filter((j) => isLiveJob(j.status)).length;
   el.textContent = active
     ? `最近 ${JOB_ROWS_VISIBLE} 次 · 运行中 ${active}`
     : `最近 ${JOB_ROWS_VISIBLE} 次`;
@@ -512,7 +523,7 @@ function renderJobs(jobs: Job[]): void {
   }
 
   // 轮询看全量，别因为被截断就停了
-  schedulePolling(jobs.some((j) => j.status === "queued" || j.status === "running"));
+  schedulePolling(jobs.some((j) => isLiveJob(j.status)));
 
   /*
    * 任务刚结束：条目的最终状态是后端最后一刻才落库的（发布成功由流水线写 published，
@@ -522,7 +533,7 @@ function renderJobs(jobs: Job[]): void {
   const justSettled = jobs.some(
     (j) =>
       (j.status === "success" || j.status === "failure" || j.status === "cancelled") &&
-      (prevStatus.get(j.id) === "queued" || prevStatus.get(j.id) === "running"),
+      isLiveJob(prevStatus.get(j.id) ?? ""),
   );
   if (justSettled) {
     window.setTimeout(() => {

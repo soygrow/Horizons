@@ -22,6 +22,8 @@ interface ListedItem {
   domain: string;
   name: string;
   url: string | null;
+  /** 一句话简介，表格里截断到两行 */
+  description: string | null;
   rank: number;
   tier: string | null;
   monthlyVisits: number | null;
@@ -30,6 +32,8 @@ interface ListedItem {
   /** 月环比增长 % */
   growth: number | null;
   snapshotMonth: string | null;
+  /** 流量月版本号：2026-10 → 202610；从没抓到流量为 null */
+  snapshotVersion: number | null;
   analyzedAt: string | null;
   collectedAt: string | null;
   heatScore: number;
@@ -39,6 +43,10 @@ interface ListedItem {
 interface ListedResp {
   version: string;
   target: string;
+  /** 当前该抓到的版本号，如 202610 */
+  targetVersion: number;
+  /** 榜单里出现过的版本及条数，按版本倒序 */
+  versions: { version: number; count: number }[];
   total: number;
   all?: number;
   stale?: number;
@@ -79,9 +87,9 @@ const state = {
   page: 1,
   pageSize: 50,
   totalPages: 1,
-  status: "all",
+  /** 按流量月版本号筛选：all | 202610 | none */
+  versionFilter: "all",
   q: "",
-  target: "",
   version: "",
   items: [] as ListedItem[],
   /** 线上旧值，用于「更新待审核」里的新旧对比 */
@@ -101,6 +109,23 @@ function fmtVisits(n: number | null | undefined): string {
 
 function fmtMonth(m: string | null | undefined): string {
   return m ? m : "—";
+}
+
+/**
+ * 版本号：流量月去掉横线，2026-10 → 202610。
+ *
+ * 用数字而不是 '2026-10' 是为了能比较和筛选：202609 < 202610 直接成立，
+ * 跨年也不会错（202612 < 202701）。字符串只适合判相等，算差距得先拆年月。
+ */
+function fmtVersion(v: number | null | undefined): string {
+  return typeof v === "number" && v > 0 ? String(v) : "—";
+}
+
+/** 2026-10 → 202610；给只有月份字符串的地方（如待审核行）换算版本号 */
+function monthToVersion(m: string | null | undefined): number | null {
+  if (!m) return null;
+  const n = Number(m.replace("-", ""));
+  return Number.isFinite(n) && n > 0 ? n : null;
 }
 
 /** 热度分：0 表示这条从没算过热度，显示破折号而不是 0.0，免得像是真值 */
@@ -164,49 +189,84 @@ function renderMeta(resp: ListedResp): void {
     meta.textContent = resp.message;
     return;
   }
+  // 版本分布直接摊开：每月跑一轮就多一行，比只报「未更新 197 条」有用得多
+  const dist = resp.versions.map((v) => `${v.version} ${v.count}`).join(" / ");
   meta.textContent =
-    `当前版本 ${resp.version.slice(0, 10)}｜目标月 ${state.target}｜` +
-    `共 ${resp.all ?? resp.total} 条（未更新 ${resp.stale ?? 0} / 已更新 ${resp.updated ?? 0} / 无流量 ${resp.nodata ?? 0}）`;
+    `当前版本 ${resp.version.slice(0, 10)}｜目标 ${resp.targetVersion}｜` +
+    `共 ${resp.all ?? resp.total} 条（${dist}${resp.nodata ? ` / 无数据 ${resp.nodata}` : ""}）`;
+}
+
+/**
+ * 版本下拉：选项来自接口返回的版本清单。
+ *
+ * 跑过哪几个月就列哪几个，不写死、不用改代码 —— 这是换成版本号筛选的主要好处。
+ * 条数直接写在选项里，不点开也知道哪个月还有多少没补。
+ */
+function fillVersionOptions(resp: ListedResp): void {
+  const sel = $("tools-listed-status") as HTMLSelectElement;
+  const opts = ['<option value="all">全部版本</option>'];
+  for (const v of resp.versions) {
+    opts.push(`<option value="${v.version}">${v.version} · ${v.count} 条</option>`);
+  }
+  if (resp.nodata) opts.push(`<option value="none">无数据 · ${resp.nodata} 条</option>`);
+  sel.innerHTML = opts.join("");
+  /*
+   * 选中的版本可能这次响应里已经不存在了（那个月的条目全被重采掉），
+   * 此时 select.value 会是空串，得把筛选条件一起回落，否则列表空着却看不出原因。
+   */
+  sel.value = state.versionFilter;
+  if (sel.value !== state.versionFilter) {
+    state.versionFilter = "all";
+    sel.value = "all";
+  }
 }
 
 function renderRows(): void {
   const body = $("tools-listed-body");
   if (state.items.length === 0) {
-    body.innerHTML = `<tr><td colspan="9" class="px-3 py-8 text-center text-ink-muted">没有符合条件的条目</td></tr>`;
+    body.innerHTML = `<tr><td colspan="10" class="px-3 py-8 text-center text-ink-muted">没有符合条件的条目</td></tr>`;
   } else {
     body.innerHTML = state.items
       .map((r) => {
         const checked = state.picked.has(r.domain) ? "checked" : "";
-        return `<tr data-listed-open="${esc(r.domain)}" class="cursor-pointer hover:bg-surface-2/60">
-          <td class="px-3 py-2">
+        /*
+         * 访问量副行写「版本 · 上月值」：这个数到底是哪个月的，比单独一列版本号更不容易看错，
+         * 也省下一列宽度留给简介。
+         */
+        const ver = fmtVersion(r.snapshotVersion);
+        const prevText = r.prevVisits != null ? `上月 ${fmtVisits(r.prevVisits)}` : "无上月";
+        return `<tr data-listed-open="${esc(r.domain)}" class="cursor-pointer align-top transition hover:bg-surface-2/60">
+          <td class="px-3 py-2.5 pt-3">
             <input type="checkbox" data-listed-pick="${esc(r.domain)}" ${checked} class="accent-primary" />
           </td>
-          <td class="px-3 py-2 tabular-nums text-ink-muted">#${r.rank}</td>
-          <td class="px-3 py-2">
+          <td class="px-3 py-2.5 pt-3 tabular-nums text-ink-muted">#${r.rank}</td>
+          <td class="px-3 py-2.5 pt-3">
             <a href="/tools/${esc(r.domain)}" target="_blank" rel="noopener"
-               class="block max-w-full truncate font-medium text-primary hover:underline"
+               class="block max-w-[170px] truncate font-medium text-primary hover:underline"
                title="在新窗口打开线上详情页">${esc(r.name)}</a>
-            <div class="text-[11px] text-ink-muted">${esc(r.domain)}</div>
+            <div class="max-w-[170px] truncate text-[11px] text-ink-muted">${esc(r.domain)}</div>
           </td>
-          <td class="px-3 py-2 text-right">
-            <div class="tabular-nums">${fmtVisits(r.monthlyVisits)}</div>
+          <td class="px-3 py-2.5 pt-3">
             ${
-              r.prevVisits != null
-                ? `<div class="text-[11px] tabular-nums text-ink-muted">上月 ${fmtVisits(r.prevVisits)}</div>`
-                : ""
+              r.description
+                ? `<p class="line-clamp-2 max-w-[300px] text-[11px] leading-[1.45] text-ink-secondary"
+                      title="${esc(r.description)}">${esc(r.description)}</p>`
+                : `<span class="text-ink-muted">—</span>`
             }
           </td>
-          <td class="px-3 py-2 tabular-nums">${fmtMonth(r.snapshotMonth)}</td>
-          <td class="px-3 py-2 text-right">${fmtMom(r.growth)}</td>
-          <td class="px-3 py-2 text-right tabular-nums text-ink-muted">${fmtHeat(r.heatScore)}</td>
-          <td class="px-3 py-2 text-ink-muted">${r.analyzedAt ? fmtTime(r.analyzedAt) : "—"}</td>
-          <td class="px-3 py-2">
-            <div class="flex items-center gap-1.5">
-              ${stateBadge(r.state)}
-              <button type="button" data-raw-open="${esc(r.domain)}"
-                      class="rounded border border-border px-1 py-0.5 text-[10px] text-ink-muted transition hover:border-border-strong hover:text-ink"
-                      title="看这个域名最近一次采集的接口原文">原文</button>
-            </div>
+          <td class="whitespace-nowrap px-3 py-2.5 pt-3 text-right">
+            <div class="font-medium tabular-nums">${fmtVisits(r.monthlyVisits)}</div>
+            <div class="text-[11px] tabular-nums text-ink-muted"
+                 title="版本 ${ver} = ${esc(fmtMonth(r.snapshotMonth))} 的流量数据">${ver} · ${prevText}</div>
+          </td>
+          <td class="px-3 py-2.5 pt-3 text-right">${fmtMom(r.growth)}</td>
+          <td class="px-3 py-2.5 pt-3 text-right tabular-nums text-ink-muted">${fmtHeat(r.heatScore)}</td>
+          <td class="whitespace-nowrap px-3 py-2.5 pt-3 text-ink-muted">${r.analyzedAt ? fmtTime(r.analyzedAt) : "—"}</td>
+          <td class="px-3 py-2.5 pt-3">${stateBadge(r.state)}</td>
+          <td class="whitespace-nowrap px-3 py-2.5 pt-3">
+            <button type="button" data-raw-open="${esc(r.domain)}"
+                    class="rounded-md border border-border px-2 py-1 text-[11px] text-ink-muted transition hover:border-border-strong hover:bg-surface-2 hover:text-ink"
+                    title="看这个域名最近一次采集的接口原文">原文</button>
           </td>
         </tr>`;
       })
@@ -260,8 +320,8 @@ function renderPending(): void {
       const old = state.oldByDomain.get(r.domain.toLowerCase());
       const beforeVisits = fmtVisits(old?.monthlyVisits);
       const afterVisits = fmtVisits(r.monthlyVisits);
-      const beforeMonth = fmtMonth(old?.snapshotMonth);
-      const afterMonth = fmtMonth(r.snapshotMonth ?? null);
+      const beforeMonth = fmtVersion(monthToVersion(old?.snapshotMonth));
+      const afterMonth = fmtVersion(monthToVersion(r.snapshotMonth));
       // 用颜色标出「确实变了」，没变的条目一眼看出来是先不急着发的
       const changed = beforeVisits !== afterVisits || beforeMonth !== afterMonth;
       return `<div data-refresh-open="${esc(r.domain)}" class="flex cursor-pointer flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-xs hover:bg-surface-2/60">
@@ -292,14 +352,14 @@ async function loadListed(): Promise<void> {
   try {
     const resp = await apiGet<ListedResp>(
       `/tools/listed?page=${state.page}&pageSize=${state.pageSize}` +
-        `&status=${encodeURIComponent(state.status)}&q=${encodeURIComponent(state.q)}`,
+        `&version=${encodeURIComponent(state.versionFilter)}&q=${encodeURIComponent(state.q)}`,
     );
-    state.target = resp.target;
     state.version = resp.version;
     state.items = resp.items;
     state.totalPages = Math.max(1, Math.ceil(resp.total / resp.pageSize));
     // 旧值只缓存一次就够：同一条目的线上值在这次会话里不会变（除非发布）
     for (const it of resp.items) state.oldByDomain.set(it.domain.toLowerCase(), it);
+    fillVersionOptions(resp);
     renderMeta(resp);
     renderRows();
   } catch (e) {
@@ -582,7 +642,7 @@ function bind(): void {
   });
 
   $("tools-listed-status").addEventListener("change", () => {
-    state.status = ($("tools-listed-status") as HTMLSelectElement).value;
+    state.versionFilter = ($("tools-listed-status") as HTMLSelectElement).value || "all";
     state.page = 1;
     void loadListed();
   });

@@ -158,12 +158,24 @@ export async function dispatchWorkflow(
 
 export function mapStatus(run: WorkflowRun | null, fallback: string): string {
   if (!run) return fallback;
+  /*
+   * GitHub 在 run 刚创建、还在等 runner 或等并发组释放时返回 pending。
+   * 它和 queued 在后台是同一件事，必须落成 queued：库里出现第四种状态
+   * （pending）后，回源校准和前端轮询的活跃判断都只认 queued/running，
+   * 这条任务就再也不会有任何一次刷新，永远停在「排队中」。
+   */
   if (run.status === "queued" || run.status === "requested" || run.status === "waiting") return "queued";
+  if (run.status === "pending") return "queued";
   if (run.status === "in_progress") return "running";
   if (run.conclusion === "success") return "success";
   if (run.conclusion === "cancelled") return "cancelled";
   if (run.conclusion) return "failure";
-  return run.status;
+  /*
+   * 走到这里说明 GitHub 给了个我们没见过的中间态。兜底不能原样返回 ——
+   * 那会把未知字符串写进库里当作 status，前端认不出、回源也筛不中。
+   * 按「还没结束」处理，至少下一轮还会继续查它。
+   */
+  return "queued";
 }
 
 /** 拉取单次 run 的最新状态 */

@@ -390,7 +390,10 @@ function renderJobs(jobs: Job[]): void {
     return;
   }
 
-  schedulePolling(jobs.some((j) => j.status === "queued" || j.status === "running"));
+  // 非终态即活跃：库里有 GitHub 的中间态（pending）时，只认 queued/running 会停止轮询
+  schedulePolling(
+    jobs.some((j) => j.status !== "success" && j.status !== "failure" && j.status !== "cancelled"),
+  );
 
   box.innerHTML = jobs
     .map((job) => {
