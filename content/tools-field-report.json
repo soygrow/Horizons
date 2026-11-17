@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-16T15:00:01.191Z",
-  "total": 13,
-  "itemsWithIssues": 7,
+  "generatedAt": "2026-11-17T08:53:53.949Z",
+  "total": 15,
+  "itemsWithIssues": 6,
   "dimensions": [
     {
       "key": "description",
@@ -10,7 +10,7 @@
       "missingRatio": 0,
       "missingDomains": [],
       "invalid": 6,
-      "invalidRatio": 46,
+      "invalidRatio": 40,
       "invalidSamples": [
         {
           "domain": "claudeduet.com",
@@ -52,7 +52,7 @@
       "key": "trafficMetrics.monthlyVisits",
       "label": "月访问量",
       "missing": 2,
-      "missingRatio": 15,
+      "missingRatio": 13,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -65,7 +65,7 @@
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
       "missing": 3,
-      "missingRatio": 23,
+      "missingRatio": 20,
       "missingDomains": [
         "claudeduet.com",
         "kixy.ai",
@@ -79,7 +79,7 @@
       "key": "metrics.registeredAt",
       "label": "域名注册时间",
       "missing": 9,
-      "missingRatio": 69,
+      "missingRatio": 60,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -99,7 +99,7 @@
       "key": "trafficMetrics.organicSearchVisits",
       "label": "自然搜索流量",
       "missing": 11,
-      "missingRatio": 85,
+      "missingRatio": 73,
       "missingDomains": [
         "agenthunt.io",
         "alsona.com",
@@ -121,7 +121,7 @@
       "key": "geoDistribution",
       "label": "地区分布",
       "missing": 2,
-      "missingRatio": 15,
+      "missingRatio": 13,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -133,9 +133,12 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 10,
-      "missingRatio": 77,
+      "missing": 13,
+      "missingRatio": 87,
       "missingDomains": [
+        "sourcely.net",
+        "gbrain.io",
+        "document360.com",
         "agenthunt.io",
         "claudeduet.com",
         "kixy.ai",
@@ -147,20 +150,15 @@
         "wanaka.app",
         "xmind.com"
       ],
-      "invalid": 1,
-      "invalidRatio": 8,
-      "invalidSamples": [
-        {
-          "domain": "pexo.ai",
-          "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
+      "invalid": 0,
+      "invalidRatio": 0,
+      "invalidSamples": []
     },
     {
       "key": "observations.competitors",
       "label": "竞品",
       "missing": 5,
-      "missingRatio": 38,
+      "missingRatio": 33,
       "missingDomains": [
         "claudeduet.com",
         "quest.app",
@@ -175,9 +173,10 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 9,
-      "missingRatio": 69,
+      "missing": 10,
+      "missingRatio": 67,
       "missingDomains": [
+        "document360.com",
         "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
@@ -196,7 +195,7 @@
       "key": "pageStructure",
       "label": "页面结构",
       "missing": 9,
-      "missingRatio": 69,
+      "missingRatio": 60,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -216,7 +215,7 @@
       "key": "screenshotDesktopUrl",
       "label": "官网截图",
       "missing": 10,
-      "missingRatio": 77,
+      "missingRatio": 67,
       "missingDomains": [
         "agenthunt.io",
         "alsona.com",
@@ -237,7 +236,7 @@
       "key": "siteAudit",
       "label": "站点体检",
       "missing": 9,
-      "missingRatio": 69,
+      "missingRatio": 60,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -257,7 +256,7 @@
       "key": "aiInsight",
       "label": "AI 叙事",
       "missing": 9,
-      "missingRatio": 69,
+      "missingRatio": 60,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -277,7 +276,7 @@
       "key": "performanceInsight",
       "label": "AI 判断",
       "missing": 9,
-      "missingRatio": 69,
+      "missingRatio": 60,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -297,21 +296,44 @@
   "entryIssues": [],
   "items": [
     {
-      "domain": "pexo.ai",
-      "name": "Pexo",
+      "domain": "sourcely.net",
+      "name": "Sourcely",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 462049,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
+      "monthlyVisits": 124255,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "gbrain.io",
+      "name": "GBrain",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 52037,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "document360.com",
+      "name": "Document360",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 87340,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
     },
     {
       "domain": "agenthunt.io",
