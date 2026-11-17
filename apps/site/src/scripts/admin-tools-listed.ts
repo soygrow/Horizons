@@ -73,13 +73,18 @@ interface PendingResp {
 }
 
 /**
- * 与 API 的 MAX_REFRESH_DOMAINS 保持一致：Actions 单 job 60 分钟，
- * 重采一条 60~90 秒，超过 30 条必须拆批。
+ * 与 API 的 MAX_REFRESH_DOMAINS 保持一致。
+ *
+ * Actions 单 job 60 分钟，enrich-staging 并发 3 跑站内管线，单批 15 条约 15~18 分钟；
+ * 超过 15 条必须拆批（多批由 workflow 的 concurrency 串行排队）。
  *
  * 拆批是前端的责任：API 遇到超过 30 条会直接 400（以前是静默 slice 掉尾巴，
  * 勾 50 条只有 30 条真跑），所以这里的循环必须真的把每一批都发出去。
  */
-const BATCH = 30;
+const BATCH = 15;
+
+/** 单条耗时（并发跑之后的折算值）：实测单站 3~4 分钟 ÷ 并发 3 ≈ 70 秒 */
+const SECONDS_PER_ITEM = 70;
 
 const state = {
   mounted: false,
@@ -290,7 +295,9 @@ function syncPicked(): void {
   const n = state.picked.size;
   const picked = $("tools-listed-picked");
   picked.textContent =
-    n === 0 ? "已选 0 条" : `已选 ${n} 条（${Math.ceil(n / BATCH)} 批，约 ${n * 80} 秒）`;
+    n === 0
+      ? "已选 0 条"
+      : `已选 ${n} 条（${Math.ceil(n / BATCH)} 批，约 ${Math.ceil((n * SECONDS_PER_ITEM) / 60)} 分钟）`;
   ($("tools-listed-refresh-btn") as HTMLButtonElement).disabled = n === 0;
 }
 
@@ -771,7 +778,7 @@ async function submitRefresh(): Promise<void> {
   }
 
   const batches = Math.ceil(domains.length / BATCH);
-  const minutes = Math.ceil((domains.length * 80) / 60);
+  const minutes = Math.ceil((domains.length * SECONDS_PER_ITEM) / 60);
   const jobs = collect && rewrite ? "重新采集 + 重跑文案" : collect ? "只重新采集" : "只重跑文案";
   if (
     !window.confirm(

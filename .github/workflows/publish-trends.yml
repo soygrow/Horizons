@@ -1,7 +1,10 @@
 name: Publish Trends
 
-# 后台「发布到榜单」按钮的落点：把候选池合并进 content/trends.json，
+# 后台「发布到榜单」按钮的落点：把候选池合并成新版本写入 D1，
 # 再把「谁进榜、谁掉了几名」写回候选池供后台回看，最后触发站点重建。
+#
+# 榜单数据不入库：唯一真源是 D1 的当前版本快照（board_listed 含 variant_of 别名），
+# 站点构建时由 scripts/admin/hydrate-trends.ts 还原 content/trends.json。
 #
 # 用默认 GITHUB_TOKEN 提交时 push 不会触发其它 workflow，所以部署要显式 dispatch。
 # 需要的仓库 Secrets：
@@ -52,7 +55,7 @@ jobs:
       - name: 合并候选池并输出位次变化
         id: merge
         env:
-          # D1 冷备写入：灰度期失败不阻塞 JSON 发布
+          # D1 是唯一真源，写失败发布脚本会直接抛错（见 publish-trends.ts）
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
@@ -72,23 +75,27 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: 提交榜单数据
+      - name: 提交候选池快照
         id: commit
         run: |
           git config user.name "horizons-bot"
           git config user.email "bot@horizons.tools"
           pnpm exec tsx scripts/admin/board-stats.ts
-          git add content/trends.json content/trends-staging.json content/board-stats.json
+          # 榜单本身已不入库（唯一真源是 D1 的当前版本快照，含 variant_of 别名），
+          # 这里只提交候选池与统计。content/trends.json 在 .gitignore 里，不能 add。
+          git add content/trends-staging.json content/board-stats.json
           if git diff --cached --quiet; then
             echo "::notice::没有可发布的变更，未产生提交"
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           msg="${{ inputs.note }}"
-          board=$(node -e "const d=require('./content/trends.json');console.log(d.keywords.filter(t=>!t.variantOf).length)")
+          board=$(node -e 'const s=process.env.SUM;console.log(JSON.parse(s).boardAfter)' 2>/dev/null || echo "?")
           git commit -m "feat(trends): 发布候选词到榜单（${board} 条在榜）${msg:+（${msg}）}"
           git push
           echo "changed=true" >> "$GITHUB_OUTPUT"
+        env:
+          SUM: ${{ steps.merge.outputs.summary }}
 
       - name: 触发站点构建
         if: steps.commit.outputs.changed == 'true'

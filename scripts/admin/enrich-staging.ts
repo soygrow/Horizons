@@ -16,7 +16,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import {
   computeFieldGaps,
   computeFieldIssues,
@@ -35,6 +35,28 @@ const ROOT = path.resolve(import.meta.dirname, "../..");
 const REPORT_PATH = path.join(ROOT, "content/tools-field-report.json");
 /** 单站富化的硬超时：采集 + LLM 正常在 2–5 分钟 */
 const PER_SITE_TIMEOUT_MS = 12 * 60_000;
+
+/**
+ * 同一时刻并发跑几个站。
+ *
+ * 单站实测 3~4 分钟（后台一次提交 30 条，跑满 60 分钟只到第 17 条就被 Actions 掐掉），
+ * 而这 3~4 分钟几乎全在等外部接口：Playwright 开页截图、两次 vortex run-sync、
+ * SERP、三段 DeepSeek。本地 CPU 基本闲着，串行跑纯属把等待时间叠加。
+ *
+ * 默认 3 是保守值：Apify 账号要同时容纳 3 个 actor run，机器要同时跑 3 个 Chromium。
+ * 想再快可用 ENRICH_CONCURRENCY 调高（4~5），但要盯日志里的内存与 429。
+ */
+const DEFAULT_CONCURRENCY = 3;
+
+/**
+ * 本进程的时间预算（分钟），可用 ENRICH_BUDGET_MINUTES 覆盖。
+ *
+ * Actions 的 job 超时是 60 分钟，超时会被直接 kill —— 末尾「统一打 stage + 写库」
+ * 那一步就没了，条目全卡在 enriching，只能等下一次跑才被放出来。
+ * 所以留 10 分钟余量给收尾（D1 写入 + git commit + 触发构建）：到点不再开新站，
+ * 没跑到的条目退回 approved，下次点一次就能接着跑。
+ */
+const DEFAULT_BUDGET_MINUTES = 45;
 
 export interface FieldGapRow {
   domain: string;
@@ -94,6 +116,75 @@ function parseDomains(): Set<string> | null {
       .map((d) => d.trim().toLowerCase())
       .filter(Boolean),
   );
+}
+
+interface SiteRunResult {
+  /** 子进程退出码；null 表示被信号杀掉或起不来 */
+  code: number | null;
+  /** 是否踩到了单站硬超时 */
+  expired: boolean;
+}
+
+/**
+ * 跑一个站（子进程），把它的输出按行透传。
+ *
+ * 并发跑时各站日志会交错，所以每行前加 `[域名]` 前缀 —— 不然出问题根本分不清
+ * 哪一行是哪个站的。串行时（concurrency=1）不加前缀，保持原来的日志形态。
+ *
+ * 用 detached + 杀进程组：`pnpm exec tsx` 会再拉起 node，只 kill pnpm 会留下
+ * 孤儿进程继续占着 Chromium 和 Apify 配额。
+ */
+function runSite(domain: string, args: string[], prefix: boolean): Promise<SiteRunResult> {
+  return new Promise((resolve) => {
+    const child = spawn("pnpm", args, {
+      cwd: ROOT,
+      env: process.env,
+      detached: true,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+
+    const tag = prefix ? `[${domain}] ` : "";
+    const relay = (stream: NodeJS.ReadableStream | null, out: NodeJS.WritableStream) => {
+      if (!stream) return;
+      let rest = "";
+      stream.setEncoding("utf8");
+      stream.on("data", (chunk: string) => {
+        rest += chunk;
+        let nl = rest.indexOf("\n");
+        while (nl >= 0) {
+          // 去掉 \r：子进程在容器里可能吐 CRLF，留着会在 Actions 日志里多出空行
+          out.write(`${tag}${rest.slice(0, nl).replace(/\r$/, "")}\n`);
+          rest = rest.slice(nl + 1);
+          nl = rest.indexOf("\n");
+        }
+      });
+      stream.on("end", () => {
+        if (rest) out.write(`${tag}${rest.replace(/\r$/, "")}\n`);
+      });
+    };
+    relay(child.stdout, process.stdout);
+    relay(child.stderr, process.stderr);
+
+    let expired = false;
+    const timer = setTimeout(() => {
+      expired = true;
+      try {
+        if (child.pid) process.kill(-child.pid, "SIGKILL");
+      } catch {
+        child.kill("SIGKILL");
+      }
+    }, PER_SITE_TIMEOUT_MS);
+
+    child.on("error", (e) => {
+      clearTimeout(timer);
+      console.error(`${tag}[enrich-staging] 子进程启动失败：${e.message}`);
+      resolve({ code: null, expired });
+    });
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      resolve({ code, expired });
+    });
+  });
 }
 
 /**
@@ -160,6 +251,7 @@ export function buildFieldReport(items: StagingItem[]): FieldReport {
 }
 
 async function main(): Promise<void> {
+  const startedAt = Date.now();
   const dry = process.argv.includes("--dry");
   const freeOnly = process.argv.includes("--free-only");
   /** 线上更新：强制重采，绕过 field-collect 的一个月缓存，否则跑完数据不变 */
@@ -171,8 +263,20 @@ async function main(): Promise<void> {
   /** 按来源过滤：两个后台 tab 的数据互不交叉 */
   const rawKind = arg("kind");
   const kind = rawKind === "new" || rawKind === "refresh" ? rawKind : null;
-  // 更新一条要重采整站，跑得比新条目慢，默认给更大的批量
-  const limit = Number(arg("limit") ?? (kind === "refresh" ? 25 : 10));
+  // 更新一条要重采整站，跑得比新条目慢；批量与 API 的 MAX_REFRESH_DOMAINS 对齐（15），
+  // 给 60 分钟的 job 窗口留余量（突发一个站卡到单站超时不会把整批拖崩）
+  const limit = Number(arg("limit") ?? (kind === "refresh" ? 15 : 10));
+
+  // 并发与时间预算：命令行优先，其次环境变量（workflow 里注入），最后取默认值
+  const concurrency = (() => {
+    const n = Number(arg("concurrency") ?? process.env.ENRICH_CONCURRENCY ?? DEFAULT_CONCURRENCY);
+    return Number.isFinite(n) && n >= 1 ? Math.min(Math.floor(n), 8) : DEFAULT_CONCURRENCY;
+  })();
+  const budgetMinutes = (() => {
+    const n = Number(arg("budget-minutes") ?? process.env.ENRICH_BUDGET_MINUTES ?? DEFAULT_BUDGET_MINUTES);
+    return Number.isFinite(n) && n > 0 ? n : DEFAULT_BUDGET_MINUTES;
+  })();
+  const deadline = Date.now() + budgetMinutes * 60_000;
 
   // 上一轮跑飞的条目先放出来：否则它们一直占着 enriching，
   // 既不能重选，也不会进发布队列，只能人工改库
@@ -194,7 +298,8 @@ async function main(): Promise<void> {
   console.log(
     `[enrich-staging]${kind ? ` 来源 ${kind}` : ""} 队列 ${staging.items.length}｜待富化 ${targets.length}｜本次处理 ${picked.length}` +
       `${force ? "｜强制重采" : ""}${freeOnly ? "｜仅免费字段" : ""}` +
-      `${noLlm ? "｜跳过文案" : ""}${insightOnly ? "｜仅重跑文案" : ""}${dry ? "｜dry-run" : ""}`,
+      `${noLlm ? "｜跳过文案" : ""}${insightOnly ? "｜仅重跑文案" : ""}${dry ? "｜dry-run" : ""}` +
+      `｜并发 ${concurrency}｜预算 ${budgetMinutes} 分钟`,
   );
 
   if (picked.length === 0) {
@@ -214,29 +319,60 @@ async function main(): Promise<void> {
 
   let ok = 0;
   const failed: string[] = [];
+  /** 时间预算用尽、压根没开跑的条目：退回 approved，下次点一下就能接着跑 */
+  const skipped: string[] = [];
 
-  for (const tool of picked) {
-    const args = ["exec", "tsx", "scripts/fetch/enrich-site.ts", "--domain", tool.domain, "--staging"];
-    if (freeOnly) args.push("--free-only");
-    if (force) args.push("--force");
-    if (noLlm) args.push("--no-llm");
-    if (insightOnly) args.push("--insight-only");
-    console.log(`\n[enrich-staging] → ${tool.domain}`);
-    const res = spawnSync("pnpm", args, {
-      cwd: ROOT,
-      stdio: "inherit",
-      timeout: PER_SITE_TIMEOUT_MS,
-      env: process.env,
-    });
-    if (res.status === 0) ok++;
-    else failed.push(`${tool.domain}(exit ${res.status ?? "timeout"})`);
+  /*
+   * 并发跑：按 picked 顺序发牌，每个 worker 跑完一条自己取下一条。
+   *
+   * 到点（deadline）就不再开新站，只把剩下的记进 skipped —— 正在跑的站不打断，
+   * 免得半套结果写进库。这样最坏情况是「跑了 25 条，剩 5 条退回待富化」，
+   * 而不是被 Actions 硬杀、条目全卡在 enriching。
+   */
+  let cursor = 0;
+  const workers = Array.from({ length: Math.min(concurrency, picked.length) }, async () => {
+    for (;;) {
+      const idx = cursor++;
+      if (idx >= picked.length) return;
+      const tool = picked[idx];
+
+      if (Date.now() >= deadline) {
+        skipped.push(tool.domain);
+        continue;
+      }
+
+      const args = ["exec", "tsx", "scripts/fetch/enrich-site.ts", "--domain", tool.domain, "--staging"];
+      if (freeOnly) args.push("--free-only");
+      if (force) args.push("--force");
+      if (noLlm) args.push("--no-llm");
+      if (insightOnly) args.push("--insight-only");
+      console.log(`\n[enrich-staging] → ${tool.domain}`);
+      const res = await runSite(tool.domain, args, concurrency > 1);
+      if (res.code === 0) {
+        ok++;
+        console.log(`[enrich-staging] ✓ ${tool.domain}（已完成 ${ok}/${picked.length}）`);
+      } else {
+        failed.push(`${tool.domain}(${res.expired ? "timeout" : `exit ${res.code ?? "signal"}`})`);
+      }
+    }
+  });
+  await Promise.all(workers);
+
+  if (skipped.length) {
+    console.warn(
+      `::warning::[enrich-staging] 时间预算 ${budgetMinutes} 分钟已用尽，${skipped.length} 条未开跑，已退回「已确认收录」：` +
+        `${skipped.slice(0, 5).join("、")}${skipped.length > 5 ? " 等" : ""}。下次再点一次即可接着跑。`,
+    );
   }
 
   // 子进程已把富化结果写回 D1，这里重新读一遍再统一打 stage / fieldGaps
   const latest = await readWorkspace<StagingItem>("tools");
   // 精确匹配失败域名（避免 a.com / ab.com 这类前缀撞车）
   const failedSet = new Set(failed.map((f) => f.split("(")[0]));
-  const done = new Set(picked.filter((t) => !failedSet.has(t.domain)).map((t) => t.domain));
+  const skippedSet = new Set(skipped);
+  const done = new Set(
+    picked.filter((t) => !failedSet.has(t.domain) && !skippedSet.has(t.domain)).map((t) => t.domain),
+  );
   const items: StagingItem[] = latest.items.map((i) => {
     // 成功 → enriched；失败 → enrich_failed（以前失败什么都不写，条目退回 approved，
     // 后台既看不出失败也分不清是不是没跑过）
@@ -244,6 +380,8 @@ async function main(): Promise<void> {
       return { ...i, stage: "enriched", enrichedAt: new Date().toISOString(), fieldGaps: computeFieldGaps(i) };
     }
     if (failedSet.has(i.domain)) return { ...i, stage: "enrich_failed" };
+    // 没开跑的不算失败：留着 enriching 会被判超时，退回 approved 才能被再次选中
+    if (skippedSet.has(i.domain)) return { ...i, stage: "approved" };
     return i;
   });
 
@@ -265,7 +403,12 @@ async function main(): Promise<void> {
   );
   await saveReport("tools-field", report, "enrich-staging");
 
-  console.log(`\n[enrich-staging] 完成 ${ok}/${picked.length}${failed.length ? `｜失败 ${failed.length}` : ""}`);
+  console.log(
+    `\n[enrich-staging] 完成 ${ok}/${picked.length}` +
+      `${failed.length ? `｜失败 ${failed.length}` : ""}` +
+      `${skipped.length ? `｜预算用尽未跑 ${skipped.length}（已退回待富化）` : ""}` +
+      `（耗时 ${Math.round((Date.now() - startedAt) / 60_000)} 分钟）`,
+  );
   if (report.total > 0) {
     // 没配 APIFY_TOKEN 时流量 / 关键词 / 渠道 / 国家分布全是空的，这属于配置缺失而非富化失败，
     // 不说明的话看报告的人只会以为富化又白跑了
@@ -289,11 +432,20 @@ async function main(): Promise<void> {
       }
     }
   }
-  console.log(JSON.stringify({ processed: picked.length, ok, failed: failed.length, report: REPORT_PATH }));
+  console.log(
+    JSON.stringify({
+      processed: picked.length,
+      ok,
+      failed: failed.length,
+      skipped: skipped.length,
+      report: REPORT_PATH,
+    }),
+  );
 
   // 全失败必须让任务失败：以前无论成败都 exit 0，后台任务列表显示「成功」，
   // 但队列一条都没富化、阶段停在「待富化」，人只能对着日志猜。
-  if (ok === 0) {
+  // 只有「没跑到的」（预算用尽）不算失败，那是正常的提前收工。
+  if (ok === 0 && failed.length > 0) {
     console.error(`[enrich-staging] ${picked.length} 条全部失败，按失败退出（后台会显示失败）`);
     process.exitCode = 1;
   } else if (failed.length) {

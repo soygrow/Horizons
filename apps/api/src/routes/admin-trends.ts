@@ -114,6 +114,43 @@ async function listJobs(env: Env, limit: number): Promise<JobRow[]> {
 }
 
 /**
+ * 正在跑（queued/running）的同类任务。
+ *
+ * 只回看最近 5 条：再往前的要么已结束，要么是幽灵记录（workflow 被手动删掉），
+ * 拿它拦派发会让后台永久卡住。状态一律用 refreshJob 现查 GitHub，不看库里的旧值。
+ */
+async function findRunningJob(env: Env, kind: string): Promise<JobRow | null> {
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT * FROM trend_jobs WHERE kind = ? ORDER BY created_at DESC LIMIT 5",
+    )
+      .bind(kind)
+      .all<JobRow>();
+    const cfg = ghConfig(env);
+    for (const row of results ?? []) {
+      const fresh = await refreshJob(env, cfg, row).catch(() => row);
+      if (fresh.status === "queued" || fresh.status === "running") return fresh;
+    }
+  } catch (e) {
+    // 表缺失（忘跑 0009）不该把所有派发都拦死，只是失去防重能力
+    console.warn("[trends] 查询运行中任务失败", e);
+  }
+  return null;
+}
+
+/** 任务参数里记录的 slugs，用来算「哪些词正在被处理」 */
+function jobSlugs(row: JobRow): string[] {
+  try {
+    const parsed = JSON.parse(row.params) as { slugs?: unknown };
+    return Array.isArray(parsed.slugs)
+      ? parsed.slugs.filter((s): s is string => typeof s === "string")
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
  * 先落一条任务记录再 dispatch，这样 workflow 里的 job_id 能和后台对上。
  * 表缺失（忘跑 0009 迁移）不该挡住 dispatch，写库失败只记日志。
  */
@@ -596,14 +633,33 @@ trends.post("/enrich", async (c) => {
     return c.json({ error: "too_many", detail: "单次最多 60 个，分批富化更容易定位失败" }, 400);
   }
 
-  const jobId = await insertJob(c.env, "enrich", { count: slugs.length }, null, null);
+  /*
+   * 防重：富化按词计费，两个标签页（或手快连点）会重复派发同一批，
+   * 白烧一遍 LLM。前端按钮锁只是第一道，后端必须自己拦。
+   * 只跳过已被占住的词，剩下的照常派发 —— 补选新词不该被旧任务挡住。
+   */
+  const running = await findRunningJob(c.env, "enrich");
+  const busy = new Set(running ? jobSlugs(running) : []);
+  const todo = slugs.filter((s) => !busy.has(s));
+  if (todo.length === 0) {
+    return c.json(
+      {
+        error: "all_enriching",
+        detail: `这 ${slugs.length} 个词已经在富化中，完成后再试`,
+        runUrl: running?.run_url ?? null,
+      },
+      409,
+    );
+  }
+
+  const jobId = await insertJob(c.env, "enrich", { count: todo.length, slugs: todo }, null, null);
   try {
     const run = await dispatchWorkflow(cfg, ENRICH_WORKFLOW, {
-      slugs: slugs.join(","),
+      slugs: todo.join(","),
       job_id: jobId,
     });
     await updateJobRun(c.env, jobId, run);
-    return c.json({ ok: true, run, jobId, count: slugs.length });
+    return c.json({ ok: true, run, jobId, count: todo.length, skipped: slugs.length - todo.length });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     await failJob(c.env, jobId, msg);
@@ -677,6 +733,22 @@ trends.post("/publish", async (c) => {
     return c.json(
       { error: "nothing_to_publish", detail: skipped > 0 ? `${skipped} 个候选还没富化` : "" },
       400,
+    );
+  }
+
+  /*
+   * 发布是整榜操作：连点两次会派发两个 workflow，
+   * 后一个拿着同一份候选再发一次，白切一个版本号还把 diff 记录搅乱。
+   */
+  const running = await findRunningJob(c.env, "publish");
+  if (running) {
+    return c.json(
+      {
+        error: "already_publishing",
+        detail: "上一次发布还在跑，等它结束再发",
+        runUrl: running.run_url ?? null,
+      },
+      409,
     );
   }
 

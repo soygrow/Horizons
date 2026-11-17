@@ -60,6 +60,11 @@ content/aitools.json
 # 发布脚本写给 CI 的报告（判断要不要重建站点），不是数据
 content/tools-publish.json
 
+# 趋势词榜：同上，唯一真源是 D1 的当前版本快照（board_listed 含 variant_of 别名）。
+# 每次 `pnpm data` 由 scripts/admin/hydrate-trends.ts 还原，不入库。
+# 注意 content/trends-policy.json 仍然入库：那是采集侧的准入判定账本，不是榜单数据。
+content/trends.json
+
 # Astro 静态站（apps/site）构建产物与类型缓存
 apps/site/dist/
 apps/site/.astro/

@@ -1,10 +1,2584 @@
 {
-  "updatedAt": "2026-11-10T07:01:28.737Z",
+  "updatedAt": "2026-11-17T12:02:41.699Z",
   "runAt": "2026-11-10T06:41:28.053Z",
   "items": [],
   "rejected": [],
+  "board": {
+    "updatedAt": "2026-11-17T12:02:41.699Z",
+    "rows": [
+      {
+        "slug": "mcp-server",
+        "keyword": "mcp server",
+        "trend": 55.6,
+        "opportunity": 64.4,
+        "enough": true
+      },
+      {
+        "slug": "model-context-protocol",
+        "keyword": "model context protocol",
+        "trend": 42.4,
+        "opportunity": 67.9,
+        "enough": true
+      },
+      {
+        "slug": "rag-pipeline",
+        "keyword": "rag pipeline",
+        "trend": 81.9,
+        "opportunity": 68.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-evals",
+        "keyword": "ai evals",
+        "trend": 80.9,
+        "opportunity": 72.2,
+        "enough": true
+      },
+      {
+        "slug": "ai-code-review",
+        "keyword": "ai code review",
+        "trend": 35.5,
+        "opportunity": 60.4,
+        "enough": true
+      },
+      {
+        "slug": "vibe-coding",
+        "keyword": "vibe coding",
+        "trend": 55.1,
+        "opportunity": 74.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-coding-agent",
+        "keyword": "ai coding agent",
+        "trend": 41,
+        "opportunity": 67.8,
+        "enough": true
+      },
+      {
+        "slug": "llm-fine-tuning",
+        "keyword": "llm fine tuning",
+        "trend": 84.1,
+        "opportunity": 73.6,
+        "enough": true
+      },
+      {
+        "slug": "local-llm",
+        "keyword": "local llm",
+        "trend": 33.4,
+        "opportunity": 64.1,
+        "enough": true
+      },
+      {
+        "slug": "vector-database",
+        "keyword": "vector database",
+        "trend": 50.1,
+        "opportunity": 61.6,
+        "enough": true
+      },
+      {
+        "slug": "cursor-ai",
+        "keyword": "cursor ai",
+        "trend": 43,
+        "opportunity": 66.5,
+        "enough": true
+      },
+      {
+        "slug": "claude-code",
+        "keyword": "claude code",
+        "trend": 56.2,
+        "opportunity": 76.1,
+        "enough": true
+      },
+      {
+        "slug": "github-copilot",
+        "keyword": "github copilot",
+        "trend": 51.1,
+        "opportunity": 64.8,
+        "enough": true
+      },
+      {
+        "slug": "lovable-ai",
+        "keyword": "lovable ai",
+        "trend": 38.4,
+        "opportunity": 66.1,
+        "enough": true
+      },
+      {
+        "slug": "notion-ai",
+        "keyword": "notion ai",
+        "trend": 40.1,
+        "opportunity": 60.9,
+        "enough": true
+      },
+      {
+        "slug": "perplexity-ai",
+        "keyword": "perplexity ai",
+        "trend": 45.4,
+        "opportunity": 66.5,
+        "enough": true
+      },
+      {
+        "slug": "gamma-ai",
+        "keyword": "gamma ai",
+        "trend": 46.6,
+        "opportunity": 60.7,
+        "enough": true
+      },
+      {
+        "slug": "napkin-ai",
+        "keyword": "napkin ai",
+        "trend": 78.4,
+        "opportunity": 70.3,
+        "enough": true
+      },
+      {
+        "slug": "elevenlabs-voice",
+        "keyword": "elevenlabs voice",
+        "trend": 66.7,
+        "opportunity": 69.9,
+        "enough": true
+      },
+      {
+        "slug": "hedra-ai",
+        "keyword": "hedra ai",
+        "trend": 84.1,
+        "opportunity": 66.2,
+        "enough": true
+      },
+      {
+        "slug": "higgsfield-ai",
+        "keyword": "higgsfield ai",
+        "trend": 36.6,
+        "opportunity": 56.8,
+        "enough": true
+      },
+      {
+        "slug": "runway-ml",
+        "keyword": "runway ml",
+        "trend": 78.5,
+        "opportunity": 68.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-meeting-notes",
+        "keyword": "ai meeting notes",
+        "trend": 67,
+        "opportunity": 73.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-resume-builder",
+        "keyword": "ai resume builder",
+        "trend": 72.8,
+        "opportunity": 72.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-photo-editor",
+        "keyword": "ai photo editor",
+        "trend": 47.9,
+        "opportunity": 56.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-video-generator",
+        "keyword": "ai video generator",
+        "trend": 42.9,
+        "opportunity": 66.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-voice-clone",
+        "keyword": "ai voice clone",
+        "trend": 81.9,
+        "opportunity": 70.2,
+        "enough": true
+      },
+      {
+        "slug": "ai-podcast-editing",
+        "keyword": "ai podcast editing",
+        "trend": 63.2,
+        "opportunity": 67.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-spreadsheet",
+        "keyword": "ai spreadsheet",
+        "trend": 53.5,
+        "opportunity": 62.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-data-analyst",
+        "keyword": "ai data analyst",
+        "trend": 35.9,
+        "opportunity": 63.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-customer-support",
+        "keyword": "ai customer support",
+        "trend": 48.9,
+        "opportunity": 71.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-seo-tools",
+        "keyword": "ai seo tools",
+        "trend": 71.9,
+        "opportunity": 68.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-ugc-ads",
+        "keyword": "ai ugc ads",
+        "trend": 81.9,
+        "opportunity": 78.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-avatar-video",
+        "keyword": "ai avatar video",
+        "trend": 76.9,
+        "opportunity": 66.4,
+        "enough": true
+      },
+      {
+        "slug": "text-to-sql-ai",
+        "keyword": "text to sql ai",
+        "trend": 47.1,
+        "opportunity": 62.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-agents-for-business",
+        "keyword": "ai agents for business",
+        "trend": 84.6,
+        "opportunity": 71.7,
+        "enough": true
+      },
+      {
+        "slug": "ai-automation-agency",
+        "keyword": "ai automation agency",
+        "trend": 77.5,
+        "opportunity": 71.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-wrappers",
+        "keyword": "ai wrappers",
+        "trend": 75.8,
+        "opportunity": 73.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-compliance",
+        "keyword": "ai compliance",
+        "trend": 39.3,
+        "opportunity": 68,
+        "enough": true
+      },
+      {
+        "slug": "ai-in-education",
+        "keyword": "ai in education",
+        "trend": 37.6,
+        "opportunity": 66,
+        "enough": true
+      },
+      {
+        "slug": "ai-agents-marketplace",
+        "keyword": "ai agents marketplace",
+        "trend": 78.3,
+        "opportunity": 64.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-infrastructure-cost",
+        "keyword": "ai infrastructure cost",
+        "trend": 74.4,
+        "opportunity": 78.5,
+        "enough": true
+      },
+      {
+        "slug": "arcjet",
+        "keyword": "Arcjet",
+        "trend": 86.8,
+        "opportunity": 64.3,
+        "enough": true
+      },
+      {
+        "slug": "agentic-workflow",
+        "keyword": "agentic workflow",
+        "trend": 67.6,
+        "opportunity": 68.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-music-generator",
+        "keyword": "ai music generator",
+        "trend": 39.7,
+        "opportunity": 66,
+        "enough": true
+      },
+      {
+        "slug": "ai-jailbreaks",
+        "keyword": "ai jailbreaks",
+        "trend": 75.5,
+        "opportunity": 71.4,
+        "enough": true
+      },
+      {
+        "slug": "typesafe-ai",
+        "keyword": "typesafe ai",
+        "trend": 34.1,
+        "opportunity": 63,
+        "enough": true
+      },
+      {
+        "slug": "ai-youtube-downloader",
+        "keyword": "ai youtube downloader",
+        "trend": 81,
+        "opportunity": 61.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-for-making-apps",
+        "keyword": "ai for making apps",
+        "trend": 70.7,
+        "opportunity": 65.3,
+        "enough": true
+      },
+      {
+        "slug": "best-ai-tools-for-documentation",
+        "keyword": "best ai tools for documentation",
+        "trend": 64.3,
+        "opportunity": 69.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-administrative-assistant",
+        "keyword": "ai administrative assistant",
+        "trend": 69.2,
+        "opportunity": 72,
+        "enough": true
+      },
+      {
+        "slug": "ai-integration-platform",
+        "keyword": "ai integration platform",
+        "trend": 82.2,
+        "opportunity": 61.7,
+        "enough": true
+      },
+      {
+        "slug": "best-plugins-for-chatgpt",
+        "keyword": "best plugins for chatgpt",
+        "trend": 69.9,
+        "opportunity": 69.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-code-editor-free",
+        "keyword": "ai code editor free",
+        "trend": 56.2,
+        "opportunity": 69.5,
+        "enough": true
+      },
+      {
+        "slug": "best-open-source-coding-agents",
+        "keyword": "best open source coding agents",
+        "trend": 71.3,
+        "opportunity": 71,
+        "enough": true
+      },
+      {
+        "slug": "prezi-ai",
+        "keyword": "prezi ai",
+        "trend": 68.5,
+        "opportunity": 60.8,
+        "enough": true
+      },
+      {
+        "slug": "omp-harness-ai",
+        "keyword": "omp harness ai",
+        "trend": 43.8,
+        "opportunity": 58.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-watch-video",
+        "keyword": "ai watch video",
+        "trend": 72.1,
+        "opportunity": 64.9,
+        "enough": true
+      },
+      {
+        "slug": "rewind-ai-alternatives",
+        "keyword": "rewind.ai alternatives",
+        "trend": 47.1,
+        "opportunity": 62.1,
+        "enough": true
+      },
+      {
+        "slug": "abm-marketing-automation",
+        "keyword": "abm marketing automation",
+        "trend": 41.3,
+        "opportunity": 51.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-image-assistant",
+        "keyword": "ai image assistant",
+        "trend": 81.3,
+        "opportunity": 54.9,
+        "enough": true
+      },
+      {
+        "slug": "gemini-ocr",
+        "keyword": "gemini ocr",
+        "trend": 80.3,
+        "opportunity": 64.6,
+        "enough": true
+      },
+      {
+        "slug": "discovery-agents",
+        "keyword": "discovery agents",
+        "trend": 78.6,
+        "opportunity": 67.7,
+        "enough": true
+      },
+      {
+        "slug": "eu-ai-act",
+        "keyword": "eu ai act",
+        "trend": 36.4,
+        "opportunity": 68,
+        "enough": true
+      },
+      {
+        "slug": "data-quality-machine-learning",
+        "keyword": "data quality machine learning",
+        "trend": 73.6,
+        "opportunity": 66,
+        "enough": true
+      },
+      {
+        "slug": "ai-flow",
+        "keyword": "ai flow",
+        "trend": 39,
+        "opportunity": 58.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-together",
+        "keyword": "ai together",
+        "trend": 41.2,
+        "opportunity": 63.8,
+        "enough": true
+      },
+      {
+        "slug": "fine-tune-ai",
+        "keyword": "fine-tune ai",
+        "trend": 47.1,
+        "opportunity": 65.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-search-engine-api",
+        "keyword": "ai search engine api",
+        "trend": 41.3,
+        "opportunity": 57.9,
+        "enough": true
+      },
+      {
+        "slug": "voice-agent-platform",
+        "keyword": "voice agent platform",
+        "trend": 69.5,
+        "opportunity": 70.7,
+        "enough": true
+      },
+      {
+        "slug": "chatgpt-crm",
+        "keyword": "chatgpt crm",
+        "trend": 74.8,
+        "opportunity": 66,
+        "enough": true
+      },
+      {
+        "slug": "peec-ai-alternatives",
+        "keyword": "peec ai alternatives",
+        "trend": 43.8,
+        "opportunity": 65,
+        "enough": true
+      },
+      {
+        "slug": "ai-agent-manager",
+        "keyword": "ai agent manager",
+        "trend": 67.2,
+        "opportunity": 69.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-office-manager",
+        "keyword": "ai office manager",
+        "trend": 78.1,
+        "opportunity": 68,
+        "enough": true
+      },
+      {
+        "slug": "claude-code-tokens-cost",
+        "keyword": "claude code tokens cost",
+        "trend": 64,
+        "opportunity": 69.5,
+        "enough": true
+      },
+      {
+        "slug": "claude-engineering",
+        "keyword": "claude engineering",
+        "trend": 52.9,
+        "opportunity": 70.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-autonomy",
+        "keyword": "ai autonomy",
+        "trend": 53.1,
+        "opportunity": 58.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-reflection",
+        "keyword": "ai reflection",
+        "trend": 39.3,
+        "opportunity": 67.7,
+        "enough": true
+      },
+      {
+        "slug": "ai-web-crawler",
+        "keyword": "ai web crawler",
+        "trend": 72.5,
+        "opportunity": 59.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-image-editor-prompt-free",
+        "keyword": "ai image editor prompt free",
+        "trend": 52,
+        "opportunity": 64.1,
+        "enough": true
+      },
+      {
+        "slug": "ai-image-story-generator",
+        "keyword": "ai image story generator",
+        "trend": 70.9,
+        "opportunity": 72.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-phone-call-free",
+        "keyword": "ai phone call free",
+        "trend": 67.4,
+        "opportunity": 64.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-table-generator",
+        "keyword": "ai table generator",
+        "trend": 70,
+        "opportunity": 60.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-reddit-search",
+        "keyword": "ai reddit search",
+        "trend": 81.6,
+        "opportunity": 70.6,
+        "enough": true
+      },
+      {
+        "slug": "best-ai-for-finding-jobs",
+        "keyword": "best ai for finding jobs",
+        "trend": 47.1,
+        "opportunity": 62.7,
+        "enough": true
+      },
+      {
+        "slug": "best-ai-job-search-tools",
+        "keyword": "best ai job search tools",
+        "trend": 48.8,
+        "opportunity": 75.3,
+        "enough": true
+      },
+      {
+        "slug": "api-deepseek",
+        "keyword": "api deepseek",
+        "trend": 65.6,
+        "opportunity": 58.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-demo-video",
+        "keyword": "ai demo video",
+        "trend": 77.9,
+        "opportunity": 66,
+        "enough": true
+      },
+      {
+        "slug": "inbox-zero-ai",
+        "keyword": "inbox zero ai",
+        "trend": 41.3,
+        "opportunity": 67.3,
+        "enough": true
+      },
+      {
+        "slug": "best-ai-dictation-software",
+        "keyword": "best ai dictation software",
+        "trend": 44.7,
+        "opportunity": 66.2,
+        "enough": true
+      },
+      {
+        "slug": "best-rag-framework",
+        "keyword": "best rag framework",
+        "trend": 46.8,
+        "opportunity": 64.3,
+        "enough": true
+      },
+      {
+        "slug": "best-free-ai-flyer-generator",
+        "keyword": "best free ai flyer generator",
+        "trend": 45.3,
+        "opportunity": 47.3,
+        "enough": true
+      },
+      {
+        "slug": "mcp",
+        "keyword": "mcp",
+        "trend": 56.5,
+        "opportunity": 76,
+        "enough": true
+      },
+      {
+        "slug": "ai-quality-evaluation",
+        "keyword": "ai quality evaluation",
+        "trend": 85.6,
+        "opportunity": 74.6,
+        "enough": true
+      },
+      {
+        "slug": "local-ai-code-review",
+        "keyword": "local ai code review",
+        "trend": 53.4,
+        "opportunity": 68.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-code-review-prompt",
+        "keyword": "ai code review prompt",
+        "trend": 55.9,
+        "opportunity": 70.6,
+        "enough": true
+      },
+      {
+        "slug": "claude-code-skills",
+        "keyword": "claude code skills",
+        "trend": 51.8,
+        "opportunity": 71.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-coding-agent-benchmark",
+        "keyword": "ai coding agent benchmark",
+        "trend": 45.3,
+        "opportunity": 70.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-coding-agent-maintenance-cost",
+        "keyword": "ai coding agent maintenance cost",
+        "trend": 45.3,
+        "opportunity": 73.8,
+        "enough": true
+      },
+      {
+        "slug": "llm-fine-tuning-cost",
+        "keyword": "llm fine tuning cost",
+        "trend": 47.1,
+        "opportunity": 68,
+        "enough": true
+      },
+      {
+        "slug": "ollama-alternative",
+        "keyword": "ollama alternative",
+        "trend": 62.3,
+        "opportunity": 72.6,
+        "enough": true
+      },
+      {
+        "slug": "local-llm-for-coding",
+        "keyword": "local llm for coding",
+        "trend": 85.4,
+        "opportunity": 69.6,
+        "enough": true
+      },
+      {
+        "slug": "claude-code-hooks-configuration",
+        "keyword": "claude code hooks configuration",
+        "trend": 41.3,
+        "opportunity": 71,
+        "enough": true
+      },
+      {
+        "slug": "claude-code-team-permissions",
+        "keyword": "claude code team permissions",
+        "trend": 47.1,
+        "opportunity": 64.7,
+        "enough": true
+      },
+      {
+        "slug": "claude-code-subagents",
+        "keyword": "claude code subagents",
+        "trend": 77.6,
+        "opportunity": 76.4,
+        "enough": true
+      },
+      {
+        "slug": "claude-code-settings-json",
+        "keyword": "claude code settings.json",
+        "trend": 57.8,
+        "opportunity": 65.8,
+        "enough": true
+      },
+      {
+        "slug": "github-copilot-business",
+        "keyword": "github copilot business",
+        "trend": 67.1,
+        "opportunity": 73,
+        "enough": true
+      },
+      {
+        "slug": "github-copilot-code-review",
+        "keyword": "github copilot code review",
+        "trend": 81.2,
+        "opportunity": 75.6,
+        "enough": true
+      },
+      {
+        "slug": "text-to-diagram-ai",
+        "keyword": "text to diagram ai",
+        "trend": 73.1,
+        "opportunity": 71.1,
+        "enough": true
+      },
+      {
+        "slug": "remove-background-ai-photo-editor",
+        "keyword": "remove background ai photo editor",
+        "trend": 71.6,
+        "opportunity": 68.6,
+        "enough": true
+      },
+      {
+        "slug": "open-source-ai-photo-editor",
+        "keyword": "open source ai photo editor",
+        "trend": 45.3,
+        "opportunity": 63.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-video-generator-from-text",
+        "keyword": "ai video generator from text",
+        "trend": 70.8,
+        "opportunity": 70.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-video-generator-for-youtube",
+        "keyword": "ai video generator for youtube",
+        "trend": 78.2,
+        "opportunity": 69.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-video-generator-for-business",
+        "keyword": "ai video generator for business",
+        "trend": 53.5,
+        "opportunity": 68.4,
+        "enough": true
+      },
+      {
+        "slug": "rag-pipeline-chunking-strategy",
+        "keyword": "rag pipeline chunking strategy",
+        "trend": 39.8,
+        "opportunity": 62.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-eval-framework",
+        "keyword": "ai eval framework",
+        "trend": 33.8,
+        "opportunity": 60.7,
+        "enough": true
+      },
+      {
+        "slug": "ai-code-review-best-practices",
+        "keyword": "ai code review best practices",
+        "trend": 41.3,
+        "opportunity": 65,
+        "enough": true
+      },
+      {
+        "slug": "llm-fine-tuning-lora",
+        "keyword": "llm fine tuning lora",
+        "trend": 39.8,
+        "opportunity": 57.1,
+        "enough": true
+      },
+      {
+        "slug": "llm-fine-tuning-dataset",
+        "keyword": "llm fine tuning dataset",
+        "trend": 39.8,
+        "opportunity": 71.8,
+        "enough": true
+      },
+      {
+        "slug": "run-llm-locally-docker",
+        "keyword": "run llm locally docker",
+        "trend": 38.6,
+        "opportunity": 68.5,
+        "enough": true
+      },
+      {
+        "slug": "local-llm-hardware-requirements",
+        "keyword": "local llm hardware requirements",
+        "trend": 39.8,
+        "opportunity": 72.6,
+        "enough": true
+      },
+      {
+        "slug": "github-copilot-audit-log",
+        "keyword": "github copilot audit log",
+        "trend": 41.3,
+        "opportunity": 63.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-video-generator-for-tiktok",
+        "keyword": "ai video generator for tiktok",
+        "trend": 55,
+        "opportunity": 66.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-video-generator-from-images",
+        "keyword": "ai video generator from images",
+        "trend": 45.6,
+        "opportunity": 62,
+        "enough": true
+      },
+      {
+        "slug": "ai-voice-clone-for-podcast",
+        "keyword": "ai voice clone for podcast",
+        "trend": 45.3,
+        "opportunity": 60.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-podcast-editor",
+        "keyword": "ai podcast editor",
+        "trend": 45,
+        "opportunity": 64,
+        "enough": true
+      },
+      {
+        "slug": "ai-podcast-clipping-for-shorts",
+        "keyword": "ai podcast clipping for shorts",
+        "trend": 47.1,
+        "opportunity": 63.8,
+        "enough": true
+      },
+      {
+        "slug": "excel-copilot-alternative",
+        "keyword": "excel copilot alternative",
+        "trend": 31.1,
+        "opportunity": 59.8,
+        "enough": true
+      },
+      {
+        "slug": "upload-csv-ask-questions-ai",
+        "keyword": "upload csv ask questions ai",
+        "trend": 45.6,
+        "opportunity": 67.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-customer-support-for-shopify",
+        "keyword": "ai customer support for shopify",
+        "trend": 45.3,
+        "opportunity": 66,
+        "enough": true
+      },
+      {
+        "slug": "ai-customer-support-for-ecommerce",
+        "keyword": "ai customer support for ecommerce",
+        "trend": 36.7,
+        "opportunity": 61.8,
+        "enough": true
+      },
+      {
+        "slug": "keyword-clustering-ai",
+        "keyword": "keyword clustering ai",
+        "trend": 43.8,
+        "opportunity": 64.5,
+        "enough": true
+      },
+      {
+        "slug": "text-to-ai-avatar-video",
+        "keyword": "text to ai avatar video",
+        "trend": 48.3,
+        "opportunity": 63.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-avatar-video-for-training",
+        "keyword": "ai avatar video for training",
+        "trend": 45.3,
+        "opportunity": 63.3,
+        "enough": true
+      },
+      {
+        "slug": "sql-ai-assistant",
+        "keyword": "sql ai assistant",
+        "trend": 72.8,
+        "opportunity": 72,
+        "enough": true
+      },
+      {
+        "slug": "ai-agents-for-small-business",
+        "keyword": "ai agents for small business",
+        "trend": 95.5,
+        "opportunity": 73.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-saas-pricing-model",
+        "keyword": "ai saas pricing model",
+        "trend": 47.1,
+        "opportunity": 65.8,
+        "enough": true
+      },
+      {
+        "slug": "pricing-ai-features",
+        "keyword": "pricing ai features",
+        "trend": 44.5,
+        "opportunity": 69.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-wrapper-startup",
+        "keyword": "ai wrapper startup",
+        "trend": 45.3,
+        "opportunity": 65,
+        "enough": true
+      },
+      {
+        "slug": "ai-wrapper-monetization",
+        "keyword": "ai wrapper monetization",
+        "trend": 45.6,
+        "opportunity": 66.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-governance-software",
+        "keyword": "ai governance software",
+        "trend": 77.1,
+        "opportunity": 61.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-lesson-plan-generator",
+        "keyword": "ai lesson plan generator",
+        "trend": 31.1,
+        "opportunity": 57,
+        "enough": true
+      },
+      {
+        "slug": "ai-grading-assistant",
+        "keyword": "ai grading assistant",
+        "trend": 48.6,
+        "opportunity": 63.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-homework-help",
+        "keyword": "ai homework help",
+        "trend": 82.4,
+        "opportunity": 74.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-tutoring-app",
+        "keyword": "ai tutoring app",
+        "trend": 47.1,
+        "opportunity": 58.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-for-math-teachers",
+        "keyword": "ai for math teachers",
+        "trend": 83,
+        "opportunity": 77.9,
+        "enough": true
+      },
+      {
+        "slug": "sell-ai-agents-online",
+        "keyword": "sell ai agents online",
+        "trend": 45,
+        "opportunity": 61.1,
+        "enough": true
+      },
+      {
+        "slug": "royalty-free-ai-music",
+        "keyword": "royalty free ai music",
+        "trend": 77.6,
+        "opportunity": 73.2,
+        "enough": true
+      },
+      {
+        "slug": "jailbreak-detection-llm",
+        "keyword": "jailbreak detection llm",
+        "trend": 40.5,
+        "opportunity": 58.4,
+        "enough": true
+      },
+      {
+        "slug": "youtube-video-to-notes-ai",
+        "keyword": "youtube video to notes ai",
+        "trend": 39.8,
+        "opportunity": 65,
+        "enough": true
+      },
+      {
+        "slug": "youtube-transcript-downloader-ai",
+        "keyword": "youtube transcript downloader ai",
+        "trend": 47.1,
+        "opportunity": 66,
+        "enough": true
+      },
+      {
+        "slug": "build-mobile-app-with-ai",
+        "keyword": "build mobile app with ai",
+        "trend": 47.1,
+        "opportunity": 70.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-scheduling-assistant",
+        "keyword": "ai scheduling assistant",
+        "trend": 78.6,
+        "opportunity": 67.4,
+        "enough": true
+      },
+      {
+        "slug": "free-ai-coding-assistant",
+        "keyword": "free ai coding assistant",
+        "trend": 44,
+        "opportunity": 65.8,
+        "enough": true
+      },
+      {
+        "slug": "open-source-coding-agent-docker",
+        "keyword": "open source coding agent docker",
+        "trend": 41.5,
+        "opportunity": 71.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-agent-harness-comparison",
+        "keyword": "ai agent harness comparison",
+        "trend": 31.1,
+        "opportunity": 64.3,
+        "enough": true
+      },
+      {
+        "slug": "ask-ai-about-video-content",
+        "keyword": "ask ai about video content",
+        "trend": 73.7,
+        "opportunity": 73.5,
+        "enough": true
+      },
+      {
+        "slug": "local-rewind-ai-alternative",
+        "keyword": "local rewind ai alternative",
+        "trend": 47.1,
+        "opportunity": 64.3,
+        "enough": true
+      },
+      {
+        "slug": "discovery-agent-open-source",
+        "keyword": "discovery agent open source",
+        "trend": 43.8,
+        "opportunity": 61.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-agent-workflow-builder",
+        "keyword": "ai agent workflow builder",
+        "trend": 39.8,
+        "opportunity": 65.8,
+        "enough": true
+      },
+      {
+        "slug": "llm-evaluation-tools",
+        "keyword": "llm evaluation tools",
+        "trend": 42,
+        "opportunity": 61.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-job-matching-tool",
+        "keyword": "ai job matching tool",
+        "trend": 41.3,
+        "opportunity": 71.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-workflow-template",
+        "keyword": "ai workflow template",
+        "trend": 45.3,
+        "opportunity": 70.8,
+        "enough": true
+      },
+      {
+        "slug": "search-api-for-ai-agents",
+        "keyword": "search api for ai agents",
+        "trend": 74.6,
+        "opportunity": 68.9,
+        "enough": true
+      },
+      {
+        "slug": "conversational-crm-ai",
+        "keyword": "conversational crm ai",
+        "trend": 69.2,
+        "opportunity": 68.6,
+        "enough": true
+      },
+      {
+        "slug": "manage-multiple-ai-agents",
+        "keyword": "manage multiple ai agents",
+        "trend": 59.5,
+        "opportunity": 73.5,
+        "enough": true
+      },
+      {
+        "slug": "claude-code-best-practices",
+        "keyword": "claude code best practices",
+        "trend": 67.9,
+        "opportunity": 73.3,
+        "enough": true
+      },
+      {
+        "slug": "are-ai-conversations-private",
+        "keyword": "are ai conversations private",
+        "trend": 43,
+        "opportunity": 71.8,
+        "enough": true
+      },
+      {
+        "slug": "openrouter-llm-ranking",
+        "keyword": "openrouter llm ranking",
+        "trend": 41.3,
+        "opportunity": 64.5,
+        "enough": true
+      },
+      {
+        "slug": "agents-md-opencode",
+        "keyword": "agents md opencode",
+        "trend": 41.7,
+        "opportunity": 58.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-avatar-video-generator",
+        "keyword": "ai avatar video generator",
+        "trend": 62.7,
+        "opportunity": 65.1,
+        "enough": true
+      },
+      {
+        "slug": "ai-cover-letter-generator",
+        "keyword": "ai cover letter generator",
+        "trend": 57.3,
+        "opportunity": 68.1,
+        "enough": true
+      },
+      {
+        "slug": "mcp-client",
+        "keyword": "mcp client",
+        "trend": 81.4,
+        "opportunity": 78.8,
+        "enough": true
+      },
+      {
+        "slug": "mcp-hosting",
+        "keyword": "mcp hosting",
+        "trend": 64.9,
+        "opportunity": 67.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-slides",
+        "keyword": "ai slides",
+        "trend": 48.8,
+        "opportunity": 59.7,
+        "enough": true
+      },
+      {
+        "slug": "ollama-docker",
+        "keyword": "ollama docker",
+        "trend": 82.4,
+        "opportunity": 68.9,
+        "enough": true
+      },
+      {
+        "slug": "prompt-marketplace",
+        "keyword": "prompt marketplace",
+        "trend": 65.2,
+        "opportunity": 53.2,
+        "enough": true
+      },
+      {
+        "slug": "suno-ai",
+        "keyword": "suno ai",
+        "trend": 47.3,
+        "opportunity": 61.8,
+        "enough": true
+      },
+      {
+        "slug": "prompt-guard",
+        "keyword": "prompt guard",
+        "trend": 82.9,
+        "opportunity": 70.5,
+        "enough": true
+      },
+      {
+        "slug": "mcp-gateway",
+        "keyword": "mcp gateway",
+        "trend": 72.2,
+        "opportunity": 67.6,
+        "enough": true
+      },
+      {
+        "slug": "mcp-proxy",
+        "keyword": "mcp proxy",
+        "trend": 82.6,
+        "opportunity": 68.5,
+        "enough": true
+      },
+      {
+        "slug": "claude-squad",
+        "keyword": "claude squad",
+        "trend": 61.5,
+        "opportunity": 68.4,
+        "enough": true
+      },
+      {
+        "slug": "github-copilot-alternative",
+        "keyword": "github copilot alternative",
+        "trend": 45.8,
+        "opportunity": 68.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-agent-monitoring",
+        "keyword": "ai agent monitoring",
+        "trend": 82.5,
+        "opportunity": 72.2,
+        "enough": true
+      },
+      {
+        "slug": "ai-email-client",
+        "keyword": "ai email client",
+        "trend": 75,
+        "opportunity": 71.1,
+        "enough": true
+      },
+      {
+        "slug": "ai-career-coach",
+        "keyword": "ai career coach",
+        "trend": 69.5,
+        "opportunity": 70.7,
+        "enough": true
+      },
+      {
+        "slug": "deepseek-api-proxy",
+        "keyword": "deepseek api proxy",
+        "trend": 45.8,
+        "opportunity": 57.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-email-assistant",
+        "keyword": "ai email assistant",
+        "trend": 70.8,
+        "opportunity": 66.1,
+        "enough": true
+      },
+      {
+        "slug": "email-triage-ai",
+        "keyword": "email triage ai",
+        "trend": 43.5,
+        "opportunity": 68,
+        "enough": true
+      },
+      {
+        "slug": "ai-email-organizer",
+        "keyword": "ai email organizer",
+        "trend": 33.3,
+        "opportunity": 60.1,
+        "enough": true
+      },
+      {
+        "slug": "mcp-server-security",
+        "keyword": "mcp server security",
+        "trend": 72.2,
+        "opportunity": 73.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-quality-report",
+        "keyword": "ai quality report",
+        "trend": 46.8,
+        "opportunity": 68,
+        "enough": true
+      },
+      {
+        "slug": "ai-evaluation-framework",
+        "keyword": "ai evaluation framework",
+        "trend": 79.8,
+        "opportunity": 73.6,
+        "enough": true
+      },
+      {
+        "slug": "reproducible-agent-eval",
+        "keyword": "reproducible agent eval",
+        "trend": 45.8,
+        "opportunity": 67.7,
+        "enough": true
+      },
+      {
+        "slug": "ai-website-generator",
+        "keyword": "ai website generator",
+        "trend": 39,
+        "opportunity": 54.8,
+        "enough": true
+      },
+      {
+        "slug": "local-llm-docker",
+        "keyword": "local llm docker",
+        "trend": 57.8,
+        "opportunity": 73.3,
+        "enough": true
+      },
+      {
+        "slug": "docker-compose-llm",
+        "keyword": "docker compose llm",
+        "trend": 47.5,
+        "opportunity": 57,
+        "enough": true
+      },
+      {
+        "slug": "ai-sql-copilot",
+        "keyword": "ai sql copilot",
+        "trend": 73.9,
+        "opportunity": 60.9,
+        "enough": true
+      },
+      {
+        "slug": "activepieces-ai-agent",
+        "keyword": "activepieces ai agent",
+        "trend": 47.5,
+        "opportunity": 53.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-governance-framework",
+        "keyword": "ai governance framework",
+        "trend": 83.8,
+        "opportunity": 68.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-model-inventory",
+        "keyword": "ai model inventory",
+        "trend": 69.6,
+        "opportunity": 77.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-audit-trail",
+        "keyword": "ai audit trail",
+        "trend": 70.4,
+        "opportunity": 72.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-policy-management",
+        "keyword": "ai policy management",
+        "trend": 48.9,
+        "opportunity": 64.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-essay-grading",
+        "keyword": "ai essay grading",
+        "trend": 82.1,
+        "opportunity": 78.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-rubric-grading",
+        "keyword": "ai rubric grading",
+        "trend": 47.5,
+        "opportunity": 56.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-homework-solver",
+        "keyword": "ai homework solver",
+        "trend": 78.5,
+        "opportunity": 73.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-music-licensing",
+        "keyword": "ai music licensing",
+        "trend": 41.7,
+        "opportunity": 63.5,
+        "enough": true
+      },
+      {
+        "slug": "prompt-injection-detection",
+        "keyword": "prompt injection detection",
+        "trend": 47.5,
+        "opportunity": 63.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-youtube-summarizer",
+        "keyword": "ai youtube summarizer",
+        "trend": 71.4,
+        "opportunity": 70.3,
+        "enough": true
+      },
+      {
+        "slug": "youtube-mcp-server",
+        "keyword": "youtube mcp server",
+        "trend": 64.2,
+        "opportunity": 68.8,
+        "enough": true
+      },
+      {
+        "slug": "yaml-agent-topology",
+        "keyword": "yaml agent topology",
+        "trend": 45.8,
+        "opportunity": 65.8,
+        "enough": true
+      },
+      {
+        "slug": "llm-benchmark-tool",
+        "keyword": "llm benchmark tool",
+        "trend": 47.5,
+        "opportunity": 64.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-crm-assistant",
+        "keyword": "ai crm assistant",
+        "trend": 82.3,
+        "opportunity": 65.9,
+        "enough": true
+      },
+      {
+        "slug": "claude-code-workflow",
+        "keyword": "claude code workflow",
+        "trend": 68.2,
+        "opportunity": 73.4,
+        "enough": true
+      },
+      {
+        "slug": "claude-code-router",
+        "keyword": "claude code router",
+        "trend": 66.5,
+        "opportunity": 68.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-conversation-storage",
+        "keyword": "ai conversation storage",
+        "trend": 47.5,
+        "opportunity": 60,
+        "enough": true
+      },
+      {
+        "slug": "rag-pipeline-python-tutorial",
+        "keyword": "rag pipeline python tutorial",
+        "trend": 37.5,
+        "opportunity": 70,
+        "enough": true
+      },
+      {
+        "slug": "chat-with-database-ai",
+        "keyword": "chat with database ai",
+        "trend": 41.7,
+        "opportunity": 64.1,
+        "enough": true
+      },
+      {
+        "slug": "ai-tools-for-teachers",
+        "keyword": "ai tools for teachers",
+        "trend": 86.5,
+        "opportunity": 70.6,
+        "enough": true
+      },
+      {
+        "slug": "youtube-shorts-downloader-ai",
+        "keyword": "youtube shorts downloader ai",
+        "trend": 45.8,
+        "opportunity": 64,
+        "enough": true
+      },
+      {
+        "slug": "yt-dlp-gui-ai-summary",
+        "keyword": "yt-dlp gui ai summary",
+        "trend": 41.7,
+        "opportunity": 68,
+        "enough": true
+      },
+      {
+        "slug": "ai-video-understanding-tool",
+        "keyword": "ai video understanding tool",
+        "trend": 47.5,
+        "opportunity": 60.8,
+        "enough": true
+      },
+      {
+        "slug": "agent-discovery-and-trust",
+        "keyword": "agent discovery and trust",
+        "trend": 41.7,
+        "opportunity": 62.8,
+        "enough": true
+      },
+      {
+        "slug": "anti-ai-crawler-tarpit",
+        "keyword": "anti ai crawler tarpit",
+        "trend": 42.8,
+        "opportunity": 58.4,
+        "enough": true
+      },
+      {
+        "slug": "flux-kontext-prompt-examples",
+        "keyword": "flux kontext prompt examples",
+        "trend": 45.5,
+        "opportunity": 69.9,
+        "enough": true
+      },
+      {
+        "slug": "free-ai-phone-agent",
+        "keyword": "free ai phone agent",
+        "trend": 54.6,
+        "opportunity": 72.3,
+        "enough": true
+      },
+      {
+        "slug": "vector-database-for-rag",
+        "keyword": "vector database for rag",
+        "trend": 81.7,
+        "opportunity": 78.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-testing-and-evaluation",
+        "keyword": "ai testing and evaluation",
+        "trend": 76.2,
+        "opportunity": 74.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-eval-maturity-model",
+        "keyword": "ai eval maturity model",
+        "trend": 44.3,
+        "opportunity": 64.5,
+        "enough": true
+      },
+      {
+        "slug": "ollama-docker-compose",
+        "keyword": "ollama docker compose",
+        "trend": 80.6,
+        "opportunity": 68.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-testing-framework",
+        "keyword": "ai testing framework",
+        "trend": 84.2,
+        "opportunity": 70.7,
+        "enough": true
+      },
+      {
+        "slug": "ai-tutor-for-homework",
+        "keyword": "ai tutor for homework",
+        "trend": 73.6,
+        "opportunity": 70.4,
+        "enough": true
+      },
+      {
+        "slug": "agents-md-example",
+        "keyword": "AGENTS.md example",
+        "trend": 53.8,
+        "opportunity": 74.3,
+        "enough": true
+      },
+      {
+        "slug": "mcp-inspector",
+        "keyword": "mcp inspector",
+        "trend": 69.2,
+        "opportunity": 69.4,
+        "enough": true
+      },
+      {
+        "slug": "llm-observability",
+        "keyword": "llm observability",
+        "trend": 77.2,
+        "opportunity": 71.4,
+        "enough": true
+      },
+      {
+        "slug": "rag-evaluation-framework",
+        "keyword": "rag evaluation framework",
+        "trend": 45.1,
+        "opportunity": 58.3,
+        "enough": true
+      },
+      {
+        "slug": "mcp-server-hosting",
+        "keyword": "mcp server hosting",
+        "trend": 45.8,
+        "opportunity": 66.1,
+        "enough": true
+      },
+      {
+        "slug": "mcp-server-authentication",
+        "keyword": "mcp server authentication",
+        "trend": 66.7,
+        "opportunity": 74.9,
+        "enough": true
+      },
+      {
+        "slug": "mcp-server-docker",
+        "keyword": "mcp server docker",
+        "trend": 68.4,
+        "opportunity": 61.4,
+        "enough": true
+      },
+      {
+        "slug": "ollama-docker-gpu",
+        "keyword": "ollama docker gpu",
+        "trend": 45.8,
+        "opportunity": 66.9,
+        "enough": true
+      },
+      {
+        "slug": "ollama-docker-volume",
+        "keyword": "ollama docker volume",
+        "trend": 44,
+        "opportunity": 62.5,
+        "enough": true
+      },
+      {
+        "slug": "sell-chatgpt-prompts",
+        "keyword": "sell chatgpt prompts",
+        "trend": 34.2,
+        "opportunity": 49.8,
+        "enough": true
+      },
+      {
+        "slug": "mcp-proxy-server",
+        "keyword": "mcp proxy server",
+        "trend": 31.5,
+        "opportunity": 65.5,
+        "enough": true
+      },
+      {
+        "slug": "chatgpt-privacy-mode",
+        "keyword": "chatgpt privacy mode",
+        "trend": 49.3,
+        "opportunity": 67.5,
+        "enough": true
+      },
+      {
+        "slug": "self-hosted-copilot",
+        "keyword": "self hosted copilot",
+        "trend": 45.8,
+        "opportunity": 57.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-agent-observability",
+        "keyword": "ai agent observability",
+        "trend": 91.2,
+        "opportunity": 72.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-interview-coach",
+        "keyword": "ai interview coach",
+        "trend": 65.6,
+        "opportunity": 70.4,
+        "enough": true
+      },
+      {
+        "slug": "geo-audit-ai",
+        "keyword": "geo audit ai",
+        "trend": 76.2,
+        "opportunity": 78.2,
+        "enough": true
+      },
+      {
+        "slug": "ai-visibility-tracking",
+        "keyword": "ai visibility tracking",
+        "trend": 85.4,
+        "opportunity": 76.9,
+        "enough": true
+      },
+      {
+        "slug": "email-mcp-server",
+        "keyword": "email mcp server",
+        "trend": 66.9,
+        "opportunity": 71.6,
+        "enough": true
+      },
+      {
+        "slug": "mcp-server-tutorial",
+        "keyword": "mcp server tutorial",
+        "trend": 47.5,
+        "opportunity": 58.3,
+        "enough": true
+      },
+      {
+        "slug": "mcp-server-oauth",
+        "keyword": "mcp server oauth",
+        "trend": 69.3,
+        "opportunity": 70.3,
+        "enough": true
+      },
+      {
+        "slug": "ollama-docker-compose-volume",
+        "keyword": "ollama docker compose volume",
+        "trend": 42.8,
+        "opportunity": 57.5,
+        "enough": true
+      },
+      {
+        "slug": "agents-md-python",
+        "keyword": "agents.md python",
+        "trend": 31.5,
+        "opportunity": 67,
+        "enough": true
+      },
+      {
+        "slug": "prompt-base",
+        "keyword": "prompt base",
+        "trend": 82.1,
+        "opportunity": 70,
+        "enough": true
+      },
+      {
+        "slug": "deepseek-api-key",
+        "keyword": "deepseek api key",
+        "trend": 85.6,
+        "opportunity": 68.4,
+        "enough": true
+      },
+      {
+        "slug": "mcp-server-automation",
+        "keyword": "mcp server automation",
+        "trend": 45.5,
+        "opportunity": 67.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-governance-policy",
+        "keyword": "ai governance policy",
+        "trend": 86.9,
+        "opportunity": 68.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-governance-tools",
+        "keyword": "ai governance tools",
+        "trend": 87.6,
+        "opportunity": 71.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-inventory-management",
+        "keyword": "ai inventory management",
+        "trend": 80.1,
+        "opportunity": 61.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-model-registry",
+        "keyword": "ai model registry",
+        "trend": 52.3,
+        "opportunity": 61.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-asset-inventory",
+        "keyword": "ai asset inventory",
+        "trend": 43.5,
+        "opportunity": 67.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-model-tracking",
+        "keyword": "ai model tracking",
+        "trend": 69.8,
+        "opportunity": 71,
+        "enough": true
+      },
+      {
+        "slug": "ai-model-catalog",
+        "keyword": "ai model catalog",
+        "trend": 76.4,
+        "opportunity": 65.1,
+        "enough": true
+      },
+      {
+        "slug": "llm-audit-log",
+        "keyword": "llm audit log",
+        "trend": 41.7,
+        "opportunity": 63.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-policy-template",
+        "keyword": "ai policy template",
+        "trend": 62,
+        "opportunity": 72.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-policy-enforcement",
+        "keyword": "ai policy enforcement",
+        "trend": 77.7,
+        "opportunity": 67.7,
+        "enough": true
+      },
+      {
+        "slug": "ai-music-rights",
+        "keyword": "ai music rights",
+        "trend": 56.8,
+        "opportunity": 73.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-summarize-youtube",
+        "keyword": "ai summarize youtube",
+        "trend": 69.9,
+        "opportunity": 69.5,
+        "enough": true
+      },
+      {
+        "slug": "youtube-video-mcp",
+        "keyword": "youtube video mcp",
+        "trend": 41.7,
+        "opportunity": 66.5,
+        "enough": true
+      },
+      {
+        "slug": "mcp-server-manager",
+        "keyword": "mcp server manager",
+        "trend": 78.2,
+        "opportunity": 74.9,
+        "enough": true
+      },
+      {
+        "slug": "mcp-server-auth",
+        "keyword": "mcp server auth",
+        "trend": 53,
+        "opportunity": 73.6,
+        "enough": true
+      },
+      {
+        "slug": "llm-performance-testing",
+        "keyword": "llm performance testing",
+        "trend": 41.7,
+        "opportunity": 66.2,
+        "enough": true
+      },
+      {
+        "slug": "whatsapp-broadcast-automation",
+        "keyword": "whatsapp broadcast automation",
+        "trend": 47.5,
+        "opportunity": 69.2,
+        "enough": true
+      },
+      {
+        "slug": "private-ai-chat",
+        "keyword": "private ai chat",
+        "trend": 74.9,
+        "opportunity": 71,
+        "enough": true
+      },
+      {
+        "slug": "export-chatgpt-conversations",
+        "keyword": "export chatgpt conversations",
+        "trend": 45.8,
+        "opportunity": 62.8,
+        "enough": true
+      },
+      {
+        "slug": "agent-identity-verification",
+        "keyword": "agent identity verification",
+        "trend": 46.9,
+        "opportunity": 66.3,
+        "enough": true
+      },
+      {
+        "slug": "agent-capability-directory",
+        "keyword": "agent capability directory",
+        "trend": 41.7,
+        "opportunity": 64.3,
+        "enough": true
+      },
+      {
+        "slug": "agent-discovery-sdk",
+        "keyword": "agent discovery SDK",
+        "trend": 41.7,
+        "opportunity": 63.8,
+        "enough": true
+      },
+      {
+        "slug": "llm-regression-testing",
+        "keyword": "llm regression testing",
+        "trend": 45.8,
+        "opportunity": 68.4,
+        "enough": true
+      },
+      {
+        "slug": "agents-md-best-practices",
+        "keyword": "AGENTS.md best practices",
+        "trend": 41.7,
+        "opportunity": 69.8,
+        "enough": true
+      },
+      {
+        "slug": "mcp-tools-list",
+        "keyword": "mcp tools list",
+        "trend": 77.9,
+        "opportunity": 74.5,
+        "enough": true
+      },
+      {
+        "slug": "llm-cost-tracking",
+        "keyword": "llm cost tracking",
+        "trend": 36.9,
+        "opportunity": 59.3,
+        "enough": true
+      },
+      {
+        "slug": "copilot-instructions-file",
+        "keyword": "copilot instructions file",
+        "trend": 41.7,
+        "opportunity": 65.8,
+        "enough": true
+      },
+      {
+        "slug": "deploy-mcp-server",
+        "keyword": "deploy mcp server",
+        "trend": 54.1,
+        "opportunity": 72.4,
+        "enough": true
+      },
+      {
+        "slug": "docker-mcp-gateway",
+        "keyword": "docker mcp gateway",
+        "trend": 41.7,
+        "opportunity": 62.8,
+        "enough": true
+      },
+      {
+        "slug": "chatgpt-prompt-store",
+        "keyword": "chatgpt prompt store",
+        "trend": 54.1,
+        "opportunity": 70.4,
+        "enough": true
+      },
+      {
+        "slug": "agent-trace-dashboard",
+        "keyword": "agent trace dashboard",
+        "trend": 45.5,
+        "opportunity": 59.3,
+        "enough": true
+      },
+      {
+        "slug": "openai-sdk-tracing",
+        "keyword": "openai sdk tracing",
+        "trend": 31.5,
+        "opportunity": 64.5,
+        "enough": true
+      },
+      {
+        "slug": "anthropic-agent-monitoring",
+        "keyword": "anthropic agent monitoring",
+        "trend": 45.8,
+        "opportunity": 65.8,
+        "enough": true
+      },
+      {
+        "slug": "send-email-mcp",
+        "keyword": "send email mcp",
+        "trend": 45.8,
+        "opportunity": 60.3,
+        "enough": true
+      },
+      {
+        "slug": "mcp-server-example",
+        "keyword": "mcp server example",
+        "trend": 77,
+        "opportunity": 70.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-agent-token-budget",
+        "keyword": "ai agent token budget",
+        "trend": 47.5,
+        "opportunity": 66,
+        "enough": true
+      },
+      {
+        "slug": "local-llm-code-editor",
+        "keyword": "local llm code editor",
+        "trend": 46,
+        "opportunity": 67.3,
+        "enough": true
+      },
+      {
+        "slug": "mac-mini-local-llm",
+        "keyword": "mac mini local llm",
+        "trend": 68.3,
+        "opportunity": 73.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-excel-error-explain",
+        "keyword": "ai excel error explain",
+        "trend": 41.7,
+        "opportunity": 70.9,
+        "enough": true
+      },
+      {
+        "slug": "chat-with-csv-ai",
+        "keyword": "chat with csv ai",
+        "trend": 45.8,
+        "opportunity": 57.8,
+        "enough": true
+      },
+      {
+        "slug": "shopify-customer-service-automation",
+        "keyword": "shopify customer service automation",
+        "trend": 54.1,
+        "opportunity": 68.5,
+        "enough": true
+      },
+      {
+        "slug": "local-business-ai-citation",
+        "keyword": "local business ai citation",
+        "trend": 45.8,
+        "opportunity": 64.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-appointment-scheduling-agent",
+        "keyword": "ai appointment scheduling agent",
+        "trend": 45.8,
+        "opportunity": 65.1,
+        "enough": true
+      },
+      {
+        "slug": "ai-product-pricing-strategy",
+        "keyword": "ai product pricing strategy",
+        "trend": 76.2,
+        "opportunity": 75.3,
+        "enough": true
+      },
+      {
+        "slug": "per-seat-pricing-ai",
+        "keyword": "per seat pricing ai",
+        "trend": 49.3,
+        "opportunity": 71.2,
+        "enough": true
+      },
+      {
+        "slug": "ai-wrapper-cost-estimation",
+        "keyword": "ai wrapper cost estimation",
+        "trend": 40.5,
+        "opportunity": 65.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-wrapper-stripe-integration",
+        "keyword": "ai wrapper stripe integration",
+        "trend": 39,
+        "opportunity": 72.3,
+        "enough": true
+      },
+      {
+        "slug": "ai-risk-management-tool",
+        "keyword": "ai risk management tool",
+        "trend": 79.1,
+        "opportunity": 74,
+        "enough": true
+      },
+      {
+        "slug": "ai-math-homework-help",
+        "keyword": "ai math homework help",
+        "trend": 63.8,
+        "opportunity": 70.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-tutor-for-math",
+        "keyword": "ai tutor for math",
+        "trend": 79.3,
+        "opportunity": 71.4,
+        "enough": true
+      },
+      {
+        "slug": "ai-agent-affiliate-program",
+        "keyword": "ai agent affiliate program",
+        "trend": 73.3,
+        "opportunity": 65.4,
+        "enough": true
+      },
+      {
+        "slug": "anthropic-api-rate-limits",
+        "keyword": "anthropic api rate limits",
+        "trend": 44.2,
+        "opportunity": 61,
+        "enough": true
+      },
+      {
+        "slug": "copyright-free-ai-music",
+        "keyword": "copyright free ai music",
+        "trend": 67.4,
+        "opportunity": 70.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-mobile-app-builder",
+        "keyword": "ai mobile app builder",
+        "trend": 76.2,
+        "opportunity": 68.1,
+        "enough": true
+      },
+      {
+        "slug": "open-source-agent-harness",
+        "keyword": "open source agent harness",
+        "trend": 67.1,
+        "opportunity": 74.3,
+        "enough": true
+      },
+      {
+        "slug": "self-hosted-discovery-agent",
+        "keyword": "self hosted discovery agent",
+        "trend": 34.2,
+        "opportunity": 59.2,
+        "enough": true
+      },
+      {
+        "slug": "agent-for-lead-discovery",
+        "keyword": "agent for lead discovery",
+        "trend": 41.7,
+        "opportunity": 66.1,
+        "enough": true
+      },
+      {
+        "slug": "n8n-ai-workflow-examples",
+        "keyword": "n8n ai workflow examples",
+        "trend": 41.7,
+        "opportunity": 71.3,
+        "enough": true
+      },
+      {
+        "slug": "agent-web-search-tool",
+        "keyword": "agent web search tool",
+        "trend": 41.7,
+        "opportunity": 68.2,
+        "enough": true
+      },
+      {
+        "slug": "ai-content-workflow-automation",
+        "keyword": "ai content workflow automation",
+        "trend": 49,
+        "opportunity": 65.8,
+        "enough": true
+      },
+      {
+        "slug": "memory-management-ai-sdk",
+        "keyword": "memory management ai sdk",
+        "trend": 41.7,
+        "opportunity": 64.7,
+        "enough": true
+      },
+      {
+        "slug": "mcp-gateway-open-source",
+        "keyword": "mcp gateway open source",
+        "trend": 47.5,
+        "opportunity": 64,
+        "enough": true
+      },
+      {
+        "slug": "brave-search-mcp-server",
+        "keyword": "brave search mcp server",
+        "trend": 71.5,
+        "opportunity": 72.4,
+        "enough": true
+      },
+      {
+        "slug": "monitor-ai-agent-cost",
+        "keyword": "monitor ai agent cost",
+        "trend": 41.7,
+        "opportunity": 66,
+        "enough": true
+      },
+      {
+        "slug": "ai-reply-draft-gmail",
+        "keyword": "ai reply draft gmail",
+        "trend": 45.8,
+        "opportunity": 67.6,
+        "enough": true
+      },
+      {
+        "slug": "docker-compose-ai-agent",
+        "keyword": "docker compose ai agent",
+        "trend": 47.5,
+        "opportunity": 64.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-excel-formula-generator",
+        "keyword": "ai excel formula generator",
+        "trend": 41.7,
+        "opportunity": 62.4,
+        "enough": true
+      },
+      {
+        "slug": "google-sheets-ai-formula",
+        "keyword": "google sheets ai formula",
+        "trend": 45.5,
+        "opportunity": 62.7,
+        "enough": true
+      },
+      {
+        "slug": "iso-42001-ai-governance",
+        "keyword": "iso 42001 ai governance",
+        "trend": 74.5,
+        "opportunity": 75.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-governance-best-practices",
+        "keyword": "ai governance best practices",
+        "trend": 73,
+        "opportunity": 68.6,
+        "enough": true
+      },
+      {
+        "slug": "ielts-writing-ai-grader",
+        "keyword": "ielts writing ai grader",
+        "trend": 40.2,
+        "opportunity": 69.6,
+        "enough": true
+      },
+      {
+        "slug": "mcp-server-management-tool",
+        "keyword": "mcp server management tool",
+        "trend": 45.8,
+        "opportunity": 68,
+        "enough": true
+      },
+      {
+        "slug": "open-source-llm-benchmark",
+        "keyword": "open source llm benchmark",
+        "trend": 45.8,
+        "opportunity": 64.5,
+        "enough": true
+      },
+      {
+        "slug": "benchmark-llm-on-openrouter",
+        "keyword": "benchmark llm on openrouter",
+        "trend": 48.7,
+        "opportunity": 63,
+        "enough": true
+      },
+      {
+        "slug": "ats-resume-checker-ai",
+        "keyword": "ats resume checker ai",
+        "trend": 47.5,
+        "opportunity": 64.3,
+        "enough": true
+      },
+      {
+        "slug": "claude-code-api-testing",
+        "keyword": "claude code api testing",
+        "trend": 41.7,
+        "opportunity": 64.7,
+        "enough": true
+      },
+      {
+        "slug": "claude-code-codebase-migration",
+        "keyword": "claude code codebase migration",
+        "trend": 41.7,
+        "opportunity": 66.7,
+        "enough": true
+      },
+      {
+        "slug": "local-ai-chat-app",
+        "keyword": "local ai chat app",
+        "trend": 47.5,
+        "opportunity": 68.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-chat-log-storage",
+        "keyword": "ai chat log storage",
+        "trend": 45.8,
+        "opportunity": 54.1,
+        "enough": true
+      },
+      {
+        "slug": "video-to-prompt-ai",
+        "keyword": "video to prompt ai",
+        "trend": 78.2,
+        "opportunity": 69.6,
+        "enough": true
+      },
+      {
+        "slug": "ai-answer-engine-optimization",
+        "keyword": "ai answer engine optimization",
+        "trend": 70.6,
+        "opportunity": 73.8,
+        "enough": true
+      },
+      {
+        "slug": "ai-phone-agent-testing",
+        "keyword": "ai phone agent testing",
+        "trend": 41.7,
+        "opportunity": 66.5,
+        "enough": true
+      },
+      {
+        "slug": "ollama-docker-compose-chroma",
+        "keyword": "ollama docker compose chroma",
+        "trend": 43.5,
+        "opportunity": 72.1,
+        "enough": true
+      },
+      {
+        "slug": "b2b-sales-ai-agent",
+        "keyword": "b2b sales ai agent",
+        "trend": 43.5,
+        "opportunity": 71.8,
+        "enough": true
+      },
+      {
+        "slug": "ollama-docker-shared-volume",
+        "keyword": "ollama docker shared volume",
+        "trend": 46,
+        "opportunity": 64.3,
+        "enough": true
+      },
+      {
+        "slug": "chatgpt-prompts-for-business",
+        "keyword": "chatgpt prompts for business",
+        "trend": 48.8,
+        "opportunity": 63.8,
+        "enough": true
+      },
+      {
+        "slug": "chatgpt-clear-all-history",
+        "keyword": "chatgpt clear all history",
+        "trend": 74.2,
+        "opportunity": 67.4,
+        "enough": true
+      },
+      {
+        "slug": "reddit-api-mcp-server",
+        "keyword": "reddit api mcp server",
+        "trend": 47.5,
+        "opportunity": 68,
+        "enough": true
+      },
+      {
+        "slug": "ai-mock-interview-behavioral",
+        "keyword": "ai mock interview behavioral",
+        "trend": 41.7,
+        "opportunity": 64.5,
+        "enough": true
+      },
+      {
+        "slug": "no-code-ai-agent-whatsapp",
+        "keyword": "no code ai agent whatsapp",
+        "trend": 47.5,
+        "opportunity": 66.7,
+        "enough": true
+      },
+      {
+        "slug": "local-llm-coding-agent-setup",
+        "keyword": "local llm coding agent setup",
+        "trend": 47.5,
+        "opportunity": 70.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-that-watches-youtube-videos",
+        "keyword": "ai that watches youtube videos",
+        "trend": 41.7,
+        "opportunity": 60,
+        "enough": true
+      },
+      {
+        "slug": "ai-product-demo-video-generator",
+        "keyword": "ai product demo video generator",
+        "trend": 41.7,
+        "opportunity": 65.8,
+        "enough": true
+      },
+      {
+        "slug": "low-latency-voice-agent-webrtc",
+        "keyword": "low latency voice agent webrtc",
+        "trend": 45.8,
+        "opportunity": 63.8,
+        "enough": true
+      },
+      {
+        "slug": "human-in-the-loop-agent",
+        "keyword": "human in the loop agent",
+        "trend": 78.2,
+        "opportunity": 77.4,
+        "enough": true
+      },
+      {
+        "slug": "call-ai-for-free-online",
+        "keyword": "call ai for free online",
+        "trend": 49.3,
+        "opportunity": 64.3,
+        "enough": true
+      },
+      {
+        "slug": "document-to-table-converter-ai",
+        "keyword": "document to table converter ai",
+        "trend": 47.5,
+        "opportunity": 63.8,
+        "enough": true
+      },
+      {
+        "slug": "github-copilot-code-review-prompt",
+        "keyword": "github copilot code review prompt",
+        "trend": 40.5,
+        "opportunity": 65,
+        "enough": true
+      },
+      {
+        "slug": "ai-code-review-prompt-examples",
+        "keyword": "ai code review prompt examples",
+        "trend": 41.7,
+        "opportunity": 68.5,
+        "enough": true
+      },
+      {
+        "slug": "tiktok-ai-video-maker-free",
+        "keyword": "tiktok ai video maker free",
+        "trend": 53.8,
+        "opportunity": 59.3,
+        "enough": true
+      },
+      {
+        "slug": "image-to-video-ai-online",
+        "keyword": "image to video ai online",
+        "trend": 76.9,
+        "opportunity": 71.1,
+        "enough": true
+      },
+      {
+        "slug": "turn-photo-into-video-ai",
+        "keyword": "turn photo into video ai",
+        "trend": 69.4,
+        "opportunity": 72.5,
+        "enough": true
+      },
+      {
+        "slug": "ai-customer-support-small-business",
+        "keyword": "ai customer support small business",
+        "trend": 83.3,
+        "opportunity": 64.9,
+        "enough": true
+      },
+      {
+        "slug": "ai-homework-help-chrome-extension",
+        "keyword": "ai homework help chrome extension",
+        "trend": 44.2,
+        "opportunity": 64.5,
+        "enough": true
+      },
+      {
+        "slug": "youtube-to-text-ai-free",
+        "keyword": "youtube to text ai free",
+        "trend": 80.2,
+        "opportunity": 73.3,
+        "enough": true
+      },
+      {
+        "slug": "build-app-with-ai-free",
+        "keyword": "build app with ai free",
+        "trend": 58.9,
+        "opportunity": 68.6,
+        "enough": true
+      },
+      {
+        "slug": "claude-code-subagents-cost",
+        "keyword": "claude code subagents cost",
+        "trend": 47.5,
+        "opportunity": 71.1,
+        "enough": true
+      },
+      {
+        "slug": "openai-tools-api-streaming",
+        "keyword": "openai tools api streaming",
+        "trend": 41.7,
+        "opportunity": 65,
+        "enough": true
+      },
+      {
+        "slug": "ai-video-generator-for-marketing",
+        "keyword": "ai video generator for marketing",
+        "trend": 56.5,
+        "opportunity": 67.6,
+        "enough": true
+      },
+      {
+        "slug": "open-source-ai-code-editor",
+        "keyword": "open source ai code editor",
+        "trend": 45.5,
+        "opportunity": 64.8,
+        "enough": true
+      }
+    ]
+  },
   "lastPublish": {
-    "at": "2026-11-10T07:01:28.737Z",
+    "at": "2026-11-17T12:02:41.701Z",
     "incoming": 0,
     "removed": 0,
     "boardBefore": 367,

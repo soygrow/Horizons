@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type {
   AITrend,
+  EntryPolicy,
   TrendContentSnapshot,
   TrendDataset,
   TrendRankRow,
@@ -22,6 +23,14 @@ export const DATASET_PATH = path.resolve(process.cwd(), "content/trends.json");
  * 只存本轮碰到的词（约 80 个），不是全量，避免 5MB 的榜单文件被整份复制。
  */
 export const STAGING_PATH = path.resolve(process.cwd(), "content/trends-staging.json");
+/**
+ * 采集侧状态：入口政策 + 准入判定缓存。
+ *
+ * 榜单数据已改为 D1 唯一真源（构建时由 hydrate-trends 还原），但这个不是榜单内容：
+ * 它是「哪些词判过了、为什么判」的账本，价值在跨机器共享，且体量小、需要可 diff。
+ * 混在 5MB 的榜单文件里既拖慢发布，也让回滚搞不清哪些是数据、哪些是账本。
+ */
+export const POLICY_PATH = path.resolve(process.cwd(), "content/trends-policy.json");
 
 export interface TrendStaging {
   updatedAt: string;
@@ -168,7 +177,17 @@ export async function syncStagingToD1(staging: TrendStaging): Promise<void> {
   );
 }
 
+function readPolicy(): EntryPolicy | undefined {
+  try {
+    return JSON.parse(fs.readFileSync(POLICY_PATH, "utf-8")) as EntryPolicy;
+  } catch {
+    return undefined;
+  }
+}
+
 export function loadDataset(): TrendDataset {
+  // 政策账本优先从独立文件读；老仓库里还留在 trends.json 的 policy 作兜底
+  const policy = readPolicy();
   try {
     const raw = JSON.parse(fs.readFileSync(DATASET_PATH, "utf-8")) as TrendDataset;
     return {
@@ -176,10 +195,16 @@ export function loadDataset(): TrendDataset {
       mode: raw.mode ?? "live",
       region: raw.region ?? "US",
       keywords: Array.isArray(raw.keywords) ? raw.keywords : [],
-      ...(raw.policy ? { policy: raw.policy } : {}),
+      ...(policy ?? raw.policy ? { policy: policy ?? raw.policy } : {}),
     };
   } catch {
-    return { updatedAt: new Date().toISOString(), mode: "live", region: "US", keywords: [] };
+    return {
+      updatedAt: new Date().toISOString(),
+      mode: "live",
+      region: "US",
+      keywords: [],
+      ...(policy ? { policy } : {}),
+    };
   }
 }
 
@@ -195,6 +220,13 @@ export function saveDataset(ds: TrendDataset): void {
     keywords.push(t);
   }
   const payload: TrendDataset = { ...ds, keywords };
+  // policy 单独落盘：它不是榜单内容，不该跟着榜单缓存一起被 D1 还原覆盖
+  if (ds.policy) {
+    const pTmp = `${POLICY_PATH}.tmp`;
+    fs.writeFileSync(pTmp, `${JSON.stringify(ds.policy, null, 2)}\n`, "utf-8");
+    fs.renameSync(pTmp, POLICY_PATH);
+    delete payload.policy;
+  }
   const tmp = `${DATASET_PATH}.tmp`;
   fs.writeFileSync(tmp, `${JSON.stringify(payload, null, 2)}\n`, "utf-8");
   fs.renameSync(tmp, DATASET_PATH);

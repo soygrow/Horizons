@@ -58,10 +58,14 @@ const MAX_PAGE_SIZE = 100;
 const MAX_MANUAL_DOMAINS = 50;
 /**
  * 线上更新单批上限。
- * Actions 单 job 60 分钟硬上限，重采一条 60~90 秒，30 条已经压线；
- * 后台会按这个数把一次选择拆成多批串行排队。
+ *
+ * Actions 单 job 60 分钟硬上限，实测重采一条 3~4 分钟（以前按 60~90 秒估，
+ * 30 条永远跑不完：跑满 60 分钟只到第 17 条就被 kill）。
+ * enrich-staging 现在默认并发 3 跑站内管线（见 ENRICH_CONCURRENCY），
+ * 单批 15 条约 15~18 分钟，60 分钟窗口留足余量（30 条压线，一旦某个站卡到
+ * 单站超时就会挤掉收尾时间）；后台按这个数把一次选择拆成多批串行排队。
  */
-const MAX_REFRESH_DOMAINS = 30;
+const MAX_REFRESH_DOMAINS = 15;
 
 /**
  * 清洗后台「指定网站」输入。

@@ -41,6 +41,14 @@ export interface PublishRow {
   card: unknown;
   /** 详情 JSON：付费墙后的完整内容 */
   detail: unknown;
+  /**
+   * 别名指向的代表词 key（只有趋势词榜用）。
+   *
+   * 别名要上线（/trends/<slug> 得能打开），但**不占名次**：
+   * rank 继承代表词，不进 board_release_items，也不算进/出榜。
+   * 其余五个榜没有这个概念，恒为空。
+   */
+  variantOf?: string | null;
 }
 
 export interface PublishInput {
@@ -70,7 +78,7 @@ export interface PublishResult {
 
 const LISTED_SPEC: UpsertSpec = {
   table: "board_listed",
-  columns: ["version", "board", "item_key", "rank", "score", "tier", "name", "url", "cats", "card"],
+  columns: ["version", "board", "item_key", "rank", "score", "tier", "name", "url", "cats", "card", "variant_of"],
   conflict: ["version", "board", "item_key"],
 };
 
@@ -146,7 +154,12 @@ function diffRanks(
   now: number,
 ): { rows: ChangeRow[]; entered: number; exited: number; up: number; down: number } {
   const prev = new Map((input.previous ?? []).map((p) => [p.key, p.rank]));
-  const next = new Map(input.rows.map((r) => [r.key, r]));
+  /*
+   * 别名不占名次，必须排除在增减统计之外：
+   * 它们的 rank 是继承代表词的，混进来会每个别名都记一条 add/update，
+   * 后台「新进榜 120 个」——而实际上榜的还是那 367 个词。
+   */
+  const next = new Map(input.rows.filter((r) => !r.variantOf).map((r) => [r.key, r]));
   const rows: ChangeRow[] = [];
 
   let entered = 0;
@@ -290,8 +303,8 @@ export async function publishBoard(
     await client.run([
       {
         sql: `INSERT INTO board_listed
-                (version, board, item_key, rank, score, tier, name, url, cats, card)
-              SELECT ?, board, item_key, rank, score, tier, name, url, cats, card
+                (version, board, item_key, rank, score, tier, name, url, cats, card, variant_of)
+              SELECT ?, board, item_key, rank, score, tier, name, url, cats, card, variant_of
               FROM board_listed WHERE version = ? AND board != ?
               ON CONFLICT (version, board, item_key) DO NOTHING`,
         params: [version, currentVersion, board],
@@ -325,6 +338,7 @@ export async function publishBoard(
     r.url,
     r.cats && r.cats.length > 0 ? JSON.stringify(r.cats) : null,
     JSON.stringify(r.card),
+    r.variantOf ?? null,
   ]);
   await client.batch(
     chunkForSpec(LISTED_SPEC, cardRows, client.statementByteLimit).map((part) => buildUpsert(LISTED_SPEC, part)),
@@ -341,8 +355,9 @@ export async function publishBoard(
     chunkForSpec(DETAIL_SPEC, detailRows, client.statementByteLimit).map((part) => buildUpsert(DETAIL_SPEC, part)),
   );
 
-  /* 5) 永久名单：只存 key+rank+name，回答「上期第 37 名是谁」 */
-  const itemRows = rows.map((r) => [version, board, r.key, r.rank, r.tier, r.name]);
+  /* 5) 永久名单：只存 key+rank+name，回答「上期第 37 名是谁」。
+   * 别名不进：名单是名次表，下次发布要用它算进出榜基准。 */
+  const itemRows = rows.filter((r) => !r.variantOf).map((r) => [version, board, r.key, r.rank, r.tier, r.name]);
   await client.batch(
     chunkForSpec(ITEMS_SPEC, itemRows, client.statementByteLimit).map((part) => buildUpsert(ITEMS_SPEC, part)),
   );

@@ -58,11 +58,14 @@ export function versionOf(date = new Date()): string {
  */
 async function d1IsLive(client: D1Client, board: Board): Promise<boolean> {
   try {
-    const res = await client.query<{ value: string }>(
-      "SELECT value FROM app_config WHERE key = ?",
+    /* 列名是 val 不是 value（migrations/0011_boards.sql）——
+       写成 value 会一直抛错、被下面的 catch 吞掉，
+       结果就是切流后 strict 永远不生效。 */
+    const res = await client.query<{ val: string }>(
+      "SELECT val FROM app_config WHERE key = ?",
       [`data_source.${board}`],
     );
-    return res.results[0]?.value === "d1";
+    return res.results[0]?.val === "d1";
   } catch (e) {
     console.warn(`[sync] 读 data_source.${board} 失败，按未切流处理：`, e);
     return false;

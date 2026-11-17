@@ -463,7 +463,7 @@ function renderStaging(data: StagingResp): void {
   const pager = $("trends-staging-pager");
 
   if (!rows.length) {
-    body.innerHTML = `<tr><td colspan="9" class="px-4 py-10 text-center text-xs text-ink-muted">没有符合条件的候选词</td></tr>`;
+    body.innerHTML = `<tr><td colspan="10" class="px-4 py-10 text-center text-xs text-ink-muted">没有符合条件的候选词</td></tr>`;
     pager.innerHTML = "";
     syncEnrichBtn();
     return;
@@ -500,6 +500,23 @@ function renderStaging(data: StagingResp): void {
       const opp = row.opportunity === null ? `<span class="text-ink-muted">—</span>` : row.opportunity.toFixed(1);
       const all = row.overall === null ? `<span class="text-ink-muted">—</span>` : row.overall.toFixed(1);
 
+      /*
+       * 体检列：和工具榜同一套口径（empty 没值 / fallback 模板句 / suspect 太短）。
+       * 未富化的词不跑体检（占位字段必然空），显示「—」而不是「干净」，
+       * 否则会把「还没做」误读成「做得好」。
+       */
+      const issues = row.issues ?? [];
+      const gapCell = row.enrichStatus
+        ? `<span class="text-xs text-ink-muted" title="富化后才有体检结果">—</span>`
+        : issues.length > 0
+          ? `<span class="rounded-full bg-danger/10 px-2 py-0.5 text-[11px] font-semibold text-danger" title="${esc(
+              issues
+                .slice(0, 4)
+                .map((i) => `[${i.level}] ${i.block}：${i.detail}`)
+                .join("\n"),
+            )}">${issues.length} 处</span>`
+          : `<span class="rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success" title="各区块都有实值，没有模板兜底">干净</span>`;
+
       return `<tr class="transition hover:bg-surface-2/50">
           <td class="px-3 py-2.5">${pick}</td>
           <td class="max-w-[260px] px-4 py-2.5">
@@ -513,6 +530,7 @@ function renderStaging(data: StagingResp): void {
           <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${all}</td>
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-muted">${fmtNum(row.peak)}</td>
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${rank}</td>
+          <td class="px-4 py-2.5">${gapCell}</td>
           <td class="px-4 py-2.5">${status}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-right">
             <button type="button" data-trend-open="${esc(row.slug)}" class="text-xs text-primary hover:underline">详情</button>
@@ -931,16 +949,28 @@ function bind(): void {
     const btn = $("trends-enrich-btn") as HTMLButtonElement;
     const slugs = [...state.selected];
     if (slugs.length === 0) return;
+    /*
+     * 后端单次最多 60 个（分批富化更容易定位失败），全选跨页时会超。
+     * 前端自己按 60 切批串行派发，用户不用手动分页勾。
+     */
+    const batches: string[][] = [];
+    for (let i = 0; i < slugs.length; i += 60) batches.push(slugs.slice(i, i + 60));
     const ok = window.confirm(
-      `将富化 ${slugs.length} 个词。\n\n每词一次 LLM 调用；缺相关查询的词会补一次 Trends 请求。\n富化只写 content/trends-staging.json，线上榜单不受影响。`,
+      `将富化 ${slugs.length} 个词${batches.length > 1 ? `（分 ${batches.length} 批派发）` : ""}。\n\n`
+        + `每词一次 LLM 调用；缺相关查询的词会补一次 Trends 请求。\n`
+        + `富化只写候选池，线上榜单不受影响。`,
     );
     if (!ok) return;
     btn.disabled = true;
-    btn.textContent = "提交中…";
+    let sent = 0;
     try {
-      await apiPost("/trends/enrich", { slugs });
+      for (let i = 0; i < batches.length; i++) {
+        btn.textContent = batches.length > 1 ? `提交中…（${i + 1}/${batches.length} 批）` : "提交中…";
+        await apiPost("/trends/enrich", { slugs: batches[i] });
+        sent += batches[i].length;
+      }
       state.selected.clear();
-      btn.textContent = "已提交";
+      btn.textContent = `已提交 ${sent} 个`;
       void loadJobs();
       window.setTimeout(() => {
         btn.disabled = false;
@@ -950,18 +980,24 @@ function bind(): void {
     } catch (e) {
       btn.disabled = false;
       btn.textContent = "富化选中";
-      window.alert(`提交失败：${e instanceof Error ? e.message : String(e)}`);
+      const msg = e instanceof Error ? e.message : String(e);
+      // 409 = 这批还在富化中，不是失败；把已派发的部分说清楚
+      window.alert(
+        sent > 0 ? `已提交 ${sent} 个，第 ${sent / 60 + 1} 批失败：${msg}` : `提交失败：${msg}`,
+      );
       syncEnrichBtn();
     }
   });
 
-  // 全选只作用于当前页，且跳过数据不足/已拒绝的词
+  /*
+   * 全选作用于**全部**筛选后的候选（跨页），跳过数据不足/已拒绝的。
+   * 只选当前页的话，候选 200 个要翻 7 次页点 7 次，日常操作基本不可用；
+   * 跨页勾选后由提交按钮按 60/批 串行派发。
+   */
   ($("trends-select-all") as HTMLInputElement).addEventListener("change", (event) => {
     const on = (event.target as HTMLInputElement).checked;
     if (!state.staging) return;
-    const rows = visibleCandidates(state.staging);
-    const from = (state.page - 1) * PAGE_SIZE;
-    for (const row of rows.slice(from, from + PAGE_SIZE)) {
+    for (const row of visibleCandidates(state.staging)) {
       if (!row.enrichable || row.rejected) continue;
       if (on) state.selected.add(row.slug);
       else state.selected.delete(row.slug);

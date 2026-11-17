@@ -50,10 +50,6 @@ const ANALYTICS_LABELS = new Set([
   "Hotjar", "Plausible", "Fathom", "Mixpanel", "PostHog", "Clarity", "Sentry",
 ]);
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
 function parseDomain(): string {
   const i = process.argv.indexOf("--domain");
   if (i >= 0 && process.argv[i + 1]) return process.argv[i + 1].toLowerCase();
@@ -584,42 +580,66 @@ async function main(): Promise<void> {
     phComments,
   };
 
-  if (!analysisOnly && !noLlm) {
-  // 调用 1：基础标签
-  const basic = await chatJSON<{
+  type BasicOut = {
     descriptionZh?: string;
     segmentLabel?: string;
     categories?: string[];
     featureTags?: string[];
     categoryTags?: string[];
     tagGroups?: TagGroup[];
-  }>(SYSTEM_BASIC, buildInput(tool, inputData));
-  if (basic.descriptionZh) {
-    tool.description = basic.descriptionZh;
-    tool.descriptionSource = "ai";
-  }
-  if (basic.segmentLabel) tool.segmentLabel = basic.segmentLabel;
-  if (basic.categories?.length) {
-    tool.categories = basic.categories.filter((c): c is AITool["categories"][number] =>
-      (CATEGORIES as readonly string[]).includes(c),
-    );
-  }
-  tool.featureTags = (basic.featureTags ?? []).slice(0, 3);
-  // 用 tool.segmentLabel（上面刚赋过值）而不是 basic 的，避免 LLM 漏给时丢失去重依据
-  tool.categoryTags = normalizeCategoryTags(basic.categoryTags, tool.segmentLabel);
-  tool.tagGroups = normalizeTagGroups(basic.tagGroups);
-  await sleep(300);
-  console.log(`[enrich-site] LLM#1 基础：${tool.description}`);
+  };
+  type InsightOut = {
+    aiInsight?: AiInsight;
+    observations?: Observations;
+    moduleInsights?: ModuleInsight;
+    trafficDecrypt?: TrafficDecrypt;
+  };
+  type OppOut = {
+    opportunity?: OpportunityScore;
+    monetizationBlueprint?: MonetizationBlueprint;
+    growthPlaybook?: GrowthPlaybook;
+    buildBlueprint?: BuildBlueprint;
+    ideaSparks?: IdeaSpark[];
+    performanceInsight?: PerformanceInsight;
+  };
+
+  /*
+   * 三段 LLM 并发跑。
+   *
+   * 三段 prompt 吃的是同一份 inputData，彼此没有任何依赖（buildInput 只取
+   * name/domain/url），以前串行 await 再加 300ms 间隔：一条站光等模型就要 1~2 分钟，
+   * 占了单站总耗时的大头（实测单站 3~4 分钟，30 条跑满 Actions 的 60 分钟只到第 17 条）。
+   * 并发后这段耗时 ≈ 最慢的那一段。
+   *
+   * 用 Promise.all 而不是 allSettled：任何一段失败仍然整条失败，与串行时一致 ——
+   * 半套文案写进库里比报错更难查（页面上新旧两套判断会互相打脸）。
+   */
+  const prompt = buildInput(tool, inputData);
+  const [basic, insight, opp] = await Promise.all([
+    !analysisOnly && !noLlm ? chatJSON<BasicOut>(SYSTEM_BASIC, prompt) : Promise.resolve(null),
+    !oppOnly && !noLlm ? chatJSON<InsightOut>(SYSTEM_INSIGHT, prompt, 6000) : Promise.resolve(null),
+    !insightOnly && !noLlm ? chatJSON<OppOut>(SYSTEM_OPPORTUNITY, prompt, 7000) : Promise.resolve(null),
+  ]);
+
+  if (basic) {
+    if (basic.descriptionZh) {
+      tool.description = basic.descriptionZh;
+      tool.descriptionSource = "ai";
+    }
+    if (basic.segmentLabel) tool.segmentLabel = basic.segmentLabel;
+    if (basic.categories?.length) {
+      tool.categories = basic.categories.filter((c): c is AITool["categories"][number] =>
+        (CATEGORIES as readonly string[]).includes(c),
+      );
+    }
+    tool.featureTags = (basic.featureTags ?? []).slice(0, 3);
+    // 用 tool.segmentLabel（上面刚赋过值）而不是 basic 的，避免 LLM 漏给时丢失去重依据
+    tool.categoryTags = normalizeCategoryTags(basic.categoryTags, tool.segmentLabel);
+    tool.tagGroups = normalizeTagGroups(basic.tagGroups);
+    console.log(`[enrich-site] LLM#1 基础：${tool.description}`);
   }
 
-  // 调用 2：AI 解读 + 观察（完全替换，不保留旧值；--opp-only 时跳过）
-  if (!oppOnly && !noLlm) {
-    const insight = await chatJSON<{
-      aiInsight?: AiInsight;
-      observations?: Observations;
-      moduleInsights?: ModuleInsight;
-      trafficDecrypt?: TrafficDecrypt;
-    }>(SYSTEM_INSIGHT, buildInput(tool, inputData), 6000);
+  if (insight) {
     if (insight.aiInsight) {
       tool.aiInsight = {
         ...insight.aiInsight,
@@ -631,20 +651,10 @@ async function main(): Promise<void> {
     if (insight.moduleInsights) tool.moduleInsights = insight.moduleInsights;
     if (insight.observations) tool.observations = insight.observations;
     if (insight.trafficDecrypt) tool.trafficDecrypt = insight.trafficDecrypt;
-    await sleep(300);
     console.log("[enrich-site] LLM#2 解读完成");
   }
 
-  // 调用 3：创业洞察（--insight-only 时跳过，只补解读）
-  if (!insightOnly && !noLlm) {
-    const opp = await chatJSON<{
-      opportunity?: OpportunityScore;
-      monetizationBlueprint?: MonetizationBlueprint;
-      growthPlaybook?: GrowthPlaybook;
-      buildBlueprint?: BuildBlueprint;
-      ideaSparks?: IdeaSpark[];
-      performanceInsight?: PerformanceInsight;
-    }>(SYSTEM_OPPORTUNITY, buildInput(tool, inputData), 7000);
+  if (opp) {
     if (opp.opportunity) tool.opportunity = opp.opportunity;
     if (opp.monetizationBlueprint) {
       tool.monetizationBlueprint = {
