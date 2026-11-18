@@ -492,12 +492,50 @@ function syncHeadCheck<T>(
   el.indeterminate = on > 0 && on < usable.length;
 }
 
-/** 「本页」按钮文案随状态切换，点之前就能知道会全选本页还是取消本页 */
-function syncPagePickBtn(id: string, allOn: boolean, empty: boolean): void {
+/**
+ * 表头「全选（N）」按钮：作用域是筛选后的全部结果（跨页），N 是可勾选总数。
+ *
+ * 表头勾选框只管本页，跨页全选只能由这个按钮触发——两个控件分工写在文案里，
+ * 点之前就知道会选中多少，不会「点一下冒出来 467 个」。
+ */
+function syncAllPickBtn(id: string, allOn: boolean, total: number): void {
   const btn = $(id) as HTMLButtonElement | null;
   if (!btn) return;
-  btn.textContent = allOn ? "取消本页" : "本页";
-  btn.disabled = empty;
+  btn.textContent = total === 0 ? "全选" : allOn ? `取消（${total}）` : `全选（${total}）`;
+  btn.disabled = total === 0;
+}
+
+/**
+ * 单行勾选后只同步表头两个控件，不重渲染整张表（否则滚动位置会跳）。
+ * 表头勾选框看本页，右侧按钮看筛选后的全部结果。
+ */
+function refreshListedPickHead(): void {
+  if (!state.listed) return;
+  const visible = visibleListed(state.listed);
+  const { slice } = pageSlice(visible, state.listedPage, LISTED_PAGE_SIZE);
+  syncHeadCheck("trends-listed-select-all", slice, listedPickable, (row) =>
+    state.listedSelected.has(row.slug),
+  );
+  const pickable = visible.filter(listedPickable);
+  syncAllPickBtn(
+    "trends-listed-pick-page",
+    pickable.length > 0 && pickable.every((row) => state.listedSelected.has(row.slug)),
+    pickable.length,
+  );
+}
+
+function refreshStagingPickHead(): void {
+  if (!state.staging) return;
+  const visible = visibleCandidates(state.staging);
+  const canPick = (row: CandidateView): boolean => row.enrichable && !row.rejected;
+  const { slice } = pageSlice(visible, state.page, PAGE_SIZE);
+  syncHeadCheck("trends-select-all", slice, canPick, (row) => state.selected.has(row.slug));
+  const pickable = visible.filter(canPick);
+  syncAllPickBtn(
+    "trends-pick-page",
+    pickable.length > 0 && pickable.every((row) => state.selected.has(row.slug)),
+    pickable.length,
+  );
 }
 
 /** 当前页可勾选的线上词：和表格渲染走同一套筛选与分页 */
@@ -525,7 +563,7 @@ function renderListed(data: ListedResp): void {
     body.innerHTML = `<tr><td colspan="10" class="px-4 py-10 text-center text-xs text-ink-muted">线上榜单还没有趋势词</td></tr>`;
     pager.innerHTML = "";
     syncHeadCheck("trends-listed-select-all", [], listedPickable, () => false);
-    syncPagePickBtn("trends-listed-pick-page", false, true);
+    syncAllPickBtn("trends-listed-pick-page", false, 0);
     syncListedBtn();
     return;
   }
@@ -542,7 +580,7 @@ function renderListed(data: ListedResp): void {
     body.innerHTML = `<tr><td colspan="10" class="px-4 py-10 text-center text-xs text-ink-muted">没有符合条件的词</td></tr>`;
     pager.innerHTML = "";
     syncHeadCheck("trends-listed-select-all", [], listedPickable, () => false);
-    syncPagePickBtn("trends-listed-pick-page", false, true);
+    syncAllPickBtn("trends-listed-pick-page", false, 0);
     syncListedBtn();
     return;
   }
@@ -598,11 +636,15 @@ function renderListed(data: ListedResp): void {
     })
     .join("");
 
-  // 本页可勾的行全选中 → 表头打勾，部分选中 → 半选
-  const usable = slice.filter(listedPickable);
-  const allOn = usable.length > 0 && usable.every((row) => state.listedSelected.has(row.slug));
+  // 表头勾选框只反映本页：整页可勾且已勾 = 勾上，只勾了一部分 = 半选
   syncHeadCheck("trends-listed-select-all", slice, listedPickable, (row) => state.listedSelected.has(row.slug));
-  syncPagePickBtn("trends-listed-pick-page", allOn, usable.length === 0);
+  // 旁边的「全选（N）」才作用于筛选后的全部结果（跨页），N 是可勾选总数
+  const pickable = rows.filter(listedPickable);
+  syncAllPickBtn(
+    "trends-listed-pick-page",
+    pickable.length > 0 && pickable.every((row) => state.listedSelected.has(row.slug)),
+    pickable.length,
+  );
 
   const prev = state.listedPage <= 1;
   const next = state.listedPage >= pages;
@@ -779,7 +821,7 @@ function renderStaging(data: StagingResp): void {
     body.innerHTML = `<tr><td colspan="10" class="px-4 py-10 text-center text-xs text-ink-muted">没有符合条件的候选词</td></tr>`;
     pager.innerHTML = "";
     syncHeadCheck("trends-select-all", [], () => false, () => false);
-    syncPagePickBtn("trends-pick-page", false, true);
+    syncAllPickBtn("trends-pick-page", false, 0);
     syncEnrichBtn();
     return;
   }
@@ -864,13 +906,16 @@ function renderStaging(data: StagingResp): void {
     })
     .join("");
 
-  // 和线上榜单同一套口径：本页全选打勾、部分选中半选
-  const usable = slice.filter((row) => row.enrichable && !row.rejected);
-  const allOn = usable.length > 0 && usable.every((row) => state.selected.has(row.slug));
+  // 和线上榜单同一套口径：勾选框只看本页，跨页交给「全选（N）」按钮
   syncHeadCheck("trends-select-all", slice, (row) => row.enrichable && !row.rejected, (row) =>
     state.selected.has(row.slug),
   );
-  syncPagePickBtn("trends-pick-page", allOn, usable.length === 0);
+  const pickable = rows.filter((row) => row.enrichable && !row.rejected);
+  syncAllPickBtn(
+    "trends-pick-page",
+    pickable.length > 0 && pickable.every((row) => state.selected.has(row.slug)),
+    pickable.length,
+  );
 
   const prev = state.page <= 1;
   const next = state.page >= pages;
@@ -1470,33 +1515,30 @@ function bind(): void {
   });
 
   /*
-   * 全选作用于**全部**筛选后的候选（跨页），跳过数据不足/已拒绝的。
-   * 只选当前页的话，候选 200 个要翻 7 次页点 7 次，日常操作基本不可用；
-   * 跨页勾选后由提交按钮按 60/批 串行派发。
+   * 表头勾选框 = 本页全选：翻到这一页、扫一眼、合适的整页勾上。
    */
   ($("trends-select-all") as HTMLInputElement).addEventListener("change", (event) => {
     const on = (event.target as HTMLInputElement).checked;
-    if (!state.staging) return;
-    for (const row of visibleCandidates(state.staging)) {
-      if (!row.enrichable || row.rejected) continue;
+    for (const row of currentStagingPickable()) {
       if (on) state.selected.add(row.slug);
       else state.selected.delete(row.slug);
     }
-    renderStaging(state.staging);
+    if (state.staging) renderStaging(state.staging);
   });
 
   /*
-   * 「本页」只动当前页：常见用法是翻到这 30 个、扫一眼、合适的整页勾上。
-   * 本页已全选时再点就是取消本页，和按钮上的文案一致。
+   * 「全选（N）」= 筛选后的**全部**候选（跨页），跳过数据不足/已拒绝的；
+   * 提交时按 60/批 串行派发。数量写在按钮上，点之前就知道会选中多少。
    */
   $("trends-pick-page").addEventListener("click", () => {
-    const rows = currentStagingPickable();
+    if (!state.staging) return;
+    const rows = visibleCandidates(state.staging).filter((row) => row.enrichable && !row.rejected);
     const allOn = rows.length > 0 && rows.every((row) => state.selected.has(row.slug));
     for (const row of rows) {
       if (allOn) state.selected.delete(row.slug);
       else state.selected.add(row.slug);
     }
-    if (state.staging) renderStaging(state.staging);
+    renderStaging(state.staging);
   });
 
   ($("trends-staging-filter") as HTMLSelectElement).addEventListener("change", (event) => {
@@ -1539,6 +1581,7 @@ function bind(): void {
     if (!slug) return;
     if (box!.checked) state.selected.add(slug);
     else state.selected.delete(slug);
+    refreshStagingPickHead();
     syncEnrichBtn();
   });
 
@@ -1553,29 +1596,31 @@ function bind(): void {
   /* --------------------------- 线上榜单的交互 --------------------------- */
 
   /*
-   * 全选作用于筛选后的全部线上词（跨页），跳过正在跑/正在发布的。
-   * 与候选池同一套理由：367 条里挑几十个，靠翻 13 页勾不现实。
+   * 表头勾选框 = 本页全选。表格右上角那个勾在用户认知里就是「这一页」，
+   * 跨页全选必须由旁边的「全选（N）」按钮显式触发，否则一点就选走 467 个。
    */
   ($("trends-listed-select-all") as HTMLInputElement).addEventListener("change", (event) => {
     const on = (event.target as HTMLInputElement).checked;
-    if (!state.listed) return;
-    for (const row of visibleListed(state.listed)) {
-      if (!listedPickable(row)) continue;
+    for (const row of currentListedPickable()) {
       if (on) state.listedSelected.add(row.slug);
       else state.listedSelected.delete(row.slug);
     }
-    renderListed(state.listed);
+    if (state.listed) renderListed(state.listed);
   });
 
-  // 「本页」：每页 20 条，整页勾选比逐个点省事，也不至于像全选那样一次挑出几百个
+  /*
+   * 「全选（N）」= 筛选后的全部线上词（跨页），跳过正在跑/正在发布的。
+   * 367 条里挑几十个靠翻 13 页勾不现实，但这个动作必须显式点，且按钮上写着数量。
+   */
   $("trends-listed-pick-page").addEventListener("click", () => {
-    const rows = currentListedPickable();
+    if (!state.listed) return;
+    const rows = visibleListed(state.listed).filter(listedPickable);
     const allOn = rows.length > 0 && rows.every((row) => state.listedSelected.has(row.slug));
     for (const row of rows) {
       if (allOn) state.listedSelected.delete(row.slug);
       else state.listedSelected.add(row.slug);
     }
-    if (state.listed) renderListed(state.listed);
+    renderListed(state.listed);
   });
 
   ($("trends-listed-filter") as HTMLSelectElement).addEventListener("change", (event) => {
@@ -1599,6 +1644,7 @@ function bind(): void {
     if (!slug) return;
     if (box!.checked) state.listedSelected.add(slug);
     else state.listedSelected.delete(slug);
+    refreshListedPickHead();
     syncListedBtn();
   });
 

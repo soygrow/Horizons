@@ -1082,16 +1082,16 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 <table class="w-full min-w-[900px] text-left text-sm">
                   <thead class="bg-surface-2/60 text-xs text-ink-muted">
                     <tr>
-                      <th class="w-[88px] px-3 py-2.5">
+                      <th class="w-[104px] px-3 py-2.5">
                         <div class="flex items-center gap-1.5">
-                          <input id="trends-select-all" type="checkbox" class="h-3.5 w-3.5 accent-primary" title="全选全部可发布的候选词（跨页）" />
+                          <input id="trends-select-all" type="checkbox" class="h-3.5 w-3.5 accent-primary" title="全选本页可以富化的候选词" />
                           <button
                             type="button"
                             id="trends-pick-page"
                             class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                            title="只勾选当前页可以富化的候选词；再点一次取消"
+                            title="全选当前筛选结果（跨页）；再点一次取消"
                           >
-                            本页
+                            全选
                           </button>
                         </div>
                       </th>
@@ -1176,21 +1176,21 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 <table class="w-full min-w-[900px] text-left text-sm">
                   <thead class="bg-surface-2/60 text-xs text-ink-muted">
                     <tr>
-                      <th class="w-[88px] px-3 py-2.5">
+                      <th class="w-[104px] px-3 py-2.5">
                         <div class="flex items-center gap-1.5">
                           <input
                             id="trends-listed-select-all"
                             type="checkbox"
                             class="h-3.5 w-3.5 accent-primary"
-                            title="全选当前筛选结果（跨页）"
+                            title="全选本页可以更新的词"
                           />
                           <button
                             type="button"
                             id="trends-listed-pick-page"
                             class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                            title="只勾选当前页可以更新的词；再点一次取消"
+                            title="全选当前筛选结果（跨页）；再点一次取消"
                           >
-                            本页
+                            全选
                           </button>
                         </div>
                       </th>
