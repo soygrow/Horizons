@@ -973,225 +973,273 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
             </article>
           </div>
 
+          <nav class="flex items-center gap-1" aria-label="趋势榜视图">
+            <button type="button" data-trends-view="fetch" data-active="true" class="admin-subtab">
+              数据抓取
+            </button>
+            <button type="button" data-trends-view="listed" class="admin-subtab">
+              线上榜单
+            </button>
+          </nav>
+
+          <!-- 运行记录放在两个页签之上：拉取、更新、发布都要跑 GitHub Actions，
+               只挂在某个内层视图里的话，切到另一个页签提交完就看不见进度了。 -->
           <article class="rounded-2xl border border-border bg-surface">
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
-              <div>
-                <h2 class="text-sm font-semibold">拉取新词</h2>
-                <p class="mt-1 text-xs text-ink-muted">
-                  采集结果先进入候选池，不会改动线上榜单
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-2.5">
+              <div class="flex items-center gap-2">
+                <h2 class="text-sm font-semibold">运行记录</h2>
+                <span class="text-[11px] text-ink-muted">最近 5 次</span>
+              </div>
+              <span class="text-[11px] text-ink-muted">有任务在跑时每 12 秒自动刷新</span>
+            </div>
+            <div id="trends-jobs"></div>
+          </article>
+
+          <div id="trends-view-fetch" class="space-y-4">
+            <article class="rounded-2xl border border-border bg-surface">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+                <div>
+                  <h2 class="text-sm font-semibold">拉取新词</h2>
+                  <p class="mt-1 text-xs text-ink-muted">
+                    采集结果先进入候选池，不会改动线上榜单
+                  </p>
+                </div>
+                <button
+                  id="trends-fetch-btn"
+                  type="button"
+                  class="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  拉取新词
+                </button>
+              </div>
+              <div class="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
+                <label class="block text-xs font-medium text-ink-secondary">
+                  采集量
+                  <select id="trends-fetch-budget" class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
+                    <option value="20">20 个（快速验证）</option>
+                    <option value="50">50 个</option>
+                    <option value="80" selected>80 个（推荐）</option>
+                    <option value="120">120 个（约 15 分钟）</option>
+                    <option value="200">200 个（约 25 分钟）</option>
+                  </select>
+                </label>
+                <label class="block text-xs font-medium text-ink-secondary">
+                  地区
+                  <select id="trends-fetch-geo" class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
+                    <option value="US" selected>US 美国</option>
+                    <option value="GB">GB 英国</option>
+                    <option value="CA">CA 加拿大</option>
+                    <option value="AU">AU 澳大利亚</option>
+                    <option value="DE">DE 德国</option>
+                    <option value="JP">JP 日本</option>
+                  </select>
+                </label>
+                <p id="trends-fetch-hint" class="self-end pb-1.5 text-[11px] leading-relaxed text-ink-muted">—</p>
+              </div>
+            </article>
+
+
+            <article class="rounded-2xl border border-border bg-surface">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+                <div class="min-w-0">
+                  <h2 class="text-sm font-semibold">候选词</h2>
+                  <p id="trends-staging-meta" class="mt-1 text-xs text-ink-muted">—</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <select id="trends-staging-filter" class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
+                    <option value="all">全部</option>
+                    <option value="pending">待富化</option>
+                    <option value="ready">已富化</option>
+                    <option value="new">新词</option>
+                    <option value="board">在榜更新</option>
+                    <option value="blocked">数据不足</option>
+                    <option value="rejected">已拒绝</option>
+                  </select>
+                  <input
+                    id="trends-staging-search"
+                    type="search"
+                    placeholder="搜索关键词"
+                    class="w-40 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary sm:w-52"
+                  />
+                  <button
+                    id="trends-enrich-btn"
+                    type="button"
+                    class="rounded-lg bg-primary px-2.5 py-1.5 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled
+                  >
+                    富化选中
+                  </button>
+                  <button
+                    id="trends-staging-refresh"
+                    type="button"
+                    class="rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
+                  >
+                    刷新
+                  </button>
+                </div>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full min-w-[900px] text-left text-sm">
+                  <thead class="bg-surface-2/60 text-xs text-ink-muted">
+                    <tr>
+                      <th class="w-[88px] px-3 py-2.5">
+                        <div class="flex items-center gap-1.5">
+                          <input id="trends-select-all" type="checkbox" class="h-3.5 w-3.5 accent-primary" title="全选全部可发布的候选词（跨页）" />
+                          <button
+                            type="button"
+                            id="trends-pick-page"
+                            class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                            title="只勾选当前页可以富化的候选词；再点一次取消"
+                          >
+                            本页
+                          </button>
+                        </div>
+                      </th>
+                      <th class="px-4 py-2.5 font-medium">关键词</th>
+                      <th class="px-4 py-2.5 text-right font-medium">趋势分</th>
+                      <th class="px-4 py-2.5 text-right font-medium">机会分</th>
+                      <th class="px-4 py-2.5 text-right font-medium">综合分</th>
+                      <th class="px-4 py-2.5 text-right font-medium">峰值</th>
+                      <th class="px-4 py-2.5 text-right font-medium">名次</th>
+                      <th class="px-4 py-2.5 font-medium">体检</th>
+                      <th class="px-4 py-2.5 font-medium">状态</th>
+                      <th class="px-4 py-2.5 text-right font-medium">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="trends-staging-body" class="divide-y divide-border"></tbody>
+                </table>
+              </div>
+              <div id="trends-staging-pager" class="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-xs text-ink-muted"></div>
+            </article>
+
+            <article class="rounded-2xl border border-border bg-surface">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+                <div class="min-w-0">
+                  <h2 class="text-sm font-semibold">发布预览</h2>
+                  <p id="trends-publish-summary" class="mt-1 text-xs text-ink-muted">—</p>
+                </div>
+                <button
+                  id="trends-publish-btn"
+                  type="button"
+                  class="rounded-lg border border-primary bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  发布
+                </button>
+              </div>
+              <div id="trends-publish-changes" class="px-4 py-3"></div>
+              <p class="px-4 pb-4 text-[11px] leading-relaxed text-ink-muted">
+                发布后把候选词合并进 <code class="rounded bg-surface-2 px-1 py-0.5">content/trends.json</code>，
+                并自动触发站点构建。别名（<code class="rounded bg-surface-2 px-1 py-0.5">variantOf</code>）不占名次；
+                拒绝某词会连它的别名一起下架，避免代表词没了还留着死链。
+                榜单上限 1000 条代表词，超出按综合分淘汰尾部（别名随代表词一起下架）；
+                候选表里「预计名次」为 — 表示数据点不足 14 个，或合并后进不了前 1000。
+              </p>
+            </article>
+          </div>
+
+          <div id="trends-view-listed" hidden class="space-y-4">
+            <!-- 线上榜单：当前版本已发布的词。勾选后「更新」只重采这几个，
+                 曲线和内容一起刷新；结果照例进候选池，要到「发布」点一次才上线。 -->
+            <article class="rounded-2xl border border-border bg-surface">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+                <div class="min-w-0">
+                  <h2 class="text-sm font-semibold">线上榜单</h2>
+                  <p id="trends-listed-meta" class="mt-1 text-xs text-ink-muted">—</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <select
+                    id="trends-listed-filter"
+                    class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
+                  >
+                    <option value="all">全部</option>
+                    <option value="stale">30 天未采集</option>
+                    <option value="old">60 天未采集</option>
+                    <option value="queued">已在候选池</option>
+                  </select>
+                  <input
+                    id="trends-listed-search"
+                    type="search"
+                    placeholder="搜索关键词"
+                    class="w-40 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary sm:w-52"
+                  />
+                  <button
+                    id="trends-listed-refresh"
+                    type="button"
+                    class="rounded-lg bg-primary px-2.5 py-1.5 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled
+                  >
+                    更新选中
+                  </button>
+                </div>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full min-w-[900px] text-left text-sm">
+                  <thead class="bg-surface-2/60 text-xs text-ink-muted">
+                    <tr>
+                      <th class="w-[88px] px-3 py-2.5">
+                        <div class="flex items-center gap-1.5">
+                          <input
+                            id="trends-listed-select-all"
+                            type="checkbox"
+                            class="h-3.5 w-3.5 accent-primary"
+                            title="全选当前筛选结果（跨页）"
+                          />
+                          <button
+                            type="button"
+                            id="trends-listed-pick-page"
+                            class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                            title="只勾选当前页可以更新的词；再点一次取消"
+                          >
+                            本页
+                          </button>
+                        </div>
+                      </th>
+                      <th class="px-4 py-2.5 text-right font-medium">名次</th>
+                      <th class="px-4 py-2.5 font-medium">关键词</th>
+                      <th class="px-4 py-2.5 font-medium">分类</th>
+                      <th class="px-4 py-2.5 text-right font-medium">趋势分</th>
+                      <th class="px-4 py-2.5 text-right font-medium">机会分</th>
+                      <th class="px-4 py-2.5 text-right font-medium">综合分</th>
+                      <th class="px-4 py-2.5 font-medium">上次采集</th>
+                      <th class="px-4 py-2.5 font-medium">状态</th>
+                      <th class="px-4 py-2.5 text-right font-medium">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="trends-listed-body" class="divide-y divide-border"></tbody>
+                </table>
+              </div>
+              <div
+                id="trends-listed-pager"
+                class="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-xs text-ink-muted"
+              ></div>
+              <!-- 更新结果进候选池后先在这里攒着：发布前能看一遍新数据，点发布才真正动线上 -->
+              <div class="border-t border-border px-4 py-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="min-w-0">
+                    <h3 class="text-xs font-semibold">待发布</h3>
+                    <p id="trends-listed-publish-summary" class="mt-1 text-xs text-ink-muted">—</p>
+                  </div>
+                  <button
+                    id="trends-listed-publish-btn"
+                    type="button"
+                    class="rounded-lg border border-primary bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled
+                  >
+                    发布
+                  </button>
+                </div>
+                <div id="trends-listed-publish-changes" class="mt-3"></div>
+                <p class="mt-2 text-[11px] leading-relaxed text-ink-muted">
+                  发布会把候选池里全部待发布的词一起并入榜单：新词进榜，在榜词换成新内容，名次整体重算。
+                  上面列出的「原名次 → 新名次」就是发布后的结果，确认无误再点。
                 </p>
               </div>
-              <button
-                id="trends-fetch-btn"
-                type="button"
-                class="rounded-lg bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                拉取新词
-              </button>
-            </div>
-            <div class="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
-              <label class="block text-xs font-medium text-ink-secondary">
-                采集量
-                <select id="trends-fetch-budget" class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
-                  <option value="20">20 个（快速验证）</option>
-                  <option value="50">50 个</option>
-                  <option value="80" selected>80 个（推荐）</option>
-                  <option value="120">120 个（约 15 分钟）</option>
-                  <option value="200">200 个（约 25 分钟）</option>
-                </select>
-              </label>
-              <label class="block text-xs font-medium text-ink-secondary">
-                地区
-                <select id="trends-fetch-geo" class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
-                  <option value="US" selected>US 美国</option>
-                  <option value="GB">GB 英国</option>
-                  <option value="CA">CA 加拿大</option>
-                  <option value="AU">AU 澳大利亚</option>
-                  <option value="DE">DE 德国</option>
-                  <option value="JP">JP 日本</option>
-                </select>
-              </label>
-              <p id="trends-fetch-hint" class="self-end pb-1.5 text-[11px] leading-relaxed text-ink-muted">—</p>
-            </div>
-            <div id="trends-jobs" class="border-t border-border"></div>
-          </article>
-
-          <!-- 线上榜单：当前版本已发布的词。勾选后「更新」只重采这几个，
-               曲线和内容一起刷新；结果照例进候选池，要到「发布」点一次才上线。 -->
-          <article class="rounded-2xl border border-border bg-surface">
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
-              <div class="min-w-0">
-                <h2 class="text-sm font-semibold">线上榜单</h2>
-                <p id="trends-listed-meta" class="mt-1 text-xs text-ink-muted">—</p>
-              </div>
-              <div class="flex flex-wrap items-center gap-2">
-                <select
-                  id="trends-listed-filter"
-                  class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
-                >
-                  <option value="all">全部</option>
-                  <option value="stale">30 天未采集</option>
-                  <option value="old">60 天未采集</option>
-                  <option value="queued">已在候选池</option>
-                </select>
-                <input
-                  id="trends-listed-search"
-                  type="search"
-                  placeholder="搜索关键词"
-                  class="w-40 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary sm:w-52"
-                />
-                <button
-                  id="trends-listed-refresh"
-                  type="button"
-                  class="rounded-lg bg-primary px-2.5 py-1.5 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-                  disabled
-                >
-                  更新选中
-                </button>
-              </div>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full min-w-[900px] text-left text-sm">
-                <thead class="bg-surface-2/60 text-xs text-ink-muted">
-                  <tr>
-                    <th class="w-[88px] px-3 py-2.5">
-                      <div class="flex items-center gap-1.5">
-                        <input
-                          id="trends-listed-select-all"
-                          type="checkbox"
-                          class="h-3.5 w-3.5 accent-primary"
-                          title="全选当前筛选结果（跨页）"
-                        />
-                        <button
-                          type="button"
-                          id="trends-listed-pick-page"
-                          class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                          title="只勾选当前页可以更新的词；再点一次取消"
-                        >
-                          本页
-                        </button>
-                      </div>
-                    </th>
-                    <th class="px-4 py-2.5 text-right font-medium">名次</th>
-                    <th class="px-4 py-2.5 font-medium">关键词</th>
-                    <th class="px-4 py-2.5 font-medium">分类</th>
-                    <th class="px-4 py-2.5 text-right font-medium">趋势分</th>
-                    <th class="px-4 py-2.5 text-right font-medium">机会分</th>
-                    <th class="px-4 py-2.5 text-right font-medium">综合分</th>
-                    <th class="px-4 py-2.5 font-medium">上次采集</th>
-                    <th class="px-4 py-2.5 font-medium">状态</th>
-                    <th class="px-4 py-2.5 text-right font-medium">操作</th>
-                  </tr>
-                </thead>
-                <tbody id="trends-listed-body" class="divide-y divide-border"></tbody>
-              </table>
-            </div>
-            <div
-              id="trends-listed-pager"
-              class="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-xs text-ink-muted"
-            ></div>
-            <p class="border-t border-border px-4 py-3 text-[11px] leading-relaxed text-ink-muted">
-              更新只重采选中的词（曲线 + 内容），结果进候选池，需到下方「发布预览」点一次才会上线。
-              单批最多 40 个，超出自动分批、逐批排队执行。
-            </p>
-          </article>
-
-          <article class="rounded-2xl border border-border bg-surface">
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
-              <div class="min-w-0">
-                <h2 class="text-sm font-semibold">候选词</h2>
-                <p id="trends-staging-meta" class="mt-1 text-xs text-ink-muted">—</p>
-              </div>
-              <div class="flex flex-wrap items-center gap-2">
-                <select id="trends-staging-filter" class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
-                  <option value="all">全部</option>
-                  <option value="pending">待富化</option>
-                  <option value="ready">已富化</option>
-                  <option value="new">新词</option>
-                  <option value="board">在榜更新</option>
-                  <option value="blocked">数据不足</option>
-                  <option value="rejected">已拒绝</option>
-                </select>
-                <input
-                  id="trends-staging-search"
-                  type="search"
-                  placeholder="搜索关键词"
-                  class="w-40 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary sm:w-52"
-                />
-                <button
-                  id="trends-enrich-btn"
-                  type="button"
-                  class="rounded-lg bg-primary px-2.5 py-1.5 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-                  disabled
-                >
-                  富化选中
-                </button>
-                <button
-                  id="trends-staging-refresh"
-                  type="button"
-                  class="rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
-                >
-                  刷新
-                </button>
-              </div>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full min-w-[900px] text-left text-sm">
-                <thead class="bg-surface-2/60 text-xs text-ink-muted">
-                  <tr>
-                    <th class="w-[88px] px-3 py-2.5">
-                      <div class="flex items-center gap-1.5">
-                        <input id="trends-select-all" type="checkbox" class="h-3.5 w-3.5 accent-primary" title="全选全部可发布的候选词（跨页）" />
-                        <button
-                          type="button"
-                          id="trends-pick-page"
-                          class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                          title="只勾选当前页可以富化的候选词；再点一次取消"
-                        >
-                          本页
-                        </button>
-                      </div>
-                    </th>
-                    <th class="px-4 py-2.5 font-medium">关键词</th>
-                    <th class="px-4 py-2.5 text-right font-medium">趋势分</th>
-                    <th class="px-4 py-2.5 text-right font-medium">机会分</th>
-                    <th class="px-4 py-2.5 text-right font-medium">综合分</th>
-                    <th class="px-4 py-2.5 text-right font-medium">峰值</th>
-                    <th class="px-4 py-2.5 text-right font-medium">名次</th>
-                    <th class="px-4 py-2.5 font-medium">体检</th>
-                    <th class="px-4 py-2.5 font-medium">状态</th>
-                    <th class="px-4 py-2.5 text-right font-medium">操作</th>
-                  </tr>
-                </thead>
-                <tbody id="trends-staging-body" class="divide-y divide-border"></tbody>
-              </table>
-            </div>
-            <div id="trends-staging-pager" class="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-xs text-ink-muted"></div>
-          </article>
-
-          <article class="rounded-2xl border border-border bg-surface">
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
-              <div class="min-w-0">
-                <h2 class="text-sm font-semibold">发布预览</h2>
-                <p id="trends-publish-summary" class="mt-1 text-xs text-ink-muted">—</p>
-              </div>
-              <button
-                id="trends-publish-btn"
-                type="button"
-                class="rounded-lg border border-primary bg-primary px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                更新榜单
-              </button>
-            </div>
-            <div id="trends-publish-changes" class="px-4 py-3"></div>
-            <p class="px-4 pb-4 text-[11px] leading-relaxed text-ink-muted">
-              发布后把候选词合并进 <code class="rounded bg-surface-2 px-1 py-0.5">content/trends.json</code>，
-              并自动触发站点构建。别名（<code class="rounded bg-surface-2 px-1 py-0.5">variantOf</code>）不占名次；
-              拒绝某词会连它的别名一起下架，避免代表词没了还留着死链。
-              榜单上限 1000 条代表词，超出按综合分淘汰尾部（别名随代表词一起下架）；
-              候选表里「预计名次」为 — 表示数据点不足 14 个，或合并后进不了前 1000。
-            </p>
-          </article>
+              <p class="border-t border-border px-4 py-3 text-[11px] leading-relaxed text-ink-muted">
+                更新只重采选中的词（曲线 + 内容），结果进候选池；要在这里或「数据抓取」页签点一次「发布」才会上线。
+                单批最多 40 个，超出自动分批、逐批排队执行。
+              </p>
+            </article>
+          </div>
         </section>
 
         <!-- GitHub 榜：采集 → 审核候选仓库 → 看位次变化再发布。

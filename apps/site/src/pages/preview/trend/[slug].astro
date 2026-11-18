@@ -1,10 +1,14 @@
 ---
 /**
- * 待发布趋势词的详情预览页（按需渲染）。
+ * 趋势词详情预览页（按需渲染）。
  *
- * 和线上 /trends/[slug] 用**同一个** TrendBody 渲染，只有数据来源不同：
- * 请求进来时现场查 D1 的 board_items.card，拿到什么就渲染什么。
- * 「审核时看到的样子」＝「这条候选现在真实的样子」，改完数据刷新即生效，
+ * 和线上 /trends/[slug] 用**同一个** TrendBody 渲染，只有数据来源不同。
+ * 数据按「最新可见版本」取：
+ *   1. 候选池里有这条词（刚更新 / 待富化 / 富化完成）→ 渲染候选池里的新版；
+ *   2. 否则回落到当前线上版本（board_listed + board_listed_details）。
+ *
+ * 这样线上榜单每一行的「预览」都点得开：更新前看的是线上内容，更新后刷新
+ * 就是候选池里的新内容，发布后又变回（新的）线上版本。改完数据刷新即生效，
  * 不需要为预览等一次整站构建。
  *
  * 只在后台内部使用：站点 Worker 对 /preview/* 统一校验管理员会话后才放行，
@@ -31,6 +35,7 @@ const STAGE_LABEL: Record<string, string> = {
   enriched: "富化完成，等待发布",
   enriching: "富化进行中，部分字段还会变",
   enrich_failed: "富化失败，下面可能是残缺数据",
+  published: "当前线上版本",
 };
 
 interface D1Like {
@@ -44,13 +49,25 @@ interface D1Like {
 interface BoardRow {
   card?: string | Record<string, unknown> | null;
   status?: string;
+  version?: string;
 }
 
 const { slug } = Astro.params;
 const db = (env as { DB?: D1Like }).DB;
 
+/** 预览数据出处：候选池里的新版优先，没有再看线上版本 */
+let source: "staging" | "listed" = "staging";
 let trend: Record<string, any> | null = null;
 let stage = "enriched";
+
+function parseCard(raw: string | Record<string, unknown> | null | undefined): Record<string, any> | null {
+  if (!raw) return null;
+  try {
+    return typeof raw === "string" ? (JSON.parse(raw) as Record<string, any>) : (raw as Record<string, any>);
+  } catch {
+    return null;
+  }
+}
 
 if (slug && db) {
   /*
@@ -70,25 +87,50 @@ if (slug && db) {
 
   const status = String(row?.status ?? "");
   if (row?.card && PREVIEW_STAGES.has(status)) {
-    try {
-      trend =
-        typeof row.card === "string"
-          ? (JSON.parse(row.card) as Record<string, any>)
-          : (row.card as Record<string, any>);
+    const card = parseCard(row.card);
+    if (card) {
+      trend = card;
       stage = status;
-    } catch {
-      trend = null;
+    }
+  }
+
+  /*
+   * 候选池没有（或状态不预览）时回落到当前线上版本。
+   *
+   * 线上数据在 board_listed（名次 + 卡片）与 board_listed_details（完整对象）里，
+   * 版本指针取 app_config 的 config.current_version —— 和 hydrate 脚本
+   * 还原榜单文件时用的是同一条链路。这样「更新前先看看现在长什么样」不用再另开页面。
+   */
+  if (!trend) {
+    const listed = await db
+      .prepare(
+        `SELECT d.detail AS card, l.version AS version
+           FROM board_listed l
+           JOIN board_listed_details d
+             ON d.version = l.version AND d.board = l.board AND d.item_key = l.item_key
+          WHERE l.board = 'trends'
+            AND l.version = (SELECT val FROM app_config WHERE key = 'config.current_version')
+            AND (json_extract(l.card, '$.slug') = ? OR l.item_key = ?)
+          LIMIT 1`,
+      )
+      .bind(slug, slug)
+      .first<BoardRow>()
+      .catch(() => null);
+
+    const card = parseCard(listed?.card);
+    if (card) {
+      trend = card;
+      stage = "published";
+      source = "listed";
     }
   }
 }
 
 /*
- * 查不到就 404，不 fallback 到已发布的静态产物：
- * 条目可能刚被发布/拒绝/清理，宁可明确「没有这条预览」，
- * 也不给一个和库里对不上的旧页面。
+ * 候选池和线上版本都没有才 404：slug 写错，或这个词从没进过榜。
  */
 if (!trend) {
-  return new Response("预览不存在：该词可能已发布、被拒绝或已清理，或 slug 有误。", {
+  return new Response("预览不存在：候选池与线上榜单都没有这个词，或 slug 有误。", {
     status: 404,
     headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
   });
@@ -107,7 +149,13 @@ const data = trend;
       <span class="rounded-full bg-primary px-2 py-0.5 font-semibold text-white">预览</span>
       <span class="font-medium">{data.keyword}</span>
       <span class="text-primary/80">· {STAGE_LABEL[stage] ?? stage}</span>
-      <span class="text-primary/60">· 尚未发布到榜单 · 仅管理员可见</span>
+      {
+        source === "listed" ? (
+          <span class="text-primary/60">· 与外网当前内容一致 · 候选池有新版时优先显示新版</span>
+        ) : (
+          <span class="text-primary/60">· 尚未发布到榜单 · 仅管理员可见</span>
+        )
+      }
       <a href="/admin" class="ml-auto font-medium underline underline-offset-2 hover:no-underline">返回后台</a>
     </div>
   </div>

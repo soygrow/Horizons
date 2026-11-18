@@ -261,6 +261,8 @@ const PAGE_SIZE = 30;
 const LISTED_PAGE_SIZE = 20;
 
 const state = {
+  /** 当前子页签：数据抓取 / 线上榜单。线上榜单是全量算分，只在真要看时才拉 */
+  view: "fetch" as "fetch" | "listed",
   filter: "all",
   q: "",
   page: 1,
@@ -370,7 +372,7 @@ function renderOverview(data: Overview): void {
       $(id).textContent = "—";
     }
     $("trends-fetch-btn").setAttribute("disabled", "true");
-    $("trends-publish-btn").setAttribute("disabled", "true");
+    for (const t of PUBLISH_TARGETS) $(t.btn).setAttribute("disabled", "true");
     return;
   }
 
@@ -589,7 +591,7 @@ function renderListed(data: ListedResp): void {
           <td class="px-4 py-2.5 text-xs tabular-nums text-ink-muted">${esc(fmtTime(row.lastSeenAt))}</td>
           <td class="px-4 py-2.5">${status}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-right">
-            <a href="/preview/trend/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener" class="text-xs text-primary hover:underline" title="在新窗口预览详情页">预览</a>
+            <a href="/preview/trend/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener" class="text-xs text-primary hover:underline" title="在新窗口预览：更新过的词显示候选池里的新内容，没更新的显示线上当前版本">预览</a>
             <button type="button" data-listed-refresh="${esc(row.slug)}" class="ml-3 text-xs text-primary transition hover:underline ${pickable ? "" : "cursor-not-allowed opacity-40"}" ${pickable ? "" : "disabled"}>更新</button>
           </td>
         </tr>`;
@@ -646,7 +648,7 @@ async function runListedRefresh(slugs: string[]): Promise<void> {
   const ok = window.confirm(
     `将重采 ${unique.length} 个线上词${batches.length > 1 ? `（分 ${batches.length} 批，逐批串行跑）` : ""}。\n\n`
       + `每个词一次 Google Trends 曲线 + 一次 LLM 富化，约 40~60 秒。\n`
-      + `结果只进候选池，需要到「发布预览」点一「更新榜单」才会上线。`,
+      + `结果只进候选池：跑完在本页签底部「待发布」里先看一遍新数据，点「发布」才会上线。`,
   );
   if (!ok) return;
 
@@ -676,6 +678,8 @@ async function runListedRefresh(slugs: string[]): Promise<void> {
       if (btn) btn.disabled = false;
       void loadListed();
       void loadStaging();
+      // 跑完的词进候选池了，待发布清单要跟着变，否则用户看不出「更新成了什么」
+      void loadPreview();
     }, 4000);
   } catch (e) {
     if (btn) {
@@ -695,7 +699,7 @@ async function runListedRefresh(slugs: string[]): Promise<void> {
 function renderJobs(jobs: Job[]): void {
   const box = $("trends-jobs");
   if (!jobs.length) {
-    box.innerHTML = `<p class="px-4 py-4 text-xs text-ink-muted">还没有任务。点上面的「拉取新词」会在这里显示进度。</p>`;
+    box.innerHTML = `<p class="px-4 py-4 text-xs text-ink-muted">还没有任务。拉取新词、更新词或发布会在这里显示进度。</p>`;
     return;
   }
 
@@ -894,25 +898,51 @@ function syncEnrichBtn(): void {
   btn.textContent = n > 0 ? `富化选中（${n}）` : "富化选中";
 }
 
+/**
+ * 发布预览的两套挂载点：数据抓取页签的「发布预览」、线上榜单页签的「待发布」。
+ * 同一份数据（/trends/publish/preview）、同一个发布接口，两边显示必须一致。
+ */
+const PUBLISH_TARGETS = [
+  {
+    btn: "trends-publish-btn",
+    summary: "trends-publish-summary",
+    box: "trends-publish-changes",
+    idle: "发布",
+  },
+  {
+    btn: "trends-listed-publish-btn",
+    summary: "trends-listed-publish-summary",
+    box: "trends-listed-publish-changes",
+    idle: "发布",
+  },
+] as const;
+
+/** 一份预览结果同时写到两个容器，避免一边刷新了另一边还停在旧内容 */
+function paintPreview(summary: string, html: string, disabled: boolean): void {
+  for (const t of PUBLISH_TARGETS) {
+    const summaryEl = $(t.summary);
+    const boxEl = $(t.box);
+    const btn = $(t.btn) as HTMLButtonElement | null;
+    if (summaryEl) summaryEl.textContent = summary;
+    if (boxEl) boxEl.innerHTML = html;
+    // 提交中的按钮别被 12 秒轮询刷回可点状态
+    if (btn && !btn.dataset.busy) btn.disabled = disabled;
+  }
+}
+
 /** 发布预览里「谁的位置变了」——这块是本页的核心 */
 function renderPreview(data: PreviewResp): void {
   const p = data.preview;
-  const btn = $("trends-publish-btn") as HTMLButtonElement;
-  const summary = $("trends-publish-summary");
-  const box = $("trends-publish-changes");
 
   if (!p) {
-    summary.textContent = "候选池为空，先拉取新词。";
-    box.innerHTML = `<p class="text-xs text-ink-muted">—</p>`;
-    btn.disabled = true;
+    paintPreview("候选池为空，先拉取新词。", `<p class="text-xs text-ink-muted">—</p>`, true);
     return;
   }
 
   const untouched = p.incoming + p.exited === 0;
-  summary.textContent = untouched
+  const summary = untouched
     ? "没有待发布的候选词"
     : `合并 ${p.incoming} 个候选词（其中 ${p.inBoardRefresh} 个是在榜刷新）；榜单 ${p.boardBefore} → ${p.boardAfter} / ${p.boardLimit} 条`;
-  btn.disabled = untouched;
 
   // 发布后候选池会被清空，所以「上次动了谁」靠 staging 里的摘要回放
   const last = p.lastPublish;
@@ -937,7 +967,11 @@ function renderPreview(data: PreviewResp): void {
       })();
 
   if (untouched) {
-    box.innerHTML = `<p class="text-xs text-ink-muted">候选池已经清空，线上榜单没有待合并的内容。</p>${lastBlock}`;
+    paintPreview(
+      summary,
+      `<p class="text-xs text-ink-muted">候选池已经清空，线上榜单没有待合并的内容。</p>${lastBlock}`,
+      true,
+    );
     return;
   }
 
@@ -960,7 +994,11 @@ function renderPreview(data: PreviewResp): void {
   );
 
   if (!named.length) {
-    box.innerHTML = `${counts}<p class="text-xs text-ink-muted">本次没有显著位次变化：新词都排在末尾，也没有词出榜。</p>${lastBlock}`;
+    paintPreview(
+      summary,
+      `${counts}<p class="text-xs text-ink-muted">本次没有显著位次变化：新词都排在末尾，也没有词出榜。</p>${lastBlock}`,
+      false,
+    );
     return;
   }
 
@@ -981,7 +1019,9 @@ function renderPreview(data: PreviewResp): void {
       ? `<p class="mt-2 text-[11px] text-ink-muted">还有 ${named.length - 60} 条显著变动，完整清单见发布日志。</p>`
       : "";
 
-  box.innerHTML = `${counts}
+  paintPreview(
+    summary,
+    `${counts}
       <div class="max-h-80 overflow-y-auto rounded-lg border border-border px-2">
         <div class="sticky top-0 flex items-center gap-2 bg-surface py-1.5 text-[11px] text-ink-muted">
           <span class="w-14 shrink-0">类型</span>
@@ -996,7 +1036,9 @@ function renderPreview(data: PreviewResp): void {
         由新词插入顺延导致（通常只挪 1–2 名），不逐条列出。
       </p>
       ${more}
-      ${lastBlock}`;
+      ${lastBlock}`,
+    false,
+  );
 }
 
 /* --------------------------------- 加载 --------------------------------- */
@@ -1029,11 +1071,11 @@ async function waitJobDone(id: string): Promise<void> {
   const deadline = Date.now() + 45 * 60_000;
   while (Date.now() < deadline) {
     await new Promise((r) => window.setTimeout(r, 15_000));
-    const data = await apiGet<{ jobs: Job[] }>("/trends/jobs?limit=8").catch(() => null);
+    const data = await apiGet<{ jobs: Job[] }>("/trends/jobs?limit=5").catch(() => null);
     if (!data) continue;
     renderJobs(data.jobs ?? []);
     const job = (data.jobs ?? []).find((j) => j.id === id);
-    if (!job) return; // 记录被挤出前 8 条，无从判断，别无限等
+    if (!job) return; // 记录被挤出前 5 条，无从判断，别无限等
     if (!JOB_TERMINAL.has(job.status)) continue;
     void loadStaging();
     void loadListed();
@@ -1047,7 +1089,7 @@ async function waitJobDone(id: string): Promise<void> {
 
 async function loadJobs(): Promise<void> {
   try {
-    const data = await apiGet<{ jobs: Job[] }>("/trends/jobs?limit=8");
+    const data = await apiGet<{ jobs: Job[] }>("/trends/jobs?limit=5");
     renderJobs(data.jobs ?? []);
   } catch {
     /* 任务列表失败不阻塞其它区域 */
@@ -1076,8 +1118,7 @@ async function loadPreview(): Promise<void> {
     state.preview = data.preview;
     renderPreview(data);
   } catch {
-    $("trends-publish-summary").textContent = "发布预览读取失败";
-    $("trends-publish-btn").setAttribute("disabled", "true");
+    paintPreview("发布预览读取失败", `<p class="text-xs text-ink-muted">—</p>`, true);
   }
 }
 
@@ -1085,8 +1126,9 @@ function reloadAll(): void {
   void loadOverview();
   void loadJobs();
   void loadStaging();
-  void loadListed();
   void loadPreview();
+  // 线上榜单是 367 条全量算分，人没在看这一页时不拉；切过去时再补一次
+  if (state.view === "listed") void loadListed();
 }
 
 /** 有任务在跑就每 12 秒刷一次，跑完自动停 */
@@ -1283,7 +1325,56 @@ function confirmPublish(): boolean {
   return window.confirm(lines.join("\n"));
 }
 
+/**
+ * 发布按钮的执行体。
+ *
+ * 数据抓取页签的「发布预览」和线上榜单页签的「待发布」是同一个动作
+ * （整榜合并候选池），只是按钮位置不同——文案、禁用状态、提交后的刷新都共用这里，
+ * 不会出现一边能点一边灰着。
+ */
+async function submitPublish(btnId: string, idle: string): Promise<void> {
+  if (!confirmPublish()) return;
+  const btn = $(btnId) as HTMLButtonElement;
+  // dataset.busy 让 paintPreview 别把提交中的按钮刷回可点状态
+  btn.dataset.busy = "1";
+  btn.disabled = true;
+  btn.textContent = "提交中…";
+  try {
+    await apiPost("/trends/publish", {});
+    btn.textContent = "已提交";
+    void loadJobs();
+    // 发布任务跑完才会动线上数据，几秒后整体重拉一次即可
+    window.setTimeout(() => {
+      delete btn.dataset.busy;
+      btn.textContent = idle;
+      reloadAll();
+    }, 4000);
+  } catch (e) {
+    delete btn.dataset.busy;
+    btn.disabled = false;
+    btn.textContent = idle;
+    window.alert(`发布失败：${e instanceof Error ? e.message : String(e)}`);
+  }
+}
+
 function bind(): void {
+  /*
+   * 子页签：数据抓取（采集 + 候选池 + 发布预览）/ 线上榜单（当前版本 + 待发布）。
+   * 切换只改显隐，数据各拉各的；线上榜单离开时不渲染，回来时补拉一次最新的。
+   */
+  document.querySelectorAll<HTMLElement>("[data-trends-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const view = btn.dataset.trendsView === "listed" ? "listed" : "fetch";
+      state.view = view;
+      document
+        .querySelectorAll<HTMLElement>("[data-trends-view]")
+        .forEach((b) => (b.dataset.active = String(b === btn)));
+      $("trends-view-fetch").hidden = view !== "fetch";
+      $("trends-view-listed").hidden = view !== "listed";
+      if (view === "listed") void loadListed();
+    });
+  });
+
   const budget = $("trends-fetch-budget") as HTMLSelectElement;
   const geo = $("trends-fetch-geo") as HTMLSelectElement;
   const hint = $("trends-fetch-hint");
@@ -1530,25 +1621,10 @@ function bind(): void {
     void runListedRefresh([...state.listedSelected]);
   });
 
-  $("trends-publish-btn").addEventListener("click", async () => {
-    if (!confirmPublish()) return;
-    const btn = $("trends-publish-btn") as HTMLButtonElement;
-    btn.disabled = true;
-    btn.textContent = "提交中…";
-    try {
-      await apiPost("/trends/publish", {});
-      btn.textContent = "已提交";
-      void loadJobs();
-      window.setTimeout(() => {
-        btn.textContent = "更新榜单";
-        void loadPreview();
-      }, 4000);
-    } catch (e) {
-      btn.disabled = false;
-      btn.textContent = "更新榜单";
-      window.alert(`发布失败：${e instanceof Error ? e.message : String(e)}`);
-    }
-  });
+  // 两个页签各有一个发布按钮，走同一份提交逻辑
+  for (const t of PUBLISH_TARGETS) {
+    $(t.btn).addEventListener("click", () => void submitPublish(t.btn, t.idle));
+  }
 
   $("trends-detail-close").addEventListener("click", closeDetail);
   $("trends-detail").addEventListener("click", (event) => {
