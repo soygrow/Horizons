@@ -15,7 +15,8 @@ import { $, apiGet, apiPost, debounce, esc, fmtNum, fmtTime } from "./admin-shar
 
 interface Job {
   id: string;
-  kind: "fetch" | "publish";
+  /** fetch 拉取 / refresh 更新选中 / enrich 富化 / publish 发布 / revert 回滚 */
+  kind: "fetch" | "refresh" | "enrich" | "publish" | "revert";
   status: string;
   params: string;
   run_url: string | null;
@@ -796,6 +797,52 @@ async function runListedRefresh(slugs: string[]): Promise<void> {
   }
 }
 
+/*
+ * 任务种类 → 中文标签 + 参数摘要。
+ *
+ * 以前这里只有「fetch 还是别的」两分支：更新选中 / 富化 / 回滚都被当成发布，
+ * 文案又只会读 publish 的 incoming 字段，于是显示成「发布 · 合并 ? 个候选词」——
+ * 那个问号不是数据缺失，是把 refresh 任务当发布来解释了。
+ */
+const JOB_KINDS: Record<string, string> = {
+  fetch: "拉取",
+  refresh: "更新",
+  enrich: "富化",
+  publish: "发布",
+  revert: "回滚",
+};
+
+function jobDesc(job: Job): string {
+  try {
+    const p = JSON.parse(job.params) as Record<string, unknown>;
+    const num = (v: unknown): number | null =>
+      typeof v === "number" && Number.isFinite(v) ? v : null;
+    const slugs = Array.isArray(p.slugs) ? p.slugs.length : null;
+    switch (job.kind) {
+      case "fetch":
+        return `${num(p.budget) ?? "?"} 个 · ${typeof p.geo === "string" ? p.geo : "US"}`;
+      case "refresh": {
+        const n = slugs ?? num(p.count);
+        return n === null ? "更新选中的词" : `更新 ${n} 个词`;
+      }
+      case "enrich": {
+        const n = num(p.count) ?? slugs;
+        return n === null ? "富化候选词" : `富化 ${n} 个词`;
+      }
+      case "revert": {
+        const n = num(p.count) ?? slugs;
+        return n === null ? "回滚候选词" : `回滚 ${n} 个词`;
+      }
+      default: {
+        const n = num(p.incoming);
+        return n === null ? "合并候选池" : `合并 ${n} 个候选词`;
+      }
+    }
+  } catch {
+    return JOB_KINDS[job.kind] ?? job.kind;
+  }
+}
+
 function renderJobs(jobs: Job[]): void {
   const box = $("trends-jobs");
   if (!jobs.length) {
@@ -811,21 +858,12 @@ function renderJobs(jobs: Job[]): void {
   box.innerHTML = jobs
     .map((job) => {
       const badge = statusBadge(job.status);
-      const params = (() => {
-        try {
-          const p = JSON.parse(job.params) as Record<string, unknown>;
-          if (job.kind === "fetch") return `${p.budget ?? "?"} 个 · ${p.geo ?? "US"}`;
-          return `合并 ${p.incoming ?? "?"} 个候选词`;
-        } catch {
-          return job.kind === "fetch" ? "拉取" : "发布";
-        }
-      })();
       const link = job.run_url
         ? `<a href="${esc(job.run_url)}" target="_blank" rel="noopener" class="text-primary hover:underline">日志</a>`
         : "—";
       return `<div class="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2.5 text-xs last:border-b-0">
-          <span class="w-14 shrink-0 text-ink-muted">${job.kind === "fetch" ? "拉取" : "发布"}</span>
-          <span class="min-w-0 flex-1 truncate text-ink-secondary">${esc(params)}</span>
+          <span class="w-14 shrink-0 text-ink-muted">${esc(JOB_KINDS[job.kind] ?? job.kind)}</span>
+          <span class="min-w-0 flex-1 truncate text-ink-secondary">${esc(jobDesc(job))}</span>
           <span class="shrink-0 rounded-full px-2 py-0.5 font-semibold ${badge.cls}">${badge.label}</span>
           <span class="w-24 shrink-0 text-right text-ink-muted">${fmtTime(job.created_at)}</span>
           <span class="w-10 shrink-0 text-right">${link}</span>
