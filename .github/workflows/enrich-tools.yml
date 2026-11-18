@@ -51,9 +51,16 @@ on:
         required: false
         default: ""
 
+# GitHub 默认同一 concurrency group 只允许 1 个 pending：新 run 进来会把之前
+# 那个 pending 顶成 cancelled。后台提交 50 条会被前端拆成 4 批连发，于是第 3 批
+# 顶掉第 2 批、第 4 批顶掉第 3 批 —— 表现就是「4 条里 2 条立刻失败，只剩第一条
+# 和最后一条在跑」，中间两批的条目根本没被处理。
+#
+# queue: max 允许最多 100 个 pending 按 FIFO 依次执行（与 cancel-in-progress: true
+# 互斥，这里本来也不需要取消正在跑的 job）。
 concurrency:
   group: enrich-tools
-  cancel-in-progress: false
+  queue: max
 
 jobs:
   enrich:
@@ -63,7 +70,11 @@ jobs:
       contents: write
 
     steps:
+      # fetch-depth: 0 —— 推被拒时要 rebase 到远端最新提交，shallow clone 缺共同
+      # 祖先会直接 rebase 失败，那样「重试」形同虚设。
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v6
         with:
@@ -112,6 +123,12 @@ jobs:
           if [ "${{ inputs.insight_only }}" = "true" ]; then ARGS="$ARGS --insight-only"; fi
           pnpm tsx scripts/admin/enrich-staging.ts $ARGS
 
+      # 推送被拒是常态而不是异常：daily / collect-fields / 另一批富化 / 人工推送
+      # 都可能在这 40 分钟里抢先推一版。以前这里是裸 `git push`，被拒就整步失败
+      # （2026-11-18 那次就是凌晨的「刷新榜单统计」抢先一条提交，导致富化报告白跑）。
+      #
+      # 富化本身的结果早已写进 D1（真源），仓库里这份 tools-field-report.json
+      # 只是后台看板用的派生快照，所以重试即可、不必让 job 失败。
       - name: 提交富化结果
         id: commit
         run: |
@@ -124,9 +141,30 @@ jobs:
             exit 0
           fi
           git commit -m "chore(tools): 富化已确认候选（后台）"
-          git push
-          echo "changed=true" >> "$GITHUB_OUTPUT"
-          echo "::notice::富化完成，请到后台查看字段完整度后再选择发榜"
+
+          REF="${GITHUB_REF_NAME:-main}"
+          for i in 1 2 3; do
+            if git push origin "HEAD:${REF}"; then
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+              echo "::notice::富化完成，请到后台查看字段完整度后再选择发榜"
+              exit 0
+            fi
+            echo "::warning::push 被拒（第 ${i} 次），同步远端后重试"
+            git fetch --quiet origin "${REF}"
+            if ! GIT_EDITOR=true git rebase "origin/${REF}"; then
+              # 报告是脚本从 D1 全量重算的派生文件，冲突时保留本次这份
+              # （rebase 过程中 --theirs 指的是被重放的本地提交）
+              git checkout --theirs -- content/tools-field-report.json || true
+              git add content/tools-field-report.json
+              GIT_EDITOR=true git rebase --continue || git rebase --abort
+            fi
+            sleep $((i * 5))
+          done
+
+          # 连续 3 次被拒说明不是普通竞态（权限/token/保护分支），要人看一眼；
+          # 但富化数据在 D1 里，不影响条目，所以只报 warning 让后续步骤照常走。
+          echo "::warning::连续 3 次推送失败，本次报告未入仓；D1 里的富化结果已写入，下次任务会重新生成这份报告"
+          echo "changed=false" >> "$GITHUB_OUTPUT"
 
       # 预览页是构建期从 D1 导出工作区条目生成的（/preview/{domain}），
       # 不重建的话富化完点「工具名」看到的还是上一版数据。
