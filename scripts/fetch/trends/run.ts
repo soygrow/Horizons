@@ -523,7 +523,7 @@ async function main(): Promise<void> {
    * 落盘：候选池模式写 staging（线上不动），默认模式直接改榜单。
    * 进度落盘和最终落盘共用一份，避免两条路径逻辑漂移。
    */
-  const persist = (): void => {
+  const persist = async (): Promise<void> => {
     const stamp = new Date().toISOString();
     if (args.staging) {
       // 两段式下候选池跨轮累积：这一轮没碰到的词原样留下。
@@ -558,7 +558,11 @@ async function main(): Promise<void> {
         },
         lastRun: { ok, failed, total: batch.length, budget: args.limit, geo: args.geo },
       });
-      await syncStagingToD1(nextStaging);
+      // 本地候选池文件已经落盘，同步 D1 失败不该让整轮采集白跑
+      // （后台只是少看到最新一批，下一轮 persist 会重新覆盖）
+      await syncStagingToD1(nextStaging).catch((e: unknown) => {
+        console.warn(`[trends] 候选池同步 D1 失败（本地文件已写入）：${msgOf(e)}`);
+      });
     } else {
       saveDataset({
         ...dataset,
@@ -666,7 +670,7 @@ async function main(): Promise<void> {
       );
 
       if (ok % 10 === 0) {
-        persist();
+        await persist();
         console.log(
           `[trends] 进度落盘：${keywords.length} 个词${args.staging ? `（候选 ${touched.size} 个 → content/trends-staging.json）` : ""}`,
         );
@@ -896,7 +900,7 @@ async function main(): Promise<void> {
     }
   }
 
-  persist();
+  await persist();
   saveSkips(skips);
   console.log(
     args.staging
