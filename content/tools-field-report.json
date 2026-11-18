@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-18T04:52:31.813Z",
-  "total": 42,
-  "itemsWithIssues": 22,
+  "generatedAt": "2026-11-18T05:09:25.125Z",
+  "total": 27,
+  "itemsWithIssues": 17,
   "dimensions": [
     {
       "key": "description",
@@ -10,7 +10,7 @@
       "missingRatio": 0,
       "missingDomains": [],
       "invalid": 6,
-      "invalidRatio": 14,
+      "invalidRatio": 22,
       "invalidSamples": [
         {
           "domain": "claudeduet.com",
@@ -52,25 +52,37 @@
       "key": "trafficMetrics.monthlyVisits",
       "label": "月访问量",
       "missing": 2,
-      "missingRatio": 5,
+      "missingRatio": 7,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
       ],
-      "invalid": 0,
-      "invalidRatio": 0,
-      "invalidSamples": []
+      "invalid": 3,
+      "invalidRatio": 11,
+      "invalidSamples": [
+        {
+          "domain": "opengeni.ai",
+          "reason": "月访问量为 0 或负数"
+        },
+        {
+          "domain": "humalike.ai",
+          "reason": "月访问量为 0 或负数"
+        },
+        {
+          "domain": "alkera.ai",
+          "reason": "月访问量为 0 或负数"
+        }
+      ]
     },
     {
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
-      "missing": 4,
-      "missingRatio": 10,
+      "missing": 3,
+      "missingRatio": 11,
       "missingDomains": [
         "claudeduet.com",
         "kixy.ai",
-        "wanaka.app",
-        "yourmascot.ai"
+        "wanaka.app"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -80,7 +92,7 @@
       "key": "metrics.registeredAt",
       "label": "域名注册时间",
       "missing": 9,
-      "missingRatio": 21,
+      "missingRatio": 33,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -99,10 +111,13 @@
     {
       "key": "trafficMetrics.organicSearchVisits",
       "label": "自然搜索流量",
-      "missing": 13,
-      "missingRatio": 31,
+      "missing": 15,
+      "missingRatio": 56,
       "missingDomains": [
-        "tiden.ai",
+        "opengeni.ai",
+        "humalike.ai",
+        "alkera.ai",
+        "band.ai",
         "agenthunt.io",
         "alsona.com",
         "claudeduet.com",
@@ -113,8 +128,7 @@
         "teamily.com",
         "tobira.ai",
         "wanaka.app",
-        "xmind.com",
-        "yourmascot.ai"
+        "xmind.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -124,11 +138,11 @@
       "key": "geoDistribution",
       "label": "地区分布",
       "missing": 3,
-      "missingRatio": 7,
+      "missingRatio": 11,
       "missingDomains": [
+        "pactto.com",
         "claudeduet.com",
-        "wanaka.app",
-        "yourmascot.ai"
+        "wanaka.app"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -137,81 +151,69 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 30,
-      "missingRatio": 71,
+      "missing": 14,
+      "missingRatio": 52,
       "missingDomains": [
-        "videonetics.com",
-        "vidsoul.ai",
-        "surgepix.ai",
-        "tiden.ai",
-        "parthjadhav.com",
-        "scape.app",
-        "leadcapture.io",
-        "flot.ai",
-        "finbrain.tech",
+        "topmessage.com",
+        "n8nchatui.com",
+        "botgauge.com",
+        "band.ai",
         "agenthunt.io",
-        "askvideo.ai",
         "claudeduet.com",
-        "cognitum.one",
-        "cutbay.ai",
-        "intrascope.app",
         "kixy.ai",
-        "luneresearch.com",
         "maxma.com",
-        "needle.app",
         "quest.app",
         "rerun.io",
-        "revix.ai",
-        "runinfra.ai",
-        "soulgen.net",
         "teamily.com",
         "tobira.ai",
         "wanaka.app",
-        "wizr.ai",
-        "xmind.com",
-        "yourmascot.ai"
+        "xmind.com"
       ],
-      "invalid": 10,
-      "invalidRatio": 24,
+      "invalid": 11,
+      "invalidRatio": 41,
       "invalidSamples": [
         {
-          "domain": "useomnia.com",
+          "domain": "semos.ai",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "hopscotchlabs.ai",
+          "domain": "resollm.ai",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "hirekai.ai",
+          "domain": "opengeni.ai",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "odyssey.systems",
+          "domain": "nitrostack.ai",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "naise.ai",
+          "domain": "pactto.com",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "adant.ai",
+          "domain": "maximem.ai",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "dailyhelm.com",
+          "domain": "irisgo.ai",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "fuseai.com",
+          "domain": "humalike.ai",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "invofox.com",
+          "domain": "alkera.ai",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "veltrix.com",
+          "domain": "bevel.software",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "domain": "autonomyai.io",
           "reason": "全部关键词缺搜索量（只有词）"
         }
       ]
@@ -220,7 +222,7 @@
       "key": "observations.competitors",
       "label": "竞品",
       "missing": 5,
-      "missingRatio": 12,
+      "missingRatio": 19,
       "missingDomains": [
         "claudeduet.com",
         "quest.app",
@@ -236,21 +238,21 @@
       "key": "pricing",
       "label": "定价",
       "missing": 14,
-      "missingRatio": 33,
+      "missingRatio": 52,
       "missingDomains": [
-        "videonetics.com",
-        "surgepix.ai",
+        "irisgo.ai",
+        "humalike.ai",
+        "botgauge.com",
+        "bevel.software",
         "agenthunt.io",
+        "autonomyai.io",
         "claudeduet.com",
-        "cognitum.one",
-        "luneresearch.com",
         "maxma.com",
         "quest.app",
         "rerun.io",
         "teamily.com",
         "tobira.ai",
         "wanaka.app",
-        "wizr.ai",
         "xmind.com"
       ],
       "invalid": 0,
@@ -260,12 +262,11 @@
     {
       "key": "pageStructure",
       "label": "页面结构",
-      "missing": 10,
-      "missingRatio": 24,
+      "missing": 9,
+      "missingRatio": 33,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
-        "luneresearch.com",
         "maxma.com",
         "quest.app",
         "rerun.io",
@@ -274,40 +275,15 @@
         "wanaka.app",
         "xmind.com"
       ],
-      "invalid": 6,
-      "invalidRatio": 14,
-      "invalidSamples": [
-        {
-          "domain": "vidsoul.ai",
-          "reason": "页面结构缺 title"
-        },
-        {
-          "domain": "surgepix.ai",
-          "reason": "页面结构缺 H1"
-        },
-        {
-          "domain": "odyssey.systems",
-          "reason": "页面结构缺 H1"
-        },
-        {
-          "domain": "flot.ai",
-          "reason": "页面结构缺 H1"
-        },
-        {
-          "domain": "cognitum.one",
-          "reason": "页面结构缺 H1"
-        },
-        {
-          "domain": "dailyhelm.com",
-          "reason": "页面结构缺 H1"
-        }
-      ]
+      "invalid": 0,
+      "invalidRatio": 0,
+      "invalidSamples": []
     },
     {
       "key": "screenshotDesktopUrl",
       "label": "官网截图",
       "missing": 10,
-      "missingRatio": 24,
+      "missingRatio": 37,
       "missingDomains": [
         "agenthunt.io",
         "alsona.com",
@@ -327,12 +303,11 @@
     {
       "key": "siteAudit",
       "label": "站点体检",
-      "missing": 10,
-      "missingRatio": 24,
+      "missing": 9,
+      "missingRatio": 33,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
-        "luneresearch.com",
         "maxma.com",
         "quest.app",
         "rerun.io",
@@ -349,7 +324,7 @@
       "key": "aiInsight",
       "label": "AI 叙事",
       "missing": 9,
-      "missingRatio": 21,
+      "missingRatio": 33,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -369,7 +344,7 @@
       "key": "performanceInsight",
       "label": "AI 判断",
       "missing": 9,
-      "missingRatio": 21,
+      "missingRatio": 33,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -381,65 +356,19 @@
         "wanaka.app",
         "xmind.com"
       ],
-      "invalid": 3,
-      "invalidRatio": 7,
-      "invalidSamples": [
-        {
-          "domain": "hopscotchlabs.ai",
-          "reason": "四要素缺 1 项"
-        },
-        {
-          "domain": "leadcapture.io",
-          "reason": "四要素缺 1 项"
-        },
-        {
-          "domain": "finbrain.tech",
-          "reason": "四要素缺 1 项"
-        }
-      ]
+      "invalid": 0,
+      "invalidRatio": 0,
+      "invalidSamples": []
     }
   ],
   "entryIssues": [],
   "items": [
     {
-      "domain": "videonetics.com",
-      "name": "Videonetics",
+      "domain": "semos.ai",
+      "name": "Semos.ai Manager Agents",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 3510,
-      "gapCount": 2,
-      "gaps": [
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "vidsoul.ai",
-      "name": "Vidsoul",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 3156,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "pageStructure",
-          "label": "页面结构",
-          "reason": "页面结构缺 title"
-        }
-      ]
-    },
-    {
-      "domain": "useomnia.com",
-      "name": "Omnia Agent",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 45406,
+      "monthlyVisits": 1852,
       "gapCount": 0,
       "gaps": [],
       "issueCount": 1,
@@ -452,31 +381,213 @@
       ]
     },
     {
-      "domain": "surgepix.ai",
-      "name": "SurgePix",
+      "domain": "resollm.ai",
+      "name": "ReSO AI",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 828,
-      "gapCount": 2,
+      "monthlyVisits": 3267,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "topmessage.com",
+      "name": "TopAgent",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 9555,
+      "gapCount": 1,
       "gaps": [
-        "keywords",
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "opengeni.ai",
+      "name": "Opengeni",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 0,
+      "gapCount": 1,
+      "gaps": [
+        "trafficMetrics.organicSearchVisits"
+      ],
+      "issueCount": 2,
+      "issues": [
+        {
+          "key": "trafficMetrics.monthlyVisits",
+          "label": "月访问量",
+          "reason": "月访问量为 0 或负数"
+        },
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "nitrostack.ai",
+      "name": "NitroStack",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 13867,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "pactto.com",
+      "name": "Pactto",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 6476,
+      "gapCount": 1,
+      "gaps": [
+        "geoDistribution"
+      ],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "n8nchatui.com",
+      "name": "N8N Chat UI",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 1169,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "maximem.ai",
+      "name": "Maximem Synap",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 14872,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "irisgo.ai",
+      "name": "IrisGo for Solopreneurs",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 4677,
+      "gapCount": 1,
+      "gaps": [
         "pricing"
       ],
       "issueCount": 1,
       "issues": [
         {
-          "key": "pageStructure",
-          "label": "页面结构",
-          "reason": "页面结构缺 H1"
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
         }
       ]
     },
     {
-      "domain": "tiden.ai",
-      "name": "Tiden",
+      "domain": "humalike.ai",
+      "name": "Humalike - AI NPC",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 1150,
+      "monthlyVisits": 0,
+      "gapCount": 2,
+      "gaps": [
+        "trafficMetrics.organicSearchVisits",
+        "pricing"
+      ],
+      "issueCount": 2,
+      "issues": [
+        {
+          "key": "trafficMetrics.monthlyVisits",
+          "label": "月访问量",
+          "reason": "月访问量为 0 或负数"
+        },
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "botgauge.com",
+      "name": "BotGauge",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 7605,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "alkera.ai",
+      "name": "Databench by Alkera",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 0,
+      "gapCount": 1,
+      "gaps": [
+        "trafficMetrics.organicSearchVisits"
+      ],
+      "issueCount": 2,
+      "issues": [
+        {
+          "key": "trafficMetrics.monthlyVisits",
+          "label": "月访问量",
+          "reason": "月访问量为 0 或负数"
+        },
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "band.ai",
+      "name": "BAND for Developers",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 3727,
       "gapCount": 2,
       "gaps": [
         "trafficMetrics.organicSearchVisits",
@@ -486,180 +597,21 @@
       "issues": []
     },
     {
-      "domain": "parthjadhav.com",
-      "name": "App Store Screenshots",
+      "domain": "bevel.software",
+      "name": "Hexis Cloud",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 3279,
+      "monthlyVisits": 2491,
       "gapCount": 1,
       "gaps": [
-        "keywords"
+        "pricing"
       ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "hopscotchlabs.ai",
-      "name": "Hopscotch AI",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 46183,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 2,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        },
-        {
-          "key": "performanceInsight",
-          "label": "AI 判断",
-          "reason": "四要素缺 1 项"
-        }
-      ]
-    },
-    {
-      "domain": "scape.app",
-      "name": "Scape",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 6851,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "hirekai.ai",
-      "name": "Kai",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 42798,
-      "gapCount": 0,
-      "gaps": [],
       "issueCount": 1,
       "issues": [
         {
           "key": "keywords",
           "label": "关键词",
           "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
-    },
-    {
-      "domain": "odyssey.systems",
-      "name": "Odyssey 3",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 100541,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 2,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        },
-        {
-          "key": "pageStructure",
-          "label": "页面结构",
-          "reason": "页面结构缺 H1"
-        }
-      ]
-    },
-    {
-      "domain": "naise.ai",
-      "name": "Naise AI",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 13043,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
-    },
-    {
-      "domain": "leadcapture.io",
-      "name": "Leadcapture",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 12513,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "performanceInsight",
-          "label": "AI 判断",
-          "reason": "四要素缺 1 项"
-        }
-      ]
-    },
-    {
-      "domain": "flot.ai",
-      "name": "Flot",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 1082,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "pageStructure",
-          "label": "页面结构",
-          "reason": "页面结构缺 H1"
-        }
-      ]
-    },
-    {
-      "domain": "adant.ai",
-      "name": "AdAnt 2.0",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 15123,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
-    },
-    {
-      "domain": "finbrain.tech",
-      "name": "Finbrain",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 24550,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "performanceInsight",
-          "label": "AI 判断",
-          "reason": "四要素缺 1 项"
         }
       ]
     },
@@ -699,17 +651,23 @@
       "issues": []
     },
     {
-      "domain": "askvideo.ai",
-      "name": "Askvideo",
+      "domain": "autonomyai.io",
+      "name": "Autonomous Product Delivery",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 6813,
+      "monthlyVisits": 6346,
       "gapCount": 1,
       "gaps": [
-        "keywords"
+        "pricing"
       ],
-      "issueCount": 0,
-      "issues": []
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
     },
     {
       "domain": "claudeduet.com",
@@ -755,108 +713,6 @@
       "issues": []
     },
     {
-      "domain": "cognitum.one",
-      "name": "ruOS",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 36425,
-      "gapCount": 2,
-      "gaps": [
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "pageStructure",
-          "label": "页面结构",
-          "reason": "页面结构缺 H1"
-        }
-      ]
-    },
-    {
-      "domain": "cutbay.ai",
-      "name": "CutBay",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 4197,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "dailyhelm.com",
-      "name": "DailyHelm",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 7782,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 2,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        },
-        {
-          "key": "pageStructure",
-          "label": "页面结构",
-          "reason": "页面结构缺 H1"
-        }
-      ]
-    },
-    {
-      "domain": "fuseai.com",
-      "name": "Fuse AI",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 22796,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
-    },
-    {
-      "domain": "intrascope.app",
-      "name": "Intrascope 2.0",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 2128,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "invofox.com",
-      "name": "Invofox Self Serve",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 10086,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
-    },
-    {
       "domain": "kixy.ai",
       "name": "Kixy",
       "tier": "core",
@@ -866,22 +722,6 @@
       "gaps": [
         "trafficMetrics.monthlyVisitsGrowth",
         "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "luneresearch.com",
-      "name": "Lune",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 6340,
-      "gapCount": 4,
-      "gaps": [
-        "keywords",
-        "pricing",
-        "pageStructure",
-        "siteAudit"
       ],
       "issueCount": 0,
       "issues": []
@@ -912,19 +752,6 @@
           "reason": "简介过短（16 字）"
         }
       ]
-    },
-    {
-      "domain": "needle.app",
-      "name": "Needle",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 17208,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
     },
     {
       "domain": "quest.app",
@@ -982,45 +809,6 @@
       ]
     },
     {
-      "domain": "revix.ai",
-      "name": "Revix AI",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 2057,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "runinfra.ai",
-      "name": "RunInfra",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 18110,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "soulgen.net",
-      "name": "Soulgen",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 31045,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
       "domain": "teamily.com",
       "name": "Teamily AI",
       "tier": "core",
@@ -1065,23 +853,6 @@
       "issues": []
     },
     {
-      "domain": "veltrix.com",
-      "name": "Veltrix AI for E-commerce",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 7590,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
-    },
-    {
       "domain": "wanaka.app",
       "name": "Wanaka Studio",
       "tier": "watch",
@@ -1112,20 +883,6 @@
       ]
     },
     {
-      "domain": "wizr.ai",
-      "name": "Wizr",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 7072,
-      "gapCount": 2,
-      "gaps": [
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
       "domain": "xmind.com",
       "name": "Xmind 2027",
       "tier": "core",
@@ -1151,22 +908,6 @@
           "reason": "简介过短（13 字）"
         }
       ]
-    },
-    {
-      "domain": "yourmascot.ai",
-      "name": "YourMascot",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 4235,
-      "gapCount": 4,
-      "gaps": [
-        "trafficMetrics.monthlyVisitsGrowth",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
     }
   ]
 }
