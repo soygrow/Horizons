@@ -1,0 +1,87 @@
+name: Fetch Models
+
+# 定向刷新模型榜里的几个模型：从 OpenRouter / models.dev 重新拉这些条目的
+# 价格、上下文、能力分，按 slug 合并回 content/models.json，再增量写 D1。
+#
+# 为什么采集要放在 CI：两个源都是公网接口，Worker 里跑不了整条采集管线。
+#
+# 为什么改完还要提交 JSON：模型榜目前仍以仓库文件为准（data_source.models = file），
+# 站点构建直接读 content/models.json；只写 D1 的话后台看到的是新数据、前台还是旧的。
+# 提交后 push 会触发站点部署，两边才一致。
+#
+# 需要的仓库 Secrets（写 D1 用，缺了只告警不失败）：
+#   CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID / D1_DATABASE_ID
+
+on:
+  workflow_dispatch:
+    inputs:
+      models:
+        description: "要刷新的模型 slug，逗号分隔（一次最多 60 个）"
+        required: true
+        type: string
+
+concurrency:
+  group: fetch-models
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # 采集结果要提交回仓库，deploy-site 由这次 push 触发
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 校验入参
+        env:
+          MODELS: ${{ inputs.models }}
+        run: |
+          n=$(echo "$MODELS" | tr ',' '\n' | grep -c . || true)
+          echo "本次刷新 $n 个：$MODELS"
+          if [ "$n" -eq 0 ]; then
+            echo "::error::没有要刷新的 slug"
+            exit 1
+          fi
+          if [ "$n" -gt 60 ]; then
+            echo "::error::一次最多 60 个，当前 $n 个"
+            exit 1
+          fi
+
+      - name: 定向刷新并写 D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          MODELS: ${{ inputs.models }}
+        # 不用模板直接拼进命令行：slug 来自后台输入，让它走环境变量而不是 shell 拼接
+        run: pnpm tsx scripts/collect/index.mjs --models="$MODELS"
+
+      - name: 提交榜单文件
+        env:
+          MODELS: ${{ inputs.models }}
+        run: |
+          if git diff --quiet -- content/models.json; then
+            echo "这些模型的数据没有变化，不提交"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/models.json
+          git commit -m "chore(models): 定向刷新 ${MODELS}"
+          git push

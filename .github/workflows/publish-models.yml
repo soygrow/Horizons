@@ -12,6 +12,10 @@ name: Publish Models
 on:
   workflow_dispatch:
     inputs:
+      patch:
+        description: "增量写库：只写变化行，不建新版本（日常刷新用）"
+        type: boolean
+        default: true
       strict_d1:
         description: "D1 写入失败时让本次任务失败（切流后打开）"
         type: boolean
@@ -50,8 +54,8 @@ jobs:
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: |
-          if [ "${{ inputs.strict_d1 }}" = "true" ]; then
-            pnpm tsx scripts/admin/publish-models.ts --strict-d1
-          else
-            pnpm tsx scripts/admin/publish-models.ts
-          fi
+          ARGS=""
+          if [ "${{ inputs.patch }}" = "true" ]; then ARGS="$ARGS --patch"; fi
+          if [ "${{ inputs.strict_d1 }}" = "true" ]; then ARGS="$ARGS --strict-d1"; fi
+          echo "publish-models.ts $ARGS"
+          pnpm tsx scripts/admin/publish-models.ts $ARGS

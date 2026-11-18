@@ -11,18 +11,23 @@
  *   pnpm models:collect --source=openrouter,models-dev
  *   pnpm models:collect --limit=100        # 按厂商轮转抽样
  *   pnpm models:collect --list             # 列出已注册的源
+ *   pnpm models:collect --models=a,b,c     # 定向刷新：只更新这几个 slug，其余原样保留
+ *
+ * 定向刷新是后台「线上榜单 → 更新选中」用的：源接口本来就只返回全量，
+ * 所以只是把拉回来的数据按 slug 覆盖回去，条数、slug、人工中文文案都不动。
  *
  * 采集规则（对所有源一致）：
  *   付费文本模型 · 去重变体 / 日期快照 / 社区微调 · 同模型跨源合并 · 能力分按家族校准
  */
 import { execSync } from "node:child_process";
-import { mkdirSync, statSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import {
   assignSlugs,
   buildOutput,
   dropForeignBrand,
   fetchJson,
+  keyOf,
   log,
   mergeRecords,
   OUT_PATH,
@@ -51,6 +56,11 @@ if (flag("list")) {
 const DRY = flag("dry");
 const LIMIT = Number(value("limit") || 0);
 const wanted = (value("source") || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+/** 定向刷新的 slug 列表；空数组表示全量采集 */
+const TARGETS = (value("models") || "")
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);
@@ -88,22 +98,19 @@ if (!metas.length) {
 // ---------- 2. 跨源合并 + 去重 ----------
 const { records: merged, stats } = mergeRecords(metas, buckets);
 
-// ---------- 3. 排序、抽样、slug ----------
-merged.sort((a, b) => b.capability - a.capability || (b.releasedAt ?? "").localeCompare(a.releasedAt ?? ""));
-const picked = sampleByProvider(merged, LIMIT);
-assignSlugs(picked);
-
-const out = buildOutput({ records: picked, metas, stats });
-
-// ---------- 4. 落盘 ----------
-if (!DRY) {
+/**
+ * 落盘 + 同步 D1。
+ *
+ * 定向刷新只写变化行（patch），全量采集建完整版本（可回滚）——
+ * 与 GitHub 榜同一个口径：改几个条目不该付出重写全榜的代价。
+ */
+function writeAndSync(out, { patch }) {
   mkdirSync(dirname(OUT_PATH), { recursive: true });
   writeFileSync(OUT_PATH, `${JSON.stringify(out, null, 2)}\n`);
 
-  // ---------- 4.5 同步 D1 ----------
   // 灰度期 D1 是冷备：写失败只告警，绝不能让一次同步故障丢掉采集结果
   try {
-    execSync("pnpm tsx scripts/admin/publish-models.ts", {
+    execSync(`pnpm tsx scripts/admin/publish-models.ts${patch ? " --patch" : ""}`, {
       // 必须是仓库根：用 OUT_PATH 往上推容易多退一级，退到仓库外面去了，
       // 而这里的失败又只打一行告警，等于永远静默失败
       cwd: ROOT,
@@ -113,6 +120,97 @@ if (!DRY) {
     warn("collect", `D1 同步失败（models），JSON 已落盘，站点不受影响：${e.message}`);
   }
 }
+
+/*
+ * ---------- 3a. 定向刷新：只覆盖选中的模型，其余一个字段都不动 ----------
+ *
+ * 源接口本来就只返回全量，所以先把全量拉回来，再按 slug 回填。三条底线：
+ *   1. 条数不变 —— 选中的模型在源里查不到时保留旧数据，只记一条 warn；
+ *   2. slug 不变 —— 不重跑 assignSlugs，否则名次与站内链接会整体换掉；
+ *   3. 人工产物不覆盖 —— descZh / strengths / useCases 是翻译与人工补的，
+ *      只覆盖采集得到的客观字段。
+ */
+const OVERRIDE_KEYS = [
+  "name",
+  "provider",
+  "modality",
+  "tags",
+  "open",
+  "license",
+  "context",
+  "maxOutput",
+  "params",
+  "price",
+  "freeTier",
+  "capability",
+  "knowledgeCutoff",
+  "releasedAt",
+  "desc",
+];
+
+if (TARGETS.length > 0) {
+  let prev;
+  try {
+    prev = JSON.parse(readFileSync(OUT_PATH, "utf-8"));
+  } catch {
+    warn("collect", "没有 content/models.json，定向刷新无从覆盖；先跑一次全量采集");
+    process.exit(1);
+  }
+
+  const bySlug = new Map((prev.models ?? []).map((m) => [m.slug, m]));
+  const fresh = new Map(merged.map((r) => [keyOf(r.provider, r.name), r]));
+
+  const changed = [];
+  const missing = [];
+  const unknown = [];
+
+  for (const slug of new Set(TARGETS)) {
+    const old = bySlug.get(slug);
+    if (!old) {
+      unknown.push(slug);
+      continue;
+    }
+    const rec = fresh.get(keyOf(old.provider, old.name));
+    if (!rec) {
+      missing.push(slug);
+      continue;
+    }
+    const next = { ...old };
+    for (const key of OVERRIDE_KEYS) {
+      if (rec[key] !== undefined) next[key] = rec[key];
+    }
+    if (JSON.stringify(next) !== JSON.stringify(old)) changed.push(slug);
+    bySlug.set(slug, next);
+  }
+
+  const models = [...bySlug.values()].sort(
+    (a, b) => b.capability - a.capability || (b.releasedAt ?? "").localeCompare(a.releasedAt ?? ""),
+  );
+  const outTarget = { ...prev, mode: "live", updatedAt: new Date().toISOString().slice(0, 10), models };
+
+  log(
+    "collect",
+    `定向刷新 ${new Set(TARGETS).size} 个：有变化 ${changed.length} 个` +
+      (changed.length ? `（${changed.slice(0, 8).join(", ")}${changed.length > 8 ? " …" : ""}）` : ""),
+  );
+  if (missing.length) warn("collect", `源里已查不到，保留旧数据：${missing.join(", ")}`);
+  if (unknown.length) warn("collect", `不在当前榜单里，已忽略：${unknown.join(", ")}`);
+
+  if (DRY) log("collect", "（dry，未写盘）");
+  else writeAndSync(outTarget, { patch: true });
+
+  process.exit(0);
+}
+
+// ---------- 3. 排序、抽样、slug ----------
+merged.sort((a, b) => b.capability - a.capability || (b.releasedAt ?? "").localeCompare(a.releasedAt ?? ""));
+const picked = sampleByProvider(merged, LIMIT);
+assignSlugs(picked);
+
+const out = buildOutput({ records: picked, metas, stats });
+
+// ---------- 4. 落盘 ----------
+if (!DRY) writeAndSync(out, { patch: false });
 
 // ---------- 5. 报告 ----------
 const kb = (DRY ? Buffer.byteLength(JSON.stringify(out)) : statSync(OUT_PATH).size) / 1024;

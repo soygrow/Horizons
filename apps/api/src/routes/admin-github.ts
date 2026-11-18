@@ -15,14 +15,8 @@ import { Hono } from "hono";
 import type { RepoRankReport, RepoRankRow, RepoStagingFile, StagingCandidate } from "@horizons/shared";
 import { diffRepoRanks, pickTopRepoRows, rankRepos, toRepoRankRow } from "@horizons/shared";
 import type { Env } from "../env";
-import {
-  dispatchWorkflow,
-  fetchRun,
-  ghConfig,
-  mapStatus,
-  missingSecrets,
-  type WorkflowRun,
-} from "../lib/github";
+import { insertJob, listJobs } from "../lib/board-jobs";
+import { dispatchWorkflow, ghConfig, missingSecrets, type WorkflowRun } from "../lib/github";
 import { readBoardStats, type BoardStats } from "../lib/board-stats";
 import { listWorkspace, setItemsStatus, setItemStatus } from "../lib/board-items";
 import { readReport } from "../lib/reports";
@@ -37,74 +31,6 @@ const META_KEY = "github-meta";
 
 /** 与实际写文件的脚本保持同一默认值 */
 const DEFAULT_TARGET = 2000;
-
-interface JobRow {
-  id: string;
-  kind: string;
-  status: string;
-  params: string;
-  gh_run_id: number | null;
-  run_url: string | null;
-  summary: string | null;
-  error: string | null;
-  created_at: number;
-  updated_at: number;
-}
-
-/* -------------------------------- 任务记录 -------------------------------- */
-
-async function refreshJob(env: Env, cfg: ReturnType<typeof ghConfig>, row: JobRow): Promise<JobRow> {
-  if (!cfg || !row.gh_run_id) return row;
-  if (["success", "failure", "cancelled"].includes(row.status)) return row;
-
-  const run = await fetchRun(cfg, row.gh_run_id);
-  if (!run) return row;
-  const status = mapStatus(run, row.status);
-  if (status === row.status) return row;
-
-  const now = Date.now();
-  await env.DB.prepare("UPDATE github_jobs SET status = ?, run_url = ?, updated_at = ? WHERE id = ?")
-    .bind(status, run.html_url ?? row.run_url, now, row.id)
-    .run();
-  return { ...row, status, run_url: run.html_url ?? row.run_url, updated_at: now };
-}
-
-async function listJobs(env: Env, limit: number): Promise<JobRow[]> {
-  const { results } = await env.DB.prepare(
-    "SELECT * FROM github_jobs ORDER BY created_at DESC LIMIT ?",
-  )
-    .bind(limit)
-    .all<JobRow>();
-  const rows = results ?? [];
-  const cfg = ghConfig(env);
-  return Promise.all(rows.map((r) => refreshJob(env, cfg, r).catch(() => r)));
-}
-
-async function insertJob(
-  env: Env,
-  kind: string,
-  params: Record<string, unknown>,
-  run: WorkflowRun | null,
-  error: string | null,
-): Promise<void> {
-  const now = Date.now();
-  await env.DB.prepare(
-    `INSERT INTO github_jobs (id, kind, status, params, gh_run_id, run_url, error, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  )
-    .bind(
-      crypto.randomUUID(),
-      kind,
-      error ? "failure" : mapStatus(run, "queued"),
-      JSON.stringify(params),
-      run?.id ?? null,
-      run?.html_url ?? null,
-      error,
-      now,
-      now,
-    )
-    .run();
-}
 
 /* --------------------------------- 计算 --------------------------------- */
 

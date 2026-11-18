@@ -10,6 +10,7 @@
  *
  * 用法：
  *   pnpm tsx scripts/admin/publish-models.ts
+ *   pnpm tsx scripts/admin/publish-models.ts --patch    # 只写变化行，不建新版本
  *   pnpm tsx scripts/admin/publish-models.ts --no-d1
  */
 import fs from "node:fs";
@@ -104,6 +105,12 @@ async function main(): Promise<void> {
      * 版本就是「这一次快照」，总量由 pruneVersions 控制。
      */
     version: versionOf(),
+    /*
+     * --patch 走增量：只 UPSERT 变化的行，不新建版本。
+     * 模型榜 366 条里日常刷新通常只动几条到几十条，整版要连其余五个榜一起重写，
+     * 省下来的写库额度就是这里来的。代价是这一版回滚不了 —— 所以只在「只改数值」时用。
+     */
+    patch: process.argv.includes("--patch"),
   });
 
   if (!res.ok && res.error !== "missing-credentials") process.exitCode = 1;
