@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-18T02:18:30.508Z",
-  "total": 17,
-  "itemsWithIssues": 8,
+  "generatedAt": "2026-11-18T02:42:39.023Z",
+  "total": 27,
+  "itemsWithIssues": 16,
   "dimensions": [
     {
       "key": "description",
@@ -10,7 +10,7 @@
       "missingRatio": 0,
       "missingDomains": [],
       "invalid": 6,
-      "invalidRatio": 35,
+      "invalidRatio": 22,
       "invalidSamples": [
         {
           "domain": "claudeduet.com",
@@ -52,7 +52,7 @@
       "key": "trafficMetrics.monthlyVisits",
       "label": "月访问量",
       "missing": 2,
-      "missingRatio": 12,
+      "missingRatio": 7,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -65,7 +65,7 @@
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
       "missing": 3,
-      "missingRatio": 18,
+      "missingRatio": 11,
       "missingDomains": [
         "claudeduet.com",
         "kixy.ai",
@@ -79,7 +79,7 @@
       "key": "metrics.registeredAt",
       "label": "域名注册时间",
       "missing": 9,
-      "missingRatio": 53,
+      "missingRatio": 33,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -99,7 +99,7 @@
       "key": "trafficMetrics.organicSearchVisits",
       "label": "自然搜索流量",
       "missing": 11,
-      "missingRatio": 65,
+      "missingRatio": 41,
       "missingDomains": [
         "agenthunt.io",
         "alsona.com",
@@ -121,7 +121,7 @@
       "key": "geoDistribution",
       "label": "地区分布",
       "missing": 2,
-      "missingRatio": 12,
+      "missingRatio": 7,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -133,15 +133,16 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 14,
-      "missingRatio": 82,
+      "missing": 15,
+      "missingRatio": 56,
       "missingDomains": [
-        "spot.ai",
+        "protex.ai",
+        "openllm.sh",
+        "popvid.ai",
+        "fal.ai",
+        "hix.ai",
         "agenthunt.io",
-        "builder.ai",
         "claudeduet.com",
-        "dacon.io",
-        "diffbot.com",
         "kixy.ai",
         "maxma.com",
         "quest.app",
@@ -151,11 +152,47 @@
         "wanaka.app",
         "xmind.com"
       ],
-      "invalid": 1,
-      "invalidRatio": 6,
+      "invalid": 10,
+      "invalidRatio": 37,
       "invalidSamples": [
         {
-          "domain": "willowvoice.com",
+          "domain": "together.ai",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "domain": "supademo.com",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "domain": "timeless.day",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "domain": "superhuman.com",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "domain": "openbot.run",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "domain": "meta.ai",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "domain": "okara.ai",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "domain": "miso.com",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "domain": "fish.audio",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "domain": "joinkudos.com",
           "reason": "全部关键词缺搜索量（只有词）"
         }
       ]
@@ -164,7 +201,7 @@
       "key": "observations.competitors",
       "label": "竞品",
       "missing": 5,
-      "missingRatio": 29,
+      "missingRatio": 19,
       "missingDomains": [
         "claudeduet.com",
         "quest.app",
@@ -179,14 +216,17 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 12,
-      "missingRatio": 71,
+      "missing": 15,
+      "missingRatio": 56,
       "missingDomains": [
-        "spot.ai",
+        "protex.ai",
+        "popvid.ai",
+        "meta.ai",
+        "miso.com",
+        "joinkudos.com",
+        "hix.ai",
         "agenthunt.io",
-        "builder.ai",
         "claudeduet.com",
-        "dacon.io",
         "maxma.com",
         "quest.app",
         "rerun.io",
@@ -203,10 +243,10 @@
       "key": "pageStructure",
       "label": "页面结构",
       "missing": 10,
-      "missingRatio": 59,
+      "missingRatio": 37,
       "missingDomains": [
+        "meta.ai",
         "agenthunt.io",
-        "builder.ai",
         "claudeduet.com",
         "maxma.com",
         "quest.app",
@@ -216,24 +256,18 @@
         "wanaka.app",
         "xmind.com"
       ],
-      "invalid": 1,
-      "invalidRatio": 6,
-      "invalidSamples": [
-        {
-          "domain": "dacon.io",
-          "reason": "页面结构缺 title"
-        }
-      ]
+      "invalid": 0,
+      "invalidRatio": 0,
+      "invalidSamples": []
     },
     {
       "key": "screenshotDesktopUrl",
       "label": "官网截图",
-      "missing": 11,
-      "missingRatio": 65,
+      "missing": 10,
+      "missingRatio": 37,
       "missingDomains": [
         "agenthunt.io",
         "alsona.com",
-        "builder.ai",
         "claudeduet.com",
         "maxma.com",
         "quest.app",
@@ -251,10 +285,10 @@
       "key": "siteAudit",
       "label": "站点体检",
       "missing": 10,
-      "missingRatio": 59,
+      "missingRatio": 37,
       "missingDomains": [
+        "meta.ai",
         "agenthunt.io",
-        "builder.ai",
         "claudeduet.com",
         "maxma.com",
         "quest.app",
@@ -264,20 +298,15 @@
         "wanaka.app",
         "xmind.com"
       ],
-      "invalid": 1,
-      "invalidRatio": 6,
-      "invalidSamples": [
-        {
-          "domain": "dacon.io",
-          "reason": "站点正文字数为 0"
-        }
-      ]
+      "invalid": 0,
+      "invalidRatio": 0,
+      "invalidSamples": []
     },
     {
       "key": "aiInsight",
       "label": "AI 叙事",
       "missing": 9,
-      "missingRatio": 53,
+      "missingRatio": 33,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -297,7 +326,7 @@
       "key": "performanceInsight",
       "label": "AI 判断",
       "missing": 9,
-      "missingRatio": 53,
+      "missingRatio": 33,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -309,19 +338,24 @@
         "wanaka.app",
         "xmind.com"
       ],
-      "invalid": 0,
-      "invalidRatio": 0,
-      "invalidSamples": []
+      "invalid": 1,
+      "invalidRatio": 4,
+      "invalidSamples": [
+        {
+          "domain": "openbot.run",
+          "reason": "四要素缺 1 项"
+        }
+      ]
     }
   ],
   "entryIssues": [],
   "items": [
     {
-      "domain": "willowvoice.com",
-      "name": "Willow Knowledge",
+      "domain": "together.ai",
+      "name": "Together Link",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 125158,
+      "monthlyVisits": 1645930,
       "gapCount": 0,
       "gaps": [],
       "issueCount": 1,
@@ -334,11 +368,231 @@
       ]
     },
     {
-      "domain": "spot.ai",
-      "name": "Spot",
+      "domain": "supademo.com",
+      "name": "Supademo AI Demo Agent",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 68991,
+      "monthlyVisits": 268357,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "timeless.day",
+      "name": "Timeless Code",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 91351,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "protex.ai",
+      "name": "Protex",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 29810,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "superhuman.com",
+      "name": "Superhuman Go",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 6514241,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "openllm.sh",
+      "name": "OpenLLM",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 2027,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "openbot.run",
+      "name": "OpenBot",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 145308,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 2,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "key": "performanceInsight",
+          "label": "AI 判断",
+          "reason": "四要素缺 1 项"
+        }
+      ]
+    },
+    {
+      "domain": "popvid.ai",
+      "name": "Popvid",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 1456433,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "meta.ai",
+      "name": "Muse Wonder",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 43935687,
+      "gapCount": 3,
+      "gaps": [
+        "pricing",
+        "pageStructure",
+        "siteAudit"
+      ],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "okara.ai",
+      "name": "Okara",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 198117,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "miso.com",
+      "name": "miso.com",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 16102,
+      "gapCount": 1,
+      "gaps": [
+        "pricing"
+      ],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "fish.audio",
+      "name": "Fish Audio Drama 3",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 8557159,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "fal.ai",
+      "name": "FLUX 3 Max",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 3093684,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "joinkudos.com",
+      "name": "Kudos 3.0",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 1333396,
+      "gapCount": 1,
+      "gaps": [
+        "pricing"
+      ],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "hix.ai",
+      "name": "Hix",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 942974,
       "gapCount": 2,
       "gaps": [
         "keywords",
@@ -383,23 +637,6 @@
       "issues": []
     },
     {
-      "domain": "builder.ai",
-      "name": "Builder",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 31039,
-      "gapCount": 5,
-      "gaps": [
-        "keywords",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
       "domain": "claudeduet.com",
       "name": "Claude Duet",
       "tier": "watch",
@@ -438,44 +675,6 @@
       "gapCount": 1,
       "gaps": [
         "trafficMetrics.organicSearchVisits"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "dacon.io",
-      "name": "Dacon",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 118521,
-      "gapCount": 2,
-      "gaps": [
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 2,
-      "issues": [
-        {
-          "key": "pageStructure",
-          "label": "页面结构",
-          "reason": "页面结构缺 title"
-        },
-        {
-          "key": "siteAudit",
-          "label": "站点体检",
-          "reason": "站点正文字数为 0"
-        }
-      ]
-    },
-    {
-      "domain": "diffbot.com",
-      "name": "Diffbot",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 21948,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
       ],
       "issueCount": 0,
       "issues": []
