@@ -1,19 +1,25 @@
 {
-  "updatedAt": "2026-11-18T03:24:17.433Z",
+  "updatedAt": "2026-11-18T03:30:02.918Z",
   "runAt": "2026-11-18T03:20:56.240Z",
   "items": [
     {
       "slug": "mcp-server",
       "keyword": "mcp server",
-      "normalizedName": "mcp server",
-      "category": "broadtech",
+      "normalizedName": "MCP Server",
+      "category": "devtech",
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "",
+      "why": "MCP Server 作为连接 AI 与外部工具的协议层，在 US 近 30 天搜索热度峰值达基线 1.36 倍，但近 7 天回落 20.2%，说明概念普及期已过、进入工程落地阶段；HN 上「减少 Claude Code 上下文消耗 98% 的 MCP server」获 570 分、Ghidra MCP 相关帖子合计超 650 分，GitHub 上 awesome-mcp-servers 星标近…",
+      "intentSummary": "想了解 MCP Server 是什么、如何接入 Claude 或 GitHub，并找现成实现。",
+      "editorNote": {
+        "audience": "想给自家 AI 产品接工具的独立开发者与小团队",
+        "entryAngle": "做一个 MCP server 的托管+调试面板：一键部署、实时看 tool call 日志、失败重试，先支持 5 个最常用 server 模板",
+        "whyAccepted": "品类词本身，周围已出现接入、调试、托管、评测等具体工程需求，供给尚未饱和"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:26:52.298Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -58,11 +64,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 72,
+        "wedge": 68,
+        "seo": 74,
+        "feasibility": 80,
+        "timing": 65
       },
       "sources": [
         {
@@ -120,29 +126,198 @@
           "publishedAt": "2026-01-07"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "想给自家 AI 产品接工具的独立开发者与小团队",
-        "entryAngle": "做一个 MCP server 的托管+调试面板：一键部署、实时看 tool call 日志、失败重试，先支持 5 个最常用 server 模板",
-        "whyAccepted": "品类词本身，周围已出现接入、调试、托管、评测等具体工程需求，供给尚未饱和"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "MCP Server 搜索热度在 30 天窗口内峰值达到基线的 1.36 倍，但近 7 天环比下降 20.2%，概念热度从峰值回落。",
+          "claimType": "fact",
+          "date": "2026-10-20",
+          "detail": "Google Trends US 90 天序列：baseline 21.3，peak 29，recent7 17。",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=mcp%20server",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "HN 上关于 MCP server 的工程实践帖持续出现，最高单帖 570 分，Ghidra 相关两帖合计 654 分，说明开发者关注点已转向具体接入与优化。",
+          "claimType": "fact",
+          "date": "2026-02-28",
+          "detail": "「MCP server that reduces Claude Code context consumption by 98%」570 分；「MCP server for Ghidra」356 分；「Show HN: Ghidra MCP Server – 110 tools」298 分。",
+          "sources": [
+            {
+              "label": "MCP server that reduces Claude Code context consumption by 98%",
+              "url": "https://mksg.lu/blog/context-mode",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-02-28"
+            },
+            {
+              "label": "MCP server for Ghidra",
+              "url": "https://github.com/LaurieWired/GhidraMCP",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2025-03-25"
+            },
+            {
+              "label": "Show HN: Ghidra MCP Server – 110 tools for AI-assisted reverse engineering",
+              "url": "https://github.com/bethington/ghidra-mcp",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-02-04"
+            }
+          ]
+        },
+        {
+          "claim": "awesome-mcp-servers 仓库星标近 9.8 万，headroom 仓库星标近 8 万，表明 MCP 生态已形成规模化目录与工具链供给。",
+          "claimType": "fact",
+          "date": "2026-01-07",
+          "detail": "punkpeye/awesome-mcp-servers ★97825；headroomlabs-ai/headroom ★79932。",
+          "sources": [
+            {
+              "label": "punkpeye/awesome-mcp-servers（★97825）",
+              "url": "https://github.com/punkpeye/awesome-mcp-servers",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2024-11-30"
+            },
+            {
+              "label": "headroomlabs-ai/headroom（★79932）",
+              "url": "https://github.com/headroomlabs-ai/headroom",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2026-01-07"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is mcp server",
+            "what is an mcp server",
+            "mcp server explained",
+            "mcp server vs api"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to build an mcp server",
+            "mcp server claude setup",
+            "github mcp server install",
+            "mcp server tutorial"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "mcp server not connecting",
+            "mcp server timeout fix",
+            "mcp server debug logs",
+            "mcp server context too large"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "what is mcp server",
+        "what is mcp",
+        "mcp server claude",
+        "ai mcp server",
+        "github mcp server",
+        "github mcp",
+        "what is an mcp",
+        "what is an mcp server",
+        "claude code",
+        "microsoft mcp server"
+      ],
+      "competitors": [
+        "awesome-mcp-servers",
+        "headroom",
+        "private-gpt",
+        "GhidraMCP"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "MCP Server 托管与调试面板",
+          "why": "搜索者已从「是什么」转向「怎么接、怎么调」，HN 上减少上下文消耗的帖子获 570 分说明调试与优化是真实痛点；独立开发者与小团队需要一键部署、实时 tool call 日志和失败重试，现有目录型仓库只解决发现不解决运维。",
+          "effort": "中",
+          "evidence": "HN「MCP server that reduces Claude Code context consumption by 98%」570 分；awesome-mcp-servers 星标 97825 说明 server 数量多、发现容易…"
+        },
+        {
+          "type": "content",
+          "title": "MCP Server 接入与排错指南",
+          "why": "相关搜索里「what is mcp server」「mcp server claude」「github mcp server」并列，说明大量人卡在接入第一步；HN 上 Safari MCP server 帖获 272 分，平台方也在推官方 server，教程需求会随新 server 发布持续产生。",
+          "effort": "低",
+          "evidence": "Google Trends 相关搜索含 what is mcp server、mcp server claude、github mcp server；HN Safari MCP server 帖 272 分。"
+        },
+        {
+          "type": "opensource",
+          "title": "轻量 MCP Server 模板与本地调试 CLI",
+          "why": "headroom 仓库星标近 8 万，说明压缩与工具链层有大量关注；但新手仍缺一个开箱即用的 server 模板加本地调试 CLI，能直接承接「how to build an mcp server」类搜索。",
+          "effort": "低",
+          "evidence": "headroomlabs-ai/headroom ★79932；GitHub 上 awesome-mcp-servers 收录大量 server 但模板与调试工具分散。"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "先做 MCP Server 托管调试面板的最小版本，支持 5 个常用 server 模板的一键部署与 tool call 日志。",
+          "reason": "搜索热度从峰值回落但工程需求明确，HN 高分帖集中在接入优化，托管调试是目录仓库未覆盖的环节。",
+          "uncertainty": "近 7 天搜索环比下降 20.2%，需确认回落是概念降温还是假期波动；托管面板的付费意愿尚未验证。"
+        },
+        {
+          "verdict": "content",
+          "action": "同步产出 MCP Server 接入与排错指南，覆盖 Claude、GitHub 等高频组合。",
+          "reason": "相关搜索以「是什么」和「怎么接」为主，内容能低成本承接搜索流量并为产品导流。",
+          "uncertainty": "教程类内容竞争可能随生态成熟快速加剧。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "mcp server",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "想给自家 AI 产品接工具的独立开发者与小团队",
+          "entryAngle": "做一个 MCP server 的托管+调试面板：一键部署、实时看 tool call 日志、失败重试，先支持 5 个最常用 server 模板",
+          "whyAccepted": "品类词本身，周围已出现接入、调试、托管、评测等具体工程需求，供给尚未饱和"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "claude-skills",
       "keyword": "claude skills",
-      "normalizedName": "claude skills",
-      "category": "broadtech",
+      "normalizedName": "Claude Skills",
+      "category": "devtech",
       "region": "US",
       "status": "cooling",
       "confidence": "medium",
-      "why": "",
+      "why": "Claude Skills 作为可复用能力包在开发者社区快速扩散：官方发布帖在 HN 获 816 分，Simon Willison 的解读获 738 分，Show HN 的 Godot 游戏技能项目获 337 分，GitHub 上相关仓库星标达 30.5 万和 23.4 万。搜索热度虽近期微降 0.8%，但峰值达基线 1.25 倍，说明需求正从尝鲜转向工具化。",
+      "intentSummary": "开发者想了解 Claude Skills 是什么、如何创建和复用技能包。",
+      "editorNote": {
+        "audience": "用 Claude 做工作流的独立开发者与一人公司",
+        "entryAngle": "做 skills 的脚手架与市场：CLI 生成 skill 模板、本地测试沙箱、一键发布到可检索的索引页",
+        "whyAccepted": "新兴能力名词，已有打包、分发、调试需求，但生态刚起步"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:27:02.969Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -187,11 +362,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 72,
+        "wedge": 78,
+        "seo": 65,
+        "feasibility": 82,
+        "timing": 80
       },
       "sources": [
         {
@@ -249,29 +424,179 @@
           "publishedAt": "2026-01-27"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "用 Claude 做工作流的独立开发者与一人公司",
-        "entryAngle": "做 skills 的脚手架与市场：CLI 生成 skill 模板、本地测试沙箱、一键发布到可检索的索引页",
-        "whyAccepted": "新兴能力名词，已有打包、分发、调试需求，但生态刚起步"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "Anthropic 官方发布 Claude Skills 的帖子在 Hacker News 获得 816 分。",
+          "claimType": "fact",
+          "date": "2025-10-16",
+          "detail": "官方公告帖引发社区广泛讨论。",
+          "sources": [
+            {
+              "label": "Claude Skills",
+              "url": "https://www.anthropic.com/news/skills",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2025-10-16"
+            }
+          ]
+        },
+        {
+          "claim": "Simon Willison 撰文认为 Claude Skills 可能比 MCP 更重要，该文在 HN 获 738 分。",
+          "claimType": "fact",
+          "date": "2025-10-17",
+          "detail": "社区意见领袖对 Skills 的战略价值给出高评价。",
+          "sources": [
+            {
+              "label": "Claude Skills are awesome, maybe a bigger deal than MCP",
+              "url": "https://simonwillison.net/2025/Oct/16/claude-skills/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2025-10-17"
+            }
+          ]
+        },
+        {
+          "claim": "GitHub 上出现多个高星 Claude Skills 相关仓库，如 affaan-m/ECC 获 30.5 万星、andrej-karpathy-skills 获 23.4 万星。",
+          "claimType": "fact",
+          "date": "2026-01-27",
+          "detail": "仓库描述显示围绕技能编排、行为优化和知识图谱的实践正在涌现。",
+          "sources": [
+            {
+              "label": "affaan-m/ECC（★305618）",
+              "url": "https://github.com/affaan-m/ECC",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2026-01-18"
+            },
+            {
+              "label": "multica-ai/andrej-karpathy-skills（★234029）",
+              "url": "https://github.com/multica-ai/andrej-karpathy-skills",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2026-01-27"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what are claude skills",
+            "claude skills explained",
+            "claude skills vs mcp"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to create claude skills",
+            "claude skills tutorial",
+            "claude skill template"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "claude skills not working",
+            "claude skill debugging",
+            "claude skills sandbox"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "claude skills marketplace",
+        "claude skill cli",
+        "claude skills examples",
+        "claude code skills",
+        "claude skills github",
+        "claude skills vs mcp",
+        "claude skill template",
+        "claude skills sandbox"
+      ],
+      "competitors": [
+        "Anthropic Claude",
+        "MCP",
+        "LangChain"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "Claude Skills 脚手架与本地测试沙箱",
+          "why": "开发者需要快速生成技能模板、在本地验证行为并一键发布，当前生态缺少统一工具链；HN 上官方帖和解读帖的高分说明关注度真实，但工具化产品尚未成型。",
+          "effort": "中",
+          "evidence": "HN 官方发布帖 816 分、Simon Willison 解读 738 分；GitHub 出现 30.5 万星和 23.4 万星的技能相关仓库，但未见专门的脚手架产品。"
+        },
+        {
+          "type": "content",
+          "title": "Claude Skills 实战教程与案例库",
+          "why": "搜索者大量在问「是什么」「怎么创建」「和 MCP 的区别」，而现有内容多为新闻式解读，缺少从零到发布的完整教程和可复用案例。",
+          "effort": "低",
+          "evidence": "Show HN 的 Godot 游戏技能项目获 337 分，说明具体案例受欢迎；相关搜索词包含 tutorial、examples、template。"
+        },
+        {
+          "type": "opensource",
+          "title": "Claude Skills 索引与检索页",
+          "why": "技能包分散在 GitHub 和个人博客，缺少可检索的索引；开发者需要发现、比较和复用他人技能，索引页能聚合需求并形成流量入口。",
+          "effort": "中",
+          "evidence": "GitHub 上已有多个高星技能仓库，但无统一索引；HN 讨论中反复出现对技能分发和复用的关注。"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "先做一个 CLI 工具，支持生成 skill 模板、本地沙箱测试和一键发布到索引页，用最小版本验证开发者是否愿意为调试和分发付费。",
+          "reason": "需求信号明确（HN 高分、高星仓库），但工具链空白，独立开发者可快速切入。",
+          "uncertainty": "搜索热度近期微降 0.8%，需观察是短期波动还是兴趣转移；付费意愿尚未验证。"
+        },
+        {
+          "verdict": "content",
+          "action": "同步产出「Claude Skills 从入门到发布」系列教程，覆盖创建、调试、与 MCP 对比，嵌入 CLI 工具作为实践环节。",
+          "reason": "搜索意图集中在 learn 和 howto，内容可低成本获取早期用户并反哺工具需求。",
+          "uncertainty": "教程类内容竞争可能快速加剧，需保持更新频率和案例独特性。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "claude skills",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "用 Claude 做工作流的独立开发者与一人公司",
+          "entryAngle": "做 skills 的脚手架与市场：CLI 生成 skill 模板、本地测试沙箱、一键发布到可检索的索引页",
+          "whyAccepted": "新兴能力名词，已有打包、分发、调试需求，但生态刚起步"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "vibe-coding",
       "keyword": "vibe coding",
-      "normalizedName": "vibe coding",
-      "category": "broadtech",
+      "normalizedName": "Vibe Coding",
+      "category": "devtech",
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "",
+      "why": "Google Trends 显示该词近 7 天相对热度 13.3、较基线 14.9 下滑 10.9%，峰值仅 20（1.34 倍），热度趋稳而非升温；但 HN 上「回归手写代码」「vibe coding 与 agentic engineering 趋同」等讨论分别获 865、787 分，GitHub 相关仓库星标达 6.9 万，说明讨论正从概念转向工程化落地，独立创业者需要上线前的风险检查工具。",
+      "intentSummary": "想了解 vibe coding 是什么、有哪些工具、如何安全上线",
+      "editorNote": {
+        "audience": "非工程背景的独立创业者与产品经理",
+        "entryAngle": "做 vibe coding 项目的上线检查清单工具：扫代码库给出部署、密钥、成本、可维护性风险清单",
+        "whyAccepted": "有明确人群和使用场景，但词偏泛、红海，需要细分切口"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:27:13.624Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -316,11 +641,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 62,
+        "wedge": 55,
+        "seo": 70,
+        "feasibility": 75,
+        "timing": 60
       },
       "sources": [
         {
@@ -378,29 +703,188 @@
           "publishedAt": "2025-06-14"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "非工程背景的独立创业者与产品经理",
-        "entryAngle": "做 vibe coding 项目的上线检查清单工具：扫代码库给出部署、密钥、成本、可维护性风险清单",
-        "whyAccepted": "有明确人群和使用场景，但词偏泛、红海，需要细分切口"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "Google Trends 美国 90 天数据显示 vibe coding 相对热度峰值 20、近期 13.3，较基线下降 10.9%",
+          "claimType": "fact",
+          "date": "2026-11-18",
+          "detail": "30 个采样点，基线 14.9，仅 5 个点高于基线",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=vibe%20coding",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "HN 上关于 vibe coding 的反思文章获得高互动，最高 865 分",
+          "claimType": "fact",
+          "date": "2026-01-26",
+          "detail": "「After two years of vibecoding, I'm back to writing by hand」865 分；「Vibe coding and agentic engineering are getting closer」787 分",
+          "sources": [
+            {
+              "label": "After two years of vibecoding, I'm back to writing by hand",
+              "url": "https://atmoio.substack.com/p/after-two-years-of-vibecoding-im",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-01-26"
+            },
+            {
+              "label": "Vibe coding and agentic engineering are getting closer than I'd like",
+              "url": "https://simonwillison.net/2026/May/6/vibe-coding-and-agentic-engineering/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-05-06"
+            }
+          ]
+        },
+        {
+          "claim": "GitHub 上 vibe coding 相关工具仓库星标可观，vibe-kanban 达 2.87 万星",
+          "claimType": "fact",
+          "date": "2025-06-14",
+          "detail": "BloopAI/vibe-kanban ★28724；claude-code-best-practice ★69170",
+          "sources": [
+            {
+              "label": "shanraisshan/claude-code-best-practice（★69170）",
+              "url": "https://github.com/shanraisshan/claude-code-best-practice",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2025-10-31"
+            },
+            {
+              "label": "BloopAI/vibe-kanban（★28724）",
+              "url": "https://github.com/BloopAI/vibe-kanban",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2025-06-14"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is vibe coding",
+            "vibe coding explained",
+            "vibe coding ai meaning"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to vibe code safely",
+            "vibe coding best practices",
+            "vibe coding deployment checklist"
+          ]
+        },
+        {
+          "intent": "compare",
+          "queries": [
+            "vibe coding vs agentic engineering",
+            "best vibe coding tools",
+            "lovable vs cursor vibe coding"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "vibe coding ai",
+        "what is vibe coding",
+        "medvi",
+        "vibe coding tools",
+        "embody",
+        "lovable vibe coding",
+        "quad ed",
+        "best vibe coding tools",
+        "shop lc",
+        "medvi quad"
+      ],
+      "competitors": [
+        "vibe-kanban",
+        "Lovable",
+        "Cursor",
+        "Claude Code"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "Vibe Coding 上线检查清单工具",
+          "why": "非工程背景的独立创业者与产品经理用 vibe coding 做出原型后，普遍缺乏部署、密钥、成本、可维护性检查能力，HN 上「回归手写」等反思文章获 865 分说明痛点真实；现有工具如 vibe-kanban 侧重任务管理，未覆盖上线风险扫描。",
+          "effort": "中",
+          "evidence": "HN「After two years of vibecoding, I'm back to writing by hand」865 分；GitHub vibe-kanban ★2.87 万"
+        },
+        {
+          "type": "content",
+          "title": "Vibe Coding 安全与成本实战指南",
+          "why": "搜索者频繁查询「what is vibe coding」「best vibe coding tools」，但缺乏系统性的安全、成本与可维护性内容；HN 讨论「vibe coding 与 agentic engineering 趋同」获 787 分，表明读者需要从概念到工程落地的桥接内容。",
+          "effort": "低",
+          "evidence": "Google Trends 相关查询含「vibe coding tools」「best vibe coding tools」；HN 讨论 787 分"
+        },
+        {
+          "type": "opensource",
+          "title": "开源 Vibe Coding 风险扫描器",
+          "why": "GitHub 上 claude-code-best-practice 获 6.9 万星，说明开发者愿意为提升 AI 编码质量投入；一个自动扫描代码库、识别密钥泄露、部署配置和成本风险的 CLI 工具，可填补 vibe-kanban 等任务管理工具未覆盖的空白。",
+          "effort": "中",
+          "evidence": "GitHub claude-code-best-practice ★69170；vibe-kanban ★28724"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "用两周做出上线检查清单 MVP，扫描 GitHub 仓库输出部署、密钥、成本、可维护性风险报告，先面向独立创业者社区免费试用。",
+          "reason": "需求有 HN 高互动讨论和 GitHub 高星工具佐证，且现有工具未聚焦上线风险，独立开发可行性高。",
+          "uncertainty": "Google Trends 热度近期下滑 10.9%，需验证用户是否愿意为检查工具付费而非仅阅读内容。"
+        },
+        {
+          "verdict": "content",
+          "action": "发布「Vibe Coding 安全上线清单」长文与视频，覆盖密钥管理、成本控制、可维护性检查，嵌入工具等待列表。",
+          "reason": "搜索意图以 learn 和 howto 为主，相关查询丰富，内容可低成本验证需求并积累早期用户。",
+          "uncertainty": "内容竞争可能来自现有 AI 编码博客，需以实操清单差异化。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "vibe coding",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "非工程背景的独立创业者与产品经理",
+          "entryAngle": "做 vibe coding 项目的上线检查清单工具：扫代码库给出部署、密钥、成本、可维护性风险清单",
+          "whyAccepted": "有明确人群和使用场景，但词偏泛、红海，需要细分切口"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "rag-pipeline",
       "keyword": "rag pipeline",
-      "normalizedName": "rag pipeline",
-      "category": "broadtech",
+      "normalizedName": "RAG Pipeline",
+      "category": "devtech",
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "",
+      "why": "近 30 天美国区搜索热度从基线 4.7 升至 13.7，7 日增长 189.4%，峰值达基线 4.64 倍；同期 HN 出现「Building a RAG pipeline for semantic code search」等工程实践帖，说明开发者正从概念转向搭建与调优，搜索背后是选型、评测与可复现配置的具体需求。",
+      "intentSummary": "开发者想搭建、调优并评测自己的 RAG 流水线",
+      "editorNote": {
+        "audience": "要做知识库问答的独立开发者与小团队",
+        "entryAngle": "做 RAG 的评测与调参工具：上传自己的文档集，自动跑分对比 chunk 策略与检索器，输出可复现的配置",
+        "whyAccepted": "品类词，接入、调试、评测需求具体，工程侧供给未饱和"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:27:23.268Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -445,11 +929,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 78,
+        "wedge": 62,
+        "seo": 74,
+        "feasibility": 80,
+        "timing": 76
       },
       "sources": [
         {
@@ -507,29 +991,180 @@
           "publishedAt": "2022-11-27"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "要做知识库问答的独立开发者与小团队",
-        "entryAngle": "做 RAG 的评测与调参工具：上传自己的文档集，自动跑分对比 chunk 策略与检索器，输出可复现的配置",
-        "whyAccepted": "品类词，接入、调试、评测需求具体，工程侧供给未饱和"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "美国区 RAG pipeline 搜索热度 7 日增长 189.4%，峰值达基线 4.64 倍",
+          "claimType": "fact",
+          "date": "2026-10-20",
+          "detail": "Google Trends 90 天序列，基线 4.7，近期 13.7，峰值 22",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=rag%20pipeline",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "HN 出现面向语义代码搜索的 RAG 流水线工程日记，获 41 分",
+          "claimType": "fact",
+          "date": "2026-10-04",
+          "detail": "Building a RAG pipeline for semantic code search",
+          "sources": [
+            {
+              "label": "Building a RAG pipeline for semantic code search",
+              "url": "https://blog.jetbrains.com/ai/2026/09/building-a-rag-pipeline-for-semantic-code-search-a-developer-diary-and-field-notes/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-10-04"
+            }
+          ]
+        },
+        {
+          "claim": "RAG 评测与自动调优工具在 HN 持续出现，说明工程侧供给尚未饱和",
+          "claimType": "inference",
+          "date": "2024-03-21",
+          "detail": "Ragas 与 AutoRAG 的 Show HN 分别获 121 分和 18 分",
+          "sources": [
+            {
+              "label": "Show HN: Ragas – Open-source library for evaluating RAG pipelines",
+              "url": "https://github.com/explodinggradients/ragas",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2024-03-21"
+            },
+            {
+              "label": "Show HN: AutoRAG – AutoML tool for RAG. Find an optimal RAG pipeline",
+              "url": "https://github.com/Marker-Inc-Korea/AutoRAG",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2024-02-08"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "howto",
+          "queries": [
+            "how to build a rag pipeline",
+            "rag pipeline chunking strategy",
+            "rag pipeline with reranker",
+            "rag pipeline evaluation"
+          ]
+        },
+        {
+          "intent": "compare",
+          "queries": [
+            "rag pipeline vs fine tuning",
+            "best rag framework 2026",
+            "ragas vs autorage"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "rag pipeline retrieval not working",
+            "rag pipeline hallucination fix",
+            "rag pipeline latency optimization"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "rag pipeline architecture",
+        "rag pipeline chunking",
+        "rag pipeline evaluation",
+        "rag pipeline reranker",
+        "rag pipeline semantic search",
+        "rag pipeline vs agent",
+        "rag pipeline best practices",
+        "rag pipeline open source"
+      ],
+      "competitors": [
+        "Ragas",
+        "AutoRAG",
+        "Haystack",
+        "Dify"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "RAG 评测与调参工作台",
+          "why": "搜索者正从概念转向搭建与调优，但评测环节仍靠手写脚本；上传文档集自动对比 chunk 策略与检索器，输出可复现配置，直接回应「怎么选」的搜索意图。",
+          "effort": "中",
+          "evidence": "HN 上 Ragas 评测库获 121 分、AutoRAG 自动调优工具获 18 分，说明评测与调参是独立需求点"
+        },
+        {
+          "type": "content",
+          "title": "RAG 流水线搭建与调优实战指南",
+          "why": "搜索热度 7 日增长 189.4%，峰值达基线 4.64 倍，大量开发者处于选型与踩坑阶段；围绕 chunk 策略、检索器对比、评测指标做可复现教程，能承接长尾搜索。",
+          "effort": "低",
+          "evidence": "Google Trends 美国区 90 天序列显示近期热度 13.7、基线 4.7"
+        },
+        {
+          "type": "opensource",
+          "title": "轻量 RAG 评测 CLI",
+          "why": "现有框架偏重编排，评测与配置对比仍缺独立工具；做一个命令行工具，输入文档集与候选配置，输出可复现的跑分对比，便于嵌入现有流水线。",
+          "effort": "中",
+          "evidence": "Dify 仓库 16.1 万星、Haystack 2.7 万星，说明 RAG 编排层已有成熟供给，评测层相对空白"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "先做 RAG 评测与调参的最小工具，支持上传文档集、对比 chunk 策略与检索器、导出可复现配置",
+          "reason": "搜索增长明确，HN 上评测类工具持续出现但未形成标准，独立开发者可快速验证",
+          "uncertainty": "大厂框架可能内置评测功能，压缩独立工具空间"
+        },
+        {
+          "verdict": "content",
+          "action": "同步产出 RAG 流水线搭建与调优的实战教程，覆盖 chunk、检索器、评测指标",
+          "reason": "搜索者处于学习与选型阶段，教程能低成本获取早期用户并验证需求",
+          "uncertainty": "内容竞争激烈，需靠可复现的配置与跑分数据形成差异"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "rag pipeline",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "要做知识库问答的独立开发者与小团队",
+          "entryAngle": "做 RAG 的评测与调参工具：上传自己的文档集，自动跑分对比 chunk 策略与检索器，输出可复现的配置",
+          "whyAccepted": "品类词，接入、调试、评测需求具体，工程侧供给未饱和"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "local-llm",
       "keyword": "local llm",
-      "normalizedName": "local llm",
-      "category": "broadtech",
+      "normalizedName": "Local LLM",
+      "category": "devtech",
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "",
+      "why": "近30天Google Trends美国区热度仅2个点高于基线，峰值1.26倍，但HN上本地LLM话题持续高热：Clippy获1122分、Ollama生态讨论648分、AMD Lemonade 572分，GitHub上unsloth与gpt4all合计超15万星，说明工程需求真实存在，搜索热度平稳而社区动手热情未减。",
+      "intentSummary": "找能在本地硬件上跑起来的大模型方案与工具",
+      "editorNote": {
+        "audience": "隐私敏感的个人开发者、离线场景小团队",
+        "entryAngle": "做一个一键把 HuggingFace 模型转成 Ollama/llama.cpp 可跑格式并自动测速的 CLI，输出显存占用和 tokens/s 对比表",
+        "whyAccepted": "本地跑模型是明确工程需求，围绕量化、推理加速、本地部署有大量可动手空间，不是发布资讯"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:27:34.743Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -574,11 +1209,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 62,
+        "wedge": 55,
+        "seo": 70,
+        "feasibility": 75,
+        "timing": 60
       },
       "sources": [
         {
@@ -636,29 +1271,188 @@
           "publishedAt": "2023-03-27"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "隐私敏感的个人开发者、离线场景小团队",
-        "entryAngle": "做一个一键把 HuggingFace 模型转成 Ollama/llama.cpp 可跑格式并自动测速的 CLI，输出显存占用和 tokens/s 对比表",
-        "whyAccepted": "本地跑模型是明确工程需求，围绕量化、推理加速、本地部署有大量可动手空间，不是发布资讯"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "本地LLM相关话题在Hacker News持续获得高互动，Clippy项目获1122分，Ollama生态讨论获648分",
+          "claimType": "fact",
+          "date": "2026-04-16",
+          "detail": "Show HN: Clippy – 90s UI for local LLMs 获1122分；The local LLM ecosystem doesn’t need Ollama 获648分",
+          "sources": [
+            {
+              "label": "Show HN: Clippy – 90s UI for local LLMs",
+              "url": "https://felixrieseberg.github.io/clippy/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2025-05-06"
+            },
+            {
+              "label": "The local LLM ecosystem doesn’t need Ollama",
+              "url": "https://sleepingrobots.com/dreams/stop-using-ollama/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-04-16"
+            }
+          ]
+        },
+        {
+          "claim": "GitHub上本地LLM工具生态成熟，unsloth获79710星、gpt4all获77346星、anything-llm获68384星",
+          "claimType": "fact",
+          "date": "2026-04-02",
+          "detail": "unsloth支持GGUF/MLX及多模型，gpt4all主打任意设备本地运行，anything-llm强调本地优先agent体验",
+          "sources": [
+            {
+              "label": "unslothai/unsloth（★79710）",
+              "url": "https://github.com/unslothai/unsloth",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2023-11-29"
+            },
+            {
+              "label": "nomic-ai/gpt4all（★77346）",
+              "url": "https://github.com/nomic-ai/gpt4all",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2023-03-27"
+            }
+          ]
+        },
+        {
+          "claim": "Google Trends近30天搜索热度平稳，近期7天环比下降14.5%，但峰值仍达基线1.26倍，说明需求未消失而是进入平台期",
+          "claimType": "inference",
+          "date": "2026-11-18",
+          "detail": "baseline 11.9，recent7 10.1，peak 15，aboveBaselinePoints仅2",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=local%20llm",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is a local llm",
+            "local llm explained",
+            "local llm vs cloud"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to run local llm",
+            "run local llm on mac",
+            "local llm setup guide"
+          ]
+        },
+        {
+          "intent": "compare",
+          "queries": [
+            "best local llm",
+            "local llm models comparison",
+            "ollama vs lm studio"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "best local llm",
+        "local llm model",
+        "run local llm",
+        "local llm models",
+        "ollama",
+        "llm studio",
+        "qwen",
+        "reddit local llm",
+        "what is a local llm",
+        "local llm for coding"
+      ],
+      "competitors": [
+        "Ollama",
+        "LM Studio",
+        "GPT4All",
+        "AnythingLLM"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "一键模型转换与测速CLI：HuggingFace转Ollama/llama.cpp并输出显存与tokens/s对比",
+          "why": "本地LLM用户常卡在模型格式转换和硬件适配，HN上Ollama生态讨论获648分说明工具链痛点真实，独立开发者可做轻量CLI切入。",
+          "effort": "2-3周",
+          "evidence": "HN讨论「The local LLM ecosystem doesn’t need Ollama」获648分；GitHub上unsloth获79710星，支持GGUF/MLX等多种格式"
+        },
+        {
+          "type": "content",
+          "title": "本地LLM硬件实测对比：不同GPU/CPU下主流模型tokens/s与显存占用表",
+          "why": "搜索词中best local llm、run local llm、local llm for coding均为高频长尾，用户需要可核对的实测数据来选型，内容缺口明显。",
+          "effort": "1-2周",
+          "evidence": "Google Trends相关搜索包含best local llm、run local llm、local llm for coding；HN上AMD Lemonade本地推理项目获572分"
+        },
+        {
+          "type": "opensource",
+          "title": "本地LLM部署检查清单与自动化脚本：从驱动到推理服务一键就绪",
+          "why": "GitHub上gpt4all获77346星、anything-llm获68384星，说明本地优先工具需求大，但部署环节仍碎片化，开源脚本可降低门槛。",
+          "effort": "3-4周",
+          "evidence": "gpt4all仓库获77346星，anything-llm获68384星，均主打本地运行与本地优先体验"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "先做模型转换+测速CLI的最小可用版，支持GGUF和Ollama格式，输出显存与tokens/s表格",
+          "reason": "工程需求明确，HN与GitHub证据充分，独立开发者可在2-3周内交付可验证工具，切入Ollama生态的格式适配缺口。",
+          "uncertainty": "Google Trends热度近期下降14.5%，需确认目标用户是否集中在社区而非搜索，避免获客渠道误判。"
+        },
+        {
+          "verdict": "content",
+          "action": "同步产出本地LLM硬件实测对比内容，覆盖best local llm、run local llm等搜索词",
+          "reason": "搜索意图以选型和教程为主，实测数据内容可建立信任并导流至CLI工具，形成内容与产品闭环。",
+          "uncertainty": "实测数据需持续更新，硬件迭代快，内容维护成本可能高于预期。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "local llm",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "隐私敏感的个人开发者、离线场景小团队",
+          "entryAngle": "做一个一键把 HuggingFace 模型转成 Ollama/llama.cpp 可跑格式并自动测速的 CLI，输出显存占用和 tokens/s 对比表",
+          "whyAccepted": "本地跑模型是明确工程需求，围绕量化、推理加速、本地部署有大量可动手空间，不是发布资讯"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "ai-meeting-notes",
       "keyword": "ai meeting notes",
-      "normalizedName": "ai meeting notes",
-      "category": "broadtech",
+      "normalizedName": "AI Meeting Notes",
+      "category": "usecase",
       "region": "US",
       "status": "cooling",
       "confidence": "medium",
-      "why": "",
+      "why": "AI 会议纪要需求真实，但通用赛道已拥挤：Meetily 开源项目获 3.2 万星，Natively 获 3300 星，HN 上本地化方案讨论频繁；近 30 天热度虽从峰值 59 回落至 21.7，仍高于基线，说明搜索者正从尝鲜转向寻找可落地的垂直方案。",
+      "intentSummary": "寻找能自动记录、总结会议并生成行动项的 AI 工具",
+      "editorNote": {
+        "audience": "中小团队创始人、销售与咨询顾问",
+        "entryAngle": "做垂直行业的会议纪要：只接某一行（如牙科诊所、房产中介）的术语库和模板，会后直接产出该行业可用的跟进清单",
+        "whyAccepted": "需求真实且付费方明确，但已是红海，需靠细分场景（如特定行业术语、本地化）差异化"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:27:44.296Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -703,11 +1497,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 78,
+        "wedge": 55,
+        "seo": 70,
+        "feasibility": 80,
+        "timing": 65
       },
       "sources": [
         {
@@ -765,29 +1559,180 @@
           "publishedAt": "2026-01-27"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "中小团队创始人、销售与咨询顾问",
-        "entryAngle": "做垂直行业的会议纪要：只接某一行（如牙科诊所、房产中介）的术语库和模板，会后直接产出该行业可用的跟进清单",
-        "whyAccepted": "需求真实且付费方明确，但已是红海，需靠细分场景（如特定行业术语、本地化）差异化"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "开源本地会议纪要工具 Meetily 在 GitHub 获 3.2 万星，表明开发者对隐私优先方案有强烈兴趣",
+          "claimType": "fact",
+          "date": "2024-12-26",
+          "detail": "Zackriya-Solutions/meetily ★32777，支持 Windows/macOS/Linux，本地 Whisper 转录",
+          "sources": [
+            {
+              "label": "Zackriya-Solutions/meetily（★32777）",
+              "url": "https://github.com/Zackriya-Solutions/meetily",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2024-12-26"
+            }
+          ]
+        },
+        {
+          "claim": "HN 上多次出现本地化 AI 会议纪要的 Show HN 与讨论，说明用户对云端方案存在隐私顾虑",
+          "claimType": "fact",
+          "date": "2026-07-21",
+          "detail": "threadfork 展示 Mac 本地运行 AI 会议纪要，获 10 分；另有 Talat 本地化方案被 TechCrunch 报道",
+          "sources": [
+            {
+              "label": "Show HN: threadfork – AI meeting notes that run on your Mac",
+              "url": "https://www.threadfork.com/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-07-21"
+            },
+            {
+              "label": "Talat's AI meeting notes stay on your machine, not in the cloud",
+              "url": "https://techcrunch.com/2026/03/24/talats-ai-meeting-notes-stay-on-your-machine-not-in-the-cloud/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-04-06"
+            }
+          ]
+        },
+        {
+          "claim": "近 30 天搜索热度从峰值 59 回落至 21.7，但仍高于基线 24.6 的 7 个点，需求未消失而是转向细分",
+          "claimType": "inference",
+          "detail": "峰值倍数 2.4，近期 7 天环比 -11.6%，属于热点后的正常回落",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20meeting%20notes",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what are ai meeting notes",
+            "how does ai meeting notes work",
+            "ai meeting notes privacy"
+          ]
+        },
+        {
+          "intent": "compare",
+          "queries": [
+            "ai meeting notes vs otter",
+            "granola vs notion ai meeting notes",
+            "best ai meeting notes for mac"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to set up ai meeting notes in zoom",
+            "how to use ai meeting notes offline",
+            "how to get ai meeting notes from teams"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "ai for meeting notes",
+        "zoom ai meeting notes",
+        "zoom",
+        "google ai meeting notes",
+        "granola",
+        "granola ai",
+        "notion ai meeting notes",
+        "notion",
+        "read ai meeting notes",
+        "microsoft teams ai meeting notes"
+      ],
+      "competitors": [
+        "Otter.ai",
+        "Granola",
+        "Notion AI",
+        "Meetily"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "垂直行业会议纪要：牙科诊所/房产中介专用模板与术语库",
+          "why": "通用工具已红海，但中小团队创始人、销售与咨询顾问需要会后直接产出行业可用的跟进清单；搜索者正从通用词转向「ai meeting notes for sales」等长尾，说明细分需求未被满足。",
+          "effort": "medium",
+          "evidence": "Meetily 获 3.2 万星证明本地化基础能力可复用；HN 上本地化方案讨论频繁，但未见行业垂直方案。"
+        },
+        {
+          "type": "content",
+          "title": "对比评测：本地 vs 云端 AI 会议纪要的隐私与成本",
+          "why": "搜索者频繁对比 granola、notion、read ai 等，且 HN 上本地化 Show HN 获关注，说明隐私是决策关键；内容可承接「local ai meeting notes」「open source ai meeting notes」等长尾词。",
+          "effort": "low",
+          "evidence": "HN 帖子「Talat's AI meeting notes stay on your machine」被 TechCrunch 报道，本地化话题有媒体验证。"
+        },
+        {
+          "type": "opensource",
+          "title": "基于 Meetily 的行业术语插件与跟进清单生成器",
+          "why": "Meetily 已提供本地转录与纪要基础，但缺少行业适配；开发者可基于其 MIT 协议快速构建垂直插件，降低从零开发成本。",
+          "effort": "medium",
+          "evidence": "Meetily GitHub 仓库 ★32777，MIT 协议，支持多平台本地 Whisper 转录。"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "选择一个垂直行业（如牙科诊所），基于开源转录工具构建带行业术语库和跟进清单模板的会议纪要 MVP，先服务 5-10 家本地客户验证付费意愿。",
+          "reason": "需求真实且付费方明确（中小团队创始人、销售顾问），通用赛道拥挤但垂直场景空白，独立开发者可借开源基础快速启动。",
+          "uncertainty": "行业客户获取成本与定制化深度可能拖慢迭代；需验证他们是否愿意为垂直模板付费而非使用通用免费工具。"
+        },
+        {
+          "verdict": "content",
+          "action": "撰写「本地 vs 云端 AI 会议纪要」对比指南，重点覆盖隐私、成本与离线能力，投放至 HN、Reddit 及 SEO 长尾词。",
+          "reason": "搜索者对比意图明显，且 HN 上本地化方案讨论获关注，内容可低成本获取早期用户并建立信任。",
+          "uncertainty": "对比类内容竞争激烈，需以实测数据和行业视角差异化。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "ai meeting notes",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "中小团队创始人、销售与咨询顾问",
+          "entryAngle": "做垂直行业的会议纪要：只接某一行（如牙科诊所、房产中介）的术语库和模板，会后直接产出该行业可用的跟进清单",
+          "whyAccepted": "需求真实且付费方明确，但已是红海，需靠细分场景（如特定行业术语、本地化）差异化"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "ai-resume-builder",
       "keyword": "ai resume builder",
-      "normalizedName": "ai resume builder",
-      "category": "broadtech",
+      "normalizedName": "AI Resume Builder",
+      "category": "usecase",
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "",
+      "why": "近30天搜索热度较基线上升21.2%，峰值达基线2.29倍，说明求职者对AI简历工具的需求在增强；但Show HN上免费AI简历构建器密集出现，GitHub开源项目如JadeAI获2025星，供给已极度饱和，独立开发者需从细分岗位或体验切口进入。",
+      "intentSummary": "找能快速生成或优化简历的AI工具，常关注免费、ATS匹配和按JD定制。",
+      "editorNote": {
+        "audience": "求职者个人用户",
+        "entryAngle": "做针对单一岗位族的简历工具（如只做转行产品经理），内置该岗位真实 JD 关键词库和逐条改写建议，按次收费",
+        "whyAccepted": "需求真实但供给极度饱和，免费工具遍地，只能靠细分人群或体验切口"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:27:52.388Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -832,11 +1777,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 75,
+        "wedge": 30,
+        "seo": 70,
+        "feasibility": 80,
+        "timing": 60
       },
       "sources": [
         {
@@ -894,29 +1839,195 @@
           "publishedAt": "2025-03-18"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "求职者个人用户",
-        "entryAngle": "做针对单一岗位族的简历工具（如只做转行产品经理），内置该岗位真实 JD 关键词库和逐条改写建议，按次收费",
-        "whyAccepted": "需求真实但供给极度饱和，免费工具遍地，只能靠细分人群或体验切口"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "过去30天AI简历构建器搜索热度较基线上升21.2%，峰值达基线2.29倍。",
+          "claimType": "fact",
+          "date": "2026-11-18",
+          "detail": "Google Trends 90天美国区数据显示相对热度从基线24.9升至近期30.1。",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20resume%20builder",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "Show HN上近期出现多个免费AI简历构建器项目，竞争激烈。",
+          "claimType": "fact",
+          "date": "2026-04-17",
+          "detail": "Resume Yay、Wobo.ai、ResumeAI、GetHireToday等均在Show HN发布。",
+          "sources": [
+            {
+              "label": "Show HN: Resume Yay: The Free AI Resume Builder that also finds you jobs",
+              "url": "https://resumeyay.com/?via=jobboardsearch&utm_source=site&utm_campaign=first&utm_id=jobboardsearch",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2025-04-22"
+            },
+            {
+              "label": "Show HN: Free AI Resume Builder – Beta Testers Say It's One of the Best",
+              "url": "https://www.wobo.ai/ai-resume-builder",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2025-04-17"
+            },
+            {
+              "label": "Show HN: ResumeAI, AI-powered Resume Builder (get your resumes done in seconds!)",
+              "url": "https://resumeai.app",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2024-07-22"
+            },
+            {
+              "label": "Show HN: GetHireToday – AI resume builder that targets ATS keyword matching",
+              "url": "https://gethiretoday.com",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-04-17"
+            }
+          ]
+        },
+        {
+          "claim": "开源AI简历构建器已形成一定社区，JadeAI获2025星。",
+          "claimType": "fact",
+          "date": "2026-02-10",
+          "detail": "GitHub上JadeAI项目支持50+模板、JD匹配分析等功能。",
+          "sources": [
+            {
+              "label": "LingyiChen-AI/JadeAI（★2025）",
+              "url": "https://github.com/LingyiChen-AI/JadeAI",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2026-02-10"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "how to use ai resume builder",
+            "what is ai resume builder",
+            "ai resume builder review"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to make ai resume for job description",
+            "how to tailor resume with ai",
+            "how to build ats friendly resume with ai"
+          ]
+        },
+        {
+          "intent": "price",
+          "queries": [
+            "free ai resume builder",
+            "ai resume builder free trial",
+            "best free ai resume builder"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "resume builder free",
+        "ai free resume builder",
+        "free ai resume",
+        "best ai resume builder",
+        "best free ai resume builder",
+        "ai resume builder reddit",
+        "free ai resume builder and download",
+        "rezi ai resume builder",
+        "teal ai resume builder",
+        "ai resume builder based on job description"
+      ],
+      "competitors": [
+        "Rezi",
+        "Teal",
+        "ResumeAI",
+        "JadeAI"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "针对单一岗位族的AI简历工具（如转行产品经理）",
+          "why": "搜索者常搜'based on job description'，但通用工具难以精准匹配细分岗位关键词；针对转行产品经理等特定人群，内置真实JD关键词库和逐条改写建议，可按次收费。",
+          "effort": "medium",
+          "evidence": "Google Trends相关查询包含'ai resume builder based on job description'；Show HN上GetHireToday主打ATS关键词匹配但未聚焦岗位族。"
+        },
+        {
+          "type": "content",
+          "title": "免费AI简历工具对比与避坑指南",
+          "why": "搜索者频繁搜索'best free ai resume builder'和'reddit'，表明需要中立对比和真实用户反馈；可制作对比评测内容，引流至细分工具。",
+          "effort": "low",
+          "evidence": "相关查询包含'best free ai resume builder'和'ai resume builder reddit'；Show HN多个免费工具获少量投票，用户选择困难。"
+        },
+        {
+          "type": "opensource",
+          "title": "隐私优先的本地AI简历构建器",
+          "why": "GitHub上resume-ai项目强调本地隐私处理获395星，说明有用户在意数据安全；可基于开源模型做本地化简历优化工具，差异化竞争。",
+          "effort": "high",
+          "evidence": "GitHub项目resume-llm/resume-ai（★395）主打本地隐私优先；搜索热度上升但免费云工具泛滥。"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "research",
+          "action": "调研转行产品经理等细分岗位的简历痛点与现有工具缺口",
+          "reason": "需求增长但供给饱和，需验证细分切口是否足够支撑付费。",
+          "uncertainty": "细分人群规模与付费意愿未知，需访谈验证。"
+        },
+        {
+          "verdict": "content",
+          "action": "撰写免费AI简历工具对比评测，突出ATS匹配和隐私差异",
+          "reason": "搜索意图中对比和免费需求明显，内容可快速获取流量并测试转化。",
+          "uncertainty": "内容竞争激烈，需找到独特角度。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "ai resume builder",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "求职者个人用户",
+          "entryAngle": "做针对单一岗位族的简历工具（如只做转行产品经理），内置该岗位真实 JD 关键词库和逐条改写建议，按次收费",
+          "whyAccepted": "需求真实但供给极度饱和，免费工具遍地，只能靠细分人群或体验切口"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "ai-photo-editor",
       "keyword": "ai photo editor",
-      "normalizedName": "ai photo editor",
-      "category": "broadtech",
+      "normalizedName": "AI Photo Editor",
+      "category": "tool",
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "",
+      "why": "近30天美国区热度峰值达基线1.38倍，但最近7天环比下降8%，仅2个采样点高于基线，说明通用AI修图搜索已进入平台期；HN上两个Show HN项目分别仅获4分和3分，开源替代品lumen-raw与open-photo-ai各约280星和240星，通用编辑器赛道拥挤，独立开发者需绑定电商主图批量处理等具体工作流才有付费空间。",
+      "intentSummary": "找免费或在线AI修图工具，替代传统编辑器完成去背、增强与生成",
+      "editorNote": {
+        "audience": "电商卖家、社媒运营个人用户",
+        "entryAngle": "做电商主图批量处理：上传一批商品图，自动去背、统一尺寸、加平台合规水印，按张计费，直接对接闲鱼/Shopify 导出",
+        "whyAccepted": "需求真实但红海严重，通用编辑器无机会，需绑定具体工作流"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:28:03.760Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -961,11 +2072,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 55,
+        "wedge": 40,
+        "seo": 65,
+        "feasibility": 70,
+        "timing": 50
       },
       "sources": [
         {
@@ -1023,29 +2134,188 @@
           "publishedAt": "2025-10-16"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "电商卖家、社媒运营个人用户",
-        "entryAngle": "做电商主图批量处理：上传一批商品图，自动去背、统一尺寸、加平台合规水印，按张计费，直接对接闲鱼/Shopify 导出",
-        "whyAccepted": "需求真实但红海严重，通用编辑器无机会，需绑定具体工作流"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "AI photo editor 搜索热度峰值仅为基线的1.38倍，且最近7天环比下降8%，通用需求增长乏力",
+          "claimType": "fact",
+          "date": "2026-10-20",
+          "detail": "Google Trends 90天美国区序列：基线8.7，峰值12，最近7天均值8，环比-8%",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20photo%20editor",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "HN上两个AI修图Show HN项目互动量极低，分别仅获4分和3分，说明通用产品很难在社区获得自然传播",
+          "claimType": "fact",
+          "date": "2026-07-12",
+          "detail": "Photo AI Editor 获4分，AI Photo Editor 获3分",
+          "sources": [
+            {
+              "label": "Show HN: Photo AI Editor – Edit, Transform and Enhance Photos with Text Prompt",
+              "url": "https://photoaieditor.app/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2025-10-02"
+            },
+            {
+              "label": "Show HN: AI Photo Editor – Professional-Grade Image Editing with Text Prompts",
+              "url": "https://www.aiphotoeditor.ai/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-07-12"
+            }
+          ]
+        },
+        {
+          "claim": "开源替代品已出现且有一定关注度，lumen-raw约282星、open-photo-ai约241星，通用编辑器供给充足",
+          "claimType": "fact",
+          "date": "2026-09-29",
+          "detail": "lumen-raw 282星，open-photo-ai 241星",
+          "sources": [
+            {
+              "label": "hety0211/lumen-raw（★282）",
+              "url": "https://github.com/hety0211/lumen-raw",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2026-09-29"
+            },
+            {
+              "label": "vegidio/open-photo-ai（★241）",
+              "url": "https://github.com/vegidio/open-photo-ai",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2025-10-16"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is ai photo editor",
+            "how does ai photo editing work",
+            "ai photo editor vs traditional"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to remove background with ai photo editor",
+            "how to batch edit product photos with ai",
+            "how to use ai photo editor for ecommerce"
+          ]
+        },
+        {
+          "intent": "price",
+          "queries": [
+            "ai photo editor pricing",
+            "cheap ai photo editor for shopify",
+            "pay per image ai photo editor"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "free ai photo editor",
+        "photo editor free",
+        "free ai",
+        "image editor",
+        "ai image editor",
+        "best photo ai editor",
+        "online ai photo editor",
+        "online photo editor",
+        "ai generator",
+        "ai photo generator"
+      ],
+      "competitors": [
+        "lumen-raw",
+        "open-photo-ai",
+        "rembrandt",
+        "FaceApp"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "电商主图批量AI处理工作流",
+          "why": "通用AI修图搜索已见顶且HN项目互动极低，但电商卖家需要批量去背、统一尺寸、加平台合规水印并按张计费，现有开源工具如lumen-raw（282星）和open-photo-ai（241星）均未绑定具体电商导出流程，存在工作流缺口。",
+          "effort": "中",
+          "evidence": "Google Trends峰值仅1.38倍且环比-8%；两个Show HN项目仅获4分和3分；开源替代品星数在200-300区间"
+        },
+        {
+          "type": "content",
+          "title": "AI修图工具对比与电商批量处理教程",
+          "why": "搜索者大量敲free ai photo editor、online ai photo editor等词，但HN上关于AI修图信任问题的讨论（14分）和FaceApp隐私争议（18分）说明用户对工具选择有顾虑，需要中立对比和实操教程来降低决策成本。",
+          "effort": "低",
+          "evidence": "HN讨论「AI photo editors are ushering in a distrust of everything we see」获14分；FaceApp隐私争议获18分"
+        },
+        {
+          "type": "opensource",
+          "title": "面向电商导出的开源批量修图CLI",
+          "why": "现有开源项目lumen-raw和open-photo-ai聚焦通用编辑，未提供闲鱼/Shopify批量导出与平台合规水印，独立开发者可用CLI切入自动化工作流，避开与通用编辑器的正面竞争。",
+          "effort": "中",
+          "evidence": "lumen-raw描述为多品牌RAW编辑器，open-photo-ai为通用替代品，均未提及电商批量导出"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "用现有开源模型搭一个最小批量处理管道：上传商品图→自动去背→统一尺寸→加平台水印→导出Shopify/闲鱼格式，按张计费验证付费意愿。",
+          "reason": "通用编辑器红海且搜索热度下行，但电商卖家为批量工作流付费的意愿未被现有开源工具满足，切入角度具体、开发量可控。",
+          "uncertainty": "电商卖家是否愿意为按张计费的工具付费，而非继续用免费工具手动处理，需用落地页和预售验证。"
+        },
+        {
+          "verdict": "watch",
+          "action": "持续观察Google Trends中batch ai photo editor、ai photo editor shopify等长尾词是否出现独立上升趋势，再决定是否加大投入。",
+          "reason": "当前通用词热度已见顶，长尾工作流词尚未在给定数据中体现独立增长，需等待更明确的信号。",
+          "uncertainty": "长尾词搜索量过小，Trends可能无法稳定捕捉，判断依据有限。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "ai photo editor",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "电商卖家、社媒运营个人用户",
+          "entryAngle": "做电商主图批量处理：上传一批商品图，自动去背、统一尺寸、加平台合规水印，按张计费，直接对接闲鱼/Shopify 导出",
+          "whyAccepted": "需求真实但红海严重，通用编辑器无机会，需绑定具体工作流"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "ai-video-generator",
       "keyword": "ai video generator",
-      "normalizedName": "ai video generator",
-      "category": "broadtech",
+      "normalizedName": "AI Video Generator",
+      "category": "tool",
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "",
+      "why": "过去30天美国区搜索热度仅3天高于基线，峰值29为基线1.19倍，7日增长-2%，说明通用AI视频生成搜索已趋饱和；但HN讨论Seedance 2.0让好莱坞感到威胁、GitHub短剧生成项目获1.7万星，显示需求正从「生成视频」转向「生成可发布内容」，中小卖家与创作者愿为成品付费。",
+      "intentSummary": "找能免费或低成本把图文变成可发布视频的工具",
+      "editorNote": {
+        "audience": "中小电商卖家、社媒内容创作者",
+        "entryAngle": "做「商品图→15秒竖版带货视频」的垂直流水线，输入一张白底图和三条卖点文案，直接输出带字幕、BGM、口播的分镜成片，按条收费",
+        "whyAccepted": "需求极真实但供给严重饱和，通用视频生成已被大厂免费功能覆盖，只有细分场景才有切口"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:28:13.849Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -1090,11 +2360,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 72,
+        "wedge": 65,
+        "seo": 70,
+        "feasibility": 80,
+        "timing": 75
       },
       "sources": [
         {
@@ -1152,29 +2422,174 @@
           "publishedAt": "2024-06-28"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "中小电商卖家、社媒内容创作者",
-        "entryAngle": "做「商品图→15秒竖版带货视频」的垂直流水线，输入一张白底图和三条卖点文案，直接输出带字幕、BGM、口播的分镜成片，按条收费",
-        "whyAccepted": "需求极真实但供给严重饱和，通用视频生成已被大厂免费功能覆盖，只有细分场景才有切口"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "美国区过去30天AI视频生成搜索热度基本持平，仅3天高于基线，峰值仅为基线1.19倍",
+          "claimType": "fact",
+          "date": "2026-10-20",
+          "detail": "30个采样点，基线24.3，近期7天23.9，7日增长-2%",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20video%20generator",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "HN讨论Seedance 2.0发布让好莱坞从业者感到威胁，说明生成质量已接近可用",
+          "claimType": "fact",
+          "date": "2026-02-15",
+          "detail": "标题「'It's over for us': release of AI video generator Seedance 2.0 spooks Hollywood」，23分",
+          "sources": [
+            {
+              "label": "'It's over for us': release of AI video generator Seedance 2.0 spooks Hollywood",
+              "url": "https://www.theguardian.com/film/2026/feb/13/new-ai-video-generator-seedance-tom-cruise-brad-pitt",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-02-15"
+            }
+          ]
+        },
+        {
+          "claim": "开源短剧生成平台获1.7万星，说明「一句话生成完整短剧」的端到端流水线有开发者需求",
+          "claimType": "fact",
+          "date": "2026-01-05",
+          "detail": "chatfire-AI/huobao-drama ★17661，从剧本到成片全自动化",
+          "sources": [
+            {
+              "label": "chatfire-AI/huobao-drama（★17661）",
+              "url": "https://github.com/chatfire-AI/huobao-drama",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2026-01-05"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is ai video generator",
+            "how does ai video generator work",
+            "best ai video generator 2026"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to make ai video from image",
+            "how to generate ai video for free",
+            "how to create product video with ai"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "ai video generator safe",
+            "fake ai video generator virus",
+            "ai video generator watermark remove"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "free video generator ai",
+        "best ai video generator",
+        "ai image generator",
+        "ai image to video generator",
+        "medvi",
+        "best ai video generator free",
+        "ai music video generator",
+        "embody",
+        "shop lc",
+        "google ai video generator"
+      ],
+      "competitors": [
+        "Runway",
+        "Pika",
+        "Sora",
+        "Veo"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "商品图→15秒竖版带货视频流水线",
+          "why": "中小电商卖家需要把白底商品图快速变成带字幕、BGM、口播的竖版视频，通用工具不解决分镜和卖点脚本，按条收费有明确付费意愿。",
+          "effort": "中",
+          "evidence": "GitHub短剧生成项目获1.7万星，证明端到端流水线技术可行；搜索词「ai product video generator」出现在相关查询中。"
+        },
+        {
+          "type": "content",
+          "title": "AI视频生成器安全避坑指南",
+          "why": "HN讨论「Fake AI video generators infect Windows, macOS with infostealers」说明用户对免费工具的安全顾虑真实存在，搜索「ai video generator safe」的人需要可信评测。",
+          "effort": "低",
+          "evidence": "HN帖子标题「Fake AI video generators infect Windows, macOS with infostealers」获10分，2024年11月发布。"
+        },
+        {
+          "type": "opensource",
+          "title": "开源YouTube长转竖版短片工具",
+          "why": "AI-Youtube-Shorts-Generator获6200星，说明创作者需要把长视频自动切成9:16短片，可在此基础上加AI字幕和选段优化。",
+          "effort": "中",
+          "evidence": "Anil-matcha/AI-Youtube-Shorts-Generator ★6200，定位为Opus Clip等产品的开源替代。"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "先做「商品图+三条卖点文案→15秒竖版视频」的MVP，按条收费验证中小电商卖家付费意愿",
+          "reason": "通用视频生成搜索饱和，但垂直带货视频有明确付费场景，且开源短剧流水线可复用技术组件。",
+          "uncertainty": "大厂免费功能可能向下覆盖垂直场景，需快速验证差异化脚本和分镜能力是否构成壁垒。"
+        },
+        {
+          "verdict": "content",
+          "action": "发布AI视频生成器安全评测与避坑指南，截取「免费工具是否安全」的搜索流量",
+          "reason": "安全类搜索意图明确且竞争内容少，HN已有恶意软件讨论作为素材。",
+          "uncertainty": "安全评测需持续更新，否则时效性下降。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "ai video generator",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "中小电商卖家、社媒内容创作者",
+          "entryAngle": "做「商品图→15秒竖版带货视频」的垂直流水线，输入一张白底图和三条卖点文案，直接输出带字幕、BGM、口播的分镜成片，按条收费",
+          "whyAccepted": "需求极真实但供给严重饱和，通用视频生成已被大厂免费功能覆盖，只有细分场景才有切口"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "ai-voice-clone",
       "keyword": "ai voice clone",
-      "normalizedName": "ai voice clone",
-      "category": "broadtech",
+      "normalizedName": "AI Voice Clone",
+      "category": "usecase",
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "",
+      "why": "美国 90 天 Google Trends 显示该词近期热度较基线抬升 90.9%、峰值达基线 7.59 倍，叠加 FBI 建议用暗语防克隆、RIAA 向政府标记克隆工具等新闻，说明需求正从「尝鲜克隆」转向「授权合规与批量配音」，播客主和跨境卖家愿意为可留痕的声纹授权与整季/整店配音付费。",
+      "intentSummary": "找免费或低门槛的 AI 声音克隆工具，并关心授权与合规风险。",
+      "editorNote": {
+        "audience": "播客主、有声书制作人、跨境卖家",
+        "entryAngle": "做「授权留痕+批量配音」工具：上传一段授权录音生成声纹，自动给整季播客或整店商品文案配音，附授权凭证存档，解决平台下架风险",
+        "whyAccepted": "语音克隆本身红海，但合规授权、多语种口播、批量配音的工程需求仍在，独立开发者可做细分"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:28:25.004Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -1219,11 +2634,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 78,
+        "wedge": 62,
+        "seo": 70,
+        "feasibility": 74,
+        "timing": 80
       },
       "sources": [
         {
@@ -1281,29 +2696,172 @@
           "publishedAt": "2023-11-29"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "播客主、有声书制作人、跨境卖家",
-        "entryAngle": "做「授权留痕+批量配音」工具：上传一段授权录音生成声纹，自动给整季播客或整店商品文案配音，附授权凭证存档，解决平台下架风险",
-        "whyAccepted": "语音克隆本身红海，但合规授权、多语种口播、批量配音的工程需求仍在，独立开发者可做细分"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "美国近 30 天该词热度较基线上升 90.9%，峰值达基线 7.59 倍",
+          "claimType": "fact",
+          "date": "2026-10-20",
+          "detail": "Google Trends 90 天序列，基线 13.2，近 7 天均值 25.1",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20voice%20clone",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "FBI 建议用暗语防范 AI 声音克隆，说明滥用风险已进入公共安全议题",
+          "claimType": "fact",
+          "date": "2024-12-07",
+          "detail": "Hacker News 讨论获 67 分",
+          "sources": [
+            {
+              "label": "The FBI now recommends choosing a secret password to thwart AI voice clones",
+              "url": "https://arstechnica.com/ai/2024/12/your-ai-clone-could-target-your-family-but-theres-a-simple-defense/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2024-12-07"
+            }
+          ]
+        },
+        {
+          "claim": "RIAA 向美国政府标记 Anna's Archive 与 AI 声音克隆工具，版权方开始主动施压",
+          "claimType": "fact",
+          "date": "2026-10-15",
+          "detail": "Hacker News 讨论获 21 分",
+          "sources": [
+            {
+              "label": "RIAA Flags Anna's Archive and AI Voice Cloner to U.S. Government",
+              "url": "https://torrentfreak.com/riaa-flags-annas-archive-and-ai-voice-cloner-to-u-s-government/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-10-15"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is ai voice clone",
+            "how does ai voice cloning work",
+            "ai voice clone explained"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to clone voice with ai free",
+            "clone my voice ai",
+            "ai voice clone for podcast"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "ai voice clone consent",
+            "ai voice clone copyright",
+            "is ai voice cloning legal"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "ai voice clone free",
+        "clone voice ai free",
+        "ai voice clone online",
+        "ai voice clone for podcast",
+        "ai voice clone consent form",
+        "ai voice clone commercial use",
+        "best ai voice clone tool",
+        "ai voice clone text to speech"
+      ],
+      "competitors": [
+        "OpenVoice",
+        "Voicebox",
+        "ElevenLabs",
+        "SmartSub"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "授权留痕 + 批量配音工作台",
+          "why": "搜索者反复敲「ai voice clone free」「clone voice ai free」，但 RIAA 已向政府标记克隆工具、FBI 建议暗语防克隆，播客主和跨境卖家真正怕的是平台下架；做「上传授权录音→生成声纹→整季播客/整店商品文案批量配音→授权凭证存档」能直接切中付费点。",
+          "effort": "中",
+          "evidence": "Google Trends 近 7 天热度较基线 +90.9%；RIAA 向美国政府标记 AI 声音克隆工具的 HN 讨论获 21 分；OpenVoice GitHub 仓库 3.8 万星、Voicebox 6 万星说明底层能力已开源可复…"
+        },
+        {
+          "type": "content",
+          "title": "AI 声音克隆合规与授权指南",
+          "why": "「ai voice clone consent」「is ai voice cloning legal」是明确的问题型搜索，而 FBI 暗语防克隆、RIAA 施压两条新闻提供了现成选题；面向播客主与跨境卖家做「授权书模板 + 平台下架案例 + 合规配音流程」内容，可承接免费工具搜索流量。",
+          "effort": "低",
+          "evidence": "FBI 建议用暗语防 AI 声音克隆的 HN 讨论获 67 分；RIAA 标记 Anna's Archive 与 AI 声音克隆工具的 HN 讨论获 21 分；Google Trends 相关搜索出现「ai voice clone fre…"
+        },
+        {
+          "type": "opensource",
+          "title": "带授权凭证的批量配音 CLI/桌面工具",
+          "why": "OpenVoice 3.8 万星、Voicebox 6 万星证明开源克隆模型已成熟，但缺少「授权凭证 + 批量任务」的工程层；独立开发者可基于开源模型做本地批量配音工具，附授权录音哈希存档，差异化于纯克隆玩具。",
+          "effort": "中",
+          "evidence": "myshell-ai/OpenVoice GitHub 仓库 3.8 万星；jamiepine/voicebox GitHub 仓库 6 万星；SmartSub 6,086 星说明本地批量语音工具已有用户基础。"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "先做「授权录音上传→声纹生成→整季播客批量配音→授权凭证 PDF 存档」的最小闭环，面向播客主和跨境卖家各找 5 个试用。",
+          "reason": "热度较基线 +90.9% 且合规新闻密集，付费方明确，开源模型可复用降低开发成本。",
+          "uncertainty": "平台对克隆语音的下架规则仍在变化，授权凭证是否被平台认可尚无公开标准。"
+        },
+        {
+          "verdict": "content",
+          "action": "同步发布「AI 声音克隆授权书模板 + 平台下架案例」长文与短视频，承接免费工具搜索流量并收集邮箱。",
+          "reason": "问题型搜索明确，FBI 与 RIAA 新闻提供高可信选题，内容成本低、可验证需求。",
+          "uncertainty": "合规内容受众付费意愿需通过落地页转化数据验证。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "ai voice clone",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "播客主、有声书制作人、跨境卖家",
+          "entryAngle": "做「授权留痕+批量配音」工具：上传一段授权录音生成声纹，自动给整季播客或整店商品文案配音，附授权凭证存档，解决平台下架风险",
+          "whyAccepted": "语音克隆本身红海，但合规授权、多语种口播、批量配音的工程需求仍在，独立开发者可做细分"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "ai-evals",
       "keyword": "ai evals",
-      "normalizedName": "ai evals",
-      "category": "broadtech",
+      "normalizedName": "AI Evals",
+      "category": "devtech",
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "",
+      "why": "AI 产品上线前的评测需求正在从「有没有」转向「怎么做」，过去 30 天美国区搜索热度从基线 14.3 升至近期 39.4，增长 175.6%，峰值达基线 4.05 倍；Hacker News 上「About AI Evals」获 189 分、「Ask HN: How are people doing AI evals these days?」获 30 分，说明开发者正为缺少可复用的评测方法付费…",
+      "intentSummary": "想搞懂 AI 评测怎么做，找可落地的工具与模板。",
+      "editorNote": {
+        "audience": "做 AI 产品的独立开发者、小团队 CTO",
+        "entryAngle": "做一个针对 RAG/客服场景的评测模板库：上传 50 条真实对话，自动跑回归并给出 prompt 改动前后的通过率 diff",
+        "whyAccepted": "评测是 AI 产品上线前的刚需环节，工具链尚未定型，小团队可切入细分场景"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:28:33.529Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -1348,11 +2906,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 78,
+        "wedge": 72,
+        "seo": 65,
+        "feasibility": 80,
+        "timing": 82
       },
       "sources": [
         {
@@ -1410,29 +2968,179 @@
           "publishedAt": "2024-07-23"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "做 AI 产品的独立开发者、小团队 CTO",
-        "entryAngle": "做一个针对 RAG/客服场景的评测模板库：上传 50 条真实对话，自动跑回归并给出 prompt 改动前后的通过率 diff",
-        "whyAccepted": "评测是 AI 产品上线前的刚需环节，工具链尚未定型，小团队可切入细分场景"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "美国区「ai evals」搜索热度 30 天内增长 175.6%，峰值达基线 4.05 倍",
+          "claimType": "fact",
+          "date": "2026-10-20",
+          "detail": "Google Trends 90 天序列：基线 14.3，近期 39.4，峰值 58",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20evals",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "Hacker News 上关于 AI 评测的入门长文获 189 分，说明开发者对评测方法论有真实需求",
+          "claimType": "fact",
+          "date": "2025-07-01",
+          "detail": "「About AI Evals」讨论获 189 分",
+          "sources": [
+            {
+              "label": "About AI Evals",
+              "url": "https://hamel.dev/blog/posts/evals-faq/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2025-07-01"
+            }
+          ]
+        },
+        {
+          "claim": "开源评测平台 Langfuse 已获 3.7 万星，但针对 RAG/客服场景的轻量模板仍稀缺",
+          "claimType": "inference",
+          "date": "2023-05-18",
+          "detail": "langfuse/langfuse 仓库 37564 星，Kiln 5286 星",
+          "sources": [
+            {
+              "label": "langfuse/langfuse（★37564）",
+              "url": "https://github.com/langfuse/langfuse",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2023-05-18"
+            },
+            {
+              "label": "Kiln-AI/Kiln（★5286）",
+              "url": "https://github.com/Kiln-AI/Kiln",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2024-07-23"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is ai evals",
+            "ai evals explained",
+            "evals in ai meaning"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to run ai evals",
+            "ai evals for rag",
+            "build eval pipeline for agents"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "ai evals too expensive",
+            "no good eval tools for customer support ai"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "evals in ai",
+        "demystifying evals for ai agents",
+        "what is evals in ai",
+        "what are evals in ai",
+        "open ai evals",
+        "evals for ai engineers pdf",
+        "ai eval framework",
+        "rag evaluation metrics",
+        "llm regression testing"
+      ],
+      "competitors": [
+        "Langfuse",
+        "Kiln",
+        "Braintrust",
+        "Vanta"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "RAG/客服场景评测模板库：上传 50 条真实对话，自动跑回归并给出 prompt 改动前后的通过率 diff",
+          "why": "搜索者反复问「怎么做 AI 评测」，HN 上「Ask HN: How are people doing AI evals these days?」获 30 分，说明大家缺的不是平台而是开箱即用的场景模板；Langfuse 虽大但偏通用，细分场景的回归 diff 是空位。",
+          "effort": "2-3 周可做出 MVP",
+          "evidence": "HN 讨论「Ask HN: How are people doing AI evals these days?」获 30 分；Langfuse 仓库 3.7 万星但未覆盖客服对话回归模板"
+        },
+        {
+          "type": "content",
+          "title": "「AI Evals 入门到落地」系列教程，配可运行 notebook 和模板",
+          "why": "「evals for ai engineers pdf」「demystifying evals for ai agents」等长尾词表明工程师在找系统学习材料，而 HN 上入门长文获 189 分验证了内容需求。",
+          "effort": "1 周可出首篇",
+          "evidence": "「About AI Evals」在 HN 获 189 分；相关搜索含「evals for ai engineers pdf」"
+        },
+        {
+          "type": "opensource",
+          "title": "轻量评测回归 CLI：针对 prompt 改动自动跑通过率 diff",
+          "why": "独立开发者需要能嵌进现有 CI 的小工具，而不是整套平台；Kiln 虽提供评测但偏重全流程，轻量 CLI 有差异化空间。",
+          "effort": "2 周可开源首版",
+          "evidence": "Kiln 仓库 5286 星，定位为全流程平台；搜索热度峰值达基线 4.05 倍"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "先做 RAG/客服对话的评测模板库，支持上传对话、自动跑回归、输出 prompt 改动前后通过率 diff",
+          "reason": "搜索增长 175.6% 且 HN 上持续有「怎么做评测」的讨论，细分场景模板是当前工具链的空位，2-3 周可验证。",
+          "uncertainty": "大厂评测平台可能快速下探细分场景，需靠模板质量和场景深度建立壁垒。"
+        },
+        {
+          "verdict": "content",
+          "action": "同步写「AI Evals 入门到落地」教程，用可运行 notebook 承接搜索流量",
+          "reason": "「evals for ai engineers pdf」等长尾词显示学习需求明确，HN 入门长文获 189 分验证内容吸引力。",
+          "uncertainty": "内容竞争会随热度上升而加剧，需持续更新保持搜索排名。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "ai evals",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "做 AI 产品的独立开发者、小团队 CTO",
+          "entryAngle": "做一个针对 RAG/客服场景的评测模板库：上传 50 条真实对话，自动跑回归并给出 prompt 改动前后的通过率 diff",
+          "whyAccepted": "评测是 AI 产品上线前的刚需环节，工具链尚未定型，小团队可切入细分场景"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "agentic-workflow",
       "keyword": "agentic workflow",
-      "normalizedName": "agentic workflow",
-      "category": "broadtech",
+      "normalizedName": "Agentic Workflow",
+      "category": "devtech",
       "region": "US",
       "status": "gaining",
       "confidence": "high",
-      "why": "",
+      "why": "过去 30 天美国区搜索热度从基线 17 升至 29.4，7 天增长 73.6%，峰值达基线 4.07 倍；HN 上「GitHub Agentic Workflows」获 302 分，Dify 与 Langflow 分别积累 16.1 万和 15.7 万星，说明多步 Agent 编排正从概念走向工程实践，开发者需要可落地的调试与回放能力。",
+      "intentSummary": "开发者想了解如何构建、调试和编排多步 Agent 工作流。",
+      "editorNote": {
+        "audience": "在搭多步 Agent 的开发者",
+        "entryAngle": "做一个可视化回放器：把 Agent 每一步的输入输出、工具调用、耗时和 token 成本录下来，支持单步重跑",
+        "whyAccepted": "需求真实但概念偏宽，需要落到具体编排/调试场景才有切口"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:28:43.568Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -1477,11 +3185,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 75,
+        "wedge": 70,
+        "seo": 65,
+        "feasibility": 80,
+        "timing": 85
       },
       "sources": [
         {
@@ -1539,29 +3247,179 @@
           "publishedAt": "2023-02-08"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "在搭多步 Agent 的开发者",
-        "entryAngle": "做一个可视化回放器：把 Agent 每一步的输入输出、工具调用、耗时和 token 成本录下来，支持单步重跑",
-        "whyAccepted": "需求真实但概念偏宽，需要落到具体编排/调试场景才有切口"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "Google Trends 显示「agentic workflow」美国区 7 天热度增长 73.6%，峰值达基线 4.07 倍。",
+          "claimType": "fact",
+          "date": "2026-11-18",
+          "detail": "30 天序列，基线 17，近期 7 天均值 29.4，峰值 69。",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=agentic%20workflow",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "HN 上「GitHub Agentic Workflows」讨论获 302 分，表明开发者对标准化 Agent 工作流有高关注。",
+          "claimType": "fact",
+          "date": "2026-02-08",
+          "detail": "GitHub 官方推出的 Agentic Workflows 项目在 HN 引发热议。",
+          "sources": [
+            {
+              "label": "GitHub Agentic Workflows",
+              "url": "https://github.github.io/gh-aw/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-02-08"
+            }
+          ]
+        },
+        {
+          "claim": "Dify 和 Langflow 分别拥有 16.1 万和 15.7 万 GitHub 星，说明可视化 Agent 编排工具已有庞大用户基础。",
+          "claimType": "fact",
+          "date": "2026-11-18",
+          "detail": "两个开源项目均支持构建 Agentic 工作流。",
+          "sources": [
+            {
+              "label": "langgenius/dify（★161383）",
+              "url": "https://github.com/langgenius/dify",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2023-04-12"
+            },
+            {
+              "label": "langflow-ai/langflow（★156725）",
+              "url": "https://github.com/langflow-ai/langflow",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2023-02-08"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is agentic workflow",
+            "agentic workflow examples",
+            "agentic workflow vs agent"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to build agentic workflow",
+            "agentic workflow tutorial",
+            "agentic workflow with langgraph"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "agentic workflow debugging",
+            "agentic workflow observability",
+            "agentic workflow replay"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "agentic workflow github",
+        "agentic workflow framework",
+        "agentic workflow orchestration",
+        "agentic workflow vs agent",
+        "agentic workflow examples",
+        "agentic workflow tools",
+        "agentic workflow design patterns",
+        "agentic workflow observability"
+      ],
+      "competitors": [
+        "Dify",
+        "Langflow",
+        "GitHub Agentic Workflows",
+        "Claude Code"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "Agent 工作流可视化回放器",
+          "why": "开发者构建多步 Agent 时缺乏对每一步输入输出、工具调用和成本的可见性，回放与单步重跑能直接降低调试成本。",
+          "effort": "medium",
+          "evidence": "HN 上「Ask HN: Any Local LLM can I run without GPU for Local Agentic workflow AI?」表明本地调试需求存在；Dify 和 Langflow 的高星数说明用户基数大。"
+        },
+        {
+          "type": "content",
+          "title": "Agentic Workflow 实战指南与案例库",
+          "why": "搜索者多为 learn 和 howto 意图，需要从概念到落地的系统内容，可结合 GitHub 热门项目做拆解。",
+          "effort": "low",
+          "evidence": "Google Trends 相关查询包含「agentic workflow examples」「agentic workflow tutorial」等长尾词。"
+        },
+        {
+          "type": "opensource",
+          "title": "轻量级 Agent 工作流调试 SDK",
+          "why": "现有编排工具偏重可视化，代码级调试库可嵌入现有项目，满足开发者对单步重跑和成本追踪的需求。",
+          "effort": "high",
+          "evidence": "HN 上「Show HN: Agentic coding workflows built on Git worktrees and task evidence」获 10 分，显示社区对工作流证据记录有兴趣。"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "先做一个最小可用的 Agent 步骤回放器，支持记录输入输出、工具调用和 token 成本，并允许单步重跑。",
+          "reason": "需求真实且搜索热度上升，独立开发者可快速验证；回放器能切入调试痛点，避开与 Dify 等大平台正面竞争。",
+          "uncertainty": "用户是否愿意为调试工具付费尚不明确，需通过早期用户反馈验证。"
+        },
+        {
+          "verdict": "content",
+          "action": "撰写「Agentic Workflow 调试与可观测性」系列文章，配套开源示例。",
+          "reason": "搜索意图偏向学习和解决问题，内容可吸引早期用户并建立信任。",
+          "uncertainty": "内容竞争激烈，需找到差异化角度如成本追踪或单步重跑。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "agentic workflow",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "在搭多步 Agent 的开发者",
+          "entryAngle": "做一个可视化回放器：把 Agent 每一步的输入输出、工具调用、耗时和 token 成本录下来，支持单步重跑",
+          "whyAccepted": "需求真实但概念偏宽，需要落到具体编排/调试场景才有切口"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "vector-database",
       "keyword": "vector database",
-      "normalizedName": "vector database",
-      "category": "broadtech",
+      "normalizedName": "Vector Database",
+      "category": "devtech",
       "region": "US",
       "status": "cooling",
       "confidence": "medium",
-      "why": "",
+      "why": "近30天热度峰值达基线2.24倍，但最近7天环比下降4%，说明搜索仍集中在概念认知而非新增采购；HN上「向量数据库是错误抽象」与「RIP，向量数据库」两篇讨论分别获493和405分，反映通用方案正被质疑，机会转向垂直场景的嵌入式检索。",
+      "intentSummary": "想搞懂向量数据库是什么、怎么选型，以及如何接入RAG。",
+      "editorNote": {
+        "audience": "做 RAG 的中小团队",
+        "entryAngle": "做垂直场景的嵌入式向量检索库，比如只服务本地文档+SQLite 的单文件方案，主打零运维和离线",
+        "whyAccepted": "需求真实但红海，通用向量库已被大厂和开源占满，只能靠细分场景差异化"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:28:52.186Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -1606,11 +3464,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 62,
+        "wedge": 55,
+        "seo": 70,
+        "feasibility": 68,
+        "timing": 58
       },
       "sources": [
         {
@@ -1668,29 +3526,180 @@
           "publishedAt": "2019-09-16"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "做 RAG 的中小团队",
-        "entryAngle": "做垂直场景的嵌入式向量检索库，比如只服务本地文档+SQLite 的单文件方案，主打零运维和离线",
-        "whyAccepted": "需求真实但红海，通用向量库已被大厂和开源占满，只能靠细分场景差异化"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "近30天搜索热度峰值达到基线的2.24倍，但最近7天环比下降4%，概念热度高但短期回落。",
+          "claimType": "fact",
+          "date": "2026-10-20",
+          "detail": "Google Trends 90天美国区序列，峰值11，基线4.9，最近7天均值4.7。",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=vector%20database",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "HN上「向量数据库是错误抽象」获493分，「RIP，向量数据库」获405分，通用向量库的定位正被社区反思。",
+          "claimType": "fact",
+          "date": "2024-10-29",
+          "detail": "两篇讨论分别来自Timescale和turbopuffer，均对独立向量数据库的必要性提出质疑。",
+          "sources": [
+            {
+              "label": "Vector databases are the wrong abstraction",
+              "url": "https://www.timescale.com/blog/vector-databases-are-the-wrong-abstraction/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2024-10-29"
+            },
+            {
+              "label": "RIP, vector database",
+              "url": "https://turbopuffer.com/blog/rip-vector-database",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-10-01"
+            }
+          ]
+        },
+        {
+          "claim": "Milvus和Qdrant分别有4.6万和3.5万GitHub星，开源通用方案已形成规模壁垒。",
+          "claimType": "fact",
+          "detail": "milvus-io/milvus ★46680，qdrant/qdrant ★35618。",
+          "sources": [
+            {
+              "label": "milvus-io/milvus（★46680）",
+              "url": "https://github.com/milvus-io/milvus",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2019-09-16"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is vector database",
+            "what is a vector database",
+            "vector database explained"
+          ]
+        },
+        {
+          "intent": "compare",
+          "queries": [
+            "best vector database",
+            "pinecone vs qdrant",
+            "chroma vs milvus"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "vector database for rag",
+            "open source vector database",
+            "how to choose vector database"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "what is vector database",
+        "what is a vector database",
+        "best vector database",
+        "rag vector database",
+        "pinecone vector database",
+        "vector database for rag",
+        "qdrant vector database",
+        "open source vector database",
+        "chroma vector database",
+        "milvus vector database"
+      ],
+      "competitors": [
+        "Pinecone",
+        "Qdrant",
+        "Milvus",
+        "Chroma"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "面向本地文档+SQLite的单文件嵌入式向量检索库",
+          "why": "做RAG的中小团队不想为检索单独运维服务，HN上对通用向量库的质疑（493分、405分）说明「零运维、离线可用」是真实缺口；搜索端「open source vector database」「vector database for rag」持续存在，但现有开源方案均需独立部署。",
+          "effort": "中",
+          "evidence": "Milvus ★46680、Qdrant ★35618均为独立服务形态；HN「向量数据库是错误抽象」获493分。"
+        },
+        {
+          "type": "content",
+          "title": "「向量数据库选型」对比与避坑指南",
+          "why": "搜索意图集中在「what is」「best」「vs」三类，用户处于认知与选型阶段；HN上「RIP，向量数据库」获405分，说明社区对通用方案有争议，对比内容能承接这批搜索并建立信任。",
+          "effort": "低",
+          "evidence": "相关搜索词包含best vector database、pinecone vs qdrant、chroma vs milvus；HN讨论获405分。"
+        },
+        {
+          "type": "opensource",
+          "title": "垂直场景的轻量向量检索封装（如只服务Markdown笔记）",
+          "why": "通用库已占满，但「只服务某一类数据源」的封装仍有空间；pathwaycom/serviette ★58709 证明「对接多个向量库的RAG服务」有需求，反向做「单场景+单库」的极简封装可避开正面竞争。",
+          "effort": "中",
+          "evidence": "pathwaycom/serviette ★58709，支持8个向量数据库的RAG服务。"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "research",
+          "action": "先访谈5-10个做RAG的中小团队，确认「零运维嵌入式检索」是否比现有方案更省事，再决定是否动手。",
+          "reason": "需求真实但通用红海，HN社区对通用向量库的质疑（493分、405分）指向细分场景，但付费意愿尚未验证。",
+          "uncertainty": "中小团队是否愿意为嵌入式方案付费，还是继续用Pinecone免费额度或自建Qdrant。"
+        },
+        {
+          "verdict": "content",
+          "action": "写一篇「向量数据库选型对比+避坑」长文，覆盖what is、best、vs三类搜索意图，挂邮件列表验证需求。",
+          "reason": "搜索意图集中在认知与选型阶段，内容成本低且能直接测试「垂直场景」的转化信号。",
+          "uncertainty": "概念热度最近7天环比下降4%，内容窗口可能收窄。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "vector database",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "做 RAG 的中小团队",
+          "entryAngle": "做垂直场景的嵌入式向量检索库，比如只服务本地文档+SQLite 的单文件方案，主打零运维和离线",
+          "whyAccepted": "需求真实但红海，通用向量库已被大厂和开源占满，只能靠细分场景差异化"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "ai-spreadsheet",
       "keyword": "ai spreadsheet",
-      "normalizedName": "ai spreadsheet",
-      "category": "broadtech",
+      "normalizedName": "AI Spreadsheet",
+      "category": "usecase",
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "",
+      "why": "尽管近 7 天搜索热度较基线下降 29.6%，但峰值仍达基线 1.81 倍，说明需求存在脉冲式爆发；HN 上 Sourcetable 的 AI 表格帖获 188 分，GitHub 上 teable 星标 2.2 万，表明用户对用自然语言操作表格、自动生成图表和透视表有真实兴趣，独立开发者可聚焦上传文件直接处理、不迁移数据的轻工具。",
+      "intentSummary": "寻找用 AI 自动生成或操作电子表格的工具，以提升数据处理效率。",
+      "editorNote": {
+        "audience": "运营、财务、小团队创始人",
+        "entryAngle": "做「上传 CSV/Excel→自然语言提问→直接生成图表和透视表并回写文件」的轻工具，主打不迁移数据、本地文件直接处理",
+        "whyAccepted": "需求真实但被大厂表格 AI 功能正面承接，独立开发者只能靠垂直模板和导入导出体验差异化"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:29:02.214Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -1735,11 +3744,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 65,
+        "wedge": 55,
+        "seo": 70,
+        "feasibility": 80,
+        "timing": 60
       },
       "sources": [
         {
@@ -1797,29 +3806,171 @@
           "publishedAt": "2019-09-05"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "运营、财务、小团队创始人",
-        "entryAngle": "做「上传 CSV/Excel→自然语言提问→直接生成图表和透视表并回写文件」的轻工具，主打不迁移数据、本地文件直接处理",
-        "whyAccepted": "需求真实但被大厂表格 AI 功能正面承接，独立开发者只能靠垂直模板和导入导出体验差异化"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "AI 表格工具在 HN 上获得关注，Sourcetable 的 Show HN 帖获 188 分。",
+          "claimType": "fact",
+          "date": "2024-09-19",
+          "detail": "Show HN: Sourcetable – AI Spreadsheet and Data Platform 获得 188 points。",
+          "sources": [
+            {
+              "label": "Show HN: Sourcetable – AI Spreadsheet and Data Platform",
+              "url": "https://news.ycombinator.com/item?id=41590682",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2024-09-19"
+            }
+          ]
+        },
+        {
+          "claim": "开源 AI 表格项目 teable 在 GitHub 上获得 2.2 万星标，显示开发者对可自托管的 AI 表格方案有兴趣。",
+          "claimType": "fact",
+          "date": "2022-11-01",
+          "detail": "teableio/teable 仓库星标数 21999，描述为 AI Spreadsheet for Business。",
+          "sources": [
+            {
+              "label": "teableio/teable（★21999）",
+              "url": "https://github.com/teableio/teable",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2022-11-01"
+            }
+          ]
+        },
+        {
+          "claim": "搜索热度近 7 天较基线下降 29.6%，但峰值达基线 1.81 倍，需求呈脉冲式而非持续增长。",
+          "claimType": "inference",
+          "detail": "基于 Google Trends 90 天 US 数据，baseline 6.1，recent7 4.3，peak 11。",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20spreadsheet",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is ai spreadsheet",
+            "ai spreadsheet examples",
+            "how does ai spreadsheet work"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to use ai in google sheets",
+            "ai spreadsheet formula generator",
+            "create pivot table with ai"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "ai spreadsheet not working",
+            "excel ai formula error",
+            "ai spreadsheet data privacy"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "ai spreadsheet generator",
+        "ai spreadsheet maker",
+        "ai excel formula generator",
+        "ai for google sheets",
+        "ai spreadsheet analysis",
+        "free ai spreadsheet",
+        "ai spreadsheet tool",
+        "ai spreadsheet software"
+      ],
+      "competitors": [
+        "Sourcetable",
+        "Teable",
+        "Rowy",
+        "Mito"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "本地 CSV/Excel 自然语言问答与图表生成工具",
+          "why": "运营、财务和小团队创始人需要不迁移数据、直接上传文件就能用自然语言提问并生成图表和透视表的轻工具，而大厂表格 AI 功能通常绑定云端生态，独立开发者可主打本地文件处理和导入导出体验。",
+          "effort": "中",
+          "evidence": "HN 上 Sourcetable 的 AI 表格帖获 188 分，说明用户对 AI 表格工具有兴趣；GitHub 上 teable 星标 2.2 万，显示开源方案有受众。"
+        },
+        {
+          "type": "content",
+          "title": "AI 表格工具对比与实操教程",
+          "why": "搜索者常搜 ai spreadsheet generator、ai spreadsheet maker 等词，但缺乏中立对比和实操指南，内容创作者可制作横向评测和场景化教程，吸引准备采购或自建工具的运营和财务人员。",
+          "effort": "低",
+          "evidence": "相关搜索词包括 ai spreadsheet generator 和 ai spreadsheet maker，且 HN 上有多个 AI 表格产品讨论帖。"
+        },
+        {
+          "type": "opensource",
+          "title": "轻量级 AI 表格分析库",
+          "why": "开发者需要可嵌入的 AI 表格分析能力，但现有开源项目如 teable 和 rowy 偏重全栈平台，可提供专注 CSV/Excel 解析、自然语言查询和图表生成的轻量库，降低集成门槛。",
+          "effort": "中",
+          "evidence": "teable 星标 2.2 万、rowy 星标 6846，说明开源表格工具受关注，但均非轻量分析库。"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "构建本地 CSV/Excel 自然语言问答与图表生成 MVP，主打不迁移数据、直接处理文件。",
+          "reason": "需求真实存在，HN 和 GitHub 上有成功产品验证，且独立开发者可凭借本地文件处理和导入导出体验差异化。",
+          "uncertainty": "搜索热度近期下降 29.6%，需验证用户付费意愿和留存。"
+        },
+        {
+          "verdict": "content",
+          "action": "制作 AI 表格工具对比和实操教程，吸引搜索流量。",
+          "reason": "相关搜索词明确，内容缺口存在，可低成本获取早期用户。",
+          "uncertainty": "内容竞争可能加剧，需持续更新。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "ai spreadsheet",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "运营、财务、小团队创始人",
+          "entryAngle": "做「上传 CSV/Excel→自然语言提问→直接生成图表和透视表并回写文件」的轻工具，主打不迁移数据、本地文件直接处理",
+          "whyAccepted": "需求真实但被大厂表格 AI 功能正面承接，独立开发者只能靠垂直模板和导入导出体验差异化"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "ai-wrappers",
       "keyword": "ai wrappers",
-      "normalizedName": "ai wrappers",
-      "category": "broadtech",
+      "normalizedName": "AI Wrappers",
+      "category": "business",
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "",
+      "why": "近 30 天 US 搜索热度峰值达基线 19.78 倍，但最近 7 天较前期下降 50.9%，说明讨论从概念转向实操；HN 上「Wrapping my head around AI wrappers」获 52 分、Show HN 健身套壳产品做到 450 美元收入，独立开发者正为「如何低成本上线并算清 token 毛利」付费。",
+      "intentSummary": "想了解 AI 套壳产品的做法、成本与存活空间",
+      "editorNote": {
+        "audience": "做 AI 套壳产品的独立开发者",
+        "entryAngle": "做一个套壳产品启动包：多模型路由加成本看板加订阅计费模板，帮人一周上线并看清每个用户的 token 毛利",
+        "whyAccepted": "搜的人在讨论套壳产品的做法与存活，红海但需求真实，切口在差异化与成本控制"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:29:12.211Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -1864,11 +4015,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 72,
+        "wedge": 65,
+        "seo": 70,
+        "feasibility": 80,
+        "timing": 75
       },
       "sources": [
         {
@@ -1926,29 +4077,178 @@
           "publishedAt": "2025-12-12"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "做 AI 套壳产品的独立开发者",
-        "entryAngle": "做一个套壳产品启动包：多模型路由加成本看板加订阅计费模板，帮人一周上线并看清每个用户的 token 毛利",
-        "whyAccepted": "搜的人在讨论套壳产品的做法与存活，红海但需求真实，切口在差异化与成本控制"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "AI wrappers 搜索热度曾达基线 19.78 倍，但近 7 天回落 50.9%，讨论进入冷静实操期",
+          "claimType": "fact",
+          "date": "2026-11-18",
+          "detail": "Google Trends US 90 天序列：峰值 92，基线 4.7，最近 7 天均值 2.3，较前期下降 50.9%",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20wrappers",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            },
+            {
+              "label": "手工种子词",
+              "url": "https://trends.google.com/trends/explore",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "HN 上关于 AI 套壳的讨论获得 52 分，说明开发者社区持续关注其定义与做法",
+          "claimType": "fact",
+          "date": "2025-11-15",
+          "detail": "「Wrapping my head around AI wrappers」获 52 分",
+          "sources": [
+            {
+              "label": "Wrapping my head around AI wrappers",
+              "url": "https://www.wreflection.com/p/wrapping-my-head-around-ai-wrappers",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2025-11-15"
+            }
+          ]
+        },
+        {
+          "claim": "已有独立开发者用健身 AI 套壳产品做到 450 美元收入，验证了小额付费需求",
+          "claimType": "fact",
+          "date": "2024-02-19",
+          "detail": "Show HN: Just hit $450 in revenue with my fitness AI wrapper，获 32 分",
+          "sources": [
+            {
+              "label": "Show HN: Just hit $450 in revenue with my fitness AI wrapper",
+              "url": "https://www.fitsenpai.com/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2024-02-19"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is an ai wrapper",
+            "ai wrapper examples",
+            "ai wrapper business model"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to build an ai wrapper",
+            "ai wrapper tutorial",
+            "launch ai wrapper fast"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "ai wrapper token cost",
+            "ai wrapper margin",
+            "ai wrapper churn"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "ai wrapper startup",
+        "ai wrapper cost",
+        "ai wrapper vs fine-tune",
+        "build ai wrapper with openai",
+        "ai wrapper subscription billing",
+        "ai wrapper multi-model routing",
+        "ai wrapper profitability",
+        "ai wrapper examples 2026"
+      ],
+      "competitors": [
+        "OpenRouter",
+        "LiteLLM",
+        "Portkey",
+        "Helicone"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "AI 套壳启动包：多模型路由 + 成本看板 + 订阅计费模板",
+          "why": "搜「ai wrapper token cost」「ai wrapper margin」的人需要算清每个用户的 token 毛利；HN 上已有套壳产品做到 450 美元收入，但成本控制仍是痛点，启动包能帮开发者一周上线并看清毛利。",
+          "effort": "medium",
+          "evidence": "HN Show HN 健身套壳产品获 32 分并做到 450 美元收入；GitHub 上 AIStudioToAPI 获 1866 星，说明多模型 API 封装有需求"
+        },
+        {
+          "type": "content",
+          "title": "AI 套壳成本与毛利计算指南",
+          "why": "搜索热度峰值达基线 19.78 倍后回落，说明概念讨论降温、实操需求上升；围绕「ai wrapper cost」「ai wrapper margin」做内容，能承接想算账的独立开发者。",
+          "effort": "low",
+          "evidence": "Google Trends 显示峰值 92、基线 4.7；HN 讨论「Wrapping my head around AI wrappers」获 52 分"
+        },
+        {
+          "type": "opensource",
+          "title": "开源多模型路由与计费中间件",
+          "why": "GitHub 上 AIStudioToAPI 获 1866 星，说明开发者需要把不同模型封装成统一 API；开源路由加计费中间件可降低套壳产品的启动成本并形成社区。",
+          "effort": "medium",
+          "evidence": "iBUHub/AIStudioToAPI 获 1866 星，功能是将 Google AI Studio 暴露为 OpenAI/Gemini/Anthropic 兼容 API"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "先做成本看板 + 多模型路由的最小版本，绑定一个订阅计费模板，找 5 个正在做套壳的开发者试用",
+          "reason": "搜索热度从峰值回落但仍有 19.78 倍基线，说明概念期已过、实操需求真实；HN 上已有套壳产品产生收入，成本与毛利是明确痛点。",
+          "uncertainty": "套壳产品竞争激烈，开发者可能自建路由而不愿为启动包付费；需验证付费意愿。"
+        },
+        {
+          "verdict": "content",
+          "action": "写一篇「AI 套壳成本拆解」长文，附 token 毛利计算模板，投放到 HN 和独立开发者社区",
+          "reason": "HN 上套壳讨论获 52 分，搜索词集中在 cost 与 margin，内容可低成本验证需求并导流到产品。",
+          "uncertainty": "内容竞争同样激烈，需用真实数据（如 450 美元收入案例）做出差异化。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "ai wrappers",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "做 AI 套壳产品的独立开发者",
+          "entryAngle": "做一个套壳产品启动包：多模型路由加成本看板加订阅计费模板，帮人一周上线并看清每个用户的 token 毛利",
+          "whyAccepted": "搜的人在讨论套壳产品的做法与存活，红海但需求真实，切口在差异化与成本控制"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "ai-compliance",
       "keyword": "ai compliance",
-      "normalizedName": "ai compliance",
-      "category": "broadtech",
+      "normalizedName": "AI 合规",
+      "category": "business",
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "",
+      "why": "近 30 天美国区搜索热度较基线低 19%，但峰值达基线 1.61 倍，说明需求集中在监管节点而非日常；HN 上 EuConform 获 71 分、OpenComplAI 获 7 分，显示开发者已开始做 AI Act 合规工具，但供给仍少，独立开发者可切入自查与文档生成。",
+      "intentSummary": "找 AI 合规的落地做法、工具与文档模板",
+      "editorNote": {
+        "audience": "做 AI 产品的独立开发者、小团队创始人",
+        "entryAngle": "做 AI 产品合规自查工具：问卷式盘点模型用途与数据来源，自动生成风险分级和所需文档清单，按次收费",
+        "whyAccepted": "AI 合规是明确的新兴需求，欧盟 AI Act 等带来具体工程与文档需求，供给尚未饱和"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:29:22.483Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -1993,11 +4293,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 55,
+        "wedge": 70,
+        "seo": 60,
+        "feasibility": 80,
+        "timing": 65
       },
       "sources": [
         {
@@ -2055,29 +4355,179 @@
           "publishedAt": "2023-05-10"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "做 AI 产品的独立开发者、小团队创始人",
-        "entryAngle": "做 AI 产品合规自查工具：问卷式盘点模型用途与数据来源，自动生成风险分级和所需文档清单，按次收费",
-        "whyAccepted": "AI 合规是明确的新兴需求，欧盟 AI Act 等带来具体工程与文档需求，供给尚未饱和"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "美国区近 30 天搜索热度低于基线，但峰值达基线 1.61 倍，需求呈事件驱动",
+          "claimType": "fact",
+          "date": "2026-10-20",
+          "detail": "baseline 18，recent7 14.6，growth7Pct -19，peak 29，peakMultiple 1.61",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20compliance",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "HN 上已有开源 EU AI Act 合规工具 EuConform 获 71 分，OpenComplAI 获 7 分",
+          "claimType": "fact",
+          "date": "2026-01-09",
+          "detail": "Show HN: EuConform – Offline-first EU AI Act compliance tool (open source)，71 points；OpenComplAI 7 points",
+          "sources": [
+            {
+              "label": "Show HN: EuConform – Offline-first EU AI Act compliance tool (open source)",
+              "url": "https://github.com/Hiepler/EuConform",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-01-09"
+            },
+            {
+              "label": "Show HN: OpenComplAI – open-source EU AI Act compliance checks in CI/CD",
+              "url": "https://github.com/opencomplai/opencomplai",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-08-14"
+            }
+          ]
+        },
+        {
+          "claim": "企业 LLM 合规担忧在 HN 有讨论，但热度不高，说明需求尚未大众化",
+          "claimType": "fact",
+          "date": "2023-10-25",
+          "detail": "What are enterprise worried about for AI compliance for LLMs? 9 points",
+          "sources": [
+            {
+              "label": "What are enterprise worried about for AI compliance for LLMs?",
+              "url": "https://news.ycombinator.com/item?id=38014867",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2023-10-25"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is ai compliance",
+            "ai compliance requirements",
+            "eu ai act compliance checklist"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to make ai product compliant",
+            "ai compliance documentation template",
+            "ai act risk classification"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "ai compliance tool for startups",
+            "ai act compliance automation",
+            "llm compliance issues"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "ai regulatory compliance",
+        "ai compliance analyst",
+        "ai act compliance tool",
+        "ai compliance checklist",
+        "ai compliance documentation",
+        "eu ai act risk assessment",
+        "ai governance software",
+        "ai compliance for startups"
+      ],
+      "competitors": [
+        "EuConform",
+        "OpenComplAI",
+        "Privacyforge.ai",
+        "Prowler"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "AI 产品合规自查工具：问卷盘点 + 风险分级 + 文档清单",
+          "why": "独立开发者和小团队需要低成本判断自己的 AI 产品是否受 AI Act 约束，HN 上 EuConform 获 71 分说明有人关注，但现有工具偏工程检查，缺少面向产品创始人的自查入口。",
+          "effort": "2-3 周可做出 MVP",
+          "evidence": "HN Show HN: EuConform 获 71 分；OpenComplAI 获 7 分；搜索词含 ai compliance checklist"
+        },
+        {
+          "type": "content",
+          "title": "AI Act 合规文档模板包与分步指南",
+          "why": "搜索者常搜 ai compliance documentation template 和 eu ai act compliance checklist，说明需要可落地的文档模板，而非纯概念解释。",
+          "effort": "1 周内可产出",
+          "evidence": "相关搜索词含 ai compliance documentation、ai act compliance tool；HN 讨论企业 LLM 合规担忧"
+        },
+        {
+          "type": "opensource",
+          "title": "轻量级 AI 合规 CI 检查器（开源）",
+          "why": "OpenComplAI 在 HN 仅获 7 分，说明开源方案尚未形成社区，独立开发者可做一个更易集成的检查器，通过 GitHub 获取早期用户。",
+          "effort": "3-4 周",
+          "evidence": "OpenComplAI 获 7 分；Prowler 云安全合规仓库获 1.5 万星，证明合规类开源工具有受众"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "先做问卷式 AI 合规自查 MVP，按次收费，验证付费意愿",
+          "reason": "需求事件驱动、峰值明显，但日常搜索低，适合轻量产品快速试错；HN 已有开源工具但面向工程，产品化自查工具存在空档。",
+          "uncertainty": "搜索热度近 7 天下降 19%，需确认监管节点过后是否仍有持续需求"
+        },
+        {
+          "verdict": "content",
+          "action": "同步产出 AI Act 合规文档模板与分步指南，作为获客入口",
+          "reason": "搜索词显示用户需要文档模板和清单，内容可低成本建立信任并导向自查工具。",
+          "uncertainty": "模板类内容竞争可能来自律所和咨询机构，需差异化聚焦独立开发者场景"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "ai compliance",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "做 AI 产品的独立开发者、小团队创始人",
+          "entryAngle": "做 AI 产品合规自查工具：问卷式盘点模型用途与数据来源，自动生成风险分级和所需文档清单，按次收费",
+          "whyAccepted": "AI 合规是明确的新兴需求，欧盟 AI Act 等带来具体工程与文档需求，供给尚未饱和"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "model-context-protocol",
       "keyword": "model context protocol",
-      "normalizedName": "model context protocol",
-      "category": "broadtech",
+      "normalizedName": "Model Context Protocol (MCP)",
+      "category": "devtech",
       "region": "US",
       "status": "cooling",
       "confidence": "medium",
-      "why": "",
+      "why": "MCP 已成为 AI 工具接入的事实标准：官方 servers 仓库获 9.2 万星、Python SDK 2.5 万星，HN 发布帖 872 分；但 90 天内相对热度峰值达基线 3.26 倍后近 7 天回落 8.5%，说明讨论期已过、进入工程落地阶段，两三人团队正为接入调试与兼容性验证付费。",
+      "intentSummary": "想了解 MCP 是什么、如何接入 server 与 SDK。",
+      "editorNote": {
+        "audience": "正在把 MCP 接进产品的两三人团队",
+        "entryAngle": "写一份 MCP 兼容性测试套件：对主流 server 跑一致性用例，输出可分享的兼容性报告，靠报告页引流",
+        "whyAccepted": "协议名词，接入与调试需求真实存在，工程侧工具仍稀缺"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:29:32.820Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -2122,11 +4572,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 82,
+        "wedge": 70,
+        "seo": 75,
+        "feasibility": 85,
+        "timing": 78
       },
       "sources": [
         {
@@ -2184,29 +4634,192 @@
           "publishedAt": "2024-09-24"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "正在把 MCP 接进产品的两三人团队",
-        "entryAngle": "写一份 MCP 兼容性测试套件：对主流 server 跑一致性用例，输出可分享的兼容性报告，靠报告页引流",
-        "whyAccepted": "协议名词，接入与调试需求真实存在，工程侧工具仍稀缺"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "MCP 官方 servers 仓库获 9.2 万星，Python SDK 获 2.5 万星，微软入门课程获 1.8 万星，工程侧采用已成规模。",
+          "claimType": "fact",
+          "date": "2026-10-20",
+          "detail": "GitHub 仓库星数反映开发者关注与使用基础。",
+          "sources": [
+            {
+              "label": "modelcontextprotocol/servers（★92074）",
+              "url": "https://github.com/modelcontextprotocol/servers",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2024-11-19"
+            },
+            {
+              "label": "modelcontextprotocol/python-sdk（★24889）",
+              "url": "https://github.com/modelcontextprotocol/python-sdk",
+              "site": "github.com",
+              "kind": "repo",
+              "publishedAt": "2024-09-24"
+            }
+          ]
+        },
+        {
+          "claim": "HN 上 MCP 发布帖获 872 分，捐赠给 Agentic AI Foundation 的帖子获 288 分，社区讨论热度高但已过峰值。",
+          "claimType": "fact",
+          "date": "2025-12-09",
+          "detail": "讨论集中在协议发布与治理归属，而非日常接入问题。",
+          "sources": [
+            {
+              "label": "Model Context Protocol",
+              "url": "https://www.anthropic.com/news/model-context-protocol",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2024-11-25"
+            },
+            {
+              "label": "Donating the Model Context Protocol and establishing the Agentic AI Foundation",
+              "url": "https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2025-12-09"
+            }
+          ]
+        },
+        {
+          "claim": "近 7 天相对热度较前 30 天下降 8.5%，但峰值仍达基线 3.26 倍，说明搜索从概念认知转向具体实现问题。",
+          "claimType": "inference",
+          "date": "2026-10-20",
+          "detail": "Trends 90 天序列显示概念期已过，长尾查询如 server、github、esphome 出现。",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=model%20context%20protocol",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            },
+            {
+              "label": "手工种子词",
+              "url": "https://trends.google.com/trends/explore",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "what is model context protocol",
+            "model context protocol explained",
+            "mcp protocol overview"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to build mcp server",
+            "model context protocol python sdk example",
+            "mcp server setup guide"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "mcp server not connecting",
+            "model context protocol compatibility issues",
+            "mcp client debug"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "mcp model context protocol",
+        "model context protocol server",
+        "what is model context protocol",
+        "mcp server",
+        "anthropic model context protocol",
+        "model context protocol github",
+        "claude model context protocol",
+        "google home model context protocol",
+        "esphome device builder model context protocol"
+      ],
+      "competitors": [
+        "modelcontextprotocol/servers",
+        "microsoft/mcp-for-beginners",
+        "mcp-agent"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "MCP 兼容性测试套件与可分享报告",
+          "why": "两三人团队把 MCP 接进产品时最缺一致性验证：官方 servers 仓库 9.2 万星说明 server 数量多，但兼容性报告页可成为引流入口，直接服务接入调试付费需求。",
+          "effort": "medium",
+          "evidence": "官方 servers 仓库获 9.2 万星，Python SDK 获 2.5 万星；HN 发布帖 872 分，社区已过概念期。"
+        },
+        {
+          "type": "content",
+          "title": "MCP server 接入实战教程与排错手册",
+          "why": "搜索长尾出现 server、github、esphome 等具体词，说明用户从「是什么」转向「怎么接」；微软入门课程 1.8 万星证明教程有需求，但缺少针对排错场景的中文/英文实战内容。",
+          "effort": "low",
+          "evidence": "微软 mcp-for-beginners 仓库获 1.8 万星；相关搜索含 mcp server、model context protocol github。"
+        },
+        {
+          "type": "opensource",
+          "title": "轻量 MCP 客户端调试工具",
+          "why": "Show HN 的 mcp-agent 获 80 分，说明开发者需要构建 agent 的辅助工具；但调试客户端仍稀缺，可开源引流并接企业定制。",
+          "effort": "medium",
+          "evidence": "Show HN: Mcp-Agent 获 80 分；HN 讨论「Adventures in Symbolic Algebra with Model Context Protocol」获 121 分。"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "先做 MCP 兼容性测试套件的最小版本，对官方 servers 跑一致性用例并生成可分享报告页。",
+          "reason": "工程侧工具稀缺，官方仓库星数高证明 server 生态已成型，报告页可低成本验证付费意愿。",
+          "uncertainty": "兼容性用例的维护成本与 server 版本迭代速度可能拖慢交付。"
+        },
+        {
+          "verdict": "content",
+          "action": "同步产出 MCP server 接入排错教程，用长尾搜索词引流到测试套件。",
+          "reason": "搜索意图从概念转向实现，教程内容可低成本获取早期用户并验证痛点。",
+          "uncertainty": "教程内容同质化风险高，需靠真实排错案例差异化。"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "model context protocol",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "正在把 MCP 接进产品的两三人团队",
+          "entryAngle": "写一份 MCP 兼容性测试套件：对主流 server 跑一致性用例，输出可分享的兼容性报告，靠报告页引流",
+          "whyAccepted": "协议名词，接入与调试需求真实存在，工程侧工具仍稀缺"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "ai-code-review",
       "keyword": "ai code review",
-      "normalizedName": "ai code review",
-      "category": "broadtech",
+      "normalizedName": "AI Code Review",
+      "category": "devtech",
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "",
+      "why": "尽管近30天相对热度从基线5.7跌到2.3、7日增长-59.6%，但峰值仍达11（1.95倍基线），说明话题在降温后仍有稳定的搜索底座；HN上「AI code review bubble」获351分、「Open Code Review」CLI获284分、Cloudflare规模化审查实践获145分，GitHub上code-review-graph已有3.2万星，讨论焦点正从「要不要用」转向「怎么…",
+      "intentSummary": "想找能自动审PR、少说废话的AI代码审查工具或方案",
+      "editorNote": {
+        "audience": "中小研发团队、开源维护者",
+        "entryAngle": "做一个只审 PR 中「新增依赖和配置变更」的审查 bot，聚焦供应链安全和版本冲突，避开和通用 review 工具正面竞争",
+        "whyAccepted": "明确场景明确人群，付费方是工程团队，供给尚未饱和且体验差异空间大"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:29:42.652Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -2251,11 +4864,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 62,
+        "wedge": 58,
+        "seo": 55,
+        "feasibility": 72,
+        "timing": 60
       },
       "sources": [
         {
@@ -2313,29 +4926,176 @@
           "publishedAt": "2026-02-26"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "中小研发团队、开源维护者",
-        "entryAngle": "做一个只审 PR 中「新增依赖和配置变更」的审查 bot，聚焦供应链安全和版本冲突，避开和通用 review 工具正面竞争",
-        "whyAccepted": "明确场景明确人群，付费方是工程团队，供给尚未饱和且体验差异空间大"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "AI代码审查在HN持续引发讨论，但已出现「泡沫」质疑",
+          "claimType": "fact",
+          "date": "2026-01-26",
+          "detail": "「There is an AI code review bubble」获351分",
+          "sources": [
+            {
+              "label": "There is an AI code review bubble",
+              "url": "https://www.greptile.com/blog/ai-code-review-bubble",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-01-26"
+            }
+          ]
+        },
+        {
+          "claim": "开源AI审查CLI工具获得社区关注",
+          "claimType": "fact",
+          "date": "2026-06-05",
+          "detail": "阿里Open Code Review CLI在HN获284分",
+          "sources": [
+            {
+              "label": "Open Code Review – An AI-powered code review CLI tool",
+              "url": "https://github.com/alibaba/open-code-review",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-06-05"
+            }
+          ]
+        },
+        {
+          "claim": "开发者核心痛点是审查bot留下过多琐碎评论",
+          "claimType": "fact",
+          "date": "2024-12-18",
+          "detail": "「让AI审查bot停止挑刺」一文获257分",
+          "sources": [
+            {
+              "label": "How we made our AI code review bot stop leaving nitpicky comments",
+              "url": "https://www.greptile.com/blog/make-llms-shut-up",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2024-12-18"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "compare",
+          "queries": [
+            "best ai code review tools",
+            "ai code review vs human review",
+            "coderabbit vs greptile",
+            "ai code review github action"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to set up ai code review for pull requests",
+            "reduce ai code review false positives",
+            "ai code review prompt best practices"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "ai code review too many comments",
+            "ai code review missing security issues",
+            "ai code review bot noisy"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "embody",
+        "saily review",
+        "surfshark review",
+        "nordvpn review",
+        "nordpass review",
+        "gate review",
+        "incogni review",
+        "saily discount code",
+        "saily esim review",
+        "nord vpn discount code"
+      ],
+      "competitors": [
+        "CodeRabbit",
+        "Greptile",
+        "Qodo Merge",
+        "GitHub Copilot Code Review"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "只审新增依赖与配置变更的PR审查bot",
+          "why": "通用审查工具已拥挤且被质疑制造噪音，而依赖升级、锁文件变动、CI配置修改是供应链风险高发区，中小团队和开源维护者缺少专门把关者，正好避开正面竞争。",
+          "effort": "medium",
+          "evidence": "HN「AI code review bubble」获351分，反映对通用工具价值的怀疑；「让bot停止挑刺」获257分，说明噪音是真实痛点"
+        },
+        {
+          "type": "content",
+          "title": "AI代码审查工具横向评测与降噪指南",
+          "why": "搜索者大量在比较工具并抱怨评论过多，但缺少按「误报率、依赖审查、私有部署」维度拆解的实测内容，适合做长尾内容切入。",
+          "effort": "low",
+          "evidence": "相关搜索包含best ai code review tools、ai code review too many comments等长尾；HN多篇高赞讨论集中在审查质量而非功能清单"
+        },
+        {
+          "type": "opensource",
+          "title": "本地优先的代码审查上下文图谱",
+          "why": "code-review-graph已获3.2万星，说明开发者愿意为「让AI读懂代码库」的基础设施买单，可在此基础上做依赖与配置变更的专用索引层。",
+          "effort": "high",
+          "evidence": "GitHub上tirth8205/code-review-graph获3.2万星，定位为MCP与CLI的本地代码智能图谱"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "用两周做一个GitHub App，只对PR中依赖清单和CI配置的diff生成审查意见，先在3-5个开源仓库试用",
+          "reason": "需求真实存在且通用工具留下明显空档，独立开发者可低成本验证",
+          "uncertainty": "依赖审查的付费意愿尚未被验证，团队可能视为安全扫描的附属功能"
+        },
+        {
+          "verdict": "content",
+          "action": "先写一篇「AI代码审查误报实测」对比文章，收集搜索流量与读者反馈",
+          "reason": "搜索意图集中在比较与降噪，内容成本低且能验证后续产品方向",
+          "uncertainty": "该话题热度近期下滑59.6%，内容窗口可能收窄"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "ai code review",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "中小研发团队、开源维护者",
+          "entryAngle": "做一个只审 PR 中「新增依赖和配置变更」的审查 bot，聚焦供应链安全和版本冲突，避开和通用 review 工具正面竞争",
+          "whyAccepted": "明确场景明确人群，付费方是工程团队，供给尚未饱和且体验差异空间大"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "ai-coding-agent",
       "keyword": "ai coding agent",
-      "normalizedName": "ai coding agent",
-      "category": "broadtech",
+      "normalizedName": "AI Coding Agent",
+      "category": "agent",
       "region": "US",
       "status": "cooling",
       "confidence": "low",
-      "why": "",
+      "why": "AI coding agent 的搜索热度在 90 天内峰值达到基线的 1.62 倍，但近 7 天回落 21.4%，说明市场已从概念好奇转向实际评估。HN 上关于开源 agent OpenCode 的讨论获 1274 分，同时「AI coding agents generate more code, but not more software」获 365 分，反映开发者既想用又担心返工和维护成本…",
+      "intentSummary": "寻找能真正写代码、可对比成本和返工率的 AI 编程代理",
+      "editorNote": {
+        "audience": "小团队创始人、独立开发者",
+        "entryAngle": "做 coding agent 的评测与成本对比站：同一任务跑多个 agent，公开耗时、token 花费、返工率",
+        "whyAccepted": "需求明确、赛道拥挤但真实，细分场景仍有空间"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:29:53.645Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -2380,11 +5140,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 78,
+        "wedge": 62,
+        "seo": 74,
+        "feasibility": 85,
+        "timing": 70
       },
       "sources": [
         {
@@ -2442,29 +5202,175 @@
           "publishedAt": "2025-03-05"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "小团队创始人、独立开发者",
-        "entryAngle": "做 coding agent 的评测与成本对比站：同一任务跑多个 agent，公开耗时、token 花费、返工率",
-        "whyAccepted": "需求明确、赛道拥挤但真实，细分场景仍有空间"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "AI coding agent 搜索热度峰值达基线 1.62 倍，但近 7 天下降 21.4%，进入理性评估期",
+          "claimType": "fact",
+          "date": "2026-10-20",
+          "detail": "Google Trends 90 天美国区数据显示，峰值 36，基线 22.2，近 7 天均值 17.4",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=ai%20coding%20agent",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "开源 AI coding agent OpenCode 在 HN 获得 1274 分，显示开发者对可自托管方案兴趣浓厚",
+          "claimType": "fact",
+          "date": "2026-03-20",
+          "detail": "HN 帖子「OpenCode – Open source AI coding agent」获 1274 points",
+          "sources": [
+            {
+              "label": "OpenCode – Open source AI coding agent",
+              "url": "https://opencode.ai/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-03-20"
+            }
+          ]
+        },
+        {
+          "claim": "HN 讨论指出 AI coding agent 生成更多代码但未必产出更多软件，维护成本成为核心顾虑",
+          "claimType": "fact",
+          "date": "2026-10-12",
+          "detail": "Ars Technica 文章「AI coding agents generate more code, but not more software」在 HN 获 365 分",
+          "sources": [
+            {
+              "label": "AI coding agents generate more code, but not more software",
+              "url": "https://arstechnica.com/ai/2026/10/ai-coding-agents-generate-more-code-but-not-more-software/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2026-10-12"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "compare",
+          "queries": [
+            "best ai coding agent comparison",
+            "claude code vs cursor vs opencode",
+            "ai coding agent cost per task",
+            "which ai coding agent has least rework"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to set up ai coding agent locally",
+            "how to measure ai coding agent token cost",
+            "how to reduce rework with ai coding agent"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "ai coding agent high maintenance cost",
+            "ai coding agent generates too much code",
+            "ai coding agent rework rate"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "best ai agent for coding",
+        "vibe coding ai",
+        "vibe coding",
+        "claude code",
+        "pi coding agent",
+        "openai astra ai coding agent",
+        "hermes agent",
+        "opencode ai coding agent",
+        "ai coding agent cost comparison",
+        "ai coding agent rework rate"
+      ],
+      "competitors": [
+        "OpenCode",
+        "Crush",
+        "Claude Code",
+        "Cursor"
+      ],
+      "opportunities": [
+        {
+          "type": "content",
+          "title": "AI coding agent 评测与成本对比站",
+          "why": "小团队创始人和独立开发者需要知道同一任务下哪个 agent 耗时最短、token 花费最低、返工率最小，而现有内容多为单点测评，缺少横向公开数据。HN 上关于维护成本的讨论获 380 分，说明这是真实痛点。",
+          "effort": "中：需设计统一任务集，跑多个 agent 并记录耗时、to…",
+          "evidence": "HN 帖子「An AI coding agent, used to write code, needs to reduce your maintenance costs」获 380 分；「AI coding agents generate…"
+        },
+        {
+          "type": "product",
+          "title": "面向小团队的 agent 成本与返工监控面板",
+          "why": "搜索热度虽回落但峰值达基线 1.62 倍，说明用户已从尝鲜进入日常使用，需要工具来量化 agent 的实际开销和代码质量。GitHub 上 ponytail 项目获 19.3 万星，主题是「最好的代码是你从未写过的代码」，反映对减少无效代码的强烈需求。",
+          "effort": "高：需对接多个 agent API，采集 token 消耗…",
+          "evidence": "GitHub 仓库 DietrichGebert/ponytail 获 193220 星，描述强调减少不必要代码；HN 讨论 OpenCode 获 1274 分"
+        },
+        {
+          "type": "opensource",
+          "title": "开源 agent 评测基准与数据集",
+          "why": "开发者对开源方案兴趣浓厚（OpenCode HN 1274 分），但缺少公开、可复现的评测基准来对比不同 agent 在真实任务上的表现，开源基准可以成为社区参考标准。",
+          "effort": "中：定义任务集、评分标准，收集多 agent 运行结果并开源",
+          "evidence": "HN 帖子「OpenCode – Open source AI coding agent」获 1274 分；GitHub 仓库 earendil-works/pi 获 122579 星，提供 agent 工具包"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "mvp",
+          "action": "先做轻量版评测页：选 5 个常见编码任务，跑 3 个主流 agent，公开耗时、token 花费和返工次数，用表格和简短结论呈现",
+          "reason": "需求明确且搜索热度虽回落但仍有峰值支撑，独立开发者可快速验证内容是否被搜索和引用",
+          "uncertainty": "评测结果可能因任务选择偏差而受质疑，需公开任务细节和运行环境"
+        },
+        {
+          "verdict": "research",
+          "action": "调研小团队目前如何选择 coding agent、愿意为哪类对比数据付费，以及现有评测内容的缺口",
+          "reason": "避免直接投入产品开发，先确认付费意愿和具体痛点，再决定做内容站还是监控工具",
+          "uncertainty": "用户可能更倾向免费社区评测，付费意愿待验证"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "ai coding agent",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "小团队创始人、独立开发者",
+          "entryAngle": "做 coding agent 的评测与成本对比站：同一任务跑多个 agent，公开耗时、token 花费、返工率",
+          "whyAccepted": "需求明确、赛道拥挤但真实，细分场景仍有空间"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     },
     {
       "slug": "llm-fine-tuning",
       "keyword": "llm fine tuning",
-      "normalizedName": "llm fine tuning",
-      "category": "broadtech",
+      "normalizedName": "LLM Fine-Tuning",
+      "category": "devtech",
       "region": "US",
       "status": "cooling",
       "confidence": "medium",
-      "why": "",
+      "why": "尽管近 7 天搜索热度较基线下降 13.5%，但 90 天内峰值达基线 13.77 倍，且 HN 上 LoRA 实现与实验总结分别获 339 和 258 分，说明开发者对微调落地细节持续关注；LlamaFactory 获 7.6 万星，印证工具化需求真实，但热度回落表明通用微调已进入红海，机会转向垂直数据清洗与配比。",
+      "intentSummary": "寻找 LLM 微调的方法、工具与数据准备方案",
+      "editorNote": {
+        "audience": "有垂直领域数据、想做小模型定制的一人公司",
+        "entryAngle": "做微调数据清洗与配比工具：针对单一垂直场景（如客服工单）自动去重、标注质量打分、生成训练集",
+        "whyAccepted": "需求真实但偏红海，多数被大厂托管承接，需靠细分数据场景差异化"
+      },
       "firstSeenAt": "2026-11-18",
       "lastSeenAt": "2026-11-18",
-      "updatedAt": "2026-11-18T03:20:56.240Z",
+      "updatedAt": "2026-11-18T03:30:02.917Z",
       "series": {
         "start": "2026-10-20",
         "stepDays": 1,
@@ -2509,11 +5415,11 @@
         "reliability": 100
       },
       "oppParts": {
-        "demand": 0,
-        "wedge": 0,
-        "seo": 0,
-        "feasibility": 0,
-        "timing": 0
+        "demand": 70,
+        "wedge": 55,
+        "seo": 60,
+        "feasibility": 75,
+        "timing": 65
       },
       "sources": [
         {
@@ -2571,16 +5477,167 @@
           "publishedAt": "2018-09-17"
         }
       ],
-      "evidence": [],
-      "editorNote": {
-        "audience": "有垂直领域数据、想做小模型定制的一人公司",
-        "entryAngle": "做微调数据清洗与配比工具：针对单一垂直场景（如客服工单）自动去重、标注质量打分、生成训练集",
-        "whyAccepted": "需求真实但偏红海，多数被大厂托管承接，需靠细分数据场景差异化"
-      },
-      "intents": [],
-      "opportunities": [],
-      "actions": [],
-      "enrichStatus": "pending"
+      "evidence": [
+        {
+          "claim": "LLM 微调搜索热度在 90 天内出现 13.77 倍于基线的峰值，但近 7 天回落 13.5%",
+          "claimType": "fact",
+          "date": "2026-10-20",
+          "detail": "Google Trends 美国区 90 天序列显示峰值 91，基线 6.6，近期均值 5.7",
+          "sources": [
+            {
+              "label": "Google Trends · Explore（90 天，US）",
+              "url": "https://trends.google.com/trends/explore?date=today%203-m&geo=US&q=llm%20fine%20tuning",
+              "site": "trends.google.com",
+              "kind": "google_trends"
+            }
+          ]
+        },
+        {
+          "claim": "开发者对 LoRA 微调的实现细节与实验经验有高关注度",
+          "claimType": "fact",
+          "date": "2024-01-22",
+          "detail": "HN 帖子「LoRA from scratch」获 339 分，「数百次 LoRA 实验总结」获 258 分",
+          "sources": [
+            {
+              "label": "LoRA from scratch: implementation for LLM finetuning",
+              "url": "https://lightning.ai/lightning-ai/studios/code-lora-from-scratch?view=public&section=all",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2024-01-22"
+            },
+            {
+              "label": "Takeaways from hundreds of LLM finetuning experiments with LoRA",
+              "url": "https://lightning.ai/pages/community/lora-insights/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2023-10-13"
+            }
+          ]
+        },
+        {
+          "claim": "微调数据集的构建与评估是实际落地中的关键痛点",
+          "claimType": "fact",
+          "date": "2024-06-27",
+          "detail": "HN 帖子「如何为微调评估创建数据集」获 139 分，另有开源数据收集平台获 115 分",
+          "sources": [
+            {
+              "label": "How to think about creating a dataset for LLM fine-tuning evaluation",
+              "url": "https://mlops.systems/posts/2024-06-25-evaluation-finetuning-manual-dataset.html",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2024-06-27"
+            },
+            {
+              "label": "Open-Source Data Collection Platform for LLM Fine-Tuning and RLHF",
+              "url": "https://argilla.io/blog/argilla-for-llms/",
+              "site": "news.ycombinator.com",
+              "kind": "community",
+              "publishedAt": "2023-06-05"
+            }
+          ]
+        }
+      ],
+      "intents": [
+        {
+          "intent": "learn",
+          "queries": [
+            "llm fine tuning guide",
+            "how does lora fine tuning work",
+            "fine tuning vs prompt engineering"
+          ]
+        },
+        {
+          "intent": "howto",
+          "queries": [
+            "how to fine tune llama 3",
+            "fine tuning dataset preparation",
+            "lora fine tuning hyperparameters"
+          ]
+        },
+        {
+          "intent": "problem",
+          "queries": [
+            "fine tuning data quality issues",
+            "overfitting in llm fine tuning",
+            "catastrophic forgetting fine tuning"
+          ]
+        }
+      ],
+      "relatedQueries": [
+        "llm fine tuning lora",
+        "fine tuning dataset preparation",
+        "llama factory fine tuning",
+        "qlora fine tuning",
+        "fine tuning evaluation metrics",
+        "instruction tuning vs fine tuning",
+        "fine tuning cost",
+        "open source llm fine tuning tools"
+      ],
+      "competitors": [
+        "LlamaFactory",
+        "Axolotl",
+        "Unsloth",
+        "PEFT"
+      ],
+      "opportunities": [
+        {
+          "type": "product",
+          "title": "垂直场景微调数据清洗与配比工具",
+          "why": "HN 上关于微调数据集构建的帖子获 139 分，说明数据准备是真实痛点；针对客服工单等单一场景做自动去重、质量打分和训练集生成，可避开通用微调红海。",
+          "effort": "medium",
+          "evidence": "HN「如何为微调评估创建数据集」获 139 分；开源数据收集平台获 115 分"
+        },
+        {
+          "type": "content",
+          "title": "LoRA 微调实战教程与实验复盘",
+          "why": "HN 上 LoRA 从零实现和实验总结分别获 339 和 258 分，表明开发者需要可复现的实操内容；结合 LlamaFactory 等工具做端到端案例，可吸引搜索流量。",
+          "effort": "low",
+          "evidence": "HN「LoRA from scratch」339 分，「数百次 LoRA 实验总结」258 分"
+        },
+        {
+          "type": "opensource",
+          "title": "轻量级微调数据质量检查库",
+          "why": "现有工具如 LlamaFactory 侧重训练流程，数据质量环节缺少独立轻量方案；可开源一个针对垂直场景的去重、标注一致性检查库，建立开发者信任。",
+          "effort": "medium",
+          "evidence": "LlamaFactory 获 7.6 万星，但数据准备相关 HN 讨论仍活跃"
+        }
+      ],
+      "actions": [
+        {
+          "verdict": "research",
+          "action": "调研客服工单等垂直场景的微调数据清洗需求，访谈 5-10 个一人公司开发者",
+          "reason": "通用微调工具已红海，但垂直数据清洗有真实讨论热度，需验证付费意愿",
+          "uncertainty": "垂直场景的付费意愿和市场规模尚不明确"
+        },
+        {
+          "verdict": "content",
+          "action": "发布一篇 LoRA 微调数据准备实战指南，附带可复现脚本",
+          "reason": "HN 相关帖子高分说明内容需求明确，可低成本测试搜索流量和用户反馈",
+          "uncertainty": "内容竞争激烈，需差异化角度"
+        }
+      ],
+      "previousSnapshot": {
+        "at": "2026-11-18T03:20:56.240Z",
+        "normalizedName": "llm fine tuning",
+        "category": "broadtech",
+        "why": "",
+        "editorNote": {
+          "audience": "有垂直领域数据、想做小模型定制的一人公司",
+          "entryAngle": "做微调数据清洗与配比工具：针对单一垂直场景（如客服工单）自动去重、标注质量打分、生成训练集",
+          "whyAccepted": "需求真实但偏红海，多数被大厂托管承接，需靠细分数据场景差异化"
+        },
+        "oppParts": {
+          "demand": 0,
+          "wedge": 0,
+          "seo": 0,
+          "feasibility": 0,
+          "timing": 0
+        },
+        "evidence": [],
+        "intents": [],
+        "opportunities": [],
+        "actions": []
+      }
     }
   ],
   "rejected": [],
@@ -12184,1072 +15241,6 @@
       "audience": "自由职业者、独立销售、小 agency 创始人",
       "ideaAngle": "做 Gmail 插件，只解决「发出后没回复的邮件」：自动识别待跟进线程，按对方语气生成 3 档催促话术并排期提醒",
       "at": "2026-10-30T07:15:59.809Z"
-    }
-  },
-  "pendingEvidence": {
-    "mcp-server": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "MCP server that reduces Claude Code context consumption by 98%",
-            "url": "https://mksg.lu/blog/context-mode",
-            "detail": "570 points",
-            "publishedAt": "2026-02-28"
-          },
-          {
-            "title": "MCP server for Ghidra",
-            "url": "https://github.com/LaurieWired/GhidraMCP",
-            "detail": "356 points",
-            "publishedAt": "2025-03-25"
-          },
-          {
-            "title": "Show HN: Ghidra MCP Server – 110 tools for AI-assisted reverse engineering",
-            "url": "https://github.com/bethington/ghidra-mcp",
-            "detail": "298 points",
-            "publishedAt": "2026-02-04"
-          },
-          {
-            "title": "The Safari MCP server for web developers",
-            "url": "https://webkit.org/blog/18136/introducing-the-safari-mcp-server-for-web-developers/",
-            "detail": "272 points",
-            "publishedAt": "2026-07-03"
-          }
-        ],
-        "repos": [
-          {
-            "title": "punkpeye/awesome-mcp-servers（★97825）",
-            "url": "https://github.com/punkpeye/awesome-mcp-servers",
-            "detail": "A collection of MCP servers.",
-            "publishedAt": "2024-11-30"
-          },
-          {
-            "title": "headroomlabs-ai/headroom（★79932）",
-            "url": "https://github.com/headroomlabs-ai/headroom",
-            "detail": "Compress tool outputs, logs, files, and RAG chunks before they reach the LLM. 20% fewer tokens for coding agents, 60-95%",
-            "publishedAt": "2026-01-07"
-          },
-          {
-            "title": "zylon-ai/private-gpt（★57644）",
-            "url": "https://github.com/zylon-ai/private-gpt",
-            "detail": "Complete API layer for private AI applications on local models: RAG, skills, tools, MCP, text-to-sql, and more. Works wi",
-            "publishedAt": "2023-05-02"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "claude-skills": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "Claude Skills",
-            "url": "https://www.anthropic.com/news/skills",
-            "detail": "816 points",
-            "publishedAt": "2025-10-16"
-          },
-          {
-            "title": "Claude Skills are awesome, maybe a bigger deal than MCP",
-            "url": "https://simonwillison.net/2025/Oct/16/claude-skills/",
-            "detail": "738 points",
-            "publishedAt": "2025-10-17"
-          },
-          {
-            "title": "Show HN: Claude Code skills that build complete Godot games",
-            "url": "https://github.com/htdt/godogen",
-            "detail": "337 points",
-            "publishedAt": "2026-03-16"
-          },
-          {
-            "title": "Geosql: A Claude/Codex skill for geospatial data",
-            "url": "https://github.com/dekart-xyz/geosql",
-            "detail": "139 points",
-            "publishedAt": "2026-07-08"
-          }
-        ],
-        "repos": [
-          {
-            "title": "affaan-m/ECC（★305618）",
-            "url": "https://github.com/affaan-m/ECC",
-            "detail": "The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development f",
-            "publishedAt": "2026-01-18"
-          },
-          {
-            "title": "multica-ai/andrej-karpathy-skills（★234029）",
-            "url": "https://github.com/multica-ai/andrej-karpathy-skills",
-            "detail": "A single CLAUDE.md file to improve Claude Code behavior, derived from Andrej Karpathy's observations on LLM coding pitfa",
-            "publishedAt": "2026-01-27"
-          },
-          {
-            "title": "Graphify-Labs/graphify（★149714）",
-            "url": "https://github.com/Graphify-Labs/graphify",
-            "detail": "Turn any codebase, with its docs, SQL schemas, configs, and PDFs, into a queryable knowledge graph. A /graphify skill fo",
-            "publishedAt": "2026-04-03"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "vibe-coding": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "After two years of vibecoding, I'm back to writing by hand",
-            "url": "https://atmoio.substack.com/p/after-two-years-of-vibecoding-im",
-            "detail": "865 points",
-            "publishedAt": "2026-01-26"
-          },
-          {
-            "title": "Vibe coding and agentic engineering are getting closer than I'd like",
-            "url": "https://simonwillison.net/2026/May/6/vibe-coding-and-agentic-engineering/",
-            "detail": "787 points",
-            "publishedAt": "2026-05-06"
-          },
-          {
-            "title": "The cult of vibe coding is dogfooding run amok",
-            "url": "https://bramcohen.com/p/the-cult-of-vibe-coding-is-insane",
-            "detail": "616 points",
-            "publishedAt": "2026-04-06"
-          },
-          {
-            "title": "Breaking the spell of vibe coding",
-            "url": "https://www.fast.ai/posts/2026-01-28-dark-flow/",
-            "detail": "434 points",
-            "publishedAt": "2026-02-13"
-          }
-        ],
-        "repos": [
-          {
-            "title": "shanraisshan/claude-code-best-practice（★69170）",
-            "url": "https://github.com/shanraisshan/claude-code-best-practice",
-            "detail": "from vibe coding to agentic engineering - practice makes claude perfect",
-            "publishedAt": "2025-10-31"
-          },
-          {
-            "title": "BloopAI/vibe-kanban（★28724）",
-            "url": "https://github.com/BloopAI/vibe-kanban",
-            "detail": "Get 10X more out of Claude Code, Codex or any coding agent",
-            "publishedAt": "2025-06-14"
-          },
-          {
-            "title": "2025Emma/vibe-coding-cn（★23175）",
-            "url": "https://github.com/2025Emma/vibe-coding-cn",
-            "publishedAt": "2025-12-17"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "rag-pipeline": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "Show HN: Demystifying Advanced RAG Pipelines",
-            "url": "https://github.com/pchunduri6/rag-demystified",
-            "detail": "131 points",
-            "publishedAt": "2023-10-28"
-          },
-          {
-            "title": "Show HN: Ragas – Open-source library for evaluating RAG pipelines",
-            "url": "https://github.com/explodinggradients/ragas",
-            "detail": "121 points",
-            "publishedAt": "2024-03-21"
-          },
-          {
-            "title": "Building a RAG pipeline for semantic code search",
-            "url": "https://blog.jetbrains.com/ai/2026/09/building-a-rag-pipeline-for-semantic-code-search-a-developer-diary-and-field-notes/",
-            "detail": "41 points",
-            "publishedAt": "2026-10-04"
-          },
-          {
-            "title": "Show HN: AutoRAG – AutoML tool for RAG. Find an optimal RAG pipeline",
-            "url": "https://github.com/Marker-Inc-Korea/AutoRAG",
-            "detail": "18 points",
-            "publishedAt": "2024-02-08"
-          }
-        ],
-        "repos": [
-          {
-            "title": "langgenius/dify（★161383）",
-            "url": "https://github.com/langgenius/dify",
-            "detail": "Build Agentic workflows, RAG pipelines, with rich AI model and tool support on one collaborative workspace. Deploy on cl",
-            "publishedAt": "2023-04-12"
-          },
-          {
-            "title": "pathwaycom/pathway（★61990）",
-            "url": "https://github.com/pathwaycom/pathway",
-            "detail": "Python ETL framework for stream processing, real-time analytics, LLM pipelines, and RAG.",
-            "publishedAt": "2022-11-27"
-          },
-          {
-            "title": "deepset-ai/haystack（★27039）",
-            "url": "https://github.com/deepset-ai/haystack",
-            "detail": "Open-source AI orchestration framework for building context-engineered, production-ready LLM applications. Design modula",
-            "publishedAt": "2019-11-14"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "local-llm": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "Show HN: Clippy – 90s UI for local LLMs",
-            "url": "https://felixrieseberg.github.io/clippy/",
-            "detail": "1122 points",
-            "publishedAt": "2025-05-06"
-          },
-          {
-            "title": "Building a fully local LLM voice assistant to control my smart home",
-            "url": "https://johnthenerd.com/blog/local-llm-assistant/",
-            "detail": "699 points",
-            "publishedAt": "2024-01-13"
-          },
-          {
-            "title": "The local LLM ecosystem doesn’t need Ollama",
-            "url": "https://sleepingrobots.com/dreams/stop-using-ollama/",
-            "detail": "648 points",
-            "publishedAt": "2026-04-16"
-          },
-          {
-            "title": "Lemonade by AMD: a fast and open source local LLM server using GPU and NPU",
-            "url": "https://lemonade-server.ai",
-            "detail": "572 points",
-            "publishedAt": "2026-04-02"
-          }
-        ],
-        "repos": [
-          {
-            "title": "unslothai/unsloth（★79710）",
-            "url": "https://github.com/unslothai/unsloth",
-            "detail": "Local UI to run and train LLMs and diffusion models. Supports GGUF, MLX, Qwen3.8, DeepSeek-V4.1, MiniMax-H3, Gemma 4, FL",
-            "publishedAt": "2023-11-29"
-          },
-          {
-            "title": "nomic-ai/gpt4all（★77346）",
-            "url": "https://github.com/nomic-ai/gpt4all",
-            "detail": "GPT4All: Run Local LLMs on Any Device. Open-source and available for commercial use.",
-            "publishedAt": "2023-03-27"
-          },
-          {
-            "title": "Mintplex-Labs/anything-llm（★68384）",
-            "url": "https://github.com/Mintplex-Labs/anything-llm",
-            "detail": "Stop renting your intelligence. Own it with AnythingLLM. Everything you need for a powerful local-first agent experience",
-            "publishedAt": "2023-06-04"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "ai-meeting-notes": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "Show HN: threadfork – AI meeting notes that run on your Mac",
-            "url": "https://www.threadfork.com/",
-            "detail": "10 points",
-            "publishedAt": "2026-07-21"
-          },
-          {
-            "title": "AI Meeting Notes – Summarization Optimization",
-            "url": "https://www.schneier.com/blog/archives/2025/11/ai-summarization-optimization.html",
-            "detail": "4 points",
-            "publishedAt": "2025-11-03"
-          },
-          {
-            "title": "Talat's AI meeting notes stay on your machine, not in the cloud",
-            "url": "https://techcrunch.com/2026/03/24/talats-ai-meeting-notes-stay-on-your-machine-not-in-the-cloud/",
-            "detail": "3 points",
-            "publishedAt": "2026-04-06"
-          },
-          {
-            "title": "Show HN: I built a local audio capture, transcription, AI meeting notes system",
-            "url": "https://panotti.io/",
-            "detail": "3 points",
-            "publishedAt": "2025-03-04"
-          }
-        ],
-        "repos": [
-          {
-            "title": "Zackriya-Solutions/meetily（★32777）",
-            "url": "https://github.com/Zackriya-Solutions/meetily",
-            "detail": "Privacy-first AI meeting note taker for Windows, macOS and Linux. Free, open source (MIT). On-device Whisper/Parakeet tr",
-            "publishedAt": "2024-12-26"
-          },
-          {
-            "title": "Natively-AI-assistant/natively-cluely-ai-assistant（★3326）",
-            "url": "https://github.com/Natively-AI-assistant/natively-cluely-ai-assistant",
-            "detail": "Natively — Free open-source AI meeting assistant, interview copilot, and note taker. The best alternative to Cluely, Ott",
-            "publishedAt": "2026-01-27"
-          },
-          {
-            "title": "wquguru/cicada（★2388）",
-            "url": "https://github.com/wquguru/cicada",
-            "detail": "知了 Cicada · 任何会议和直播的实时字幕、同声传译、AI 会议纪要，Mac、Windows、Linux、Android 免费开源。Live subtitles, interpreting and meeting notes for ",
-            "publishedAt": "2026-11-01"
-          }
-        ]
-      },
-      "relatedQueries": [
-        "ai for meeting notes",
-        "zoom ai meeting notes",
-        "zoom",
-        "google ai meeting notes",
-        "granola",
-        "granola ai",
-        "notion ai meeting notes",
-        "notion",
-        "read ai meeting notes",
-        "microsoft teams ai meeting notes",
-        "otter ai"
-      ]
-    },
-    "ai-resume-builder": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "Show HN: Resume Yay: The Free AI Resume Builder that also finds you jobs",
-            "url": "https://resumeyay.com/?via=jobboardsearch&utm_source=site&utm_campaign=first&utm_id=jobboardsearch",
-            "detail": "5 points",
-            "publishedAt": "2025-04-22"
-          },
-          {
-            "title": "Show HN: Free AI Resume Builder – Beta Testers Say It's One of the Best",
-            "url": "https://www.wobo.ai/ai-resume-builder",
-            "detail": "4 points",
-            "publishedAt": "2025-04-17"
-          },
-          {
-            "title": "Show HN: ResumeAI, AI-powered Resume Builder (get your resumes done in seconds!)",
-            "url": "https://resumeai.app",
-            "detail": "4 points",
-            "publishedAt": "2024-07-22"
-          },
-          {
-            "title": "Show HN: GetHireToday – AI resume builder that targets ATS keyword matching",
-            "url": "https://gethiretoday.com",
-            "detail": "3 points",
-            "publishedAt": "2026-04-17"
-          }
-        ],
-        "repos": [
-          {
-            "title": "LingyiChen-AI/JadeAI（★2025）",
-            "url": "https://github.com/LingyiChen-AI/JadeAI",
-            "detail": "AI-Powered Smart Resume Builder — 50+ professional templates, PDF/image parsing, AI optimization, JD match analysis, mul",
-            "publishedAt": "2026-02-10"
-          },
-          {
-            "title": "resume-llm/resume-ai（★395）",
-            "url": "https://github.com/resume-llm/resume-ai",
-            "detail": "A local, privacy-first résumé builder using LLMs and Markdown to generate ATS-ready DOCX files with Pandoc — no cloud, n",
-            "publishedAt": "2025-03-18"
-          },
-          {
-            "title": "olyaiy/resume-lm（★332）",
-            "url": "https://github.com/olyaiy/resume-lm",
-            "detail": "Open-source AI resume builder • Next.js 15, React 19, Tailwind CSS • Tailor job-ready resumes in minutes.",
-            "publishedAt": "2024-08-01"
-          }
-        ]
-      },
-      "relatedQueries": [
-        "resume builder free",
-        "ai free resume builder",
-        "free ai resume",
-        "best ai resume builder",
-        "best free ai resume builder",
-        "ai resume builder reddit",
-        "free ai resume builder and download",
-        "rezi ai resume builder",
-        "teal ai resume builder",
-        "ai resume builder based on job description"
-      ]
-    },
-    "ai-photo-editor": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "Questionable AI photo editor FaceApp goes viral again on iOS",
-            "url": "https://techcrunch.com/2019/07/16/ai-photo-editor-faceapp-goes-viral-again-on-ios-raises-questions-about-photo-library-access-and-clo/",
-            "detail": "18 points",
-            "publishedAt": "2019-07-18"
-          },
-          {
-            "title": "AI photo editors are ushering in a distrust of everything we see",
-            "url": "https://www.wired.com/story/google-pixel-8-artificial-intelligence-photos/",
-            "detail": "14 points",
-            "publishedAt": "2023-10-19"
-          },
-          {
-            "title": "Show HN: Photo AI Editor – Edit, Transform and Enhance Photos with Text Prompt",
-            "url": "https://photoaieditor.app/",
-            "detail": "4 points",
-            "publishedAt": "2025-10-02"
-          },
-          {
-            "title": "Show HN: AI Photo Editor – Professional-Grade Image Editing with Text Prompts",
-            "url": "https://www.aiphotoeditor.ai/",
-            "detail": "3 points",
-            "publishedAt": "2026-07-12"
-          }
-        ],
-        "repos": [
-          {
-            "title": "hety0211/lumen-raw（★282）",
-            "url": "https://github.com/hety0211/lumen-raw",
-            "detail": "开源多品牌 RAW 照片编辑器，集调色、AI 增强、智能蒙版与照片合成于一体。 / An open-source multi-brand RAW photo editor with color grading, AI enhancement",
-            "publishedAt": "2026-09-29"
-          },
-          {
-            "title": "vegidio/open-photo-ai（★241）",
-            "url": "https://github.com/vegidio/open-photo-ai",
-            "detail": "An open source alternative to the popular photo AI editor.",
-            "publishedAt": "2025-10-16"
-          },
-          {
-            "title": "thesnarkitecht/rembrandt（★210）",
-            "url": "https://github.com/thesnarkitecht/rembrandt",
-            "detail": "A free photo editor. No account, no subscription, no tracking. RAW, masks and on-device AI for macOS, Windows and Linux.",
-            "publishedAt": "2026-09-29"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "ai-video-generator": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "Meta’s new text-to-video AI generator is like DALL-E for video",
-            "url": "https://www.theverge.com/2022/9/29/23378210/meta-text-to-video-ai-generation-make-a-video-model-dall-e",
-            "detail": "103 points",
-            "publishedAt": "2022-09-29"
-          },
-          {
-            "title": "Google is using YouTube videos to train its AI video generator",
-            "url": "https://www.cnbc.com/2025/06/19/google-youtube-ai-training-veo-3.html",
-            "detail": "34 points",
-            "publishedAt": "2025-06-19"
-          },
-          {
-            "title": "'It's over for us': release of AI video generator Seedance 2.0 spooks Hollywood",
-            "url": "https://www.theguardian.com/film/2026/feb/13/new-ai-video-generator-seedance-tom-cruise-brad-pitt",
-            "detail": "23 points",
-            "publishedAt": "2026-02-15"
-          },
-          {
-            "title": "Fake AI video generators infect Windows, macOS with infostealers",
-            "url": "https://www.bleepingcomputer.com/news/security/fake-ai-video-generators-infect-windows-macos-with-infostealers/",
-            "detail": "10 points",
-            "publishedAt": "2024-11-17"
-          }
-        ],
-        "repos": [
-          {
-            "title": "chatfire-AI/huobao-drama（★17661）",
-            "url": "https://github.com/chatfire-AI/huobao-drama",
-            "detail": "🎬 火宝短剧 - 基于AI的一站式短剧生成平台 《一句话生成完整短剧，从剧本到成片全自动化》  Huobao Drama - An AI-Powered End-to-End Short Drama Generator \"One Sent",
-            "publishedAt": "2026-01-05"
-          },
-          {
-            "title": "Anil-matcha/AI-Youtube-Shorts-Generator（★6200）",
-            "url": "https://github.com/Anil-matcha/AI-Youtube-Shorts-Generator",
-            "detail": "Open-source alternative to Opus Clip, Vidyo.ai, Klap & SubMagic. Turn long-form YouTube videos into viral 9:16 shorts us",
-            "publishedAt": "2024-06-28"
-          },
-          {
-            "title": "Picsart-AI-Research/Text2Video-Zero（★4250）",
-            "url": "https://github.com/Picsart-AI-Research/Text2Video-Zero",
-            "detail": "[ICCV 2023 Oral] Text-to-Image Diffusion Models are Zero-Shot Video Generators",
-            "publishedAt": "2023-03-21"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "ai-voice-clone": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "The FBI now recommends choosing a secret password to thwart AI voice clones",
-            "url": "https://arstechnica.com/ai/2024/12/your-ai-clone-could-target-your-family-but-theres-a-simple-defense/",
-            "detail": "67 points",
-            "publishedAt": "2024-12-07"
-          },
-          {
-            "title": "A woman made her AI voice clone say \"arse.\" Then she got banned",
-            "url": "https://www.technologyreview.com/2025/02/14/1111900/ai-voice-clone-say-arse-then-banned/",
-            "detail": "56 points",
-            "publishedAt": "2025-02-14"
-          },
-          {
-            "title": "RIAA Flags Anna's Archive and AI Voice Cloner to U.S. Government",
-            "url": "https://torrentfreak.com/riaa-flags-annas-archive-and-ai-voice-cloner-to-u-s-government/",
-            "detail": "21 points",
-            "publishedAt": "2026-10-15"
-          },
-          {
-            "title": "People Can't Distinguish AI Voice Clones from Actual Humans Anymore",
-            "url": "https://singularityhub.com/2025/09/29/people-cant-distinguish-ai-voice-clones-from-actual-humans-anymore/",
-            "detail": "11 points",
-            "publishedAt": "2025-09-30"
-          }
-        ],
-        "repos": [
-          {
-            "title": "jamiepine/voicebox（★60844）",
-            "url": "https://github.com/jamiepine/voicebox",
-            "detail": "The open-source AI voice studio. Clone, dictate, create.",
-            "publishedAt": "2026-01-25"
-          },
-          {
-            "title": "myshell-ai/OpenVoice（★38268）",
-            "url": "https://github.com/myshell-ai/OpenVoice",
-            "detail": "Instant voice cloning by MIT and MyShell. Audio foundation model.",
-            "publishedAt": "2023-11-29"
-          },
-          {
-            "title": "buxuku/SmartSub（★6086）",
-            "url": "https://github.com/buxuku/SmartSub",
-            "detail": "视频转字幕、字幕翻译、AI 配音与声音克隆、字幕烧录——免费开源的一站式桌面工具。基于 Whisper / FunASR 等本地模型离线语音转文字，批量处理 + 全平台 GPU 加速，跨 Windows / macOS / Linux。Fr",
-            "publishedAt": "2024-05-21"
-          }
-        ]
-      },
-      "relatedQueries": [
-        "ai voice clone free"
-      ]
-    },
-    "ai-evals": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "About AI Evals",
-            "url": "https://hamel.dev/blog/posts/evals-faq/",
-            "detail": "189 points",
-            "publishedAt": "2025-07-01"
-          },
-          {
-            "title": "Ask HN: How are people doing AI evals these days?",
-            "url": "https://news.ycombinator.com/item?id=47319587",
-            "detail": "30 points",
-            "publishedAt": "2026-03-10"
-          },
-          {
-            "title": "The Vanta AI Quality Eval Maturity Model",
-            "url": "https://www.vanta.com/resources/vanta-ai-quality-evaluation-maturity-model",
-            "detail": "26 points",
-            "publishedAt": "2026-06-10"
-          },
-          {
-            "title": "Kradle: Eval AI with Simulations",
-            "url": "https://twitter.com/kradleai/status/1965126412047945966",
-            "detail": "11 points",
-            "publishedAt": "2025-09-08"
-          }
-        ],
-        "repos": [
-          {
-            "title": "langfuse/langfuse（★37564）",
-            "url": "https://github.com/langfuse/langfuse",
-            "detail": "🪢 Open source AI engineering platform: AI Gateway, agent observability, evals, and prompt/skill management, built on Op",
-            "publishedAt": "2023-05-18"
-          },
-          {
-            "title": "Kiln-AI/Kiln（★5286）",
-            "url": "https://github.com/Kiln-AI/Kiln",
-            "detail": "Build, Evaluate, and Optimize AI Systems. Includes evals, RAG, agents, fine-tuning, synthetic data generation, dataset m",
-            "publishedAt": "2024-07-23"
-          },
-          {
-            "title": "ai-boost/awesome-harness-engineering（★5182）",
-            "url": "https://github.com/ai-boost/awesome-harness-engineering",
-            "detail": "Awesome list for AI agent harness engineering: tools, patterns, evals, memory, MCP, permissions, observability, and orch",
-            "publishedAt": "2026-03-29"
-          }
-        ]
-      },
-      "relatedQueries": [
-        "evals in ai",
-        "demystifying evals for ai agents",
-        "what is evals in ai",
-        "what are evals in ai",
-        "open ai evals",
-        "evals for ai engineers pdf"
-      ]
-    },
-    "agentic-workflow": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "GitHub Agentic Workflows",
-            "url": "https://github.github.io/gh-aw/",
-            "detail": "302 points",
-            "publishedAt": "2026-02-08"
-          },
-          {
-            "title": "Show HN: Agentic coding workflows built on Git worktrees and task evidence",
-            "url": "https://github.com/alex-reysa/glueRun-go",
-            "detail": "10 points",
-            "publishedAt": "2026-06-20"
-          },
-          {
-            "title": "Ask HN: Any Local LLM can I run without GPU for Local Agentic workflow AI?",
-            "url": "https://news.ycombinator.com/item?id=48487147",
-            "detail": "8 points",
-            "publishedAt": "2026-06-11"
-          },
-          {
-            "title": "Show HN: Overcut.ai – Automate Your SDLC with Agentic Workflows",
-            "url": "https://overcut.ai/",
-            "detail": "8 points",
-            "publishedAt": "2025-09-30"
-          }
-        ],
-        "repos": [
-          {
-            "title": "langgenius/dify（★161383）",
-            "url": "https://github.com/langgenius/dify",
-            "detail": "Build Agentic workflows, RAG pipelines, with rich AI model and tool support on one collaborative workspace. Deploy on cl",
-            "publishedAt": "2023-04-12"
-          },
-          {
-            "title": "langflow-ai/langflow（★156725）",
-            "url": "https://github.com/langflow-ai/langflow",
-            "detail": "Langflow is a powerful tool for building and deploying AI-powered agents and workflows.",
-            "publishedAt": "2023-02-08"
-          },
-          {
-            "title": "anthropics/claude-code（★156056）",
-            "url": "https://github.com/anthropics/claude-code",
-            "detail": "Claude Code is an agentic coding tool that lives in your terminal, understands your codebase, and helps you code faster ",
-            "publishedAt": "2025-02-22"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "vector-database": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "Vector Databases: A Technical Primer [pdf]",
-            "url": "https://tge-data-web.nyc3.digitaloceanspaces.com/docs/Vector%20Databases%20-%20A%20Technical%20Primer.pdf",
-            "detail": "557 points",
-            "publishedAt": "2024-01-12"
-          },
-          {
-            "title": "Vector databases are the wrong abstraction",
-            "url": "https://www.timescale.com/blog/vector-databases-are-the-wrong-abstraction/",
-            "detail": "493 points",
-            "publishedAt": "2024-10-29"
-          },
-          {
-            "title": "What is a Vector Database? (2021)",
-            "url": "https://www.pinecone.io/learn/vector-database/",
-            "detail": "409 points",
-            "publishedAt": "2023-05-05"
-          },
-          {
-            "title": "RIP, vector database",
-            "url": "https://turbopuffer.com/blog/rip-vector-database",
-            "detail": "405 points",
-            "publishedAt": "2026-10-01"
-          }
-        ],
-        "repos": [
-          {
-            "title": "pathwaycom/serviette（★58709）",
-            "url": "https://github.com/pathwaycom/serviette",
-            "detail": "A no-code RAG server that keeps answers in sync with your documents. Works with 8 vector databases. Built on Pathway.",
-            "publishedAt": "2023-07-19"
-          },
-          {
-            "title": "milvus-io/milvus（★46680）",
-            "url": "https://github.com/milvus-io/milvus",
-            "detail": "Milvus is a high-performance, cloud-native vector database built for scalable vector ANN search",
-            "publishedAt": "2019-09-16"
-          },
-          {
-            "title": "qdrant/qdrant（★35618）",
-            "url": "https://github.com/qdrant/qdrant",
-            "detail": "Qdrant - High-performance, massive-scale Vector Database and Vector Search Engine for the next generation of AI. Also av",
-            "publishedAt": "2020-05-30"
-          }
-        ]
-      },
-      "relatedQueries": [
-        "what is vector database",
-        "what is a vector database",
-        "best vector database",
-        "rag vector database",
-        "pinecone vector database",
-        "vector database for rag",
-        "qdrant vector database",
-        "open source vector database",
-        "chroma vector database",
-        "milvus vector database",
-        "local vector database",
-        "weaviate vector database"
-      ]
-    },
-    "ai-spreadsheet": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "Show HN: Sourcetable – AI Spreadsheet and Data Platform",
-            "url": "https://news.ycombinator.com/item?id=41590682",
-            "detail": "188 points",
-            "publishedAt": "2024-09-19"
-          },
-          {
-            "title": "Silicon Valley dating now means spreadsheets, AI and $5K-a-month coaches",
-            "url": "https://www.techspot.com/news/114425-dating-silicon-valley-now-involves-spreadsheets-ai-analysis.html",
-            "detail": "16 points",
-            "publishedAt": "2026-11-03"
-          },
-          {
-            "title": "Show HN: Sourcetable – AI Spreadsheet",
-            "url": "https://news.ycombinator.com/item?id=42379599",
-            "detail": "9 points",
-            "publishedAt": "2024-12-10"
-          },
-          {
-            "title": "AI Spreadsheet",
-            "url": "https://spreadsheetgpt.aitida.com/",
-            "detail": "4 points",
-            "publishedAt": "2025-08-29"
-          }
-        ],
-        "repos": [
-          {
-            "title": "teableio/teable（★21999）",
-            "url": "https://github.com/teableio/teable",
-            "detail": "✨ AI Spreadsheet for Business",
-            "publishedAt": "2022-11-01"
-          },
-          {
-            "title": "buildship-ai/rowy（★6846）",
-            "url": "https://github.com/buildship-ai/rowy",
-            "detail": "Low-code backend platform. Manage database on spreadsheet-like UI and build cloud functions workflows in JS/TS, all in y",
-            "publishedAt": "2019-09-05"
-          },
-          {
-            "title": "mito-ds/mito（★2655）",
-            "url": "https://github.com/mito-ds/mito",
-            "detail": "Jupyter extensions that help you write code faster: Context aware AI Chat, Autocomplete, and Spreadsheet",
-            "publishedAt": "2022-01-20"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "ai-wrappers": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "Wrapping my head around AI wrappers",
-            "url": "https://www.wreflection.com/p/wrapping-my-head-around-ai-wrappers",
-            "detail": "52 points",
-            "publishedAt": "2025-11-15"
-          },
-          {
-            "title": "Show HN: Just hit $450 in revenue with my fitness AI wrapper",
-            "url": "https://www.fitsenpai.com/",
-            "detail": "32 points",
-            "publishedAt": "2024-02-19"
-          },
-          {
-            "title": "HN is an echo chamber of AI wrappers. Moving to Slashdot",
-            "url": "https://news.ycombinator.com/item?id=47044810",
-            "detail": "7 points",
-            "publishedAt": "2026-02-17"
-          },
-          {
-            "title": "Show HN: An \"AI wrapper\" that creates beautiful LinkedIn Carousels",
-            "url": "https://www.dottypost.com/",
-            "detail": "5 points",
-            "publishedAt": "2024-05-07"
-          }
-        ],
-        "repos": [
-          {
-            "title": "helallao/perplexity-ai（★2026）",
-            "url": "https://github.com/helallao/perplexity-ai",
-            "detail": "Unofficial API Wrapper for Perplexity.ai + Account Generator with Web Interface",
-            "publishedAt": "2023-06-12"
-          },
-          {
-            "title": "iBUHub/AIStudioToAPI（★1866）",
-            "url": "https://github.com/iBUHub/AIStudioToAPI",
-            "detail": "A wrapper that exposes Google AI Studio Build as OpenAI, Gemini, and Anthropic compatible APIs.（一个将 Google AI Studio Bui",
-            "publishedAt": "2025-12-12"
-          },
-          {
-            "title": "ai/visibilityjs（★1838）",
-            "url": "https://github.com/ai/visibilityjs",
-            "detail": "Wrapper for the Page Visibility API",
-            "publishedAt": "2011-06-19"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "ai-compliance": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "Show HN: EuConform – Offline-first EU AI Act compliance tool (open source)",
-            "url": "https://github.com/Hiepler/EuConform",
-            "detail": "71 points",
-            "publishedAt": "2026-01-09"
-          },
-          {
-            "title": "Show HN: Privacyforge.ai – AI privacy compliance documents that work",
-            "url": "https://www.privacyforge.ai/",
-            "detail": "15 points",
-            "publishedAt": "2025-09-28"
-          },
-          {
-            "title": "What are enterprise worried about for AI compliance for LLMs?",
-            "url": "https://news.ycombinator.com/item?id=38014867",
-            "detail": "9 points",
-            "publishedAt": "2023-10-25"
-          },
-          {
-            "title": "Show HN: OpenComplAI – open-source EU AI Act compliance checks in CI/CD",
-            "url": "https://github.com/opencomplai/opencomplai",
-            "detail": "7 points",
-            "publishedAt": "2026-08-14"
-          }
-        ],
-        "repos": [
-          {
-            "title": "prowler-cloud/prowler（★15270）",
-            "url": "https://github.com/prowler-cloud/prowler",
-            "detail": "This repo hosts Prowler OSS (CLI and Local Server). Prowler is the world’s most widely used open-source cloud security p",
-            "publishedAt": "2016-08-24"
-          },
-          {
-            "title": "superagent-ai/superagent（★6877）",
-            "url": "https://github.com/superagent-ai/superagent",
-            "detail": "Superagent protects your AI applications against prompt injections, data leaks, and harmful outputs. Embed safety direct",
-            "publishedAt": "2023-05-10"
-          },
-          {
-            "title": "zakirkun/deep-eye（★2376）",
-            "url": "https://github.com/zakirkun/deep-eye",
-            "detail": "Deep Eye orchestrates multiple AI providers (OpenAI, Claude, Grok, Gemini, OLLAMA, Groq, Mistral, OpenRouter, LiteLLM, L",
-            "publishedAt": "2025-10-15"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "model-context-protocol": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "Model Context Protocol",
-            "url": "https://www.anthropic.com/news/model-context-protocol",
-            "detail": "872 points",
-            "publishedAt": "2024-11-25"
-          },
-          {
-            "title": "Donating the Model Context Protocol and establishing the Agentic AI Foundation",
-            "url": "https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation",
-            "detail": "288 points",
-            "publishedAt": "2025-12-09"
-          },
-          {
-            "title": "Adventures in Symbolic Algebra with Model Context Protocol",
-            "url": "https://www.stephendiehl.com/posts/computer_algebra_mcp/",
-            "detail": "121 points",
-            "publishedAt": "2025-05-22"
-          },
-          {
-            "title": "Show HN: Mcp-Agent – Build effective agents with Model Context Protocol",
-            "url": "https://github.com/lastmile-ai/mcp-agent",
-            "detail": "80 points",
-            "publishedAt": "2025-01-29"
-          }
-        ],
-        "repos": [
-          {
-            "title": "modelcontextprotocol/servers（★92074）",
-            "url": "https://github.com/modelcontextprotocol/servers",
-            "detail": "Model Context Protocol Reference Servers",
-            "publishedAt": "2024-11-19"
-          },
-          {
-            "title": "modelcontextprotocol/python-sdk（★24889）",
-            "url": "https://github.com/modelcontextprotocol/python-sdk",
-            "detail": "The official Python SDK for Model Context Protocol servers and clients",
-            "publishedAt": "2024-09-24"
-          },
-          {
-            "title": "microsoft/mcp-for-beginners（★17675）",
-            "url": "https://github.com/microsoft/mcp-for-beginners",
-            "detail": "This open-source curriculum introduces the fundamentals of Model Context Protocol (MCP) through real-world, cross-langua",
-            "publishedAt": "2025-04-04"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "ai-code-review": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "There is an AI code review bubble",
-            "url": "https://www.greptile.com/blog/ai-code-review-bubble",
-            "detail": "351 points",
-            "publishedAt": "2026-01-26"
-          },
-          {
-            "title": "Open Code Review – An AI-powered code review CLI tool",
-            "url": "https://github.com/alibaba/open-code-review",
-            "detail": "284 points",
-            "publishedAt": "2026-06-05"
-          },
-          {
-            "title": "How we made our AI code review bot stop leaving nitpicky comments",
-            "url": "https://www.greptile.com/blog/make-llms-shut-up",
-            "detail": "257 points",
-            "publishedAt": "2024-12-18"
-          },
-          {
-            "title": "Orchestrating AI code review at scale",
-            "url": "https://blog.cloudflare.com/ai-code-review/",
-            "detail": "145 points",
-            "publishedAt": "2026-05-26"
-          }
-        ],
-        "repos": [
-          {
-            "title": "pbakaus/impeccable（★112294）",
-            "url": "https://github.com/pbakaus/impeccable",
-            "detail": "The design vocabulary for your coding agent. Steer with polish and bolder, review with critique and audit, catch AI slop",
-            "publishedAt": "2025-11-16"
-          },
-          {
-            "title": "tirth8205/code-review-graph（★32831）",
-            "url": "https://github.com/tirth8205/code-review-graph",
-            "detail": "Local-first code intelligence graph for MCP and CLI. Builds a persistent map of your codebase so AI coding tools read on",
-            "publishedAt": "2026-02-26"
-          },
-          {
-            "title": "Gentleman-Programming/gentle-ai（★9334）",
-            "url": "https://github.com/Gentleman-Programming/gentle-ai",
-            "detail": "Gentle-AI configures the AI coding agents you already use: Claude Code, Cursor, OpenCode, Codex, Pi, and more. Choose pe",
-            "publishedAt": "2026-02-27"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "ai-coding-agent": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "OpenCode – Open source AI coding agent",
-            "url": "https://opencode.ai/",
-            "detail": "1274 points",
-            "publishedAt": "2026-03-20"
-          },
-          {
-            "title": "An AI coding agent, used to write code, needs to reduce your maintenance costs",
-            "url": "https://www.jamesshore.com/v2/blog/2026/you-need-ai-that-reduces-your-maintenance-costs",
-            "detail": "380 points",
-            "publishedAt": "2026-05-10"
-          },
-          {
-            "title": "Crush: Glamourous AI coding agent for your favourite terminal",
-            "url": "https://github.com/charmbracelet/crush",
-            "detail": "367 points",
-            "publishedAt": "2025-07-30"
-          },
-          {
-            "title": "AI coding agents generate more code, but not more software",
-            "url": "https://arstechnica.com/ai/2026/10/ai-coding-agents-generate-more-code-but-not-more-software/",
-            "detail": "365 points",
-            "publishedAt": "2026-10-12"
-          }
-        ],
-        "repos": [
-          {
-            "title": "DietrichGebert/ponytail（★193220）",
-            "url": "https://github.com/DietrichGebert/ponytail",
-            "detail": "Makes your AI agent think like the laziest senior dev in the room. The best code is the code you never wrote.",
-            "publishedAt": "2026-06-12"
-          },
-          {
-            "title": "x1xhlol/system-prompts-and-models-of-ai-tools（★144735）",
-            "url": "https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools",
-            "detail": "FULL Augment Code, Claude Code, Cluely, CodeBuddy, Comet, Cursor, Devin AI, Junie, Kiro, Leap.new, Lovable, Manus, Notio",
-            "publishedAt": "2025-03-05"
-          },
-          {
-            "title": "earendil-works/pi（★122579）",
-            "url": "https://github.com/earendil-works/pi",
-            "detail": "AI agent toolkit: unified LLM API, agent loop, TUI, coding agent CLI",
-            "publishedAt": "2025-08-09"
-          }
-        ]
-      },
-      "relatedQueries": []
-    },
-    "llm-fine-tuning": {
-      "evidence": {
-        "hn": [
-          {
-            "title": "LoRA from scratch: implementation for LLM finetuning",
-            "url": "https://lightning.ai/lightning-ai/studios/code-lora-from-scratch?view=public&section=all",
-            "detail": "339 points",
-            "publishedAt": "2024-01-22"
-          },
-          {
-            "title": "Takeaways from hundreds of LLM finetuning experiments with LoRA",
-            "url": "https://lightning.ai/pages/community/lora-insights/",
-            "detail": "258 points",
-            "publishedAt": "2023-10-13"
-          },
-          {
-            "title": "How to think about creating a dataset for LLM fine-tuning evaluation",
-            "url": "https://mlops.systems/posts/2024-06-25-evaluation-finetuning-manual-dataset.html",
-            "detail": "139 points",
-            "publishedAt": "2024-06-27"
-          },
-          {
-            "title": "Open-Source Data Collection Platform for LLM Fine-Tuning and RLHF",
-            "url": "https://argilla.io/blog/argilla-for-llms/",
-            "detail": "115 points",
-            "publishedAt": "2023-06-05"
-          }
-        ],
-        "repos": [
-          {
-            "title": "hiyouga/LlamaFactory（★76095）",
-            "url": "https://github.com/hiyouga/LlamaFactory",
-            "detail": "Unified Efficient Fine-Tuning of 100+ LLMs & VLMs (ACL 2024)",
-            "publishedAt": "2023-05-28"
-          },
-          {
-            "title": "dipakkr/awesome-ai-engineering（★22589）",
-            "url": "https://github.com/dipakkr/awesome-ai-engineering",
-            "detail": "🚀 A curated collection of AI engineering resources, roadmaps, tools, and projects covering LLMs, RAG, AI Agents, MCP, f",
-            "publishedAt": "2018-09-17"
-          },
-          {
-            "title": "kvcache-ai/ktransformers（★19684）",
-            "url": "https://github.com/kvcache-ai/ktransformers",
-            "detail": "A Flexible Framework for Experiencing Heterogeneous LLM Inference/Fine-tune Optimizations",
-            "publishedAt": "2024-07-26"
-          }
-        ]
-      },
-      "relatedQueries": []
     }
   },
   "board": {
