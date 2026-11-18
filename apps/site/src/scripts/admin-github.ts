@@ -19,11 +19,37 @@ import { $, apiGet, apiPost, debounce, esc, fmtNum, fmtTime } from "./admin-shar
 
 interface Job {
   id: string;
-  kind: "fetch" | "publish";
+  /** fetch 采集 / refresh 更新选中 / publish 发布 */
+  kind: "fetch" | "refresh" | "publish";
   status: string;
   params: string;
   run_url: string | null;
   created_at: number;
+}
+
+/** 线上榜单的一行：名次 + 数值 + 上次采集时间 + 候选池状态 */
+interface ListedRepo {
+  fullName: string;
+  owner: string;
+  rank: number;
+  score: number;
+  stars: number;
+  forks: number;
+  language: string | null;
+  description: string | null;
+  grade: string | null;
+  pushedAt: string | null;
+  lastCrawledAt: string | null;
+  /** 候选池里的队列状态：enriching / candidate / rejected … */
+  staging: string | null;
+}
+
+interface ListedResp {
+  version: string;
+  total: number;
+  refreshPending: number;
+  items: ListedRepo[];
+  detail?: string;
 }
 
 interface CandidateView {
@@ -166,6 +192,10 @@ interface PreviewResp {
 /* --------------------------------- 状态 --------------------------------- */
 
 const PAGE_SIZE = 30;
+/** 线上榜单每页 20 条：一屏看全，勾一页就更新一页 */
+const LISTED_PAGE_SIZE = 20;
+/** 与 API 的 MAX_REFRESH_REPOS 保持一致 */
+const MAX_REFRESH_REPOS = 60;
 
 const state = {
   filter: "all",
@@ -175,6 +205,13 @@ const state = {
   preview: null as Preview | null,
   polling: 0 as number | undefined,
   mounted: false,
+  /** 子页签：fetch 数据抓取 / listed 线上榜单 */
+  view: "fetch" as "fetch" | "listed",
+  listed: null as ListedResp | null,
+  listedFilter: "all",
+  listedQ: "",
+  listedPage: 1,
+  listedSelected: new Set<string>(),
 };
 
 /* -------------------------------- 小工具 -------------------------------- */
@@ -192,6 +229,20 @@ function statusBadge(status: string): { label: string; cls: string } {
     default:
       return { label: "排队中", cls: "bg-surface-2 text-ink-muted" };
   }
+}
+
+const JOB_KINDS: Record<string, string> = {
+  fetch: "采集",
+  refresh: "更新",
+  publish: "发布",
+};
+
+/** 距今天数；解析失败返回 null */
+function ageDays(iso: string | null): number | null {
+  if (!iso) return null;
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return null;
+  return Math.max(0, Math.floor((Date.now() - t) / 86_400_000));
 }
 
 /** 星标按万/千缩写，2000 行的表格里没必要写全 */
@@ -299,16 +350,17 @@ function renderJobs(jobs: Job[]): void {
         try {
           const p = JSON.parse(job.params) as Record<string, unknown>;
           if (job.kind === "fetch") return `目标 ${p.target ?? "?"} 条${p.refreshCache ? " · 强制重搜" : ""}`;
-          return `合并 ${p.incoming ?? "?"} 个候选 · 更新 ${p.updates ?? 0} 条`;
+          if (job.kind === "refresh") return `定向重采 ${p.count ?? "?"} 个仓库`;
+          return `合并 ${p.incoming ?? "?"} 个候选 · 更新 ${p.updates ?? 0} 条${p.patch ? " · 增量" : ""}`;
         } catch {
-          return job.kind === "fetch" ? "采集" : "发布";
+          return JOB_KINDS[job.kind] ?? job.kind;
         }
       })();
       const link = job.run_url
         ? `<a href="${esc(job.run_url)}" target="_blank" rel="noopener" class="text-primary hover:underline">日志</a>`
         : "—";
       return `<div class="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2.5 text-xs last:border-b-0">
-          <span class="w-14 shrink-0 text-ink-muted">${job.kind === "fetch" ? "采集" : "发布"}</span>
+          <span class="w-14 shrink-0 text-ink-muted">${esc(JOB_KINDS[job.kind] ?? job.kind)}</span>
           <span class="min-w-0 flex-1 truncate text-ink-secondary">${esc(params)}</span>
           <span class="shrink-0 rounded-full px-2 py-0.5 font-semibold ${badge.cls}">${badge.label}</span>
           <span class="w-24 shrink-0 text-right text-ink-muted">${fmtTime(job.created_at)}</span>
@@ -396,9 +448,51 @@ function renderStaging(data: StagingResp): void {
       </span>`;
 }
 
+/**
+ * 线上榜单页签里的「待发布」：同一份预览数据，换个入口。
+ *
+ * 用户的重心在线上榜单那侧（勾几条 → 更新 → 发布），所以那边要能直接看到
+ * 「这次会动多少」，不用切回数据抓取页签；完整的变动清单仍放在抓取页。
+ */
+function renderListedPublish(p: Preview | null): void {
+  const summary = $("gh-listed-publish-summary");
+  const btn = $("gh-listed-publish-btn") as HTMLButtonElement;
+  const box = $("gh-listed-publish-changes");
+  if (!p) {
+    summary.textContent = "候选池为空，先采集一轮或勾选仓库更新。";
+    btn.disabled = true;
+    box.innerHTML = "";
+    return;
+  }
+  const idle = p.incoming === 0;
+  summary.textContent = idle
+    ? "没有待发布的仓库"
+    : `合并 ${p.incoming} 个（在榜刷新 ${p.inBoardRefresh}）· 进榜 ${p.entered} · 出榜 ${p.exited} · 上升 ${p.up} · 下降 ${p.down}`;
+  btn.disabled = idle;
+  if (idle) {
+    box.innerHTML = "";
+    return;
+  }
+  const brief = [...p.named]
+    .sort((a, b) => Math.min(a.from ?? 1e9, a.to ?? 1e9) - Math.min(b.from ?? 1e9, b.to ?? 1e9))
+    .slice(0, 12)
+    .map(
+      (c) => `<div class="flex items-center gap-2 border-b border-border px-1 py-1 text-xs last:border-b-0">
+          ${changeBadge(c)}
+          <span class="min-w-0 flex-1 truncate text-ink">${esc(c.fullName)}</span>
+          <span class="shrink-0 tabular-nums text-ink-muted">${c.from ? `#${c.from}` : "—"} → ${c.to ? `#${c.to}` : "—"}</span>
+        </div>`,
+    )
+    .join("");
+  box.innerHTML = brief
+    ? `<div class="max-h-52 overflow-y-auto rounded-lg border border-border px-2">${brief}</div>`
+    : "";
+}
+
 /** 发布预览：谁进榜、谁被挤出去、前 50 谁动了 —— 本页的核心 */
 function renderPreview(data: PreviewResp): void {
   const p = data.preview;
+  renderListedPublish(p);
   const btn = $("gh-publish-btn") as HTMLButtonElement;
   const summary = $("gh-publish-summary");
   const box = $("gh-publish-changes");
@@ -488,7 +582,208 @@ function renderPreview(data: PreviewResp): void {
       ${lastBlock}`;
 }
 
+/* ------------------------------- 线上榜单 -------------------------------- */
+
+/** 队列状态文案：这里只说「在队列里到哪一步」，新鲜度归更新时间列 */
+function listedStage(stage: string | null): string {
+  switch (stage) {
+    case "enriching":
+      return `<span class="rounded-full bg-primary-soft px-2 py-0.5 text-[11px] font-semibold text-primary">更新中</span>`;
+    case "candidate":
+      return `<span class="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-semibold text-accent">待发布</span>`;
+    case "rejected":
+      return `<span class="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-ink-muted">已拒绝</span>`;
+    default:
+      return `<span class="text-xs text-ink-muted">—</span>`;
+  }
+}
+
+/** 正在跑的不允许重复提交，否则同一条会被塞进两条流水线 */
+function listedPickable(row: ListedRepo): boolean {
+  return row.staging !== "enriching";
+}
+
+function visibleListed(data: ListedResp): ListedRepo[] {
+  const q = state.listedQ.toLowerCase();
+  return data.items.filter((row) => {
+    if (q && !row.fullName.toLowerCase().includes(q) && !(row.description ?? "").toLowerCase().includes(q)) {
+      return false;
+    }
+    /* 从未采集按「很久没更新」算，落在所有未更新档里 */
+    const age = ageDays(row.lastCrawledAt) ?? 999;
+    if (state.listedFilter === "d7") return age >= 7;
+    if (state.listedFilter === "d10") return age >= 10;
+    if (state.listedFilter === "d30") return age >= 30;
+    if (state.listedFilter === "queued") return row.staging !== null;
+    return true;
+  });
+}
+
+function listedOn(rows: ListedRepo[]): boolean {
+  return rows.length > 0 && rows.every((row) => state.listedSelected.has(row.fullName));
+}
+
+/** 当前页的行（筛选后的第 N 页） */
+function listedPageRows(): ListedRepo[] {
+  if (!state.listed) return [];
+  const visible = visibleListed(state.listed);
+  const pages = Math.max(1, Math.ceil(visible.length / LISTED_PAGE_SIZE));
+  const page = Math.min(state.listedPage, pages);
+  return visible.slice((page - 1) * LISTED_PAGE_SIZE, page * LISTED_PAGE_SIZE);
+}
+
+/** 单行勾选后只同步表头三个控件，不重渲染整表（否则滚动位置会跳） */
+function syncListedHead(): void {
+  if (!state.listed) return;
+  const visible = visibleListed(state.listed);
+  const pages = Math.max(1, Math.ceil(visible.length / LISTED_PAGE_SIZE));
+  if (state.listedPage > pages) state.listedPage = pages;
+  const slice = visible.slice(
+    (state.listedPage - 1) * LISTED_PAGE_SIZE,
+    state.listedPage * LISTED_PAGE_SIZE,
+  );
+
+  const box = $("gh-listed-select-all") as HTMLInputElement | null;
+  if (box) {
+    const pagePickable = slice.filter(listedPickable);
+    const picked = pagePickable.filter((row) => state.listedSelected.has(row.fullName));
+    box.checked = pagePickable.length > 0 && picked.length === pagePickable.length;
+    box.indeterminate = picked.length > 0 && picked.length < pagePickable.length;
+    box.disabled = pagePickable.length === 0;
+  }
+
+  const cur = $("gh-listed-pick-current") as HTMLButtonElement | null;
+  if (cur) {
+    const pagePickable = slice.filter(listedPickable);
+    const on = listedOn(pagePickable);
+    cur.textContent = on && pagePickable.length > 0 ? "取消本页" : "本页";
+    cur.disabled = pagePickable.length === 0;
+  }
+
+  const all = $("gh-listed-pick-page") as HTMLButtonElement | null;
+  if (all) {
+    const pickable = visible.filter(listedPickable);
+    const on = listedOn(pickable);
+    all.textContent = on && pickable.length > 0 ? "取消" : "全选";
+    all.title =
+      pickable.length === 0
+        ? "当前筛选结果里没有可勾选的仓库"
+        : `全选当前筛选结果（跨页，共 ${pickable.length} 条）；再点一次取消`;
+    all.disabled = pickable.length === 0;
+  }
+
+  const btn = $("gh-listed-refresh") as HTMLButtonElement | null;
+  if (btn) {
+    const n = state.listedSelected.size;
+    btn.textContent = n > 0 ? `更新选中（${n}）` : "更新选中";
+    btn.disabled = n === 0 || n > MAX_REFRESH_REPOS;
+    btn.title =
+      n > MAX_REFRESH_REPOS
+        ? `一次最多 ${MAX_REFRESH_REPOS} 个，已选 ${n} 个`
+        : "只重采选中的仓库，结果进候选池";
+  }
+}
+
+function renderListed(data: ListedResp): void {
+  state.listed = data;
+  const meta = $("gh-listed-meta");
+  const body = $("gh-listed-body");
+  const pager = $("gh-listed-pager");
+
+  const stale7 = data.items.filter((r) => (ageDays(r.lastCrawledAt) ?? 999) >= 7).length;
+  const stale30 = data.items.filter((r) => (ageDays(r.lastCrawledAt) ?? 999) >= 30).length;
+  meta.textContent = data.detail
+    ? data.detail
+    : `版本 ${data.version || "—"} · 共 ${fmtNum(data.total)} 条 · 7 天未更新 ${fmtNum(stale7)} · 30 天未更新 ${fmtNum(stale30)}${
+        data.refreshPending ? ` · 候选池待发布 ${fmtNum(data.refreshPending)}` : ""
+      }`;
+
+  const rows = visibleListed(data);
+  if (!rows.length) {
+    body.innerHTML = `<tr><td colspan="9" class="px-4 py-10 text-center text-xs text-ink-muted">没有符合条件的仓库</td></tr>`;
+    pager.innerHTML = "";
+    syncListedHead();
+    return;
+  }
+
+  const pages = Math.max(1, Math.ceil(rows.length / LISTED_PAGE_SIZE));
+  if (state.listedPage > pages) state.listedPage = pages;
+  const slice = rows.slice(
+    (state.listedPage - 1) * LISTED_PAGE_SIZE,
+    state.listedPage * LISTED_PAGE_SIZE,
+  );
+
+  body.innerHTML = slice
+    .map((row) => {
+      const age = ageDays(row.lastCrawledAt);
+      const ageNote =
+        age === null
+          ? ""
+          : age >= 30
+            ? `<span class="text-danger">${age} 天前</span>`
+            : age >= 10
+              ? `<span class="text-accent">${age} 天前</span>`
+              : age >= 7
+                ? `<span class="text-ink-secondary">${age} 天前</span>`
+                : `<span class="text-ink-muted">${age === 0 ? "今天" : `${age} 天前`}</span>`;
+      const picked = state.listedSelected.has(row.fullName);
+      return `<tr class="transition hover:bg-surface-2/50">
+          <td class="px-3 py-2.5">
+            <input
+              type="checkbox"
+              class="h-3.5 w-3.5 accent-primary"
+              data-gh-listed-pick="${esc(row.fullName)}"
+              ${picked ? "checked" : ""}
+              ${listedPickable(row) ? "" : "disabled"}
+              title="${listedPickable(row) ? "勾选后点「更新选中」重采这个仓库" : "正在更新中"}"
+            />
+          </td>
+          <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-muted">#${row.rank}</td>
+          <td class="max-w-[320px] px-4 py-2.5">
+            <a href="https://github.com/${esc(row.fullName)}" target="_blank" rel="noopener" class="block max-w-full truncate font-medium text-ink hover:text-primary">${esc(row.fullName)}</a>
+            <div class="mt-0.5 truncate text-[11px] text-ink-muted">${esc(row.description || "（无简介）")}</div>
+          </td>
+          <td class="px-4 py-2.5 text-xs text-ink-secondary">${esc(row.language || "—")}</td>
+          <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${fmtStars(row.stars)}</td>
+          <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${row.score.toFixed(1)}</td>
+          <td class="whitespace-nowrap px-4 py-2.5 text-xs tabular-nums text-ink-secondary">
+            <span class="block">${row.lastCrawledAt ? fmtTime(row.lastCrawledAt) : "—"}</span>
+            ${ageNote ? `<span class="text-[11px]">${ageNote}</span>` : ""}
+          </td>
+          <td class="px-4 py-2.5">${listedStage(row.staging)}</td>
+          <td class="whitespace-nowrap px-4 py-2.5 text-right">
+            <a href="https://github.com/${esc(row.fullName)}" target="_blank" rel="noopener" class="text-xs text-primary hover:underline">仓库</a>
+          </td>
+        </tr>`;
+    })
+    .join("");
+
+  const prev = state.listedPage <= 1;
+  const next = state.listedPage >= pages;
+  pager.innerHTML = `<span>共 ${rows.length} 个 · 第 ${state.listedPage} / ${pages} 页</span>
+      <span class="flex gap-3">
+        <button type="button" data-gh-listed-page="${state.listedPage - 1}" class="${prev ? "cursor-not-allowed opacity-40" : "text-primary hover:underline"}" ${prev ? "disabled" : ""}>上一页</button>
+        <button type="button" data-gh-listed-page="${state.listedPage + 1}" class="${next ? "cursor-not-allowed opacity-40" : "text-primary hover:underline"}" ${next ? "disabled" : ""}>下一页</button>
+      </span>`;
+
+  syncListedHead();
+}
+
 /* --------------------------------- 加载 --------------------------------- */
+
+async function loadListed(): Promise<void> {
+  try {
+    const data = await apiGet<ListedResp>("/github/listed");
+    /* 榜单换代后清掉已不在榜上的选择，避免带着旧的 key 去提交 */
+    const onBoard = new Set(data.items.map((i) => i.fullName));
+    for (const key of [...state.listedSelected]) {
+      if (!onBoard.has(key)) state.listedSelected.delete(key);
+    }
+    renderListed(data);
+  } catch (e) {
+    $("gh-listed-meta").textContent = `读取失败：${e instanceof Error ? e.message : String(e)}`;
+  }
+}
 
 async function loadOverview(): Promise<void> {
   try {
@@ -532,6 +827,8 @@ function reloadAll(): void {
   void loadJobs();
   void loadStaging();
   void loadPreview();
+  /* 线上榜单页签比候选池大一个量级，但接口只回 2000 行的轻字段，和候选池一起拉不心疼 */
+  void loadListed();
 }
 
 /** 有任务在跑就每 12 秒刷一次，跑完自动停 */
@@ -659,6 +956,141 @@ function bind(): void {
     } catch (e) {
       btn.disabled = false;
       btn.textContent = "更新榜单";
+      window.alert(`发布失败：${e instanceof Error ? e.message : String(e)}`);
+    }
+  });
+
+  /* ------------------------------ 子页签切换 ------------------------------ */
+
+  for (const btn of document.querySelectorAll<HTMLElement>("[data-gh-view]")) {
+    btn.addEventListener("click", () => {
+      const view = btn.dataset.ghView === "listed" ? "listed" : "fetch";
+      state.view = view;
+      for (const b of document.querySelectorAll<HTMLElement>("[data-gh-view]")) {
+        b.dataset.active = String(b === btn);
+      }
+      $("gh-view-fetch").classList.toggle("hidden", view !== "fetch");
+      $("gh-view-listed").classList.toggle("hidden", view !== "listed");
+      if (view === "listed") {
+        syncListedHead();
+        void loadListed();
+      }
+    });
+  }
+
+  /* ------------------------------ 线上榜单 -------------------------------- */
+
+  $("gh-listed-filter").addEventListener("change", (event) => {
+    state.listedFilter = (event.target as HTMLSelectElement).value;
+    state.listedPage = 1;
+    if (state.listed) renderListed(state.listed);
+  });
+
+  const search = $("gh-listed-search") as HTMLInputElement;
+  let searchTimer = 0;
+  search.addEventListener("input", () => {
+    window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => {
+      state.listedQ = search.value.trim();
+      state.listedPage = 1;
+      if (state.listed) renderListed(state.listed);
+    }, 180);
+  });
+
+  $("gh-listed-pager").addEventListener("click", (event) => {
+    const btn = (event.target as HTMLElement).closest<HTMLElement>("[data-gh-listed-page]");
+    const page = Number(btn?.dataset.ghListedPage);
+    if (!page || page === state.listedPage) return;
+    state.listedPage = page;
+    if (state.listed) renderListed(state.listed);
+  });
+
+  $("gh-listed-body").addEventListener("change", (event) => {
+    const box = (event.target as HTMLElement).closest<HTMLInputElement>("[data-gh-listed-pick]");
+    if (!box) return;
+    const key = box.dataset.ghListedPick ?? "";
+    if (!key) return;
+    if (box.checked) state.listedSelected.add(key);
+    else state.listedSelected.delete(key);
+    /* 只同步表头，不重渲染：重渲染会把滚动位置弹回顶部 */
+    syncListedHead();
+  });
+
+  $("gh-listed-select-all").addEventListener("change", (event) => {
+    const on = (event.target as HTMLInputElement).checked;
+    for (const row of listedPageRows().filter(listedPickable)) {
+      if (on) state.listedSelected.add(row.fullName);
+      else state.listedSelected.delete(row.fullName);
+    }
+    if (state.listed) renderListed(state.listed);
+  });
+
+  $("gh-listed-pick-current").addEventListener("click", () => {
+    const rows = listedPageRows().filter(listedPickable);
+    const allOn = listedOn(rows);
+    for (const row of rows) {
+      if (allOn) state.listedSelected.delete(row.fullName);
+      else state.listedSelected.add(row.fullName);
+    }
+    if (state.listed) renderListed(state.listed);
+  });
+
+  $("gh-listed-pick-page").addEventListener("click", () => {
+    if (!state.listed) return;
+    const rows = visibleListed(state.listed).filter(listedPickable);
+    const allOn = listedOn(rows);
+    for (const row of rows) {
+      if (allOn) state.listedSelected.delete(row.fullName);
+      else state.listedSelected.add(row.fullName);
+    }
+    renderListed(state.listed);
+  });
+
+  $("gh-listed-refresh").addEventListener("click", async () => {
+    const repos = [...state.listedSelected];
+    if (!repos.length) return;
+    if (repos.length > MAX_REFRESH_REPOS) {
+      window.alert(`一次最多更新 ${MAX_REFRESH_REPOS} 个，当前选中 ${repos.length} 个`);
+      return;
+    }
+    const btn = $("gh-listed-refresh") as HTMLButtonElement;
+    const label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "提交中…";
+    try {
+      await apiPost("/github/refresh", { repos });
+      state.listedSelected.clear();
+      btn.textContent = `已提交 ${repos.length} 个`;
+      void loadJobs();
+      void loadListed();
+      window.setTimeout(() => {
+        if (btn.isConnected) btn.textContent = "更新选中";
+        syncListedHead();
+      }, 3000);
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = label ?? "更新选中";
+      window.alert(`提交失败：${e instanceof Error ? e.message : String(e)}`);
+    }
+  });
+
+  $("gh-listed-publish-btn").addEventListener("click", async () => {
+    if (!confirmPublish()) return;
+    const btn = $("gh-listed-publish-btn") as HTMLButtonElement;
+    btn.disabled = true;
+    btn.textContent = "提交中…";
+    try {
+      await apiPost("/github/publish", {});
+      btn.textContent = "已提交";
+      void loadJobs();
+      window.setTimeout(() => {
+        btn.textContent = "发布";
+        void loadPreview();
+        void loadListed();
+      }, 4000);
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = "发布";
       window.alert(`发布失败：${e instanceof Error ? e.message : String(e)}`);
     }
   });

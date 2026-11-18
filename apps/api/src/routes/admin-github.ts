@@ -24,8 +24,9 @@ import {
   type WorkflowRun,
 } from "../lib/github";
 import { readBoardStats, type BoardStats } from "../lib/board-stats";
-import { listWorkspace, setItemStatus } from "../lib/board-items";
+import { listWorkspace, setItemsStatus, setItemStatus } from "../lib/board-items";
 import { readReport } from "../lib/reports";
+import { currentVersion } from "../lib/versions";
 
 const github = new Hono<{ Bindings: Env }>();
 
@@ -373,6 +374,157 @@ github.post("/staging/reject", async (c) => {
   return c.json({ ok: true, fullName, rejected: wantReject });
 });
 
+/* -------------------------------- 线上榜单 -------------------------------- */
+
+/** 线上榜单行：只取列表要显示的字段，不把整张卡片捞出来 */
+interface ListedRepoRow {
+  item_key: string;
+  rank: number;
+  score: number;
+  name: string;
+  url: string | null;
+  stars: number | null;
+  forks: number | null;
+  language: string | null;
+  description: string | null;
+  pushed_at: string | null;
+  last_crawled: string | null;
+  grade: string | null;
+}
+
+/**
+ * 一次最多重采多少个。
+ *
+ * 定向重采是「一个仓库一次 /repos/{full}」，60 个 ≈ 一分钟，远低于
+ * token 限额（5000/h）；真正花钱的是发布那一步，所以上限配合增量写库一起用。
+ */
+const MAX_REFRESH_REPOS = 60;
+
+/**
+ * 线上榜单：名次 + 数值 + 上次采集时间 + 候选池状态。
+ *
+ * 与趋势榜 /trends/listed 同一思路：更新时间用来判断该不该重采，
+ * staging 用来避免「已经在队列里了又提交一遍」。
+ */
+github.get("/listed", async (c) => {
+  const version = await currentVersion(c.env.DB);
+  if (!version) {
+    return c.json({
+      version: "",
+      total: 0,
+      items: [],
+      refreshPending: 0,
+      detail: "库里还没有发布过 GitHub 榜",
+    });
+  }
+
+  const [{ results }, ws] = await Promise.all([
+    c.env.DB.prepare(
+      `SELECT item_key, rank, score, name, url,
+              json_extract(card,'$.stars') AS stars,
+              json_extract(card,'$.forks') AS forks,
+              json_extract(card,'$.language') AS language,
+              json_extract(card,'$.description') AS description,
+              json_extract(card,'$.pushedAt') AS pushed_at,
+              json_extract(card,'$.lastCrawledAt') AS last_crawled,
+              json_extract(card,'$.productScore.grade') AS grade
+       FROM board_listed
+       WHERE version = ? AND board = 'github'
+       ORDER BY rank ASC, name ASC`,
+    )
+      .bind(version)
+      .all<ListedRepoRow>(),
+    listWorkspace<StagingCandidate>(c.env.DB, "github"),
+  ]);
+
+  const staging = new Map<string, string>();
+  for (const t of ws.items) {
+    const stage = (t as unknown as { stage?: string }).stage;
+    if (stage) staging.set(t.repo.fullName.toLowerCase(), stage);
+  }
+
+  const items = (results ?? []).map((r) => ({
+    fullName: r.name,
+    owner: r.name.split("/")[0] ?? "",
+    rank: r.rank,
+    score: r.score,
+    stars: r.stars ?? 0,
+    forks: r.forks ?? 0,
+    language: r.language,
+    description: r.description,
+    grade: r.grade,
+    pushedAt: r.pushed_at,
+    /** 上次真正采到数据的日期：判断「该不该更新」就看它 */
+    lastCrawledAt: r.last_crawled ?? r.pushed_at,
+    /* board_listed 的 item_key 是原样的 fullName，工作区用小写，这里要转一道 */
+    staging: staging.get(r.name.toLowerCase()) ?? null,
+  }));
+
+  /* 队列里有多少是「线上词的重采」——发布时这些走增量，不算新进榜 */
+  const onBoard = new Set(items.map((i) => i.fullName.toLowerCase()));
+  const refreshPending = ws.items.filter((t) => onBoard.has(t.repo.fullName.toLowerCase())).length;
+
+  return c.json({ version, total: items.length, refreshPending, items });
+});
+
+/**
+ * 更新选中：对指定仓库做定向重采。
+ *
+ * 和「采集」的区别是这条路不打搜索、不重置候选池：N 个仓库就是 N 次请求，
+ * 结果按「在榜刷新」写进候选池，发布时只改写这几行（patchBoard）。
+ * 以前没有这条路，想刷新十几个仓库只能跑一次全量采集（700+ 请求、近 50 分钟），
+ * 发布时还要重写全榜两万三千行 —— 成本完全不成比例。
+ */
+github.post("/refresh", async (c) => {
+  const cfg = ghConfig(c.env);
+  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 400);
+
+  const body = await c.req
+    .json<{ repos?: unknown }>()
+    .catch(() => ({}) as { repos?: unknown });
+  const raw = Array.isArray(body.repos) ? body.repos : [];
+  const repos = [
+    ...new Set(
+      raw
+        .map((r) => String(r).trim())
+        .filter((r) => /^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(r))
+        .map((r) => r),
+    ),
+  ];
+  if (repos.length === 0) return c.json({ error: "repos_required" }, 400);
+  if (repos.length > MAX_REFRESH_REPOS) {
+    return c.json({ error: "too_many_repos", limit: MAX_REFRESH_REPOS }, 400);
+  }
+
+  /* 先标「更新中」，避免同一条被连点两次扔进两条流水线 */
+  await setItemsStatus(
+    c.env.DB,
+    "github",
+    repos.map((r) => r.toLowerCase()),
+    "enriching",
+  ).catch(() => 0);
+
+  try {
+    const run = await dispatchWorkflow(cfg, FETCH_WORKFLOW, {
+      target: String(DEFAULT_TARGET),
+      refresh_cache: "0",
+      repos: repos.join(","),
+    });
+    await insertJob(c.env, "refresh", { count: repos.length, repos: repos.slice(0, 5) }, run, null);
+    return c.json({ ok: true, run, count: repos.length });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    await setItemsStatus(
+      c.env.DB,
+      "github",
+      repos.map((r) => r.toLowerCase()),
+      "candidate",
+    ).catch(() => 0);
+    await insertJob(c.env, "refresh", { count: repos.length }, null, msg);
+    return c.json({ error: "dispatch_failed", detail: msg }, 502);
+  }
+});
+
 /** 发布预览：谁进榜、谁被挤出去、前 50 谁动了 */
 github.get("/publish/preview", async (c) => {
   const { file } = await loadStaging(c.env);
@@ -448,16 +600,28 @@ github.post("/publish", async (c) => {
 
   const { report } = buildView(file);
 
+  /*
+   * 增量还是整版：全是「在榜仓库重新采集」时走 patch。
+   *
+   * 整版发布要建新快照 = 全榜两万三千行 rows_written，只刷新十几个星标
+   * 也这么干太亏；patch 只改变动行（外加版本元数据），是工具榜验证过的作法。
+   * 只要有一个新仓库要进榜，就得走整版 —— 新版本才对应一个可回滚的名次表。
+   */
+  const boardKeys = new Set((file.board?.rows ?? []).map((r) => r.fullName.toLowerCase()));
+  const allInBoard = boardKeys.size > 0 && pending.every((x) => boardKeys.has(x.repo.fullName.toLowerCase()));
+  const patch = allInBoard;
+
   try {
     const run = await dispatchWorkflow(cfg, PUBLISH_WORKFLOW, {
       incoming: String(pending.length),
       /** 这份摘要会回传到 Actions，发布后与真实结果对账 */
       expected_significant: String(report.significant.length),
+      patch: patch ? "1" : "0",
     });
     await insertJob(
       c.env,
       "publish",
-      { incoming: pending.length, updates: updatesCount },
+      { incoming: pending.length, updates: updatesCount, patch },
       run,
       null,
     );
@@ -466,6 +630,7 @@ github.post("/publish", async (c) => {
       run,
       incoming: pending.length,
       updates: updatesCount,
+      patch,
       /** 发布前的预计变化，方便用户核对 */
       expected: reportSummary(report),
     });

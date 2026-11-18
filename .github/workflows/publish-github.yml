@@ -15,6 +15,10 @@ on:
         description: "发布前预览到的显著变动数（仅回显，用于对账）"
         required: false
         default: ""
+      patch:
+        description: "1 = 增量发布：只改写变动的行，不新建榜单快照（只更新在榜仓库时用）"
+        required: false
+        default: "0"
 
 concurrency:
   group: publish-github
@@ -53,7 +57,9 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: |
-          out=$(pnpm exec tsx scripts/admin/publish-github.ts)
+          ARGS=""
+          if [ "${{ inputs.patch }}" = "1" ]; then ARGS="--patch"; fi
+          out=$(pnpm exec tsx scripts/admin/publish-github.ts ${ARGS})
           echo "$out"
           summary=$(echo "$out" | grep '##GH_PUBLISH_RESULT##' | tail -1)
           echo "summary=$summary" >> "$GITHUB_OUTPUT"

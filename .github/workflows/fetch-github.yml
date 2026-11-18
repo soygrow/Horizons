@@ -19,6 +19,10 @@ on:
         description: "强制重搜（忽略 3 小时内的候选缓存，慢很多）"
         required: false
         default: "0"
+      repos:
+        description: "定向重采：owner/repo，逗号分隔；留空 = 全量采集。填了就只抓这些仓库的数值，不跑搜索"
+        required: false
+        default: ""
 
 concurrency:
   group: fetch-github
@@ -62,6 +66,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
           TARGET: ${{ inputs.target }}
           REFRESH_CACHE: ${{ inputs.refresh_cache }}
+          # 定向重采名单；非空时脚本只打 N 次 /repos/{full}，不跑搜索
+          REFRESH_REPOS: ${{ inputs.repos }}
           # 候选池落 D1（后台只读库）；失败只告警，不阻塞候选池提交
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -70,6 +76,9 @@ jobs:
           args=""
           if [ "${REFRESH_CACHE}" = "1" ]; then
             args="--refresh-cache"
+          fi
+          if [ -n "${REFRESH_REPOS}" ]; then
+            args="$args --repos=${REFRESH_REPOS}"
           fi
           out=$(pnpm exec tsx scripts/admin/fetch-github-staging.ts ${args})
           echo "$out"

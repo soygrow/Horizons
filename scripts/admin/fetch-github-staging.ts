@@ -66,6 +66,22 @@ const SEARCH_PAGES = Math.min(5, Math.max(1, parseInt(process.env.SEARCH_PAGES ?
 const SEARCH_DELAY = Math.max(2300, parseInt(process.env.SEARCH_DELAY ?? "3800", 10) || 3800);
 const DRY = process.argv.includes("--dry");
 const REFRESH_CACHE = process.argv.includes("--refresh-cache");
+
+/**
+ * 定向重采名单（--repos=owner/repo,...，或环境变量 REFRESH_REPOS）。
+ *
+ * 后台「线上榜单 → 更新选中」走这条路径：只打 N 次 /repos/{full}，
+ * 不跑搜索、不碰候选池里其它条目。全量采集一次要 700+ 次搜索接口、
+ * 近 50 分钟，只为刷新十几个仓库的星标完全没必要。
+ */
+const REPOS: string[] = (() => {
+  const arg = process.argv.find((a) => a.startsWith("--repos="))?.slice("--repos=".length);
+  const raw = arg ?? process.env.REFRESH_REPOS ?? "";
+  return raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => /^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(s));
+})();
 /**
  * 候选缓存的有效期（分钟）。默认 3 小时：
  * 全量搜索要打 700+ 次接口、跑近 50 分钟，后台每次点「采集」都重搜没有意义；
@@ -374,7 +390,174 @@ async function syncStagingToD1(staging: RepoStagingFile): Promise<void> {
   );
 }
 
+/** 单个仓库的实时数值（/repos/{full}）。null = 404 / 限流 / 网络失败 */
+async function fetchRepo(full: string): Promise<SearchItem | null> {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${full}`, { headers: headers() });
+    if (!res.ok) {
+      console.warn(`[refresh] ${full} → HTTP ${res.status}`);
+      return null;
+    }
+    return (await res.json()) as SearchItem;
+  } catch (e) {
+    console.warn(`[refresh] ${full} 请求失败：`, e instanceof Error ? e.message : e);
+    return null;
+  }
+}
+
+/**
+ * 定向重采：只刷新选中仓库的数值，结果进候选池等发布。
+ *
+ * 与全量采集的区别（后台「更新选中」用的就是这条）：
+ *   - 不跑搜索、不建候选缓存，N 个仓库就是 N 次请求，几秒到一分钟；
+ *   - 不清空候选池，只 upsert 这几条 —— 全量那条路会 clearCandidates 之后
+ *     重写两千行，为了刷新十条数据把整池重灌一遍毫无必要；
+ *   - 基线快照 board 保持不动，否则「发布前名次」会被这次刷新污染。
+ *
+ * 已发布的 README / 中文情报一律保留，只覆盖数值字段，和全量采集同口径。
+ */
+async function refreshRepos(keys: string[]): Promise<void> {
+  const startedAt = Date.now();
+  const board = loadBoard();
+  const prev = loadStaging();
+  const rejected = new Set(prev?.rejected ?? []);
+  for (const row of await listCandidates("github", "rejected")) rejected.add(row.itemKey);
+
+  const boardByKey = new Map(board.repos.map((r) => [r.fullName.toLowerCase(), r]));
+  const candidateByKey = new Map(
+    (prev?.candidates ?? []).map((c) => [c.repo.fullName.toLowerCase(), c]),
+  );
+
+  const updates: StagingUpdate[] = [];
+  const done: BoardItemInput[] = [];
+  const failed: string[] = [];
+
+  for (const key of keys) {
+    if (rejected.has(key)) {
+      console.log(`[refresh] ${key} 在拒绝名单里，跳过`);
+      continue;
+    }
+    /* 全名大小写以正式榜 / 用户勾选的原始写法为准 */
+    const full = boardByKey.get(key)?.fullName ?? key;
+    const d = await fetchRepo(full);
+    if (!d) {
+      failed.push(full);
+      continue;
+    }
+
+    const fresh = toRepo(d);
+    const check = checkRankable({ ...d, full_name: full } as SearchItem);
+    const old = boardByKey.get(key);
+    const merged: GitHubRepo = old
+      ? {
+          ...old,
+          stars: fresh.stars,
+          forks: fresh.forks,
+          openIssues: fresh.openIssues,
+          pushedAt: fresh.pushedAt,
+          description: fresh.description ?? old.description,
+          homepage: fresh.homepage ?? old.homepage,
+          topics: fresh.topics.length ? fresh.topics : old.topics,
+          categories: fresh.topics.length ? fresh.categories : old.categories,
+          heatScore: fresh.heatScore,
+          lastCrawledAt: fresh.lastCrawledAt,
+        }
+      : fresh;
+    merged.productScore = computeProductScore(merged);
+    const score = merged.productScore;
+
+    const candidate: StagingCandidate = {
+      /* 候选池不存 README 全文（体积），已有条目发布时会保留线上那份 */
+      repo: { ...merged, readme: "", readmeSummary: merged.readmeSummary },
+      score: score.score,
+      grade: score.grade,
+      /* 定向刷新不重排名次：后台预览会用候选池 + 榜单快照重新推演 */
+      estimatedRank: null,
+      check,
+    };
+    candidateByKey.set(key, candidate);
+
+    updates.push({
+      fullName: merged.fullName,
+      stars: merged.stars,
+      forks: merged.forks,
+      openIssues: merged.openIssues,
+      pushedAt: merged.pushedAt,
+      description: merged.description,
+      homepage: merged.homepage,
+      score: score.score,
+      grade: score.grade,
+    });
+
+    done.push({
+      itemKey: key,
+      name: merged.fullName,
+      url: merged.htmlUrl ?? null,
+      status: "candidate",
+      /* 线上词的刷新，发布时按「覆盖同仓库」处理，走增量写库 */
+      kind: "refresh",
+      judge: { score: score.score, grade: score.grade, check },
+      card: candidate,
+    });
+  }
+
+  console.log(
+    `[refresh] 命中 ${done.length} / ${keys.length} 个（失败 ${failed.length}）` +
+      `${failed.length ? `：${failed.slice(0, 5).join(", ")}` : ""}`,
+  );
+  if (done.length === 0) {
+    console.log(`##GH_STAGING_RESULT##${JSON.stringify({ ok: false, error: "no_repo_refreshed" })}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  if (!DRY) {
+    const staging: RepoStagingFile = {
+      ...(prev ?? {
+        updatedAt: new Date().toISOString(),
+        ruleVersion: RANKING_RULE_VERSION,
+        scoreModel: "pps-v4",
+        target: TARGET,
+        board: { rows: [] },
+        candidates: [],
+        updates: [],
+        rejected: [...rejected],
+        preview: null,
+      }),
+      updatedAt: new Date().toISOString(),
+      /* 本轮刷新到的仓库并进已有候选池；不覆盖全量采集的统计 */
+      candidates: [...candidateByKey.values()].sort(
+        (a, b) => (a.estimatedRank ?? 9999) - (b.estimatedRank ?? 9999),
+      ),
+      updates: [...(prev?.updates ?? []), ...updates],
+      rejected: [...rejected],
+    };
+    fs.writeFileSync(STAGING_PATH, JSON.stringify(staging, null, 2) + "\n", "utf-8");
+    console.log(`[refresh] 已写入 ${STAGING_PATH}`);
+
+    /* 只 upsert 这几条：clearCandidates + 全量重写是「更新十条写两千行」的老毛病 */
+    const n = await syncCandidates("github", done);
+    console.log(`[refresh] 候选池 upsert ${n} 条（未清空其它条目）`);
+  }
+
+  console.log(
+    `##GH_STAGING_RESULT##${JSON.stringify({
+      ok: true,
+      mode: "refresh",
+      refreshed: done.length,
+      failed: failed.length,
+      elapsedMs: Date.now() - startedAt,
+    })}`,
+  );
+}
+
 async function main(): Promise<void> {
+  /* 定向重采是另一条路：不搜索、不清池，直接返回 */
+  if (REPOS.length > 0) {
+    await refreshRepos(REPOS);
+    return;
+  }
+
   const startedAt = Date.now();
   const board = loadBoard();
   const prevStaging = loadStaging();
