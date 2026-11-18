@@ -72,8 +72,8 @@ export async function apiGet<T>(path: string): Promise<T> {
     throw new Error("unauthorized");
   }
   if (!res.ok) {
-    const body = (await res.json().catch(() => ({}))) as { error?: string };
-    throw new Error(body.error ?? `request_failed_${res.status}`);
+    const body = (await res.json().catch(() => ({}))) as { error?: string; detail?: string };
+    throw new Error(body.detail ?? body.error ?? `request_failed_${res.status}`);
   }
   return (await res.json()) as T;
 }

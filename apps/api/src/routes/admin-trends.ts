@@ -37,6 +37,7 @@ import {
 import { readBoardStats, type BoardStats } from "../lib/board-stats";
 import { listWorkspace, setItemsStatus } from "../lib/board-items";
 import { readReport } from "../lib/reports";
+import { currentVersion } from "../lib/versions";
 
 const trends = new Hono<{ Bindings: Env }>();
 type Ctx = Context<{ Bindings: Env }>;
@@ -553,6 +554,123 @@ trends.get("/publish/preview", async (c) => {
   });
 });
 
+/* -------------------------------- 线上榜单 -------------------------------- */
+
+interface ListedTrendRow {
+  item_key: string;
+  rank: number;
+  name: string;
+  variant_of: string | null;
+  slug: string | null;
+  category: string | null;
+  confidence: string | null;
+  trend_parts: string | null;
+  opp_parts: string | null;
+  first_seen: string | null;
+  last_seen: string | null;
+  updated_at: string | null;
+}
+
+/**
+ * card 里只剩 trendParts / oppParts（发布脚本把 series 剥掉了），
+ * 而评分函数恰好只用这两块，所以不用把曲线拉过来也能算分。
+ */
+function scoresFromParts(trendParts: string | null, oppParts: string | null): {
+  trend: number;
+  opportunity: number;
+  overall: number;
+} {
+  const parseParts = (raw: string | null): Record<string, number> => {
+    if (!raw) return {};
+    try {
+      const v: unknown = JSON.parse(raw);
+      return v && typeof v === "object" ? (v as Record<string, number>) : {};
+    } catch {
+      return {};
+    }
+  };
+  const fake = {
+    trendParts: parseParts(trendParts),
+    oppParts: parseParts(oppParts),
+  } as unknown as AITrend;
+  return {
+    trend: trendScore(fake),
+    opportunity: opportunityScore(fake),
+    overall: overallScore(fake),
+  };
+}
+
+/**
+ * 线上趋势词（当前版本），给「手动更新」挑词用。
+ *
+ * 与工具榜 /listed 同一思路：只取列表要显示的字段，不拉整张卡片。
+ * 别名行也一并返回（variant_of 非空、rank 继承代表词），
+ * 因为它们各自有独立页面，内容同样需要更新。
+ */
+trends.get("/listed", async (c) => {
+  const version = await currentVersion(c.env.DB);
+  if (!version) {
+    return c.json({ version: "", total: 0, items: [], refreshPending: 0, detail: "库里还没有发布过趋势榜" });
+  }
+
+  const [{ results }, ws] = await Promise.all([
+    c.env.DB.prepare(
+      `SELECT item_key, rank, name, variant_of,
+              json_extract(card,'$.slug') AS slug,
+              json_extract(card,'$.category') AS category,
+              json_extract(card,'$.confidence') AS confidence,
+              json_extract(card,'$.trendParts') AS trend_parts,
+              json_extract(card,'$.oppParts') AS opp_parts,
+              json_extract(card,'$.firstSeenAt') AS first_seen,
+              json_extract(card,'$.lastSeenAt') AS last_seen,
+              json_extract(card,'$.updatedAt') AS updated_at
+       FROM board_listed
+       WHERE version = ? AND board = 'trends'
+       ORDER BY rank ASC, variant_of IS NOT NULL, name ASC`,
+    )
+      .bind(version)
+      .all<ListedTrendRow>(),
+    listWorkspace<AITrend>(c.env.DB, "trends"),
+  ]);
+
+  // 候选池状态：同一个词已经在队列里（更新中/待发布）就标出来，避免重复提交
+  const staging = new Map<string, string>();
+  for (const t of ws.items) {
+    const stage = (t as unknown as { stage?: string }).stage;
+    if (stage) staging.set(t.slug, stage);
+  }
+  const items = (results ?? []).map((r) => {
+    const slug = r.slug ?? r.item_key;
+    return {
+      slug,
+      keyword: r.name,
+      rank: r.rank,
+      category: r.category,
+      confidence: r.confidence,
+      /** 非空表示这是别名，rank 继承代表词，不占名次 */
+      variantOf: r.variant_of,
+      firstSeenAt: r.first_seen,
+      /** 上次真正采到数据的日期：判断「该不该更新」就看它 */
+      lastSeenAt: r.last_seen ?? r.updated_at,
+      staging: staging.get(slug) ?? null,
+      scores: scoresFromParts(r.trend_parts, r.opp_parts),
+    };
+  });
+
+  /*
+   * 「候选池里待发布的线上词」按「榜上有 + 已富化」数：
+   * 候选池不记 kind（AITrend 没有 origin 字段），拿 kind==='refresh' 数会永远是 0，
+   * 而这个词是不是线上词，用榜上 slug 判断反而更准。
+   */
+  const onBoard = new Set(items.map((i) => i.slug));
+  const refreshPending = ws.items.filter((t) => {
+    const stage = (t as unknown as { stage?: string }).stage;
+    return onBoard.has(t.slug) && (stage === "enriched" || stage === "publish_failed");
+  }).length;
+
+  return c.json({ version, total: items.length, refreshPending, items });
+});
+
 /* -------------------------------- 触发流水线 -------------------------------- */
 
 /** 拉取新词：采集结果只进候选池，线上榜单不动 */
@@ -577,6 +695,100 @@ trends.post("/fetch", async (c) => {
     });
     await updateJobRun(c.env, jobId, run);
     return c.json({ ok: true, run, jobId });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    await failJob(c.env, jobId, msg);
+    return c.json({ error: "dispatch_failed", detail: msg }, 502);
+  }
+});
+
+/**
+ * 单批重采上限。
+ *
+ * 定向重采一个词 = 一次 Google Trends 曲线 + 一次 LLM 富化，约 40~60 秒；
+ * 40 个词约 40 分钟，fetch workflow 的 240 分钟窗口留足重试余量。
+ * 超限必须报错而不是截断——被静默丢掉的那部分永远不会跑，后台却显示已提交。
+ */
+const MAX_REFRESH_SLUGS = 40;
+
+/**
+ * 更新线上词：只重采选中的这几个词，曲线和内容一起刷新。
+ *
+ * 结果照例只进候选池，线上榜单不动——要上线还得去「发布」点一次，
+ * 这样更新坏了能拦下来，不会把线上词条换成更差的版本。
+ */
+trends.post("/refresh", async (c) => {
+  const cfg = ghConfig(c.env);
+  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 400);
+
+  const body = await c.req
+    .json<{ slugs?: unknown }>()
+    .catch(() => ({}) as { slugs?: unknown });
+  const raw = Array.isArray(body.slugs)
+    ? body.slugs.filter((s): s is string => typeof s === "string")
+    : [];
+  // slug 会拼进 workflow input，只允许小写字母数字与连字符
+  const slugs = [...new Set(raw.map((s) => s.trim().toLowerCase()))].filter((s) =>
+    /^[a-z0-9-]+$/.test(s),
+  );
+
+  if (slugs.length === 0) return c.json({ error: "empty_slugs", detail: "没有选中任何词" }, 400);
+  if (slugs.length > MAX_REFRESH_SLUGS) {
+    return c.json(
+      {
+        error: "too_many_slugs",
+        max: MAX_REFRESH_SLUGS,
+        received: slugs.length,
+        detail: `单批最多 ${MAX_REFRESH_SLUGS} 个，请分 ${Math.ceil(slugs.length / MAX_REFRESH_SLUGS)} 批提交`,
+      },
+      400,
+    );
+  }
+
+  // 只认当前线上榜单里的词：slug 拿错不该白跑一次 Actions
+  const version = await currentVersion(c.env.DB);
+  if (!version) return c.json({ error: "no_current_version", detail: "线上还没有趋势榜" }, 409);
+
+  const { results } = await c.env.DB.prepare(
+    "SELECT json_extract(card,'$.slug') AS slug FROM board_listed WHERE version = ? AND board = 'trends'",
+  )
+    .bind(version)
+    .all<{ slug: string | null }>();
+  const onBoard = new Set(
+    (results ?? []).map((r) => r.slug).filter((s): s is string => typeof s === "string"),
+  );
+  const valid = slugs.filter((s) => onBoard.has(s));
+  const skipped = slugs.filter((s) => !onBoard.has(s));
+  if (valid.length === 0) {
+    return c.json({ error: "not_listed", detail: "选中的词都不在当前线上榜单", skipped }, 404);
+  }
+
+  // 防重：正在跑的重叠部分不再派发，否则白烧一遍 Trends 配额与 token
+  const running = await findRunningJob(c.env, "refresh");
+  const busy = new Set(running ? jobSlugs(running) : []);
+  const todo = valid.filter((s) => !busy.has(s));
+  if (todo.length === 0) {
+    return c.json(
+      {
+        error: "already_refreshing",
+        detail: "这些词正在更新中，等这一批跑完再试",
+        runUrl: running?.run_url ?? null,
+      },
+      409,
+    );
+  }
+
+  const jobId = await insertJob(c.env, "refresh", { slugs: todo, count: todo.length }, null, null);
+  try {
+    const run = await dispatchWorkflow(cfg, FETCH_WORKFLOW, {
+      budget: String(todo.length),
+      geo: "US",
+      job_id: jobId,
+      // 有 slugs 时 workflow 会跳过发现链路，直接重采这几个词并顺带富化
+      slugs: todo.join(","),
+    });
+    await updateJobRun(c.env, jobId, run);
+    return c.json({ ok: true, run, jobId, count: todo.length, skipped });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     await failJob(c.env, jobId, msg);

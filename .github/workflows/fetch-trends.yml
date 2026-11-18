@@ -29,6 +29,10 @@ on:
         description: "后台任务 ID（仅回显，便于对日志）"
         required: false
         default: ""
+      slugs:
+        description: "定向重采的 slug（逗号分隔，留空=正常发现新词）"
+        required: false
+        default: ""
 
 # 采集、富化、发布、回滚四条流水线都会写 content/trends-staging.json 并 push 同一个分支。
 # 分成不同 group 时它们能同时跑：后 push 的会被拒（non-fast-forward），
@@ -69,9 +73,12 @@ jobs:
 
       # 采集写得慢一点：Google Trends 是这里最容易失败的一环，
       # 宁可跑 2 小时也别在中途被 429 打断。
-      # 两段式的第一段：只取曲线、趋势分和证据，不花富化的 token。
-      # 内容等后台点「富化选中」再补——采集 80 个词，人工通常只用得上十几个。
-      - name: 采集候选词（只写候选池，不富化）
+      #
+      # 两条路径：
+      #   发现新词（默认）→ 只取曲线、趋势分和证据，不花富化 token；
+      #   定向重采（传了 slugs）→ 只刷这几个已在榜的词，曲线和内容一起更新，
+      #     因为人工点「更新」要的就是内容也跟上，这些词本来就已经通过审核。
+      - name: 采集候选词（只写候选池，不碰线上）
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           TRENDS_PROXY: ${{ secrets.TRENDS_PROXY }}
@@ -83,12 +90,22 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: |
-          pnpm exec tsx scripts/fetch/trends/run.ts \
-            --staging \
-            --no-enrich \
-            --limit "${{ inputs.budget }}" \
-            --geo "${{ inputs.geo }}" \
-            ${{ inputs.patient && '--patient' || '' }}
+          if [ -n "${{ inputs.slugs }}" ]; then
+            # 定向重采：不传 --no-enrich，曲线和内容一起刷新
+            pnpm exec tsx scripts/fetch/trends/run.ts \
+              --staging \
+              --slugs "${{ inputs.slugs }}" \
+              --limit "${{ inputs.budget }}" \
+              --geo "${{ inputs.geo }}" \
+              ${{ inputs.patient && '--patient' || '' }}
+          else
+            pnpm exec tsx scripts/fetch/trends/run.ts \
+              --staging \
+              --no-enrich \
+              --limit "${{ inputs.budget }}" \
+              --geo "${{ inputs.geo }}" \
+              ${{ inputs.patient && '--patient' || '' }}
+          fi
 
       - name: 提交候选池
         run: |

@@ -187,6 +187,32 @@ interface PreviewResp {
   preview: Preview | null;
 }
 
+/** 线上榜单里的一行：当前版本已发布的词 */
+interface ListedTrend {
+  slug: string;
+  keyword: string;
+  rank: number;
+  category: string | null;
+  confidence: string | null;
+  /** 非空表示别名，名次继承代表词 */
+  variantOf: string | null;
+  firstSeenAt: string | null;
+  /** 上次采到数据的日期，判断「该不该更新」就看它 */
+  lastSeenAt: string | null;
+  /** 候选池里的状态（candidate/enriched/enriching/…），null 表示不在队列里 */
+  staging: string | null;
+  scores: { trend: number; opportunity: number; overall: number };
+}
+
+interface ListedResp {
+  version: string;
+  total: number;
+  /** 候选池里已刷新、等发布的词数 */
+  refreshPending: number;
+  items: ListedTrend[];
+  detail?: string;
+}
+
 interface TrendSplit {
   slug: string;
   keyword: string;
@@ -231,10 +257,20 @@ interface DetailResp {
 
 const PAGE_SIZE = 30;
 
+/** 线上榜单的每页条数：单批重采上限 40，翻两页刚好覆盖一批 */
+const LISTED_PAGE_SIZE = 30;
+
 const state = {
   filter: "all",
   q: "",
   page: 1,
+  /** 线上榜单：数据、筛选与勾选（和候选池的选择分开，互不干扰） */
+  listed: null as ListedResp | null,
+  listedQ: "",
+  /** all / stale(≥30 天) / old(≥60 天) / queued(已在候选池) */
+  listedFilter: "all",
+  listedPage: 1,
+  listedSelected: new Set<string>(),
   /** 勾选待富化的 slug，刷新后保留——富化是一次远程任务，选择不能被轮询清掉 */
   selected: new Set<string>(),
   staging: null as StagingResp | null,
@@ -381,6 +417,218 @@ function renderOverview(data: Overview): void {
   $("trend-kpi-changes-sub").textContent = s.lastPublish
     ? `上次发布 ${fmtTime(s.lastPublish.at)}：进 ${s.lastPublish.incoming} · 显著 ${s.lastPublish.significant} · 顺延 ${s.lastPublish.shifted}`
     : `新进榜 ${fmtNum(s.entered)}，其余按顺延处理`;
+}
+
+/* ------------------------------- 线上榜单 -------------------------------- */
+
+/** 单批重采上限，与后端 MAX_REFRESH_SLUGS 一致 */
+const REFRESH_BATCH = 40;
+
+/** 候选池状态 → 徽章。staging 非空就说明这个词已经在队列里了 */
+const STAGE_BADGES: Record<string, { label: string; cls: string }> = {
+  enriching: { label: "更新中", cls: "bg-primary-soft text-primary" },
+  candidate: { label: "待富化", cls: "bg-accent-soft text-accent" },
+  enriched: { label: "待发布", cls: "bg-accent-soft text-accent" },
+  enrich_failed: { label: "富化失败", cls: "bg-danger/10 text-danger" },
+  publishing: { label: "发布中", cls: "bg-primary-soft text-primary" },
+  publish_failed: { label: "发布失败", cls: "bg-danger/10 text-danger" },
+  rejected: { label: "已拒绝", cls: "bg-surface-2 text-ink-muted" },
+};
+
+/** 距离上次采集多少天；null 表示没有可用日期 */
+function ageDays(date: string | null): number | null {
+  if (!date) return null;
+  const ms = Date.parse(date);
+  if (!Number.isFinite(ms)) return null;
+  return Math.max(0, Math.floor((Date.now() - ms) / 86_400_000));
+}
+
+/** 这个词现在能不能勾选：正在跑的、正在发布的别再提交一遍 */
+function listedPickable(row: ListedTrend): boolean {
+  return row.staging !== "enriching" && row.staging !== "publishing";
+}
+
+function visibleListed(data: ListedResp): ListedTrend[] {
+  const q = state.listedQ.toLowerCase();
+  return data.items.filter((row) => {
+    if (q && !row.keyword.toLowerCase().includes(q) && !row.slug.includes(q)) return false;
+    const age = ageDays(row.lastSeenAt) ?? 999;
+    if (state.listedFilter === "stale") return age >= 30;
+    if (state.listedFilter === "old") return age >= 60;
+    if (state.listedFilter === "queued") return row.staging !== null;
+    return true;
+  });
+}
+
+function renderListed(data: ListedResp): void {
+  state.listed = data;
+  const meta = $("trends-listed-meta");
+  const body = $("trends-listed-body");
+  const pager = $("trends-listed-pager");
+
+  if (!data.items.length) {
+    meta.textContent = data.detail ?? "线上还没有趋势词，先采集并发布一次";
+    body.innerHTML = `<tr><td colspan="10" class="px-4 py-10 text-center text-xs text-ink-muted">线上榜单还没有趋势词</td></tr>`;
+    pager.innerHTML = "";
+    syncListedBtn();
+    return;
+  }
+
+  const stale = data.items.filter((r) => (ageDays(r.lastSeenAt) ?? 999) >= 30).length;
+  const never = data.items.filter((r) => !r.lastSeenAt).length;
+  meta.textContent =
+    `版本 ${data.version || "—"} · 共 ${fmtNum(data.total)} 条（含别名）`
+    + ` · 30 天未采集 ${fmtNum(stale)}${never ? `（其中从未采集 ${fmtNum(never)}）` : ""}`
+    + (data.refreshPending ? ` · 候选池待发布 ${fmtNum(data.refreshPending)}` : "");
+
+  const rows = visibleListed(data);
+  if (!rows.length) {
+    body.innerHTML = `<tr><td colspan="10" class="px-4 py-10 text-center text-xs text-ink-muted">没有符合条件的词</td></tr>`;
+    pager.innerHTML = "";
+    syncListedBtn();
+    return;
+  }
+
+  const pages = Math.max(1, Math.ceil(rows.length / LISTED_PAGE_SIZE));
+  if (state.listedPage > pages) state.listedPage = pages;
+  const slice = rows.slice((state.listedPage - 1) * LISTED_PAGE_SIZE, state.listedPage * LISTED_PAGE_SIZE);
+
+  body.innerHTML = slice
+    .map((row) => {
+      const age = ageDays(row.lastSeenAt);
+      const stage = row.staging ? STAGE_BADGES[row.staging] ?? { label: row.staging, cls: "bg-surface-2 text-ink-muted" } : null;
+
+      /*
+       * 状态列只回答一个问题：这个词现在要不要更新。
+       * 有候选池状态就先说状态（更新中/待发布），否则按新鲜度说事。
+       */
+      const status = stage
+        ? `<span class="rounded-full px-2 py-0.5 text-[11px] font-semibold ${stage.cls}">${esc(stage.label)}</span>`
+        : age === null
+          ? `<span class="rounded-full bg-danger/10 px-2 py-0.5 text-[11px] font-semibold text-danger">从未采集</span>`
+          : age >= 60
+            ? `<span class="rounded-full bg-danger/10 px-2 py-0.5 text-[11px] font-semibold text-danger">${age} 天未更新</span>`
+            : age >= 30
+              ? `<span class="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-semibold text-accent">${age} 天未更新</span>`
+              : `<span class="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-ink-muted">${age} 天前</span>`;
+
+      const pickable = listedPickable(row);
+      const pick = `<input type="checkbox" data-listed-pick="${esc(row.slug)}" class="h-3.5 w-3.5 accent-primary" ${state.listedSelected.has(row.slug) ? "checked" : ""} ${pickable ? "" : "disabled"} />`;
+      const score = (n: number) => (Number.isFinite(n) && n > 0 ? n.toFixed(1) : `<span class="text-ink-muted">—</span>`);
+
+      return `<tr class="transition hover:bg-surface-2/50">
+          <td class="px-3 py-2.5">${pick}</td>
+          <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${
+            row.variantOf ? `<span class="text-ink-muted" title="别名，名次继承 ${esc(row.variantOf)}">—</span>` : `#${row.rank}`
+          }</td>
+          <td class="max-w-[280px] px-4 py-2.5">
+            <span class="block truncate font-medium text-ink">${esc(row.keyword)}</span>
+            <div class="mt-0.5 truncate text-[11px] text-ink-muted">${esc(row.slug)}${
+              row.variantOf ? ` · 别名 → ${esc(row.variantOf)}` : ""
+            }</div>
+          </td>
+          <td class="px-4 py-2.5 text-xs text-ink-secondary">${esc(row.category ?? "—")}</td>
+          <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${score(row.scores.trend)}</td>
+          <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${score(row.scores.opportunity)}</td>
+          <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${score(row.scores.overall)}</td>
+          <td class="px-4 py-2.5 text-xs tabular-nums text-ink-muted">${esc(fmtTime(row.lastSeenAt))}</td>
+          <td class="px-4 py-2.5">${status}</td>
+          <td class="whitespace-nowrap px-4 py-2.5 text-right">
+            <a href="/preview/trend/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener" class="text-xs text-primary hover:underline" title="在新窗口预览详情页">预览</a>
+            <button type="button" data-listed-refresh="${esc(row.slug)}" class="ml-3 text-xs text-primary transition hover:underline ${pickable ? "" : "cursor-not-allowed opacity-40"}" ${pickable ? "" : "disabled"}>更新</button>
+          </td>
+        </tr>`;
+    })
+    .join("");
+
+  const prev = state.listedPage <= 1;
+  const next = state.listedPage >= pages;
+  pager.innerHTML = `<span>共 ${rows.length} 条 · 第 ${state.listedPage} / ${pages} 页</span>
+      <span class="flex gap-3">
+        <button type="button" data-listed-page="${state.listedPage - 1}" class="${prev ? "cursor-not-allowed opacity-40" : "text-primary hover:underline"}" ${prev ? "disabled" : ""}>上一页</button>
+        <button type="button" data-listed-page="${state.listedPage + 1}" class="${next ? "cursor-not-allowed opacity-40" : "text-primary hover:underline"}" ${next ? "disabled" : ""}>下一页</button>
+      </span>`;
+
+  syncListedBtn();
+}
+
+/** 勾选里剔掉已经不在列表或不可勾的词，按钮数字才不会骗人 */
+function syncListedBtn(): void {
+  const btn = $("trends-listed-refresh") as HTMLButtonElement | null;
+  if (!btn) return;
+  const rows = state.listed?.items ?? [];
+  for (const slug of [...state.listedSelected]) {
+    const row = rows.find((r) => r.slug === slug);
+    if (!row || !listedPickable(row)) state.listedSelected.delete(slug);
+  }
+  const n = state.listedSelected.size;
+  btn.disabled = n === 0;
+  btn.textContent = n > 0 ? `更新选中（${n}）` : "更新选中";
+}
+
+/**
+ * 更新线上词：一次只派一批，等这一批跑完再派下一批。
+ *
+ * 和富化同一个原因——同 concurrency group 只保留一个排队任务，
+ * 连发会让中间那批被顶掉，而且静默（不报错，日志里也不会出现）。
+ */
+async function runListedRefresh(slugs: string[]): Promise<void> {
+  const btn = $("trends-listed-refresh") as HTMLButtonElement | null;
+  const unique = [...new Set(slugs)];
+  if (!unique.length) return;
+
+  const batches: string[][] = [];
+  for (let i = 0; i < unique.length; i += REFRESH_BATCH) {
+    batches.push(unique.slice(i, i + REFRESH_BATCH));
+  }
+
+  const ok = window.confirm(
+    `将重采 ${unique.length} 个线上词${batches.length > 1 ? `（分 ${batches.length} 批，逐批串行跑）` : ""}。\n\n`
+      + `每个词一次 Google Trends 曲线 + 一次 LLM 富化，约 40~60 秒。\n`
+      + `结果只进候选池，需要到「发布预览」点一「更新榜单」才会上线。`,
+  );
+  if (!ok) return;
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "提交中…";
+  }
+  let sent = 0;
+  let done = 0;
+  try {
+    for (let i = 0; i < batches.length; i++) {
+      if (btn) {
+        btn.textContent = batches.length > 1 ? `更新中…（第 ${i + 1}/${batches.length} 批）` : "提交中…";
+      }
+      const resp = await apiPost<{ jobId?: string; count?: number }>("/trends/refresh", {
+        slugs: batches[i],
+      });
+      sent += resp.count ?? batches[i].length;
+      done = i + 1;
+      for (const s of batches[i]) state.listedSelected.delete(s);
+      void loadJobs();
+      if (i < batches.length - 1 && resp.jobId) await waitJobDone(resp.jobId);
+    }
+    if (btn) btn.textContent = `已提交 ${sent} 个`;
+    void loadJobs();
+    window.setTimeout(() => {
+      if (btn) btn.disabled = false;
+      void loadListed();
+      void loadStaging();
+    }, 4000);
+  } catch (e) {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "更新选中";
+    }
+    syncListedBtn();
+    const msg = e instanceof Error ? e.message : String(e);
+    window.alert(
+      sent > 0
+        ? `已提交 ${sent} 个（前 ${done} 批），第 ${done + 1} 批有中断：${msg}`
+        : `提交失败：${msg}`,
+    );
+  }
 }
 
 function renderJobs(jobs: Job[]): void {
@@ -709,6 +957,7 @@ async function waitJobDone(id: string): Promise<void> {
     if (!job) return; // 记录被挤出前 8 条，无从判断，别无限等
     if (!JOB_TERMINAL.has(job.status)) continue;
     void loadStaging();
+    void loadListed();
     if (job.status !== "success") {
       throw new Error(`上一批执行${job.status === "cancelled" ? "被取消" : "失败"}，剩余批次未派发`);
     }
@@ -734,6 +983,14 @@ async function loadStaging(): Promise<void> {
   }
 }
 
+async function loadListed(): Promise<void> {
+  try {
+    renderListed(await apiGet<ListedResp>("/trends/listed"));
+  } catch (e) {
+    $("trends-listed-meta").textContent = `读取失败：${e instanceof Error ? e.message : String(e)}`;
+  }
+}
+
 async function loadPreview(): Promise<void> {
   try {
     const data = await apiGet<PreviewResp>("/trends/publish/preview");
@@ -749,6 +1006,7 @@ function reloadAll(): void {
   void loadOverview();
   void loadJobs();
   void loadStaging();
+  void loadListed();
   void loadPreview();
 }
 
@@ -1106,6 +1364,66 @@ function bind(): void {
     if (!page || page === state.page) return;
     state.page = page;
     if (state.staging) renderStaging(state.staging);
+  });
+
+  /* --------------------------- 线上榜单的交互 --------------------------- */
+
+  /*
+   * 全选作用于筛选后的全部线上词（跨页），跳过正在跑/正在发布的。
+   * 与候选池同一套理由：367 条里挑几十个，靠翻 13 页勾不现实。
+   */
+  ($("trends-listed-select-all") as HTMLInputElement).addEventListener("change", (event) => {
+    const on = (event.target as HTMLInputElement).checked;
+    if (!state.listed) return;
+    for (const row of visibleListed(state.listed)) {
+      if (!listedPickable(row)) continue;
+      if (on) state.listedSelected.add(row.slug);
+      else state.listedSelected.delete(row.slug);
+    }
+    renderListed(state.listed);
+  });
+
+  ($("trends-listed-filter") as HTMLSelectElement).addEventListener("change", (event) => {
+    state.listedFilter = (event.target as HTMLSelectElement).value;
+    state.listedPage = 1;
+    if (state.listed) renderListed(state.listed);
+  });
+
+  $("trends-listed-search").addEventListener(
+    "input",
+    debounce(() => {
+      state.listedQ = ($("trends-listed-search") as HTMLInputElement).value.trim();
+      state.listedPage = 1;
+      if (state.listed) renderListed(state.listed);
+    }),
+  );
+
+  $("trends-listed-body").addEventListener("change", (event) => {
+    const box = (event.target as HTMLElement).closest<HTMLInputElement>("[data-listed-pick]");
+    const slug = box?.dataset.listedPick;
+    if (!slug) return;
+    if (box!.checked) state.listedSelected.add(slug);
+    else state.listedSelected.delete(slug);
+    syncListedBtn();
+  });
+
+  $("trends-listed-body").addEventListener("click", (event) => {
+    const btn = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-listed-refresh]");
+    const slug = btn?.dataset.listedRefresh;
+    if (!slug || btn?.disabled) return;
+    void runListedRefresh([slug]);
+  });
+
+  $("trends-listed-pager").addEventListener("click", (event) => {
+    const btn = (event.target as HTMLElement).closest<HTMLElement>("[data-listed-page]");
+    const page = Number(btn?.dataset.listedPage);
+    if (!page || page === state.listedPage) return;
+    state.listedPage = page;
+    if (state.listed) renderListed(state.listed);
+  });
+
+  $("trends-listed-refresh").addEventListener("click", () => {
+    void runListedRefresh([...state.listedSelected]);
   });
 
   $("trends-publish-btn").addEventListener("click", async () => {

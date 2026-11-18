@@ -49,6 +49,7 @@ import {
   saveStaging,
   syncStagingToD1,
   upsert,
+  type BatchItem,
 } from "./store";
 
 /**
@@ -125,6 +126,11 @@ interface Args {
    * 富化是唯一的大额 token 开销，砍在候选阶段能省掉大部分。
    */
   noEnrich: boolean;
+  /**
+   * 定向重采：只刷新这几个已在榜的词（后台「线上榜单」勾选后传进来）。
+   * 跳过发现与准入判定，也不看 refreshAfter —— 用户点「更新」就是现在要。
+   */
+  slugs: string[];
 }
 
 function parseArgs(): Args {
@@ -149,6 +155,10 @@ function parseArgs(): Args {
     patient: process.argv.includes("--patient"),
     staging: process.argv.includes("--staging"),
     noEnrich: process.argv.includes("--no-enrich"),
+    slugs: (arg("--slugs") ?? "")
+      .split(",")
+      .map((s) => s.trim().toLowerCase())
+      .filter((s) => /^[a-z0-9-]+$/.test(s)),
   };
 }
 
@@ -324,6 +334,39 @@ function mergeSources(existing: AITrend | undefined, next: TrendSourceRef[]): Tr
   return out.slice(0, 8);
 }
 
+/**
+ * 定向重采的排队：只认库内已有的词。
+ *
+ * 后台「线上榜单」勾选的词已经在榜上，重采的意义是刷曲线和内容，
+ * 不需要再走一遍发现、去重、准入判定——那几步既费时又会把词重新论证一遍。
+ * 找不到的 slug 单独返回，好让日志说清楚是「词不在库」而不是「没数据」。
+ */
+function planForcedBatch(
+  slugs: string[],
+  existing: AITrend[],
+  budget: number,
+): { batch: BatchItem[]; missing: string[] } {
+  const bySlug = new Map(existing.map((t) => [t.slug, t]));
+  const byKey = indexByKey(existing);
+  const batch: BatchItem[] = [];
+  const missing: string[] = [];
+  const seen = new Set<string>();
+
+  for (const slug of slugs) {
+    const hit = bySlug.get(slug) ?? byKey.get(normalizeKey(slug));
+    if (!hit) {
+      missing.push(slug);
+      continue;
+    }
+    if (seen.has(hit.slug)) continue;
+    if (batch.length >= budget) break;
+    seen.add(hit.slug);
+    batch.push({ keyword: hit.keyword, origin: "refresh", seedSources: [], existing: hit });
+  }
+
+  return { batch, missing };
+}
+
 async function main(): Promise<void> {
   const args = parseArgs();
   // 未富化的词只有占位字段，直接写进榜单就会生成空详情页。
@@ -363,15 +406,19 @@ async function main(): Promise<void> {
 
   console.log(`[trends] 词库现有 ${dataset.keywords.length} 个，本次预算 ${args.limit} 个（geo=${args.geo}）`);
 
-  const discovered: TrendCandidate[] = [
-    ...(await discoverFromTrendingRss(
-      (process.env.TRENDS_RSS_GEOS ?? "US,GB,IN,CA,AU").split(",").map((s) => s.trim()).filter(Boolean),
-    )),
-    ...discoverFromAitools(),
-    ...discoverFromSeeds(),
-    ...discoverFromRelatedQueries(),
-    ...(await discoverFromGithub(Number(process.env.TRENDS_GITHUB_DAYS ?? 14), 40)),
-  ];
+  const forced = args.slugs;
+  // 定向重采不碰发现链路：省掉 RSS/GitHub 的网络与限流风险，也不会顺手收进新词
+  const discovered: TrendCandidate[] = forced.length > 0
+    ? []
+    : [
+        ...(await discoverFromTrendingRss(
+          (process.env.TRENDS_RSS_GEOS ?? "US,GB,IN,CA,AU").split(",").map((s) => s.trim()).filter(Boolean),
+        )),
+        ...discoverFromAitools(),
+        ...discoverFromSeeds(),
+        ...discoverFromRelatedQueries(),
+        ...(await discoverFromGithub(Number(process.env.TRENDS_GITHUB_DAYS ?? 14), 40)),
+      ];
   if (args.withPh) discovered.push(...(await discoverFromProductHunt()));
 
   const existingIndex = indexByKey(dataset.keywords);
@@ -476,17 +523,30 @@ async function main(): Promise<void> {
     console.log(`[policy] 价值准入拒掉 ${valueRejected} 个：没有可落地的创业切口`);
   }
 
-  const batch = planBatch({
-    candidates: passed,
-    existing: dataset.keywords,
-    budget: args.limit,
-    refreshAfterDays: args.refreshAfter,
-    newRatio: args.newRatio,
-    today,
-  });
+  const forcedPlan = forced.length > 0 ? planForcedBatch(forced, dataset.keywords, args.limit) : null;
+  if (forcedPlan && forcedPlan.missing.length > 0) {
+    console.warn(
+      `[trends] ${forcedPlan.missing.length} 个词不在词库里，已跳过：${forcedPlan.missing.slice(0, 8).join("、")}`,
+    );
+  }
+
+  const batch = forcedPlan
+    ? forcedPlan.batch
+    : planBatch({
+        candidates: passed,
+        existing: dataset.keywords,
+        budget: args.limit,
+        refreshAfterDays: args.refreshAfter,
+        newRatio: args.newRatio,
+        today,
+      });
 
   if (batch.length === 0) {
-    console.log("[trends] 没有需要采集的词（都还新鲜），结束");
+    console.log(
+      forcedPlan
+        ? "[trends] 没有可重采的词（slug 都不在词库里或未被识别），结束"
+        : "[trends] 没有需要采集的词（都还新鲜），结束",
+    );
     return;
   }
   console.log(
@@ -650,7 +710,10 @@ async function main(): Promise<void> {
                 whyAccepted: editor.reason,
               },
             }
-          : {}),
+          : item.existing?.editorNote
+            ? // 定向重采不做准入判定，沿用当初收录时写下的判定，别把审核结论刷没
+              { editorNote: item.existing.editorNote }
+            : {}),
         region: args.geo,
         now,
       };
