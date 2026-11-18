@@ -72,7 +72,7 @@ const { tool } = Astro.props;
     title={tool.grank === null ? "未采集到全球排名" : "SimilarWeb 全球排名"}
     class="text-center text-sm text-ink-secondary tabular-nums"
   >
-    {tool.grank !== null ? `#${formatCount(tool.grank)}` : "—"}
+    {tool.grank !== null ? formatCount(tool.grank) : "—"}
   </div>
 
   <div class="whitespace-nowrap text-center text-sm text-ink-secondary tabular-nums">
