@@ -1004,11 +1004,32 @@ trends.post("/publish", async (c) => {
     );
   }
 
+  /*
+   * 纯更新（候选池里每个待发词都已在榜）走增量发布：
+   * 只在当前版本上改变化的行，不新建版本、不继承其余五个榜、不剪枝 ——
+   * 免费版每天只有 10 万 rows_written，而一次完整发布要 3.8 万。
+   *
+   * 只要有一个新词就必须完整发布：新版本才会进版本历史，才回滚得回去。
+   */
+  let patch = "0";
+  const cur = await currentVersion(c.env.DB).catch(() => null);
+  if (cur && pending.length > 0) {
+    const listed = await c.env.DB.prepare(
+      "SELECT item_key FROM board_listed WHERE version = ? AND board = 'trends'",
+    )
+      .bind(cur)
+      .all<{ item_key: string }>()
+      .catch(() => ({ results: [] as { item_key: string }[] }));
+    const keys = new Set((listed.results ?? []).map((r) => r.item_key));
+    if (pending.every((t) => keys.has(t.slug))) patch = "1";
+  }
+
   const jobId = await insertJob(c.env, "publish", { incoming: pending.length }, null, null);
   try {
     const run = await dispatchWorkflow(cfg, PUBLISH_WORKFLOW, {
       incoming: String(pending.length),
       job_id: jobId,
+      patch,
     });
     await updateJobRun(c.env, jobId, run);
     return c.json({ ok: true, run, incoming: pending.length, skipped, jobId });

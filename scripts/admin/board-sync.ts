@@ -12,7 +12,13 @@
  */
 import type { Board } from "@horizons/shared";
 import { createD1Client, d1Configured, type D1Client } from "./d1-client";
-import { lastReleaseRanks, pruneVersions, publishBoard, type PublishRow } from "./publish-board";
+import {
+  lastReleaseRanks,
+  patchBoard,
+  pruneVersions,
+  publishBoard,
+  type PublishRow,
+} from "./publish-board";
 
 export interface SyncOptions {
   board: Board;
@@ -24,6 +30,11 @@ export interface SyncOptions {
    * 按日发布的榜（digest）传期号，补成 `YYYY-MM-DDT00:00:00` 保持格式统一。
    */
   version?: string;
+  /**
+   * 增量发布：在当前生效版本上原地改差异行，不建新版本、不继承其它榜、不剪枝。
+   * 默认为 false，也可用命令行 `--patch` 打开。
+   */
+  patch?: boolean;
 }
 
 export interface SyncResult {
@@ -34,6 +45,13 @@ export interface SyncResult {
   exited?: number;
   pruned?: string[];
   error?: string;
+  /** 增量模式的明细；完整发布时为空 */
+  patch?: {
+    inserted: number;
+    updated: number;
+    dropped: number;
+    unchanged: number;
+  };
 }
 
 /**
@@ -133,6 +151,53 @@ export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
   }
 
   const version = opts.version ?? versionOf();
+
+  /*
+   * 增量模式：在当前生效版本上原地改差异行。
+   *
+   * 完整发布要新建全局版本、把其余五个榜整份继承过来、最后再剪掉一个旧版本，
+   * 一次约 3.8 万 rows_written（免费版每天才 10 万）。日常「刷新已有条目的数据」
+   * 根本不需要这些动作 —— 逐行比对后只写变了的那些，几十条就是几百次写。
+   *
+   * 代价见 publish-board.ts 的 PatchInput 注释：不产生新版本、回滚不到这次之前。
+   */
+  if (opts.patch ?? process.argv.includes("--patch")) {
+    try {
+      const res = await patchBoard(client, {
+        board,
+        rows,
+        actor,
+        allowShrink: process.argv.includes("--allow-shrink"),
+      });
+
+      await recordBoardStat(client, board, res.listed, res.version);
+
+      console.log(
+        `[sync] ${board} 增量更新版本 ${res.version}：${res.listed} 条` +
+          `（新增 ${res.inserted} / 更新 ${res.updated} / 下榜 ${res.dropped}` +
+          ` / 未变 ${res.unchanged}，实际写入 ${res.inserted + res.updated + res.dropped} 行）`,
+      );
+
+      return {
+        ok: true,
+        version: res.version,
+        listed: res.listed,
+        entered: res.inserted,
+        exited: res.dropped,
+        patch: {
+          inserted: res.inserted,
+          updated: res.updated,
+          dropped: res.dropped,
+          unchanged: res.unchanged,
+        },
+      };
+    } catch (e) {
+      // 增量模式没有「新版本兜底」：写了一半就是线上半更新，必须收干净
+      if (strict) throw e;
+      console.error(`[sync] ${board} 增量写入失败，JSON 链路继续：`, e);
+      return { ok: false, version, error: String(e) };
+    }
+  }
 
   try {
     // 上期名次从库里取，不依赖 JSON 的历史顺序
