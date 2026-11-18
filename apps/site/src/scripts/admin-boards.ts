@@ -36,6 +36,8 @@ interface SourceRow {
   board: string;
   label: string;
   source: "file" | "d1";
+  /** 当前版本库里实际有几行：0 就是切不了 d1 */
+  rows: number;
 }
 
 interface SourcesRes {
@@ -127,11 +129,13 @@ async function loadSources(): Promise<void> {
       .map((s) => {
         const fileActive = s.source === "file";
         const d1Active = s.source === "d1";
+        /* 库里 0 行时切 d1 会把线上清空，接口也会 409，这里先把话说在前面 */
+        const empty = s.rows === 0;
         return `
           <div class="flex items-center justify-between gap-2 rounded-xl border border-border bg-surface-2 px-3 py-2">
             <div class="min-w-0">
               <div class="truncate text-xs font-medium">${esc(s.label)}</div>
-              <div class="text-[11px] text-ink-muted">${esc(s.board)} · 当前读 ${esc(s.source)}</div>
+              <div class="text-[11px] ${empty ? "text-danger" : "text-ink-muted"}">${esc(s.board)} · 当前读 ${esc(s.source)} · 库内 ${fmtNum(s.rows)} 条${empty ? "（先发布一次再切）" : ""}</div>
             </div>
             <div class="flex shrink-0 gap-1">
               <button type="button" data-source="${esc(s.board)}" data-value="file"
@@ -174,7 +178,20 @@ async function switchSource(board: string, source: "file" | "d1"): Promise<void>
     await apiPost("/boards/sources", { board, source });
     await loadSources();
   } catch (e) {
-    window.alert(`切换失败：${msg(e)}`);
+    const m = msg(e);
+    /* 后端只回错误码，把「为什么切不动」翻译成人话，别让人对着 no_data_for_board 猜 */
+    if (m.includes("no_data_for_board")) {
+      window.alert(
+        `切换失败：库里当前版本没有「${board}」的数据。\n\n` +
+          `切到 D1 后线上会立刻变成空榜，所以被挡住了。先把这个榜发布一次（写进 D1），再回来切。`,
+      );
+      return;
+    }
+    if (m.includes("no_current_version")) {
+      window.alert("切换失败：库里还没有任何生效版本，先发布一次任意榜。");
+      return;
+    }
+    window.alert(`切换失败：${m}`);
   }
 }
 

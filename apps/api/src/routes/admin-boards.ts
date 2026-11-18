@@ -190,13 +190,36 @@ adminBoards.get("/releases/:version/changes", async (c) => {
 /** 六个榜各自读 JSON 还是读 D1。切错了会让线上某榜空白，所以写接口只接受两个值 */
 adminBoards.get("/sources", async (c) => {
   const keys = BOARDS.map((b) => `data_source.${b}`);
-  const map = await readConfigs(c.env.DB, keys);
+  const [map, cur] = await Promise.all([
+    readConfigs(c.env.DB, keys),
+    currentVersion(c.env.DB),
+  ]);
+
+  /*
+   * 库内真实行数。
+   *
+   * board_stats 里的 total 是「发布时写进去的统计」，和 board_listed 实际有几行
+   * 可能是两回事（回填过统计但没发布过榜单就会出现这种偏差），
+   * 而切换校验只看 board_listed —— 把真实行数摆出来，才不会盲点一下才发现切不动。
+   */
+  const counts = new Map<string, number>();
+  if (cur) {
+    const { results } = await c.env.DB.prepare(
+      "SELECT board, COUNT(*) AS n FROM board_listed WHERE version = ? GROUP BY board",
+    )
+      .bind(cur)
+      .all<{ board: string; n: number }>();
+    for (const r of results ?? []) counts.set(r.board, r.n);
+  }
 
   return c.json({
+    version: cur,
     sources: BOARDS.map((b) => ({
       board: b,
       label: BOARD_LABELS[b],
       source: map.get(`data_source.${b}`) === "d1" ? "d1" : "file",
+      /** 当前版本里这个榜实际有几行；0 表示切到 d1 会让线上变空榜 */
+      rows: counts.get(b) ?? 0,
     })),
   });
 });

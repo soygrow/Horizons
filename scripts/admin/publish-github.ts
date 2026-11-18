@@ -114,7 +114,13 @@ function toRows(kept: readonly GitHubRepo[]): PublishRow[] {
 async function main(): Promise<void> {
   if (!fs.existsSync(GITHUB_PATH)) throw new Error("找不到 content/github.json");
 
-  /* --resync：只把现有 JSON 重灌进 D1，不动榜单与候选池 */
+  /*
+   * --resync：只把现有 JSON 重灌进 D1，不动榜单与候选池。
+   *
+   * 补历史欠账时务必带上 --patch：整版发布要新建版本、继承其余五个榜、剪掉旧版本，
+   * 一次三万八千行；而「库里还没有这个榜」的情况下增量写只会插入这个榜自己的一千多行。
+   * 唯一的代价是不产生新版本 —— 反正之前是空的，没有什么可回滚的。
+   */
   if (process.argv.includes("--resync")) {
     const board = JSON.parse(fs.readFileSync(GITHUB_PATH, "utf-8")) as { repos?: GitHubRepo[] };
     const rows = toRows(board.repos ?? []);
