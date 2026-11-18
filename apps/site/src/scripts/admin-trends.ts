@@ -471,9 +471,11 @@ function visibleListed(data: ListedResp): ListedTrend[] {
   const q = state.listedQ.toLowerCase();
   return data.items.filter((row) => {
     if (q && !row.keyword.toLowerCase().includes(q) && !row.slug.includes(q)) return false;
+    // 从未采集的按「很久没更新」算，落在所有未更新档里
     const age = ageDays(row.lastSeenAt) ?? 999;
-    if (state.listedFilter === "stale") return age >= 30;
-    if (state.listedFilter === "old") return age >= 60;
+    if (state.listedFilter === "d7") return age >= 7;
+    if (state.listedFilter === "d10") return age >= 10;
+    if (state.listedFilter === "d30") return age >= 30;
     if (state.listedFilter === "queued") return row.staging !== null;
     return true;
   });
@@ -599,11 +601,14 @@ function renderListed(data: ListedResp): void {
     return;
   }
 
-  const stale = data.items.filter((r) => (ageDays(r.lastSeenAt) ?? 999) >= 30).length;
+  // 和筛选档位同口径：7 天 / 30 天，中间那档（10 天）看下拉筛就行
+  const stale7 = data.items.filter((r) => (ageDays(r.lastSeenAt) ?? 999) >= 7).length;
+  const stale30 = data.items.filter((r) => (ageDays(r.lastSeenAt) ?? 999) >= 30).length;
   const never = data.items.filter((r) => !r.lastSeenAt).length;
   meta.textContent =
     `版本 ${data.version || "—"} · 共 ${fmtNum(data.total)} 条（含别名）`
-    + ` · 30 天未采集 ${fmtNum(stale)}${never ? `（其中从未采集 ${fmtNum(never)}）` : ""}`
+    + ` · 7 天未更新 ${fmtNum(stale7)}${never ? `（其中从未采集 ${fmtNum(never)}）` : ""}`
+    + ` · 30 天未更新 ${fmtNum(stale30)}`
     + (data.refreshPending ? ` · 候选池待发布 ${fmtNum(data.refreshPending)}` : "");
 
   const rows = visibleListed(data);
@@ -626,18 +631,30 @@ function renderListed(data: ListedResp): void {
       const stage = row.staging ? STAGE_BADGES[row.staging] ?? { label: row.staging, cls: "bg-surface-2 text-ink-muted" } : null;
 
       /*
-       * 状态列只回答一个问题：这个词现在要不要更新。
-       * 有候选池状态就先说状态（更新中/待发布），否则按新鲜度说事。
+       * 状态列只说「这个词在队列里到哪一步了」——更新中 / 待富化 / 待发布 / 失败。
+       * 新鲜度归「更新时间」列，两边别各说一遍年龄：以前状态列把候选池状态和
+       * 「N 天前」二选一，同一个词要么看不到队列进度、要么看不到多久没动。
        */
       const status = stage
         ? `<span class="rounded-full px-2 py-0.5 text-[11px] font-semibold ${stage.cls}">${esc(stage.label)}</span>`
         : age === null
           ? `<span class="rounded-full bg-danger/10 px-2 py-0.5 text-[11px] font-semibold text-danger">从未采集</span>`
-          : age >= 60
-            ? `<span class="rounded-full bg-danger/10 px-2 py-0.5 text-[11px] font-semibold text-danger">${age} 天未更新</span>`
-            : age >= 30
-              ? `<span class="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-semibold text-accent">${age} 天未更新</span>`
-              : `<span class="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-ink-muted">${age} 天前</span>`;
+          : `<span class="text-xs text-ink-muted">—</span>`;
+
+      /*
+       * 更新时间：上行是具体时间，下行是距今天数，并按 7 / 10 / 30 天染色。
+       * 筛选档位就是按这三个阈值切的，颜色和筛选项一一对应。
+       */
+      const ageNote =
+        age === null
+          ? ""
+          : age >= 30
+            ? `<span class="text-danger">${age} 天前</span>`
+            : age >= 10
+              ? `<span class="text-accent">${age} 天前</span>`
+              : age >= 7
+                ? `<span class="text-ink-secondary">${age} 天前</span>`
+                : `<span class="text-ink-muted">${age === 0 ? "今天" : `${age} 天前`}</span>`;
 
       const pickable = listedPickable(row);
       const pick = `<input type="checkbox" data-listed-pick="${esc(row.slug)}" class="h-3.5 w-3.5 accent-primary" ${state.listedSelected.has(row.slug) ? "checked" : ""} ${pickable ? "" : "disabled"} />`;
@@ -658,7 +675,10 @@ function renderListed(data: ListedResp): void {
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${score(row.scores.trend)}</td>
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${score(row.scores.opportunity)}</td>
           <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${score(row.scores.overall)}</td>
-          <td class="px-4 py-2.5 text-xs tabular-nums text-ink-muted">${esc(fmtTime(row.lastSeenAt))}</td>
+          <td class="whitespace-nowrap px-4 py-2.5 text-xs tabular-nums text-ink-secondary">
+            <span class="block">${esc(fmtTime(row.lastSeenAt))}</span>
+            ${ageNote ? `<span class="text-[11px]">${ageNote}</span>` : ""}
+          </td>
           <td class="px-4 py-2.5">${status}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-right">
             <a href="/preview/trend/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener" class="text-xs text-primary hover:underline" title="在新窗口预览：更新过的词显示候选池里的新内容，没更新的显示线上当前版本">预览</a>

@@ -1160,8 +1160,9 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                     class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
                   >
                     <option value="all">全部</option>
-                    <option value="stale">30 天未采集</option>
-                    <option value="old">60 天未采集</option>
+                    <option value="d7">7 天未更新</option>
+                    <option value="d10">10 天未更新</option>
+                    <option value="d30">30 天未更新</option>
                     <option value="queued">已在候选池</option>
                   </select>
                   <input
@@ -1216,7 +1217,7 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                       <th class="px-4 py-2.5 text-right font-medium">趋势分</th>
                       <th class="px-4 py-2.5 text-right font-medium">机会分</th>
                       <th class="px-4 py-2.5 text-right font-medium">综合分</th>
-                      <th class="px-4 py-2.5 font-medium">上次采集</th>
+                      <th class="px-4 py-2.5 font-medium">更新时间</th>
                       <th class="px-4 py-2.5 font-medium">状态</th>
                       <th class="px-4 py-2.5 text-right font-medium">操作</th>
                     </tr>
