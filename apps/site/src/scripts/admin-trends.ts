@@ -108,6 +108,8 @@ interface StagingInfo {
   ready?: number;
   /** 等富化 */
   pending: number;
+  /** 候选池是否带可用的榜单基线；false 时「新进榜/掉名次」都不可信 */
+  baseline?: boolean;
   /** 数据点不足，不允许富化 */
   blocked?: number;
   rejected: number;
@@ -164,6 +166,8 @@ interface Preview {
   updatedAt: string;
   /** 榜单代表词上限（与发布脚本同一常量） */
   boardLimit: number;
+  /** 候选池是否带可用的榜单基线；false 时位次变化不可信 */
+  baseline?: boolean;
   /** 合并后会因超上限被淘汰的词数（含别名） */
   trimmed: number;
   incoming: number;
@@ -397,9 +401,13 @@ function renderOverview(data: Overview): void {
 
   $("trend-kpi-board").textContent = fmtNum(s.boardRows);
   const limitNote = data.boardLimit ? ` · 上限 ${fmtNum(data.boardLimit)} 条` : "";
+  // 基线缺失时这个数字来自正式榜统计，不是候选池的计分快照，别混着说
+  const boardNote = s.baseline === false ? "正式榜统计" : "计分快照";
   $("trend-kpi-board-sub").textContent = s.boardUpdatedAt
-    ? `计分快照 ${fmtTime(s.boardUpdatedAt)}${limitNote}`
-    : `候选池里没有榜单快照${limitNote}`;
+    ? `${boardNote} ${fmtTime(s.boardUpdatedAt)}${limitNote}`
+    : s.baseline === false
+      ? `正式榜实时计数${limitNote}`
+      : `候选池里没有榜单快照${limitNote}`;
 
   $("trend-kpi-candidates").textContent = fmtNum(s.candidates);
   $("trend-kpi-candidates-sub").textContent = s.lastRun
@@ -415,10 +423,19 @@ function renderOverview(data: Overview): void {
     .filter(Boolean)
     .join(" · ");
 
-  $("trend-kpi-changes").textContent = fmtNum(s.significant);
-  $("trend-kpi-changes-sub").textContent = s.lastPublish
-    ? `上次发布 ${fmtTime(s.lastPublish.at)}：进 ${s.lastPublish.incoming} · 显著 ${s.lastPublish.significant} · 顺延 ${s.lastPublish.shifted}`
-    : `新进榜 ${fmtNum(s.entered)}，其余按顺延处理`;
+  /*
+   * 没有榜单基线时，「新进榜 20」其实是「基线为空，所以全都算新进」——
+   * 这种数字比不给更糟，直接降级成「—」并说明原因。
+   */
+  if (s.baseline === false) {
+    $("trend-kpi-changes").textContent = "—";
+    $("trend-kpi-changes-sub").textContent = "候选池缺少榜单基线，位次变化不可信；重新采集一次即可恢复";
+  } else {
+    $("trend-kpi-changes").textContent = fmtNum(s.significant);
+    $("trend-kpi-changes-sub").textContent = s.lastPublish
+      ? `上次发布 ${fmtTime(s.lastPublish.at)}：进 ${s.lastPublish.incoming} · 显著 ${s.lastPublish.significant} · 顺延 ${s.lastPublish.shifted}`
+      : `新进榜 ${fmtNum(s.entered)}，其余按顺延处理`;
+  }
 }
 
 /* ------------------------------- 线上榜单 -------------------------------- */
@@ -985,9 +1002,14 @@ function renderPreview(data: PreviewResp): void {
   }
 
   const untouched = p.incoming + p.exited === 0;
-  const summary = untouched
+  const merged = untouched
     ? "没有待发布的候选词"
     : `合并 ${p.incoming} 个候选词（其中 ${p.inBoardRefresh} 个是在榜刷新）；榜单 ${p.boardBefore} → ${p.boardAfter} / ${p.boardLimit} 条`;
+  // 基线缺失时「新进榜 / 在榜刷新」都算不出来，先说明再给数字
+  const summary =
+    p.baseline === false
+      ? `候选池没有榜单基线，本次位次变化不可信（重新采集一次即可）· ${merged}`
+      : merged;
 
   // 发布后候选池会被清空，所以「上次动了谁」靠 staging 里的摘要回放
   const last = p.lastPublish;

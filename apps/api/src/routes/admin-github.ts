@@ -299,10 +299,14 @@ github.get("/overview", async (c) => {
         ruleVersion: file.ruleVersion,
         scoreModel: file.scoreModel,
         target,
-        // 候选池的 board 快照缺失时，回退到上次发布记录，最后才用正式榜统计快照
-        boardRows: file.board?.rows.length ?? file.lastPublish?.total ?? board?.total ?? 0,
-        boardUpdatedAt:
-          file.board?.updatedAt ?? file.lastPublish?.at ?? board?.updatedAt ?? null,
+        /*
+         * 快照可能是「有 updatedAt 但 rows 为空」的壳（发布后清空、CI 没还原榜单文件），
+         * 所以按「有内容才算」判断，0 继续回退到上次发布、最后到正式榜统计。
+         */
+        boardRows: file.board?.rows.length || file.lastPublish?.total || board?.total || 0,
+        boardUpdatedAt: file.board?.rows.length
+          ? file.board.updatedAt
+          : (file.lastPublish?.at ?? board?.updatedAt ?? null),
         candidates: candidates.length,
         pending: candidates.filter((x) => !x.rejected).length,
         rejected: file.rejected?.length ?? 0,

@@ -71,6 +71,16 @@ jobs:
         if: inputs.job_id != ''
         run: echo "::notice::后台任务 job_id=${{ inputs.job_id }}"
 
+      # 候选池里的 board 基线快照来自 content/trends.json，而它在 .gitignore 里、
+      # CI checkout 下来没有。不先还原的话基线是空的：后台「线上榜单」显示 0 条，
+      # 这批候选还会被全算成「新进榜」，发布预览的「谁掉名次」也全失灵。
+      - name: 还原榜单基线
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm exec tsx scripts/admin/hydrate-trends.ts
+
       # 采集写得慢一点：Google Trends 是这里最容易失败的一环，
       # 宁可跑 2 小时也别在中途被 429 打断。
       #

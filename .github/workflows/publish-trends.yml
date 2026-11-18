@@ -87,10 +87,12 @@ jobs:
         run: |
           git config user.name "horizons-bot"
           git config user.email "bot@horizons.tools"
-          pnpm exec tsx scripts/admin/board-stats.ts
           # 榜单本身已不入库（唯一真源是 D1 的当前版本快照，含 variant_of 别名），
-          # 这里只提交候选池与统计。content/trends.json 在 .gitignore 里，不能 add。
-          git add content/trends-staging.json content/board-stats.json
+          # 这里只提交候选池。content/trends.json 在 .gitignore 里，不能 add。
+          #
+          # 不再跑 board-stats.ts：在榜条数由 syncBoardToD1 直接写 D1 的 board_stats，
+          # 而 CI 里没有 trends.json，跑一次只会把快照里的 trends 键删掉、再提交一次噪音。
+          git add content/trends-staging.json
           if git diff --cached --quiet; then
             echo "::notice::没有可发布的变更，未产生提交"
             echo "changed=false" >> "$GITHUB_OUTPUT"

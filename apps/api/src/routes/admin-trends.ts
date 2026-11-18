@@ -323,6 +323,13 @@ function buildView(file: StagingFile): {
   stats: { ready: number; pending: number; blocked: number };
   /** 已富化候选的内容体检汇总 */
   quality: ReturnType<typeof summarizeQuality>;
+  /**
+   * 候选池里有没有可用的榜单基线。
+   *
+   * 基线为空时「新进榜 / 掉名次 / 在榜刷新」全算不出来——会把 20 个其实在榜的词
+   * 全说成「新进榜」。这种情况不能拿数字糊弄人，调用方要显式降级。
+   */
+  baseline: boolean;
 } {
   const rejected = new Set(file.rejected.map((k) => k.toLowerCase()));
   const boardRows = file.board?.rows ?? [];
@@ -396,7 +403,15 @@ function buildView(file: StagingFile): {
   };
 
   // 体检只算能发布的词：未富化的字段是占位，算进去等于自欺
-  return { candidates, report, boardRank, trimmed: dropped.length, stats, quality: summarizeQuality(ready) };
+  return {
+    candidates,
+    report,
+    boardRank,
+    trimmed: dropped.length,
+    stats,
+    quality: summarizeQuality(ready),
+    baseline: boardRows.length > 0,
+  };
 }
 
 /* ---------------------------------- 路由 ---------------------------------- */
@@ -418,7 +433,24 @@ trends.get("/overview", async (c) => {
     if (!file) {
       return c.json({ configured, missing, staging: null, jobs, empty: true, board });
     }
-    const { candidates, report, stats, quality } = buildView(file);
+    const { candidates, report, stats, quality, baseline } = buildView(file);
+    /*
+     * 基线缺失时按顺序回退：候选池快照 → 上次发布 → board_stats。
+     * 三者都空（recordBoardStat 失败只告警，可能真没写进去）就直接数 board_listed，
+     * 「线上榜单」这个数字宁可多查一次库，也不能显示成 0。
+     */
+    let boardRows = file.board?.rows.length || file.lastPublish?.boardAfter || board?.total || 0;
+    if (boardRows === 0) {
+      const version = await currentVersion(c.env.DB);
+      const counted = version
+        ? await c.env.DB.prepare(
+            "SELECT COUNT(*) AS n FROM board_listed WHERE version = ? AND board = 'trends'",
+          )
+            .bind(version)
+            .first<{ n: number }>()
+        : null;
+      boardRows = counted?.n ?? 0;
+    }
     return c.json({
       configured,
       missing,
@@ -435,10 +467,15 @@ trends.get("/overview", async (c) => {
         blocked: stats.blocked,
         quality,
         rejected: file.rejected.length,
-        // 候选池的 board 快照在发布后会被清掉，此时回退到上次发布的在榜数，
-        // 再不行才用正式榜统计快照 —— 保证后台不显示 0
-        boardRows: file.board?.rows.length ?? file.lastPublish?.boardAfter ?? board?.total ?? 0,
-        boardUpdatedAt: file.board?.updatedAt ?? file.lastPublish?.at ?? board?.updatedAt ?? null,
+        /*
+         * boardRows 见上面：按「有内容才算」，0 会一路回退到 board_listed 实表。
+         * 时间跟着数量走 —— 数字来自正式榜统计时，就别再说这是「计分快照时间」。
+         */
+        boardRows,
+        boardUpdatedAt: file.board?.rows.length
+          ? file.board.updatedAt
+          : (file.lastPublish?.at ?? board?.updatedAt ?? null),
+        baseline,
         lastRun: file.lastRun ?? null,
         lastPublish: file.lastPublish ?? null,
         // 概览只给数字，明细走 /staging
@@ -465,7 +502,7 @@ trends.get("/staging", async (c) => {
     return c.json({ empty: true, candidates: [], report: null });
   }
 
-  const { candidates, report, stats, quality } = buildView(staging);
+  const { candidates, report, stats, quality, baseline } = buildView(staging);
   return c.json({
     updatedAt: staging.updatedAt,
     runAt: staging.runAt,
@@ -474,6 +511,7 @@ trends.get("/staging", async (c) => {
     candidates,
     stats,
     quality,
+    baseline,
     report: {
       boardBefore: report.boardBefore,
       boardAfter: report.boardAfter,
@@ -526,13 +564,15 @@ trends.get("/publish/preview", async (c) => {
   const file = await loadStaging(c.env);
   if (!file) return c.json({ empty: true, preview: null });
 
-  const { candidates, report, trimmed } = buildView(file);
+  const { candidates, report, trimmed, baseline } = buildView(file);
   const active = candidates.filter((x) => !x.rejected);
 
   return c.json({
     preview: {
       updatedAt: file.updatedAt,
       boardLimit: MAX_BOARD_SIZE,
+      // 基线缺失时「新进榜 / 在榜刷新 / 掉名次」都不可信，前端要显式提示
+      baseline,
       trimmed,
       incoming: active.length,
       inBoardRefresh: active.filter((x) => x.inBoard).length,
