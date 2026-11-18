@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-17T15:14:24.258Z",
-  "total": 34,
-  "itemsWithIssues": 17,
+  "generatedAt": "2026-11-18T01:32:06.593Z",
+  "total": 27,
+  "itemsWithIssues": 11,
   "dimensions": [
     {
       "key": "description",
@@ -10,7 +10,7 @@
       "missingRatio": 0,
       "missingDomains": [],
       "invalid": 6,
-      "invalidRatio": 18,
+      "invalidRatio": 22,
       "invalidSamples": [
         {
           "domain": "claudeduet.com",
@@ -52,7 +52,7 @@
       "key": "trafficMetrics.monthlyVisits",
       "label": "月访问量",
       "missing": 2,
-      "missingRatio": 6,
+      "missingRatio": 7,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -64,9 +64,10 @@
     {
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
-      "missing": 3,
-      "missingRatio": 9,
+      "missing": 4,
+      "missingRatio": 15,
       "missingDomains": [
+        "schole.ai",
         "claudeduet.com",
         "kixy.ai",
         "wanaka.app"
@@ -78,10 +79,9 @@
     {
       "key": "metrics.registeredAt",
       "label": "域名注册时间",
-      "missing": 10,
-      "missingRatio": 29,
+      "missing": 9,
+      "missingRatio": 33,
       "missingDomains": [
-        "cue.im",
         "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
@@ -99,7 +99,7 @@
     {
       "key": "trafficMetrics.organicSearchVisits",
       "label": "自然搜索流量",
-      "missing": 14,
+      "missing": 11,
       "missingRatio": 41,
       "missingDomains": [
         "agenthunt.io",
@@ -107,13 +107,10 @@
         "claudeduet.com",
         "cliputils.com",
         "maxma.com",
-        "openrouter.ai",
         "quest.app",
         "rerun.io",
         "teamily.com",
         "tobira.ai",
-        "trigger.dev",
-        "twinmind.com",
         "wanaka.app",
         "xmind.com"
       ],
@@ -125,7 +122,7 @@
       "key": "geoDistribution",
       "label": "地区分布",
       "missing": 2,
-      "missingRatio": 6,
+      "missingRatio": 7,
       "missingDomains": [
         "claudeduet.com",
         "wanaka.app"
@@ -137,62 +134,34 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 23,
-      "missingRatio": 68,
+      "missing": 19,
+      "missingRatio": 70,
       "missingDomains": [
-        "viggle.ai",
-        "tooljet.com",
-        "promptai.co",
-        "gamma.app",
-        "lyzr.ai",
-        "lumana.ai",
-        "cue.im",
-        "autoshorts.ai",
-        "aibuilders.ai",
+        "openrouter.ai",
+        "voicemaker.in",
+        "trigger.dev",
+        "twinmind.com",
+        "musevideo.ai",
+        "lexmount.com",
+        "design-extractor.com",
+        "lalal.ai",
+        "facia.ai",
         "agenthunt.io",
         "claudeduet.com",
         "kixy.ai",
-        "lalal.ai",
         "maxma.com",
-        "openrouter.ai",
         "quest.app",
         "rerun.io",
         "teamily.com",
         "tobira.ai",
-        "trigger.dev",
-        "twinmind.com",
         "wanaka.app",
         "xmind.com"
       ],
-      "invalid": 9,
-      "invalidRatio": 26,
+      "invalid": 5,
+      "invalidRatio": 19,
       "invalidSamples": [
         {
-          "domain": "spira.ai",
-          "reason": "全部关键词缺搜索量（只有词）"
-        },
-        {
-          "domain": "twelvelabs.io",
-          "reason": "全部关键词缺搜索量（只有词）"
-        },
-        {
-          "domain": "onepin.ai",
-          "reason": "全部关键词缺搜索量（只有词）"
-        },
-        {
-          "domain": "floot.com",
-          "reason": "全部关键词缺搜索量（只有词）"
-        },
-        {
-          "domain": "gauth.com",
-          "reason": "全部关键词缺搜索量（只有词）"
-        },
-        {
-          "domain": "ctrlops.io",
-          "reason": "全部关键词缺搜索量（只有词）"
-        },
-        {
-          "domain": "arcjet.com",
+          "domain": "zenabm.com",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
@@ -202,6 +171,14 @@
         {
           "domain": "schole.ai",
           "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "domain": "memories.ai",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "domain": "arcjet.com",
+          "reason": "全部关键词缺搜索量（只有词）"
         }
       ]
     },
@@ -209,7 +186,7 @@
       "key": "observations.competitors",
       "label": "竞品",
       "missing": 5,
-      "missingRatio": 15,
+      "missingRatio": 19,
       "missingDomains": [
         "claudeduet.com",
         "quest.app",
@@ -224,14 +201,10 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 14,
-      "missingRatio": 41,
+      "missing": 10,
+      "missingRatio": 37,
       "missingDomains": [
-        "promptai.co",
-        "gamma.app",
-        "lumana.ai",
-        "gauth.com",
-        "aibuilders.ai",
+        "lexmount.com",
         "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
@@ -249,23 +222,17 @@
     {
       "key": "pageStructure",
       "label": "页面结构",
-      "missing": 16,
-      "missingRatio": 47,
+      "missing": 10,
+      "missingRatio": 37,
       "missingDomains": [
-        "promptai.co",
-        "gamma.app",
+        "memories.ai",
         "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
-        "openrouter.ai",
-        "postnitro.ai",
         "quest.app",
         "rerun.io",
-        "schole.ai",
         "teamily.com",
         "tobira.ai",
-        "trigger.dev",
-        "twinmind.com",
         "wanaka.app",
         "xmind.com"
       ],
@@ -276,10 +243,9 @@
     {
       "key": "screenshotDesktopUrl",
       "label": "官网截图",
-      "missing": 11,
-      "missingRatio": 32,
+      "missing": 10,
+      "missingRatio": 37,
       "missingDomains": [
-        "promptai.co",
         "agenthunt.io",
         "alsona.com",
         "claudeduet.com",
@@ -298,11 +264,9 @@
     {
       "key": "siteAudit",
       "label": "站点体检",
-      "missing": 12,
-      "missingRatio": 35,
+      "missing": 9,
+      "missingRatio": 33,
       "missingDomains": [
-        "promptai.co",
-        "gamma.app",
         "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
@@ -310,7 +274,6 @@
         "rerun.io",
         "teamily.com",
         "tobira.ai",
-        "twinmind.com",
         "wanaka.app",
         "xmind.com"
       ],
@@ -322,7 +285,7 @@
       "key": "aiInsight",
       "label": "AI 叙事",
       "missing": 9,
-      "missingRatio": 26,
+      "missingRatio": 33,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -342,7 +305,7 @@
       "key": "performanceInsight",
       "label": "AI 判断",
       "missing": 9,
-      "missingRatio": 26,
+      "missingRatio": 33,
       "missingDomains": [
         "agenthunt.io",
         "claudeduet.com",
@@ -354,32 +317,19 @@
         "wanaka.app",
         "xmind.com"
       ],
-      "invalid": 3,
-      "invalidRatio": 9,
-      "invalidSamples": [
-        {
-          "domain": "tooljet.com",
-          "reason": "四要素缺 1 项"
-        },
-        {
-          "domain": "gauth.com",
-          "reason": "四要素缺 1 项"
-        },
-        {
-          "domain": "lalal.ai",
-          "reason": "四要素缺 1 项"
-        }
-      ]
+      "invalid": 0,
+      "invalidRatio": 0,
+      "invalidSamples": []
     }
   ],
   "entryIssues": [],
   "items": [
     {
-      "domain": "spira.ai",
-      "name": "Spira Maxima",
+      "domain": "zenabm.com",
+      "name": "ZenABM",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 93367,
+      "monthlyVisits": 43617,
       "gapCount": 0,
       "gaps": [],
       "issueCount": 1,
@@ -392,11 +342,11 @@
       ]
     },
     {
-      "domain": "viggle.ai",
-      "name": "Viggle JST-2",
+      "domain": "openrouter.ai",
+      "name": "Openrouter",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 2526033,
+      "monthlyVisits": 19941437,
       "gapCount": 1,
       "gaps": [
         "keywords"
@@ -405,11 +355,50 @@
       "issues": []
     },
     {
-      "domain": "twelvelabs.io",
-      "name": "Jockey by TwelveLabs",
+      "domain": "voicemaker.in",
+      "name": "Voicemaker",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 133085,
+      "monthlyVisits": 500999,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "trigger.dev",
+      "name": "Trigger.dev: Webhooks for your AI agents",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 170818,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "twinmind.com",
+      "name": "TwinMind for Desktop",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 207739,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "postnitro.ai",
+      "name": "PostNitro for Agents",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 52756,
       "gapCount": 0,
       "gaps": [],
       "issueCount": 1,
@@ -422,13 +411,15 @@
       ]
     },
     {
-      "domain": "onepin.ai",
-      "name": "Onepin",
+      "domain": "schole.ai",
+      "name": "Scholé Learn by Building",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 4488,
-      "gapCount": 0,
-      "gaps": [],
+      "monthlyVisits": 27139,
+      "gapCount": 1,
+      "gaps": [
+        "trafficMetrics.monthlyVisitsGrowth"
+      ],
       "issueCount": 1,
       "issues": [
         {
@@ -439,76 +430,43 @@
       ]
     },
     {
-      "domain": "tooljet.com",
-      "name": "Tooljet",
+      "domain": "musevideo.ai",
+      "name": "Musevideo",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 46637,
+      "monthlyVisits": 26226,
       "gapCount": 1,
       "gaps": [
         "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "memories.ai",
+      "name": "LUCI Desktop",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 188127,
+      "gapCount": 1,
+      "gaps": [
+        "pageStructure"
       ],
       "issueCount": 1,
       "issues": [
         {
-          "key": "performanceInsight",
-          "label": "AI 判断",
-          "reason": "四要素缺 1 项"
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
         }
       ]
     },
     {
-      "domain": "promptai.co",
-      "name": "Promptai",
+      "domain": "lexmount.com",
+      "name": "Moli by Lexmount",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 24347,
-      "gapCount": 5,
-      "gaps": [
-        "keywords",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "gamma.app",
-      "name": "Gamma",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 20808177,
-      "gapCount": 4,
-      "gaps": [
-        "keywords",
-        "pricing",
-        "pageStructure",
-        "siteAudit"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "lyzr.ai",
-      "name": "Opencontroller by lyzr",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 25875,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "lumana.ai",
-      "name": "Lumana",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 22304,
+      "monthlyVisits": 318166,
       "gapCount": 2,
       "gaps": [
         "keywords",
@@ -518,11 +476,61 @@
       "issues": []
     },
     {
-      "domain": "floot.com",
-      "name": "Floot MCP",
+      "domain": "design-extractor.com",
+      "name": "Design-extractor",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 503571,
+      "monthlyVisits": 20741,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "lalal.ai",
+      "name": "Lalal",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 1963370,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "facia.ai",
+      "name": "Facia",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 60126,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "clueso.io",
+      "name": "Clueso MCP",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 179904,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "arcjet.com",
+      "name": "Arcjet",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 38973,
       "gapCount": 0,
       "gaps": [],
       "issueCount": 1,
@@ -533,88 +541,6 @@
           "reason": "全部关键词缺搜索量（只有词）"
         }
       ]
-    },
-    {
-      "domain": "gauth.com",
-      "name": "Gauth Unlimited Digital Canvas",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 619147,
-      "gapCount": 1,
-      "gaps": [
-        "pricing"
-      ],
-      "issueCount": 2,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        },
-        {
-          "key": "performanceInsight",
-          "label": "AI 判断",
-          "reason": "四要素缺 1 项"
-        }
-      ]
-    },
-    {
-      "domain": "cue.im",
-      "name": "Cue by Manus",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 101379,
-      "gapCount": 2,
-      "gaps": [
-        "metrics.registeredAt",
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "autoshorts.ai",
-      "name": "Autoshorts",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 296414,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "ctrlops.io",
-      "name": "CtrlOps 1.0",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 25368,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
-    },
-    {
-      "domain": "aibuilders.ai",
-      "name": "Aibuilders",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 1833,
-      "gapCount": 2,
-      "gaps": [
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 0,
-      "issues": []
     },
     {
       "domain": "agenthunt.io",
@@ -650,23 +576,6 @@
       ],
       "issueCount": 0,
       "issues": []
-    },
-    {
-      "domain": "arcjet.com",
-      "name": "Arcjet",
-      "tier": "?",
-      "stage": "approved",
-      "monthlyVisits": 38973,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
     },
     {
       "domain": "claudeduet.com",
@@ -726,25 +635,6 @@
       "issues": []
     },
     {
-      "domain": "lalal.ai",
-      "name": "Lalal",
-      "tier": "?",
-      "stage": "approved",
-      "monthlyVisits": 1963370,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "performanceInsight",
-          "label": "AI 判断",
-          "reason": "四要素缺 1 项"
-        }
-      ]
-    },
-    {
       "domain": "maxma.com",
       "name": "Maxma",
       "tier": "core",
@@ -768,40 +658,6 @@
           "key": "description",
           "label": "简介",
           "reason": "简介过短（16 字）"
-        }
-      ]
-    },
-    {
-      "domain": "openrouter.ai",
-      "name": "Openrouter",
-      "tier": "?",
-      "stage": "approved",
-      "monthlyVisits": 21267929,
-      "gapCount": 3,
-      "gaps": [
-        "trafficMetrics.organicSearchVisits",
-        "keywords",
-        "pageStructure"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "postnitro.ai",
-      "name": "PostNitro for Agents",
-      "tier": "?",
-      "stage": "approved",
-      "monthlyVisits": 61275,
-      "gapCount": 1,
-      "gaps": [
-        "pageStructure"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
         }
       ]
     },
@@ -861,25 +717,6 @@
       ]
     },
     {
-      "domain": "schole.ai",
-      "name": "Scholé Learn by Building",
-      "tier": "?",
-      "stage": "approved",
-      "monthlyVisits": 27141,
-      "gapCount": 1,
-      "gaps": [
-        "pageStructure"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
-    },
-    {
       "domain": "teamily.com",
       "name": "Teamily AI",
       "tier": "core",
@@ -919,37 +756,6 @@
         "siteAudit",
         "aiInsight",
         "performanceInsight"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "trigger.dev",
-      "name": "Trigger.dev: Webhooks for your AI agents",
-      "tier": "?",
-      "stage": "approved",
-      "monthlyVisits": 204778,
-      "gapCount": 3,
-      "gaps": [
-        "trafficMetrics.organicSearchVisits",
-        "keywords",
-        "pageStructure"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "twinmind.com",
-      "name": "TwinMind for Desktop",
-      "tier": "?",
-      "stage": "approved",
-      "monthlyVisits": 198140,
-      "gapCount": 4,
-      "gaps": [
-        "trafficMetrics.organicSearchVisits",
-        "keywords",
-        "pageStructure",
-        "siteAudit"
       ],
       "issueCount": 0,
       "issues": []
