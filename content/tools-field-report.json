@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-18T01:32:06.593Z",
+  "generatedAt": "2026-11-18T01:48:47.686Z",
   "total": 27,
-  "itemsWithIssues": 11,
+  "itemsWithIssues": 14,
   "dimensions": [
     {
       "key": "description",
@@ -64,10 +64,9 @@
     {
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
-      "missing": 4,
-      "missingRatio": 15,
+      "missing": 3,
+      "missingRatio": 11,
       "missingDomains": [
-        "schole.ai",
         "claudeduet.com",
         "kixy.ai",
         "wanaka.app"
@@ -79,9 +78,10 @@
     {
       "key": "metrics.registeredAt",
       "label": "域名注册时间",
-      "missing": 9,
-      "missingRatio": 33,
+      "missing": 10,
+      "missingRatio": 37,
       "missingDomains": [
+        "dust.tt",
         "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
@@ -134,18 +134,19 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 19,
-      "missingRatio": 70,
+      "missing": 20,
+      "missingRatio": 74,
       "missingDomains": [
-        "openrouter.ai",
-        "voicemaker.in",
-        "trigger.dev",
-        "twinmind.com",
-        "musevideo.ai",
-        "lexmount.com",
-        "design-extractor.com",
-        "lalal.ai",
-        "facia.ai",
+        "mouse.dev",
+        "jenni.ai",
+        "luxonis.com",
+        "inceptionlabs.ai",
+        "kaleido.ai",
+        "fast.ai",
+        "fireflies.ai",
+        "getoffgridai.co",
+        "dust.tt",
+        "aivideocut.com",
         "agenthunt.io",
         "claudeduet.com",
         "kixy.ai",
@@ -161,23 +162,23 @@
       "invalidRatio": 19,
       "invalidSamples": [
         {
-          "domain": "zenabm.com",
+          "domain": "mylens.ai",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "postnitro.ai",
+          "domain": "copilotkit.ai",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "schole.ai",
+          "domain": "databox.com",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "memories.ai",
+          "domain": "autonomous.ai",
           "reason": "全部关键词缺搜索量（只有词）"
         },
         {
-          "domain": "arcjet.com",
+          "domain": "bitrise.io",
           "reason": "全部关键词缺搜索量（只有词）"
         }
       ]
@@ -201,10 +202,12 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 10,
-      "missingRatio": 37,
+      "missing": 12,
+      "missingRatio": 44,
       "missingDomains": [
-        "lexmount.com",
+        "luxonis.com",
+        "inceptionlabs.ai",
+        "kaleido.ai",
         "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
@@ -222,10 +225,9 @@
     {
       "key": "pageStructure",
       "label": "页面结构",
-      "missing": 10,
-      "missingRatio": 37,
+      "missing": 9,
+      "missingRatio": 33,
       "missingDomains": [
-        "memories.ai",
         "agenthunt.io",
         "claudeduet.com",
         "maxma.com",
@@ -236,9 +238,14 @@
         "wanaka.app",
         "xmind.com"
       ],
-      "invalid": 0,
-      "invalidRatio": 0,
-      "invalidSamples": []
+      "invalid": 1,
+      "invalidRatio": 4,
+      "invalidSamples": [
+        {
+          "domain": "autonomous.ai",
+          "reason": "页面结构缺 H1"
+        }
+      ]
     },
     {
       "key": "screenshotDesktopUrl",
@@ -317,19 +324,55 @@
         "wanaka.app",
         "xmind.com"
       ],
-      "invalid": 0,
-      "invalidRatio": 0,
-      "invalidSamples": []
+      "invalid": 4,
+      "invalidRatio": 15,
+      "invalidSamples": [
+        {
+          "domain": "mouse.dev",
+          "reason": "四要素缺 1 项"
+        },
+        {
+          "domain": "jenni.ai",
+          "reason": "四要素缺 1 项"
+        },
+        {
+          "domain": "fireflies.ai",
+          "reason": "四要素缺 1 项"
+        },
+        {
+          "domain": "databox.com",
+          "reason": "四要素缺 1 项"
+        }
+      ]
     }
   ],
   "entryIssues": [],
   "items": [
     {
-      "domain": "zenabm.com",
-      "name": "ZenABM",
+      "domain": "mouse.dev",
+      "name": "Mouse-1",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 43617,
+      "monthlyVisits": 27237,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "performanceInsight",
+          "label": "AI 判断",
+          "reason": "四要素缺 1 项"
+        }
+      ]
+    },
+    {
+      "domain": "mylens.ai",
+      "name": "MyLens",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 104460,
       "gapCount": 0,
       "gaps": [],
       "issueCount": 1,
@@ -342,131 +385,30 @@
       ]
     },
     {
-      "domain": "openrouter.ai",
-      "name": "Openrouter",
+      "domain": "jenni.ai",
+      "name": "Jenni",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 19941437,
+      "monthlyVisits": 1498133,
       "gapCount": 1,
       "gaps": [
         "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "voicemaker.in",
-      "name": "Voicemaker",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 500999,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "trigger.dev",
-      "name": "Trigger.dev: Webhooks for your AI agents",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 170818,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "twinmind.com",
-      "name": "TwinMind for Desktop",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 207739,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "postnitro.ai",
-      "name": "PostNitro for Agents",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 52756,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
-    },
-    {
-      "domain": "schole.ai",
-      "name": "Scholé Learn by Building",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 27139,
-      "gapCount": 1,
-      "gaps": [
-        "trafficMetrics.monthlyVisitsGrowth"
       ],
       "issueCount": 1,
       "issues": [
         {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
+          "key": "performanceInsight",
+          "label": "AI 判断",
+          "reason": "四要素缺 1 项"
         }
       ]
     },
     {
-      "domain": "musevideo.ai",
-      "name": "Musevideo",
+      "domain": "luxonis.com",
+      "name": "Luxonis",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 26226,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "memories.ai",
-      "name": "LUCI Desktop",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 188127,
-      "gapCount": 1,
-      "gaps": [
-        "pageStructure"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "keywords",
-          "label": "关键词",
-          "reason": "全部关键词缺搜索量（只有词）"
-        }
-      ]
-    },
-    {
-      "domain": "lexmount.com",
-      "name": "Moli by Lexmount",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 318166,
+      "monthlyVisits": 69527,
       "gapCount": 2,
       "gaps": [
         "keywords",
@@ -476,11 +418,39 @@
       "issues": []
     },
     {
-      "domain": "design-extractor.com",
-      "name": "Design-extractor",
+      "domain": "inceptionlabs.ai",
+      "name": "Mercury 3",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 20741,
+      "monthlyVisits": 287953,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "kaleido.ai",
+      "name": "Kaleido",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 300243,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "fast.ai",
+      "name": "Fast",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 250720,
       "gapCount": 1,
       "gaps": [
         "keywords"
@@ -489,11 +459,30 @@
       "issues": []
     },
     {
-      "domain": "lalal.ai",
-      "name": "Lalal",
+      "domain": "fireflies.ai",
+      "name": "Fireflies",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 1963370,
+      "monthlyVisits": 4411502,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "performanceInsight",
+          "label": "AI 判断",
+          "reason": "四要素缺 1 项"
+        }
+      ]
+    },
+    {
+      "domain": "getoffgridai.co",
+      "name": "Off Grid AI",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 36669,
       "gapCount": 1,
       "gaps": [
         "keywords"
@@ -502,35 +491,99 @@
       "issues": []
     },
     {
-      "domain": "facia.ai",
-      "name": "Facia",
+      "domain": "copilotkit.ai",
+      "name": "OpenMuse",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 60126,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "clueso.io",
-      "name": "Clueso MCP",
-      "tier": "?",
-      "stage": "enriched",
-      "monthlyVisits": 179904,
+      "monthlyVisits": 403148,
       "gapCount": 0,
       "gaps": [],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        }
+      ]
+    },
+    {
+      "domain": "databox.com",
+      "name": "MCP Connectors by Databox",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 204738,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 2,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "key": "performanceInsight",
+          "label": "AI 判断",
+          "reason": "四要素缺 1 项"
+        }
+      ]
+    },
+    {
+      "domain": "dust.tt",
+      "name": "Dust",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 547217,
+      "gapCount": 2,
+      "gaps": [
+        "metrics.registeredAt",
+        "keywords"
+      ],
       "issueCount": 0,
       "issues": []
     },
     {
-      "domain": "arcjet.com",
-      "name": "Arcjet",
+      "domain": "aivideocut.com",
+      "name": "Aivideocut",
       "tier": "?",
       "stage": "enriched",
-      "monthlyVisits": 38973,
+      "monthlyVisits": 99484,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "autonomous.ai",
+      "name": "Harness by Autonomous",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 302031,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 2,
+      "issues": [
+        {
+          "key": "keywords",
+          "label": "关键词",
+          "reason": "全部关键词缺搜索量（只有词）"
+        },
+        {
+          "key": "pageStructure",
+          "label": "页面结构",
+          "reason": "页面结构缺 H1"
+        }
+      ]
+    },
+    {
+      "domain": "bitrise.io",
+      "name": "Bitrise Build Hub",
+      "tier": "?",
+      "stage": "enriched",
+      "monthlyVisits": 328961,
       "gapCount": 0,
       "gaps": [],
       "issueCount": 1,
