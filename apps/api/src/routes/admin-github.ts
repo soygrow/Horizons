@@ -2,11 +2,11 @@
  * 后台「GitHub 榜」API：采集、审核、发布。
  *
  * 与工具榜、趋势榜的分工完全一致 —— Worker 跑不动采集（要打 700 多次 GitHub 接口、
- * 还要读写 59MB 的 github.json），这里只做编排：
- *   1. 点「采集」→ 触发 fetch-github.yml，候选只写进 content/github-staging.json；
+ * 还要读写几十 MB 的榜单数据），这里只做编排：
+ *   1. 点「采集」→ 触发 fetch-github.yml，候选只写进候选池；
  *   2. 读候选池，逐个仓库看分数、星标、预计名次，决定收还是拒；
  *   3. 点「发布」前先算一遍位次变化 —— 谁进榜、谁被挤出去、前 50 谁动了；
- *   4. 确认后触发 publish-github.yml，那边才真正写 content/github.json。
+ *   4. 确认后触发 publish-github.yml，那边才真正写 D1 的当前版本。
  *
  * 数据全部来自 D1：候选池读 board_items，发布期快照读 board_reports:github-meta。
  * 鉴权与 CSRF 由 admin.ts 的 `admin.use("*")` 统一兜住。
@@ -345,15 +345,13 @@ github.get("/listed", async (c) => {
   }
 
   const [{ results }, ws] = await Promise.all([
+    /* 0021 起这些标量是列：不再对 1500 行各做 7 次 json_extract（一次 2–4MB） */
     c.env.DB.prepare(
       `SELECT item_key, rank, score, name, url,
-              json_extract(card,'$.stars') AS stars,
-              json_extract(card,'$.forks') AS forks,
-              json_extract(card,'$.language') AS language,
-              json_extract(card,'$.description') AS description,
-              json_extract(card,'$.pushedAt') AS pushed_at,
-              json_extract(card,'$.lastCrawledAt') AS last_crawled,
-              json_extract(card,'$.productScore.grade') AS grade
+              stars, forks, language, description,
+              pushed_at,
+              COALESCE(last_crawled_at, pushed_at) AS last_crawled,
+              grade
        FROM board_listed
        WHERE version = ? AND board = 'github'
        ORDER BY rank ASC, name ASC`,

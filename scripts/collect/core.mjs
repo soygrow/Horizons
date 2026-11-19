@@ -24,6 +24,12 @@ import { fileURLToPath } from "node:url";
 import { brandOwnerOf, buildCopy, estimateCapability, paramsOf, slugify } from "./model-rules.mjs";
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+/**
+ * 当前线上榜单的构建缓存 —— 定向刷新读它当基线。
+ *
+ * 它不入库，由 `hydrate-models.ts` 从 D1 还原；采集结果写 `CACHE_DIR/models-pending.json`，
+ * 再由 publish-models 直接进库。仓库里没有第二份真源。
+ */
 export const OUT_PATH = resolve(ROOT, "content/models.json");
 export const CACHE_DIR = resolve(ROOT, "content/cache");
 

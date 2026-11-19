@@ -1,17 +1,18 @@
 /**
  * 模型榜 → D1。
  *
- * 数据源 `content/models.json` 由 `scripts/collect/index.mjs` 采集写入，
- * 采集完调一次本脚本即可。
+ * 模型榜只写库：`content/models.json` 不再入库，构建时由 `hydrate-models.ts`
+ * 从库还原。本脚本吃的是「采集刚算出来的那一份」——通常由
+ * `scripts/collect/index.mjs` 落在 `content/cache/models-pending.json` 后传进来。
  *
  * 名次口径与站点页面完全一致：综合分 = 0.9 × 能力 + 0.1 × 性价比，
  * 同分按名称字典序 —— 复用的是 `apps/site/src/lib/model-score.ts`，
  * 不在这里重写一遍公式，避免页面和榜单排名对不上。
  *
  * 用法：
- *   pnpm tsx scripts/admin/publish-models.ts
- *   pnpm tsx scripts/admin/publish-models.ts --patch    # 只写变化行，不建新版本
- *   pnpm tsx scripts/admin/publish-models.ts --no-d1
+ *   pnpm tsx scripts/admin/publish-models.ts                     # 读 content/models.json（hydrate 出来的缓存）
+ *   pnpm tsx scripts/admin/publish-models.ts --input content/cache/models-pending.json
+ *   pnpm tsx scripts/admin/publish-models.ts --patch             # 只写变化行，不建新版本
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -21,6 +22,11 @@ import type { PublishRow } from "./publish-board";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const MODELS_PATH = path.join(ROOT, "content/models.json");
+
+function arg(name: string): string | undefined {
+  const i = process.argv.indexOf(`--${name}`);
+  return i >= 0 ? process.argv[i + 1] : undefined;
+}
 
 interface ModelPrice {
   input?: number | null;
@@ -41,15 +47,23 @@ interface ModelRecord {
 interface ModelsFile {
   updatedAt?: string;
   models: ModelRecord[];
+  [key: string]: unknown;
 }
 
 async function main(): Promise<void> {
-  if (!fs.existsSync(MODELS_PATH)) {
-    throw new Error(`找不到 ${MODELS_PATH}，先跑 pnpm collect`);
+  const input = arg("input") ? path.resolve(ROOT, arg("input") as string) : MODELS_PATH;
+  if (!fs.existsSync(input)) {
+    throw new Error(
+      `找不到 ${path.relative(ROOT, input)}。采集产物在 content/cache/models-pending.json，` +
+        "用 --input 指过去；或者先跑 pnpm models:collect",
+    );
   }
-  const file = JSON.parse(fs.readFileSync(MODELS_PATH, "utf-8")) as ModelsFile;
+  const file = JSON.parse(fs.readFileSync(input, "utf-8")) as ModelsFile;
   const models = file.models ?? [];
-  if (models.length === 0) throw new Error("models.json 里没有模型，拒绝发布空榜");
+  if (models.length === 0) throw new Error("模型数据里没有模型，拒绝发布空榜");
+
+  /* 除 models 以外的字段都是文件头（来源统计、文案说明），原样存进 board_stats.meta */
+  const { models: _ignored, ...meta } = file;
 
   // 性价比在全库样本内归一，和页面用同一套函数
   const valueMap = valueScores(
@@ -111,6 +125,7 @@ async function main(): Promise<void> {
      * 省下来的写库额度就是这里来的。代价是这一版回滚不了 —— 所以只在「只改数值」时用。
      */
     patch: process.argv.includes("--patch"),
+    meta,
   });
 
   if (!res.ok && res.error !== "missing-credentials") process.exitCode = 1;

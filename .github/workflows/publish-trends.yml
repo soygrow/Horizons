@@ -118,6 +118,15 @@ jobs:
         env:
           SUM: ${{ steps.merge.outputs.summary }}
 
+      # 导出 R2 快照：构建读对象存储，不再从 D1 全量还原
+      - name: 导出榜单快照
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm exec tsx scripts/admin/hydrate-trends.ts --upload-snapshot
+
       - name: 触发站点构建
         if: steps.commit.outputs.changed == 'true'
         env:

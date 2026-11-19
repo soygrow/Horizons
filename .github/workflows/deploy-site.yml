@@ -24,6 +24,11 @@ on:
       - "pnpm-workspace.yaml"
       - ".github/workflows/deploy-site.yml"
   workflow_dispatch:
+    inputs:
+      reason:
+        description: "触发原因（仅记录在日志里，不影响构建）"
+        required: false
+        default: ""
 
 concurrency:
   group: deploy-site

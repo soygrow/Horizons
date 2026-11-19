@@ -1,7 +1,14 @@
 name: Publish GitHub Board
 
-# 后台「发布」按钮的落点：把候选池合并进 content/github.json，
+# 后台「发布」按钮的落点：把候选池合并进 D1 的当前版本，
 # 把「谁进榜、谁掉了几名」写回候选池供后台回看，补新条目的中文情报，最后触发站点重建。
+#
+# 数据只写库：content/github.json 不入库，它是构建缓存，由构建前的 hydrate-github 还原。
+#
+# 为什么来回 hydrate 两次：
+#   1. 发布前 —— 现榜基线要从库里读（旧榜的 README 与中文情报都在 detail 里）；
+#   2. 发布后 —— 中文情报富化仍然对文件动手，补完用 --repost 把文件推回库。
+# 不这样做的话，富化出来的中文情报会留在工作区里没人接。
 #
 # 这是整条链路里**唯一**会改正式榜的 workflow —— 必须由人点按钮触发。
 on:
@@ -27,7 +34,7 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    # 合并本身很快，时间几乎都花在给新条目补中文情报上
+    # 合并本身很快，时间主要花在两次 hydrate（各 1500 条）和给新条目补中文情报上
     timeout-minutes: 240
     permissions:
       contents: write
@@ -48,11 +55,17 @@ jobs:
       - name: 安装依赖
         run: pnpm install --frozen-lockfile
 
+      - name: 从库还原现榜（发布基线）
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm exec tsx scripts/admin/hydrate-github.ts
+
       - name: 合并候选池并输出位次变化
         id: merge
         env:
           GITHUB_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
-          # D1 冷备写入：灰度期失败不阻塞 JSON 发布，切流前改成 --strict-d1
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
@@ -75,6 +88,14 @@ jobs:
             echo '${{ steps.merge.outputs.summary }}'
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # 把刚发布的结果还原成文件，供下面两步对文件动手（富化 + 统计）
+      - name: 还原发布结果到文件
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm exec tsx scripts/admin/hydrate-github.ts
 
       # 新进榜的条目没有中文情报（采集阶段为了控制候选池体积没有生成），
       # 这里补上，否则详情页是空模板。
@@ -111,31 +132,49 @@ jobs:
             echo "::warning::加工空间判定部分失败，可稍后重跑"
           echo "::endgroup::"
 
+      # 富化改的是文件，推回库才算真的补上
+      - name: 中文情报回写 D1
+        if: always()
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm exec tsx scripts/admin/publish-github.ts --repost
+
       - name: 清理临时文件
         if: always()
         run: rm -f .gh-entered.txt
 
-      - name: 提交榜单数据
+      # 只提交候选池与统计快照：榜单本体在库里，仓库里不该有它
+      - name: 提交候选池与统计
         id: commit
         run: |
           git config user.name "horizons-bot"
           git config user.email "bot@horizons.tools"
           pnpm exec tsx scripts/admin/board-stats.ts
-          git add content/github.json content/board-stats.json
+          git add content/board-stats.json
           # 候选池正常都在；万一被手工清理过，缺文件会让 git add 直接 fatal
           if [ -f content/github-staging.json ]; then git add content/github-staging.json; fi
           if git diff --cached --quiet; then
-            echo "::notice::没有可发布的变更，未产生提交"
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
+            echo "::notice::候选池与统计没有变化，未产生提交"
+          else
+            git commit -m "chore(github): 发布后同步候选池与统计"
+            git push
           fi
-          board=$(node -e "const d=require('./content/github.json');console.log(d.repos.length)")
-          git commit -m "feat(github): 发布榜单更新（${board} 条在榜）"
-          git push
-          echo "changed=true" >> "$GITHUB_OUTPUT"
 
+      # 把这一版导出成 R2 快照：之后构建读对象存储（0 rows read），不再分页扫 D1。
+      # 失败即中断，宁可这次不部署，也不让构建读到落后于库的快照。
+      - name: 导出榜单快照
+        if: success()
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm exec tsx scripts/admin/hydrate-github.ts --upload-snapshot
+
+      # 榜单在库里，push 不会自己触发部署，必须显式请求一次
       - name: 触发站点构建
-        if: steps.commit.outputs.changed == 'true'
+        if: success()
         env:
           BOT_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
         run: |

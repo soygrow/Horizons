@@ -17,6 +17,7 @@ import {
   patchBoard,
   pruneVersions,
   publishBoard,
+  slimDetail,
   type PublishRow,
 } from "./publish-board";
 
@@ -35,6 +36,13 @@ export interface SyncOptions {
    * 默认为 false，也可用命令行 `--patch` 打开。
    */
   patch?: boolean;
+  /**
+   * 榜单元数据（数据来源统计、文案说明、评分规则版本……）。
+   *
+   * 只写库的榜（models / github）构建时要从库里还原文件，而元数据不是条目字段，
+   * 塞进 board_listed 只会污染榜单行。落 board_stats.meta，hydrate 时原样带回。
+   */
+  meta?: unknown;
 }
 
 export interface SyncResult {
@@ -104,21 +112,46 @@ async function recordBoardStat(
   board: Board,
   total: number,
   at: string,
+  meta?: unknown,
+  bytes?: number,
 ): Promise<void> {
   try {
     await client.query(
-      `INSERT INTO board_stats (board, total, updated_at, generated_at, source)
-       VALUES (?, ?, ?, ?, 'publish')
+      `INSERT INTO board_stats (board, total, updated_at, generated_at, source, meta, bytes)
+       VALUES (?, ?, ?, ?, 'publish', ?, ?)
        ON CONFLICT (board) DO UPDATE SET
          total = excluded.total,
          updated_at = excluded.updated_at,
          generated_at = excluded.generated_at,
-         source = excluded.source`,
-      [board, total, at, Date.now()],
+         source = excluded.source,
+         meta = COALESCE(excluded.meta, board_stats.meta),
+         bytes = COALESCE(excluded.bytes, board_stats.bytes)`,
+      [
+        board,
+        total,
+        at,
+        Date.now(),
+        // 不传 meta 的榜（tools/trends/opps/digest 走各自发布脚本）保持旧值不动
+        meta === undefined ? null : JSON.stringify(meta),
+        bytes ?? null,
+      ],
     );
   } catch (e) {
     console.warn("[stats] 写入 board_stats 失败（不影响发布）：", e);
   }
+}
+
+/**
+ * 整榜详情字节数（瘦身后）。
+ *
+ * 存在 board_stats 里，取代 `SELECT SUM(LENGTH(detail)) ... GROUP BY board` ——
+ * 那条语句返回 6 行却要把整版 60MB 的详情读出来，纯为算一个数字。
+ * 发布时详情本来就在内存里，顺手加一遍即可。
+ */
+function totalDetailBytes(board: Board, rows: readonly PublishRow[]): number {
+  let sum = 0;
+  for (const r of rows) sum += Buffer.byteLength(JSON.stringify(slimDetail(board, r.detail)));
+  return sum;
 }
 
 export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
@@ -170,7 +203,7 @@ export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
         allowShrink: process.argv.includes("--allow-shrink"),
       });
 
-      await recordBoardStat(client, board, res.listed, res.version);
+      await recordBoardStat(client, board, res.listed, res.version, opts.meta);
 
       console.log(
         `[sync] ${board} 增量更新版本 ${res.version}：${res.listed} 条` +
@@ -213,8 +246,9 @@ export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
 
     const pruned = await pruneVersions(client);
 
-    // 顺带记下在榜条数：后台概览只查 board_stats，不再读仓库里的榜文件
-    await recordBoardStat(client, board, res.listed, res.version);
+    // 顺带记下在榜条数与整榜字节：后台概览只查 board_stats，不再读仓库里的榜文件，
+    // 也不再为了体积去 SUM(LENGTH(detail))
+    await recordBoardStat(client, board, res.listed, res.version, opts.meta, totalDetailBytes(board, rows));
 
     console.log(
       `[sync] ${board} 已写入 ${res.version}：${res.listed} 条` +

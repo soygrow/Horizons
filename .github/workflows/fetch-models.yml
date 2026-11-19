@@ -1,16 +1,20 @@
 name: Fetch Models
 
 # 定向刷新模型榜里的几个模型：从 OpenRouter / models.dev 重新拉这些条目的
-# 价格、上下文、能力分，按 slug 合并回 content/models.json，再增量写 D1。
+# 价格、上下文、能力分，直接增量写 D1，然后触发站点重建。
 #
 # 为什么采集要放在 CI：两个源都是公网接口，Worker 里跑不了整条采集管线。
 #
-# 为什么改完还要提交 JSON：模型榜目前仍以仓库文件为准（data_source.models = file），
-# 站点构建直接读 content/models.json；只写 D1 的话后台看到的是新数据、前台还是旧的。
-# 提交后 push 会触发站点部署，两边才一致。
+# 为什么先 hydrate：模型榜的唯一真源是 D1，仓库里没有 content/models.json
+# （它是构建缓存）。定向刷新要拿「当前线上榜单」做基线，所以先把它从库里还原出来，
+# 采集改完再写回库 —— 读和写都只经过 D1，没有第二份真源。
 #
-# 需要的仓库 Secrets（写 D1 用，缺了只告警不失败）：
+# 为什么最后要 dispatch deploy-site：数据不在仓库里，push 不会触发部署，
+# 站点自己也不会知道榜单变了。不发这一下，前台会一直停在上一次的构建。
+#
+# 需要的仓库 Secrets（写 D1 与触发部署）：
 #   CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID / D1_DATABASE_ID
+#   DEPLOY_TOKEN（PAT，用于 dispatch deploy-site）
 
 on:
   workflow_dispatch:
@@ -28,9 +32,10 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # 采集结果要提交回仓库，deploy-site 由这次 push 触发
+    # 不再提交文件，但 dispatch deploy-site 需要 token
     permissions:
-      contents: write
+      contents: read
+      actions: write
 
     steps:
       - uses: actions/checkout@v4
@@ -62,6 +67,13 @@ jobs:
             exit 1
           fi
 
+      - name: 从库还原当前榜单（定向刷新的基线）
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm tsx scripts/admin/hydrate-models.ts
+
       - name: 定向刷新并写 D1
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -72,16 +84,29 @@ jobs:
         # 不用模板直接拼进命令行：slug 来自后台输入，让它走环境变量而不是 shell 拼接
         run: pnpm tsx scripts/collect/index.mjs --models="$MODELS"
 
-      - name: 提交榜单文件
+      # 采集结果只进了 D1，工作区应该干净（pending 文件在 content/cache 下，已被忽略）。
+      # 如果有别的文件变了，说明有人绕过了「只写库」的口径，直接失败让人看见。
+      - name: 确认没有改到仓库文件
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --short
+            echo "::error::采集过程改动了仓库文件，模型榜应当只写 D1"
+            exit 1
+          fi
+          echo "工作区干净，数据只写进了 D1"
+
+      # collect 只会 patch 写库（版本号不变），所以每次都要覆盖同版本快照
+      - name: 导出榜单快照
         env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm tsx scripts/admin/hydrate-models.ts --upload-snapshot
+
+      - name: 触发站点重建
+        env:
+          GH_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
           MODELS: ${{ inputs.models }}
         run: |
-          if git diff --quiet -- content/models.json; then
-            echo "这些模型的数据没有变化，不提交"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add content/models.json
-          git commit -m "chore(models): 定向刷新 ${MODELS}"
-          git push
+          gh workflow run deploy-site.yml --ref main \
+            -f reason="模型榜定向刷新：${MODELS}"

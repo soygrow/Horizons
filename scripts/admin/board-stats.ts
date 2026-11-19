@@ -9,6 +9,10 @@
  * 快照是纯派生数据：随时可由正式榜重建，不参与任何写入，
  * 因此不会变成第二个事实来源。
  *
+ * 四个大榜的文件现在都不入库了（构建缓存），CI 里未必都在场：
+ * 文件缺失的榜用 D1 的 board_stats 补齐 —— 那本来就是发布时写进去的同一份数字，
+ * 缺了就说明这次环境没 hydrate，而不是榜单真的空了。
+ *
  * 用法：
  *   pnpm tsx scripts/admin/board-stats.ts
  * 或在 publish-*.ts 末尾调用 writeBoardStats()。
@@ -107,8 +111,37 @@ export function computeBoardStats(): BoardStatsFile {
   return { generatedAt: new Date().toISOString(), boards };
 }
 
-export function writeBoardStats(): BoardStatsFile {
-  const stats = computeBoardStats();
+/**
+ * 用 D1 补齐「文件不在场」的榜。
+ *
+ * 只补缺失项，不覆盖文件算出来的数字：文件是刚刚发布的那一份，比库只可能更新、不会更旧。
+ * 没有 D1 通道时原样返回（本地离线跑统计不至于失败）。
+ */
+async function fillMissingFromD1(stats: BoardStatsFile): Promise<BoardStatsFile> {
+  if (!d1Configured()) return stats;
+
+  try {
+    const client = createD1Client();
+    const res = await client.query<{ board: string; total: number; updated_at: string | null }>(
+      "SELECT board, total, updated_at FROM board_stats",
+      [],
+    );
+    for (const row of res.results) {
+      if (stats.boards[row.board]) continue;
+      stats.boards[row.board] = {
+        total: row.total,
+        updatedAt: row.updated_at,
+        source: "d1:board_stats",
+      };
+    }
+  } catch (e) {
+    console.warn("[stats] 用 D1 补齐缺失榜失败（不影响已有条目）：", e);
+  }
+  return stats;
+}
+
+export async function writeBoardStats(): Promise<BoardStatsFile> {
+  const stats = await fillMissingFromD1(computeBoardStats());
   const tmp = `${STATS_PATH}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify(stats, null, 2) + "\n", "utf-8");
   fs.renameSync(tmp, STATS_PATH);
@@ -162,16 +195,17 @@ export async function writeBoardStatsToD1(): Promise<number> {
 
 // 直接执行时刷新快照；被 publish-*.ts import 时不自动跑
 if (process.argv[1]?.endsWith("board-stats.ts")) {
-  const stats = writeBoardStats();
-  console.log(`[stats] ${statsLine(stats)} → content/board-stats.json`);
+  (async () => {
+    const stats = await writeBoardStats();
+    console.log(`[stats] ${statsLine(stats)} → content/board-stats.json`);
 
-  // 加 --d1 才写库，避免本地随手跑一次就把线上统计覆盖掉
-  if (process.argv.includes("--d1")) {
-    writeBoardStatsToD1()
-      .then((n) => console.log(`[stats] 已回填 D1 board_stats：${n} 行`))
-      .catch((e) => {
-        console.error("[stats] 写入 D1 失败：", e);
-        process.exitCode = 1;
-      });
-  }
+    // 加 --d1 才写库，避免本地随手跑一次就把线上统计覆盖掉
+    if (process.argv.includes("--d1")) {
+      const n = await writeBoardStatsToD1();
+      console.log(`[stats] 已回填 D1 board_stats：${n} 行`);
+    }
+  })().catch((e) => {
+    console.error("[stats] 失败：", e);
+    process.exitCode = 1;
+  });
 }

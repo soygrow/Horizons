@@ -65,6 +65,12 @@ content/tools-publish.json
 # 注意 content/trends-policy.json 仍然入库：那是采集侧的准入判定账本，不是榜单数据。
 content/trends.json
 
+# 模型榜 / GitHub 榜：同上。两个文件都只作为构建缓存存在，每次 `pnpm data` 由
+# scripts/admin/hydrate-models.ts / hydrate-github.ts 从库还原，不入库。
+# 采集与发布的唯一落点是 D1 —— 仓库里留一份就等于第二份真源，迟早和库分叉。
+content/models.json
+content/github.json
+
 # Astro 静态站（apps/site）构建产物与类型缓存
 apps/site/dist/
 apps/site/.astro/

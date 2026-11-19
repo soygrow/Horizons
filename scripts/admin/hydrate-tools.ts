@@ -10,12 +10,13 @@
  *   card 在发布时被刻意削掉了 pageStructure（单条 11KB，列表查询用不上），
  *   detail 才是发布那一刻的完整 AITool。详情页、sitemap 都依赖完整字段。
  *
- * 为什么分页读：
- *   210 条 detail 合计约 5MB，一次查询会让 REST 响应过大、wrangler 输出
- *   也可能被截断。按 rank 顺序每页 20 条，稳定且失败重试代价小。
+ * 为什么一次读完（不再分页）：
+ *   203 条 detail 合计约 5MB，一次查询即可，往返次数从 14 次降到 1 次。
+ *   分页本身没有意义 —— 整榜都要用，`OFFSET` 只是把一次线性扫描拆成了
+ *   十四次重复扫描（Σoffset ≈ 1.4k 行）。
  *
  * 三种失败一律硬失败（构建不能悄悄用旧数据）：
- *   1. 没有 D1 通道；
+ *   1. 没有 D1 通道且没有快照；
  *   2. 当前版本一条都没有；
  *   3. 有条目缺 detail（详情页会缺页）。
  *
@@ -25,6 +26,8 @@
  *   pnpm tsx scripts/admin/hydrate-tools.ts --from 2026-11-10T12:00:00
  *   pnpm tsx scripts/admin/hydrate-tools.ts --out /tmp/tools.json
  *   pnpm tsx scripts/admin/hydrate-tools.ts --force          # 允许条数明显下降
+ *   pnpm tsx scripts/admin/hydrate-tools.ts --no-snapshot    # 强制走 D1
+ *   pnpm tsx scripts/admin/hydrate-tools.ts --upload-snapshot
  *
  * 无凭据时的行为由调用方决定（`strict=false` 时返回 null 而不是退出）：
  * 本地开发不想每次都连库，但 CI 里必须成功。
@@ -33,18 +36,11 @@ import fs from "node:fs";
 import path from "node:path";
 import type { AITool } from "@horizons/shared";
 import { createD1Client, d1Configured } from "./d1-client";
+import { currentBoardVersion, readSnapshot, snapshotEnabled, writeSnapshot } from "./snapshot";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const TOOLS_PATH = path.join(ROOT, "content/aitools.json");
 const BOARD = "tools";
-
-/**
- * 每页读多少条 detail。
- *
- * 单条 detail 约 25–30KB，取 15 条 ≈ 400KB：CI 走 REST 通道（直连 Cloudflare），
- * 单次响应越小越不容易撞超时/体积限制；210 条约 14 次请求，代价可忽略。
- */
-const PAGE_SIZE = 15;
 
 /**
  * 条数安全阀：新数据比现有文件少这么多就拒绝覆盖。
@@ -129,38 +125,36 @@ export async function readListedTools(version?: string): Promise<HydrateResult> 
   const tools: AITool[] = [];
   const missing: string[] = [];
 
-  for (let offset = 0; offset < total; offset += PAGE_SIZE) {
-    const page = await read<ListedPageRow>(
-      `SELECT l.item_key, l.rank, d.detail
-         FROM board_listed l
-         LEFT JOIN board_listed_details d
-           ON d.version = l.version AND d.board = l.board AND d.item_key = l.item_key
-        WHERE l.version = ? AND l.board = ?
-        ORDER BY l.rank
-        LIMIT ? OFFSET ?`,
-      [ver, BOARD, PAGE_SIZE, offset],
-    );
+  const page = await read<ListedPageRow>(
+    `SELECT l.item_key, l.rank, d.detail
+       FROM board_listed l
+       LEFT JOIN board_listed_details d
+         ON d.version = l.version AND d.board = l.board AND d.item_key = l.item_key
+      WHERE l.version = ? AND l.board = ?
+      ORDER BY l.rank
+      LIMIT ?`,
+    [ver, BOARD, total],
+  );
 
-    for (const row of page.results) {
-      if (!row.detail) {
-        missing.push(row.item_key);
-        continue;
-      }
-      const tool = JSON.parse(row.detail) as AITool;
-      for (const k of BOOKKEEPING) delete (tool as unknown as Record<string, unknown>)[k];
-      /*
-       * domain 必须与 item_key 一致：详情页路由是 /tools/<domain>，
-       * 而更新接口按 item_key 定位线上条目。两者错位会让「点了更新却更新不到」。
-       * 以库里的 key 为准并告警 —— key 是发布时写死的，不会自己变。
-       */
-      if (tool.domain !== row.item_key) {
-        console.warn(
-          `::warning::[hydrate] ${row.item_key} 的 detail.domain=${tool.domain ?? "(空)"}，已按库里的 key 纠正`,
-        );
-        tool.domain = row.item_key;
-      }
-      tools.push(tool);
+  for (const row of page.results) {
+    if (!row.detail) {
+      missing.push(row.item_key);
+      continue;
     }
+    const tool = JSON.parse(row.detail) as AITool;
+    for (const k of BOOKKEEPING) delete (tool as unknown as Record<string, unknown>)[k];
+    /*
+     * domain 必须与 item_key 一致：详情页路由是 /tools/<domain>，
+     * 而更新接口按 item_key 定位线上条目。两者错位会让「点了更新却更新不到」。
+     * 以库里的 key 为准并告警 —— key 是发布时写死的，不会自己变。
+     */
+    if (tool.domain !== row.item_key) {
+      console.warn(
+        `::warning::[hydrate] ${row.item_key} 的 detail.domain=${tool.domain ?? "(空)"}，已按库里的 key 纠正`,
+      );
+      tool.domain = row.item_key;
+    }
+    tools.push(tool);
   }
 
   if (tools.length !== total - missing.length) {
@@ -184,6 +178,18 @@ function readExisting(): AITool[] | null {
   }
 }
 
+/** 条数骤降保护：构建宁可失败，也不要把线上榜换成残缺版 */
+function assertNotShrunk(count: number, force: boolean, existing: AITool[] | null): void {
+  if (force || !existing?.length) return;
+  if (count >= existing.length * MIN_RATIO) return;
+  throw new Error(
+    `还原出 ${count} 条，比现有文件的 ${existing.length} 条少很多（阈值 ${Math.round(
+      MIN_RATIO * 100,
+    )}%）。\n` +
+      "通常是版本指针指到了一个没有 tools 的快照，或换库了。确认无误后加 --force。",
+  );
+}
+
 /** 原子写：写临时文件再 rename，构建中途失败也不会留下半截 JSON */
 function writeAtomic(file: string, tools: readonly AITool[]): void {
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -195,7 +201,37 @@ function writeAtomic(file: string, tools: readonly AITool[]): void {
 async function main(): Promise<void> {
   const dry = process.argv.includes("--dry");
   const force = process.argv.includes("--force");
+  const uploadSnap = process.argv.includes("--upload-snapshot");
   const out = arg("out") ? path.resolve(ROOT, arg("out") as string) : TOOLS_PATH;
+
+  /* 快照优先：发布后导出一次，之后构建不再碰 board_listed_details */
+  if (snapshotEnabled() && d1Configured()) {
+    const ver = arg("from") ?? (await currentBoardVersion());
+    const buf = ver ? await readSnapshot(BOARD, ver) : null;
+    if (buf) {
+      const tools = JSON.parse(buf.toString("utf8")) as AITool[];
+      if (!Array.isArray(tools) || tools.length === 0) {
+        throw new Error(`快照 ${ver} 里没有工具数据，拒绝用它还原站点数据`);
+      }
+      assertNotShrunk(tools.length, force, readExisting());
+      if (!dry) writeAtomic(out, tools);
+      console.log(
+        `[hydrate]${dry ? " dry-run" : ""} 快照命中 boards/${BOARD}/${ver}.json｜${tools.length} 条` +
+          `｜${(buf.length / 1024 / 1024).toFixed(1)}MB → ${path.relative(ROOT, out)}`,
+      );
+      console.log(
+        JSON.stringify({
+          version: ver,
+          count: tools.length,
+          bytes: buf.length,
+          source: "snapshot",
+          out: path.relative(ROOT, out),
+          dry,
+        }),
+      );
+      return;
+    }
+  }
 
   /*
    * 没有 D1 通道时：
@@ -227,15 +263,7 @@ async function main(): Promise<void> {
     );
   }
 
-  const existing = readExisting();
-  if (existing && existing.length > 0 && tools.length < existing.length * MIN_RATIO && !force) {
-    throw new Error(
-      `还原出 ${tools.length} 条，比现有文件的 ${existing.length} 条少很多（阈值 ${Math.round(
-        MIN_RATIO * 100,
-      )}%）。\n` +
-        "通常是版本指针指到了一个没有 tools 的快照，或换库了。确认无误后加 --force。",
-    );
-  }
+  assertNotShrunk(tools.length, force, readExisting());
 
   const bytes = Buffer.byteLength(JSON.stringify(tools, null, 2));
   const summary = {
@@ -247,6 +275,12 @@ async function main(): Promise<void> {
   };
 
   if (!dry) writeAtomic(out, tools);
+
+  /* 发布流程收尾：导出快照，之后构建读 R2 而不是 D1 */
+  if (uploadSnap && !dry) {
+    const hit = await writeSnapshot(BOARD, version, JSON.stringify(tools, null, 2) + "\n", true);
+    if (hit) console.log(`[snapshot] ${hit.key}｜${(hit.bytes / 1024 / 1024).toFixed(1)}MB`);
+  }
 
   console.log(
     `[hydrate]${dry ? " dry-run" : ""} 版本 ${version}｜${tools.length} 条` +

@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "data": "tsx --tsconfig tsconfig.json ../../scripts/admin/hydrate-tools.ts && tsx --tsconfig tsconfig.json ../../scripts/admin/hydrate-trends.ts && node ../../scripts/build/web-data.mjs && tsx --tsconfig tsconfig.json ../../scripts/build/artifacts.ts && node ../../scripts/build/field-health.mjs",
+    "data": "tsx --tsconfig tsconfig.json ../../scripts/admin/hydrate-tools.ts && tsx --tsconfig tsconfig.json ../../scripts/admin/hydrate-trends.ts && tsx --tsconfig tsconfig.json ../../scripts/admin/hydrate-github.ts && tsx --tsconfig tsconfig.json ../../scripts/admin/hydrate-models.ts && node ../../scripts/build/web-data.mjs && tsx --tsconfig tsconfig.json ../../scripts/build/artifacts.ts && node ../../scripts/build/field-health.mjs",
     "deploy": "pnpm data && astro build && wrangler deploy"
   },
   "dependencies": {

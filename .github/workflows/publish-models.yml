@@ -1,25 +1,27 @@
 name: Publish Models
 
-# 模型榜的数据源是 content/models.json，由 `pnpm collect` 采集写入。
-# 这里只做一件事：把仓库里当前这份 JSON 同步进 D1。
+# 模型榜的唯一真源是 D1。采集（fetch-models.yml）采完会直接增量写库，
+# 所以这个 workflow 不再「把文件推进库」——它做两件事：
+#   1. 校验当前版本快照能不能完整还原（缺 detail 会在这里暴露）；
+#   2. 触发站点重建，让前台跟上库里的最新数据。
 #
-# 日常用法：采集完提交 JSON 后，点一次 Run workflow（或从后台「模型榜」页触发）。
-# 不配 D1 凭据也能跑，会跳过写入并打印告警。
+# 日常用法：后台「模型榜 → 采集同步 → 同步到线上」，或直接 Run workflow。
 #
 # 需要的仓库 Secrets：
 #   CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID / D1_DATABASE_ID
+#   DEPLOY_TOKEN（PAT，用于 dispatch deploy-site）
 
 on:
   workflow_dispatch:
     inputs:
       patch:
-        description: "增量写库：只写变化行，不建新版本（日常刷新用）"
+        description: "兼容旧入口的占位参数，当前无效果（采集即入，不需要再发布一次）"
         type: boolean
         default: true
       strict_d1:
-        description: "D1 写入失败时让本次任务失败（切流后打开）"
+        description: "D1 读取失败时让本次任务失败"
         type: boolean
-        default: false
+        default: true
 
 concurrency:
   group: publish-models
@@ -31,6 +33,7 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
+      actions: write
 
     steps:
       - uses: actions/checkout@v4
@@ -47,15 +50,22 @@ jobs:
       - name: 安装依赖
         run: pnpm install --frozen-lockfile
 
-      - name: 同步模型榜到 D1
+      - name: 校验当前版本能完整还原
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
-          GITHUB_ACTOR: ${{ github.actor }}
-        run: |
-          ARGS=""
-          if [ "${{ inputs.patch }}" = "true" ]; then ARGS="$ARGS --patch"; fi
-          if [ "${{ inputs.strict_d1 }}" = "true" ]; then ARGS="$ARGS --strict-d1"; fi
-          echo "publish-models.ts $ARGS"
-          pnpm tsx scripts/admin/publish-models.ts $ARGS
+        run: pnpm tsx scripts/admin/hydrate-models.ts --dry
+
+      # 版本没变也要重导（patch 发布不换版本号，快照 key 不变则必须覆盖）
+      - name: 导出榜单快照
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm tsx scripts/admin/hydrate-models.ts --upload-snapshot
+
+      - name: 触发站点重建
+        env:
+          GH_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: gh workflow run deploy-site.yml --ref main -f reason="模型榜：按当前线上版本重建站点"

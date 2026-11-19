@@ -1267,7 +1267,7 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
           <div id="gh-setup" class="hidden rounded-2xl border border-border bg-surface p-4">
             <h2 class="text-sm font-semibold">需要先配置 GitHub 集成</h2>
             <p class="mt-1 text-xs leading-relaxed text-ink-secondary">
-              GitHub 榜要打几百次接口、还要读写几十 MB 的 <code class="rounded bg-surface-2 px-1 py-0.5">content/github.json</code>，
+              GitHub 榜要打几百次接口、还要读写几十 MB 的榜单数据，
               Worker 跑不了这种任务，所以流程放在 GitHub Actions。给 API Worker 配好下面两个 Secret 后本页就能用：
             </p>
             <pre class="mt-2 overflow-x-auto rounded-lg bg-surface-2 p-3 text-[11px] leading-relaxed text-ink-secondary">wrangler secret put GITHUB_TOKEN   # fine-grained PAT：contents 读写 + actions 读写
@@ -1425,7 +1425,7 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
             </div>
             <div id="gh-publish-changes" class="px-4 py-3"></div>
             <p class="px-4 pb-4 text-[11px] leading-relaxed text-ink-muted">
-              发布后把候选合并进 <code class="rounded bg-surface-2 px-1 py-0.5">content/github.json</code>，按综合分重新排名并截断到容量上限，
+              发布后把候选合并进 D1 的当前版本，按综合分重新排名并截断到容量上限，
               随后自动触发站点构建。新进榜的项目会顺带补齐中文情报与加工空间评分。
             </p>
           </article>
@@ -1597,10 +1597,10 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
             <article class="rounded-2xl border border-border bg-surface p-5">
               <div class="flex flex-wrap items-start justify-between gap-3">
                 <div class="min-w-0">
-                  <h2 class="text-sm font-semibold">同步到线上</h2>
+                  <h2 class="text-sm font-semibold">按线上版本重建站点</h2>
                   <p class="mt-1 text-xs text-ink-muted">
-                    把仓库里的 <code class="font-mono">content/models.json</code> 写进 D1。默认走增量：
-                    只写变化的那几行，不新建版本，也不碰其余五个榜。
+                    模型榜只写 D1，采集完就已经在线上。这里做的事是校验当前版本能完整还原，
+                    再触发一次站点重建，让前台跟上库里的数据。
                   </p>
                 </div>
                 <div class="flex shrink-0 gap-2">
@@ -1616,7 +1616,7 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                     type="button"
                     class="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    同步到线上
+                    校验并重建
                   </button>
                 </div>
               </div>

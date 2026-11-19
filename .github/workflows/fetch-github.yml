@@ -60,6 +60,14 @@ jobs:
       - name: 安装依赖
         run: pnpm install --frozen-lockfile
 
+      # 榜单只存在库里，采集要拿「现榜」做去重与名次预估，先还原成缓存文件
+      - name: 从库还原现榜（采集基线）
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm exec tsx scripts/admin/hydrate-github.ts
+
       - name: 采集候选（只写候选池）
         id: staging
         env:

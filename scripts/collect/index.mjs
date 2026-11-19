@@ -1,27 +1,32 @@
 /**
  * AI 模型榜统一采集入口
  *
- * 一条命令跑完所有已注册的采集源，产出 content/models.json（唯一真源）。
+ * 一条命令跑完所有已注册的采集源，结果直接写进 D1（唯一真源）。
  * 新增采集源只需在 sources/ 下加文件 + 在 SOURCES 里注册，其余逻辑自动复用。
+ *
+ * 写库口径：采集产物先落到 content/cache/models-pending.json（不入库），
+ * 再交给 publish-models 写 D1。仓库里没有 content/models.json —— 那是构建缓存，
+ * 由 hydrate-models 从库还原。所以本地想让页面看到新数据，采集后要重新构建。
  *
  * 用法：
  *   pnpm models:collect                    # 全量采集（默认所有源）
- *   pnpm models:collect --dry              # 只打印统计，不写文件
+ *   pnpm models:collect --dry              # 只打印统计，不写库
  *   pnpm models:collect --source=models-dev        # 只跑指定源
  *   pnpm models:collect --source=openrouter,models-dev
  *   pnpm models:collect --limit=100        # 按厂商轮转抽样
  *   pnpm models:collect --list             # 列出已注册的源
  *   pnpm models:collect --models=a,b,c     # 定向刷新：只更新这几个 slug，其余原样保留
  *
- * 定向刷新是后台「线上榜单 → 更新选中」用的：源接口本来就只返回全量，
- * 所以只是把拉回来的数据按 slug 覆盖回去，条数、slug、人工中文文案都不动。
+ * 定向刷新是后台「线上榜单 → 更新选中」用的：基线取 content/models.json
+ * （= 当前线上榜单的 hydrate 产物），源接口本来就只返回全量，所以只是把拉回来的
+ * 数据按 slug 覆盖回去，条数、slug、人工中文文案都不动。
  *
  * 采集规则（对所有源一致）：
  *   付费文本模型 · 去重变体 / 日期快照 / 社区微调 · 同模型跨源合并 · 能力分按家族校准
  */
 import { execSync } from "node:child_process";
 import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import {
   assignSlugs,
   buildOutput,
@@ -35,6 +40,9 @@ import {
   sampleByProvider,
   warn,
 } from "./core.mjs";
+
+/** 采集产物：入库前的临时落点，.gitignore 已忽略 content/cache/ */
+const PENDING_PATH = resolve(ROOT, "content/cache/models-pending.json");
 import modelsDev from "./sources/models-dev.mjs";
 import openrouter from "./sources/openrouter.mjs";
 
@@ -91,7 +99,7 @@ for (const source of sources) {
   }
 }
 if (!metas.length) {
-  warn("collect", "所有采集源都失败，保留原有 content/models.json 不变");
+  warn("collect", "所有采集源都失败，线上榜单保持不变");
   process.exit(1);
 }
 
@@ -105,19 +113,28 @@ const { records: merged, stats } = mergeRecords(metas, buckets);
  * 与 GitHub 榜同一个口径：改几个条目不该付出重写全榜的代价。
  */
 function writeAndSync(out, { patch }) {
-  mkdirSync(dirname(OUT_PATH), { recursive: true });
-  writeFileSync(OUT_PATH, `${JSON.stringify(out, null, 2)}\n`);
+  mkdirSync(dirname(PENDING_PATH), { recursive: true });
+  writeFileSync(PENDING_PATH, `${JSON.stringify(out, null, 2)}\n`);
 
-  // 灰度期 D1 是冷备：写失败只告警，绝不能让一次同步故障丢掉采集结果
+  /*
+   * 模型榜只写库：产物不进仓库，所以「写盘成功、写库失败」= 这次采集白跑。
+   * 仍然只告警不抛错，让采集源自己的报告能完整打完，但文案要说清后果。
+   */
   try {
-    execSync(`pnpm tsx scripts/admin/publish-models.ts${patch ? " --patch" : ""}`, {
-      // 必须是仓库根：用 OUT_PATH 往上推容易多退一级，退到仓库外面去了，
-      // 而这里的失败又只打一行告警，等于永远静默失败
-      cwd: ROOT,
-      stdio: "inherit",
-    });
+    execSync(
+      `pnpm tsx scripts/admin/publish-models.ts --input "${PENDING_PATH}"${patch ? " --patch" : ""}`,
+      {
+        // 必须是仓库根：用 OUT_PATH 往上推容易多退一级，退到仓库外面去了，
+        // 而这里的失败又只打一行告警，等于永远静默失败
+        cwd: ROOT,
+        stdio: "inherit",
+      },
+    );
   } catch (e) {
-    warn("collect", `D1 同步失败（models），JSON 已落盘，站点不受影响：${e.message}`);
+    warn(
+      "collect",
+      `D1 写入失败（models）：这次采集结果没进库，线上与站点仍是上一版。${e.message}`,
+    );
   }
 }
 
@@ -153,7 +170,10 @@ if (TARGETS.length > 0) {
   try {
     prev = JSON.parse(readFileSync(OUT_PATH, "utf-8"));
   } catch {
-    warn("collect", "没有 content/models.json，定向刷新无从覆盖；先跑一次全量采集");
+    warn(
+      "collect",
+      "没有 content/models.json（当前线上榜单的构建缓存），定向刷新无从覆盖；先跑 pnpm hydrate:models",
+    );
     process.exit(1);
   }
 
@@ -213,7 +233,7 @@ const out = buildOutput({ records: picked, metas, stats });
 if (!DRY) writeAndSync(out, { patch: false });
 
 // ---------- 5. 报告 ----------
-const kb = (DRY ? Buffer.byteLength(JSON.stringify(out)) : statSync(OUT_PATH).size) / 1024;
+const kb = (DRY ? Buffer.byteLength(JSON.stringify(out)) : statSync(PENDING_PATH).size) / 1024;
 const byProvider = {};
 for (const m of out.models) byProvider[m.provider] = (byProvider[m.provider] ?? 0) + 1;
 const prices = out.models.map((m) => m.price.input).filter((x) => typeof x === "number");

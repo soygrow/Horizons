@@ -108,6 +108,15 @@ jobs:
           echo "榜单变更：${changed}（详见 content/tools-publish.json）"
           echo "changed=${changed}" >> "$GITHUB_OUTPUT"
 
+      # 导出 R2 快照：构建读对象存储，不再从 D1 全量还原
+      - name: 导出榜单快照
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm exec tsx scripts/admin/hydrate-tools.ts --upload-snapshot
+
       # GITHUB_TOKEN 提交不会触发 push 型 workflow，这里显式触发部署；
       # 配了 ADMIN_BOT_TOKEN 时用它，保证 dispatch 生效。
       - name: 触发站点构建

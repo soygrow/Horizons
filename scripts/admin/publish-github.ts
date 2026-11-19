@@ -1,11 +1,14 @@
 /**
  * 后台「发布 GitHub 榜」入口（由 .github/workflows/publish-github.yml 调用）。
  *
- * 这是唯一会写 content/github.json 的脚本 —— 必须由人点「发布」触发。
+ * 必须由人点「发布」触发。
  *
  * 流程：
- *   读正式榜 + 读候选池 → 应用数值更新 → 合并新候选（补 README）
- *   → 按综合分排序取前 TARGET 名 → 与旧榜对比 → 写回 → 打印位次变化
+ *   读现榜（D1 当前版本快照）+ 读候选池 → 应用数值更新 → 合并新候选（补 README）
+ *   → 按综合分排序取前 TARGET 名 → 与旧榜对比 → 写回 D1 → 打印位次变化
+ *
+ * 只写库：`content/github.json` 不再入库（.gitignore），它是构建缓存，
+ * 由 `hydrate-github.ts` 从库里还原。本脚本跑完由 workflow 触发站点重建。
  *
  * 注意：
  *   - 现榜条目只更新星标/issue/推送时间并重算分数，README 与中文情报原样保留；
@@ -14,7 +17,7 @@
  *
  * 用法：
  *   pnpm tsx scripts/admin/publish-github.ts            # 正式发布
- *   pnpm tsx scripts/admin/publish-github.ts --dry      # 只打印报告，不写文件
+ *   pnpm tsx scripts/admin/publish-github.ts --dry      # 只打印报告，不写库
  *   GITHUB_TOKEN=ghp_xxx pnpm tsx scripts/admin/publish-github.ts
  */
 import fs from "node:fs";
@@ -25,6 +28,8 @@ import { config } from "../fetch/config"; // 顺带加载 .env.local
 import { RANKING_RULE_VERSION } from "../fetch/github-ranking-rules";
 import { clearCandidates, listCandidates, syncCandidates } from "./board-items";
 import { syncBoardToD1 } from "./board-sync";
+import { d1Configured } from "./d1-client";
+import { readListedGithub } from "./hydrate-github";
 import type { PublishRow } from "./publish-board";
 import { saveReport } from "./reports";
 
@@ -111,20 +116,62 @@ function toRows(kept: readonly GitHubRepo[]): PublishRow[] {
   });
 }
 
-async function main(): Promise<void> {
-  if (!fs.existsSync(GITHUB_PATH)) throw new Error("找不到 content/github.json");
+/**
+ * 读「现榜」基线。
+ *
+ * 库是唯一真源：从当前版本快照还原，README 与中文情报都在 detail 里。
+ * 没有 D1 通道时才回落到构建缓存文件（本地离线调试）。
+ */
+async function loadCurrentBoard(): Promise<{
+  updatedAt?: string;
+  ruleVersion?: string;
+  scoreModel?: string;
+  repos: GitHubRepo[];
+}> {
+  if (d1Configured()) {
+    const { repos, meta } = await readListedGithub();
+    return {
+      updatedAt: typeof meta.updatedAt === "string" ? meta.updatedAt : undefined,
+      ruleVersion: typeof meta.ruleVersion === "string" ? meta.ruleVersion : undefined,
+      scoreModel: typeof meta.scoreModel === "string" ? meta.scoreModel : undefined,
+      repos,
+    };
+  }
+  if (!fs.existsSync(GITHUB_PATH)) {
+    throw new Error(
+      "既没有 D1 通道，也没有 content/github.json 缓存：先配置 D1，或跑一次 hydrate-github",
+    );
+  }
+  console.log("[publish] 无 D1 通道，现榜回落到 content/github.json 缓存");
+  return JSON.parse(fs.readFileSync(GITHUB_PATH, "utf-8")) as {
+    updatedAt?: string;
+    ruleVersion?: string;
+    scoreModel?: string;
+    repos: GitHubRepo[];
+  };
+}
 
+async function main(): Promise<void> {
   /*
    * --resync：只把现有 JSON 重灌进 D1，不动榜单与候选池。
    *
    * 补历史欠账时务必带上 --patch：整版发布要新建版本、继承其余五个榜、剪掉旧版本，
    * 一次三万八千行；而「库里还没有这个榜」的情况下增量写只会插入这个榜自己的一千多行。
    * 唯一的代价是不产生新版本 —— 反正之前是空的，没有什么可回滚的。
+   *
+   * 现在 github.json 已不入库，这个模式只在本地有缓存文件时可用，
+   * 属于历史补偿手段，日常发布不再需要。
    */
   if (process.argv.includes("--resync")) {
+    if (!fs.existsSync(GITHUB_PATH)) {
+      throw new Error(
+        "--resync 需要本地 content/github.json 缓存，但它已不入库。\n" +
+          "先跑 pnpm tsx scripts/admin/hydrate-github.ts 从库还原，或直接用正常发布流程。",
+      );
+    }
     const board = JSON.parse(fs.readFileSync(GITHUB_PATH, "utf-8")) as { repos?: GitHubRepo[] };
     const rows = toRows(board.repos ?? []);
-    console.log(`[publish] resync：按现有 ${rows.length} 条重灌 D1（不改 JSON / 候选池）`);
+    console.log(`[publish] resync：按现有 ${rows.length} 条重灌 D1（不改榜单 / 候选池）`);
     await syncBoardToD1({
       board: "github",
       rows,
@@ -133,14 +180,41 @@ async function main(): Promise<void> {
     return;
   }
 
+  /*
+   * --repost：把「已经 hydrate 到本地的现榜文件」整榜写回库，不碰候选池、不算位次。
+   *
+   * 用于发布之后的人工补写：发布只写库，而中文情报富化（enrich-github-insight）
+   * 仍然是对文件动手 —— 补完再用这个模式推回库，库与文件就一致了。
+   */
+  if (process.argv.includes("--repost")) {
+    if (!fs.existsSync(GITHUB_PATH)) {
+      throw new Error("--repost 需要先 hydrate-github 还原出 content/github.json");
+    }
+    const board = JSON.parse(fs.readFileSync(GITHUB_PATH, "utf-8")) as {
+      updatedAt?: string;
+      ruleVersion?: string;
+      scoreModel?: string;
+      repos: GitHubRepo[];
+    };
+    const rows = toRows(board.repos ?? []);
+    console.log(`[publish] repost：按本地 ${rows.length} 条回写 D1（不动候选池、不算位次）`);
+    await syncBoardToD1({
+      board: "github",
+      rows,
+      actor: process.env.GITHUB_ACTOR ?? "manual",
+      patch: true,
+      meta: {
+        updatedAt: board.updatedAt,
+        ruleVersion: board.ruleVersion,
+        scoreModel: board.scoreModel,
+      },
+    });
+    return;
+  }
+
   if (!fs.existsSync(STAGING_PATH)) throw new Error("候选池不存在，请先点「采集」");
 
-  const board = JSON.parse(fs.readFileSync(GITHUB_PATH, "utf-8")) as {
-    updatedAt?: string;
-    ruleVersion?: string;
-    scoreModel?: string;
-    repos: GitHubRepo[];
-  };
+  const board = await loadCurrentBoard();
   const staging = JSON.parse(fs.readFileSync(STAGING_PATH, "utf-8")) as RepoStagingFile;
 
   /* 后台的审核只写 D1：候选与拒绝名单以库为准，库里空了才回落到文件 */
@@ -240,16 +314,16 @@ async function main(): Promise<void> {
     for (const c of report.top.slice(0, REPORT_LIMIT)) console.log(line(c));
   }
 
-  /* 5) 写回正式榜 */
+  /* 5) 组装新榜：只写库，不落文件（文件由构建时的 hydrate-github 从库还原） */
+  const out = {
+    updatedAt: new Date().toISOString(),
+    ruleVersion: RANKING_RULE_VERSION,
+    scoreModel: "pps-v4",
+    repos: kept,
+  };
+
   if (!DRY) {
-    const out = {
-      updatedAt: new Date().toISOString(),
-      ruleVersion: RANKING_RULE_VERSION,
-      scoreModel: "pps-v4",
-      repos: kept,
-    };
-    fs.writeFileSync(GITHUB_PATH, JSON.stringify(out, null, 2) + "\n", "utf-8");
-    console.log(`\n[publish] 已写入 ${GITHUB_PATH}`);
+    console.log(`\n[publish] 新榜 ${kept.length} 条，写入 D1`);
 
     /* 候选池清空，只留一份「上次发布」摘要供后台展示 */
     const nextStaging: RepoStagingFile = {
@@ -303,16 +377,22 @@ async function main(): Promise<void> {
     );
     if (n > 0) console.log(`[publish] D1 候选池已清空，保留拒绝名单 ${n} 条`);
   } else {
-    console.log("\n[publish] --dry：未写入文件");
+    console.log("\n[publish] --dry：未写入库");
   }
 
-  /* 6) 同步 D1。灰度期是冷备，失败不影响 JSON 发布 */
+  /* 6) 同步 D1：这是唯一落点，写不进去就等于没发布 */
   const d1 = DRY
     ? { ok: true }
     : await syncBoardToD1({
         board: "github",
         rows: toRows(kept),
         actor: process.env.GITHUB_ACTOR ?? "manual",
+        /* updatedAt / ruleVersion / scoreModel 不是条目字段，存进 board_stats.meta */
+        meta: {
+          updatedAt: out.updatedAt,
+          ruleVersion: out.ruleVersion,
+          scoreModel: out.scoreModel,
+        },
       });
 
   const freshNames = report.entered.map((c) => c.fullName);

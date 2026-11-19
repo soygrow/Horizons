@@ -1,14 +1,19 @@
 {
-  "generatedAt": "2026-11-18T06:11:49.172Z",
+  "generatedAt": "2026-11-19T02:52:32.355Z",
   "boards": {
     "tools": {
       "total": 203,
       "updatedAt": "2026-11-18T06:11:47.643Z",
       "source": "content/tools-stats.json"
     },
+    "trends": {
+      "total": 367,
+      "updatedAt": "2026-11-17T11:54:52Z",
+      "source": "content/trends.json"
+    },
     "models": {
-      "total": 366,
-      "updatedAt": "2026-10-30",
+      "total": 370,
+      "updatedAt": "2026-11-19",
       "source": "content/models.json"
     },
     "github": {

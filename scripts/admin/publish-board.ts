@@ -78,15 +78,76 @@ export interface PublishResult {
 
 const LISTED_SPEC: UpsertSpec = {
   table: "board_listed",
-  columns: ["version", "board", "item_key", "rank", "score", "tier", "name", "url", "cats", "card", "variant_of"],
+  columns: [
+    "version",
+    "board",
+    "item_key",
+    "rank",
+    "score",
+    "tier",
+    "name",
+    "url",
+    "cats",
+    "card",
+    "variant_of",
+    /* 0021：被后台/列表反复查询的标量，从 card JSON 里提成列，查询不再解析大字段 */
+    "stars",
+    "forks",
+    "language",
+    "description",
+    "pushed_at",
+    "last_crawled_at",
+    "grade",
+  ],
   conflict: ["version", "board", "item_key"],
 };
 
 const DETAIL_SPEC: UpsertSpec = {
   table: "board_listed_details",
-  columns: ["version", "board", "item_key", "detail"],
+  columns: ["version", "board", "item_key", "detail", "bytes"],
   conflict: ["version", "board", "item_key"],
 };
+
+/**
+ * 发布时可以丢掉的详情字段。
+ *
+ * readme 占 github detail 的 74.8%（33.5MB / 59MB），而它只在采集期生成中文情报
+ * 时用（产物是 insight），构建侧 `web-data.mjs` 一进来就把它删掉。
+ * 留在发布快照里等于每次构建都从 D1 搬 33MB 无用数据。
+ *
+ * 原文不会丢：工作区 board_item_details（和 R2 的 raw 快照）是采集侧的完整数据。
+ * 需要全文时从那里取，不要指望发布快照。
+ */
+const SLIM_FIELDS: Partial<Record<Board, readonly string[]>> = {
+  github: ["readme"],
+};
+
+export function slimDetail(board: Board, detail: unknown): unknown {
+  const drop = SLIM_FIELDS[board];
+  if (!drop || !detail || typeof detail !== "object") return detail;
+  const copy = { ...(detail as Record<string, unknown>) };
+  for (const k of drop) delete copy[k];
+  return copy;
+}
+
+/** 某个榜要从 card 里提成列的标量；没有就是 7 个 null（顺序同 LISTED_SPEC 尾部） */
+export function cardColumns(board: Board, card: unknown): Array<string | number | null> {
+  if (board !== "github") return [null, null, null, null, null, null, null];
+  const c = (card ?? {}) as Record<string, unknown>;
+  const num = (v: unknown) =>
+    typeof v === "number" && Number.isFinite(v) ? Math.round(v) : null;
+  const str = (v: unknown) => (typeof v === "string" && v.length > 0 ? v : null);
+  const score = (c.productScore ?? {}) as Record<string, unknown>;
+  return [
+    num(c.stars),
+    num(c.forks),
+    str(c.language),
+    str(c.description),
+    str(c.pushedAt),
+    str(c.lastCrawledAt),
+    str(score.grade),
+  ];
+}
 
 const ITEMS_SPEC: UpsertSpec = {
   table: "board_release_items",
@@ -122,7 +183,8 @@ function assertRowsFit(
   for (const r of rows) {
     for (const [label, value] of [
       ["card", r.card],
-      ["detail", r.detail],
+      /* 按真正写下去的体积检查：瘦身后的 detail 才是占空间的 */
+      ["detail", slimDetail(board, r.detail)],
     ] as const) {
       const size = byteLength(value);
 
@@ -339,18 +401,17 @@ export async function publishBoard(
     r.cats && r.cats.length > 0 ? JSON.stringify(r.cats) : null,
     JSON.stringify(r.card),
     r.variantOf ?? null,
+    ...cardColumns(board, r.card),
   ]);
   await client.batch(
     chunkForSpec(LISTED_SPEC, cardRows, client.statementByteLimit).map((part) => buildUpsert(LISTED_SPEC, part)),
   );
 
-  /* 4) 详情：体积差异极大（24KB 中位、421KB 最大），按字节分块 */
-  const detailRows = rows.map((r) => [
-    version,
-    board,
-    r.key,
-    JSON.stringify(r.detail),
-  ]);
+  /* 4) 详情：先瘦身（github 去掉 readme），再写 —— 体积直接决定构建要搬多少字节 */
+  const detailRows = rows.map((r) => {
+    const detail = JSON.stringify(slimDetail(board, r.detail));
+    return [version, board, r.key, detail, byteLength(detail)];
+  });
   await client.batch(
     chunkForSpec(DETAIL_SPEC, detailRows, client.statementByteLimit).map((part) => buildUpsert(DETAIL_SPEC, part)),
   );
@@ -525,9 +586,8 @@ export async function patchBoard(client: D1Client, input: PatchInput): Promise<P
   /*
    * 只读「卡片 + 详情字节数」，不读详情正文。
    *
-   * 详情节均 25KB（github 45MB），整榜拉回来只为比对代价太大。
-   * 卡片是详情的裁剪版（去掉 pageStructure 之类的长文本），卡片变了必然要写；
-   * 卡片没变但 pageStructure 改了的情况，由 `length(CAST(detail AS BLOB))` 兜住 ——
+   * 卡片是详情的裁剪版，卡片变了必然要写；卡片没变但正文改了的情况，
+   * 由 0021 的 `bytes` 列兜住（写库时算好，比对时只读这个整数）——
    * 长文本改动几乎不可能长度分毫不差。
    */
   const listed = await client.query<ListedSnapshot>(
@@ -535,8 +595,8 @@ export async function patchBoard(client: D1Client, input: PatchInput): Promise<P
      FROM board_listed WHERE version = ? AND board = ?`,
     [version, board],
   );
-  const sizes = await client.query<{ item_key: string; n: number }>(
-    `SELECT item_key, length(CAST(detail AS BLOB)) AS n
+  const sizes = await client.query<{ item_key: string; n: number | null }>(
+    `SELECT item_key, bytes AS n
      FROM board_listed_details WHERE version = ? AND board = ?`,
     [version, board],
   );
@@ -565,6 +625,8 @@ export async function patchBoard(client: D1Client, input: PatchInput): Promise<P
     }
 
     const cats = r.cats && r.cats.length > 0 ? JSON.stringify(r.cats) : null;
+    /* 老行的 bytes 为空（0021 之前写的），视为「变了」重写一次，顺手补上 */
+    const nextBytes = byteLength(JSON.stringify(slimDetail(board, r.detail)));
     const same =
       old.rank === r.rank &&
       Math.abs(old.score - r.score) < 1e-9 &&
@@ -574,7 +636,7 @@ export async function patchBoard(client: D1Client, input: PatchInput): Promise<P
       (old.cats ?? null) === cats &&
       (old.variant_of ?? null) === (r.variantOf ?? null) &&
       old.card === JSON.stringify(r.card) &&
-      prevSize.get(r.key) === byteLength(r.detail);
+      prevSize.get(r.key) === nextBytes;
 
     if (same) unchanged++;
     else toWrite.push(r);
@@ -604,6 +666,7 @@ export async function patchBoard(client: D1Client, input: PatchInput): Promise<P
       r.cats && r.cats.length > 0 ? JSON.stringify(r.cats) : null,
       JSON.stringify(r.card),
       r.variantOf ?? null,
+      ...cardColumns(board, r.card),
     ]);
     await client.batch(
       chunkForSpec(LISTED_SPEC, cardRows, client.statementByteLimit).map((part) =>
@@ -611,7 +674,10 @@ export async function patchBoard(client: D1Client, input: PatchInput): Promise<P
       ),
     );
 
-    const detailRows = toWrite.map((r) => [version, board, r.key, JSON.stringify(r.detail)]);
+    const detailRows = toWrite.map((r) => {
+      const detail = JSON.stringify(slimDetail(board, r.detail));
+      return [version, board, r.key, detail, byteLength(detail)];
+    });
     await client.batch(
       chunkForSpec(DETAIL_SPEC, detailRows, client.statementByteLimit).map((part) =>
         buildUpsert(DETAIL_SPEC, part),

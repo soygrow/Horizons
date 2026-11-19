@@ -1,0 +1,183 @@
+/**
+ * 一次性维护脚本：把已有版本的数据搬到 0021 的新结构上。
+ *
+ * 三件事：
+ *   1. 瘦身 —— github 的 detail 去掉 readme（74.8% 的体积，构建侧从来不用），
+ *      顺便把每条的字节数写进 board_listed_details.bytes。
+ *   2. 回填 —— 把 card 里被反复查询的标量写进 board_listed 的新列，
+ *      之后后台列表不再对 1500 行各做 7 次 json_extract。
+ *   3. 汇总 —— board_stats.bytes 存整榜体积，取代 SUM(LENGTH(detail)) 全表扫描。
+ *
+ * 幂等：已瘦身的行不会再改（`json_extract(detail,'$.readme') IS NOT NULL` 过滤），
+ * 已回填的列再写一次值也一样。
+ *
+ * 用法：
+ *   pnpm tsx scripts/admin/backfill-board-columns.ts                    # 只处理当前版本的 github
+ *   pnpm tsx scripts/admin/backfill-board-columns.ts --board models
+ *   pnpm tsx scripts/admin/backfill-board-columns.ts --all              # 所有保留的版本
+ *   pnpm tsx scripts/admin/backfill-board-columns.ts --dry
+ */
+import path from "node:path";
+import type { Board } from "@horizons/shared";
+import { createD1Client, d1Configured, type D1Client } from "./d1-client";
+import { cardColumns, slimDetail } from "./publish-board";
+import { currentBoardVersion } from "./snapshot";
+
+const ROOT = path.resolve(import.meta.dirname, "../..");
+const PAGE = 50;
+
+function arg(name: string): string | undefined {
+  const hit = process.argv.find((a) => a.startsWith(`--${name}=`));
+  return hit ? hit.slice(name.length + 3) : undefined;
+}
+
+const dry = process.argv.includes("--dry");
+const board = (arg("board") ?? "github") as Board;
+
+interface DetailRow {
+  item_key: string;
+  detail: string;
+}
+
+/** 保留的版本（prune 之后最多三期），从榜单本身取，不依赖版本登记表 */
+async function listVersions(client: D1Client): Promise<string[]> {
+  const res = await client.query<{ version: string }>(
+    "SELECT DISTINCT version FROM board_listed WHERE board = ? ORDER BY version DESC LIMIT 3",
+    [board],
+  );
+  return res.results.map((r) => r.version);
+}
+
+/** 1) 瘦身 + 写 bytes */
+async function slimDetails(client: D1Client, version: string): Promise<{ rows: number; before: number; after: number }> {
+  let cursor = "";
+  let rows = 0;
+  let before = 0;
+  let after = 0;
+
+  for (;;) {
+    const page = await client.query<DetailRow>(
+      `SELECT item_key, detail FROM board_listed_details
+        WHERE version = ? AND board = ? AND item_key > ?
+        ORDER BY item_key LIMIT ?`,
+      [version, board, cursor, PAGE],
+    );
+    if (page.results.length === 0) break;
+
+    const stmts = [];
+    for (const row of page.results) {
+      cursor = row.item_key;
+      const parsed = JSON.parse(row.detail) as Record<string, unknown>;
+      const slim = JSON.stringify(slimDetail(board, parsed));
+      const bytes = Buffer.byteLength(slim);
+      before += Buffer.byteLength(row.detail);
+      after += bytes;
+      rows += 1;
+      if (slim === row.detail) continue; // 没东西可瘦，只补 bytes
+      stmts.push({
+        sql: "UPDATE board_listed_details SET detail = ?, bytes = ? WHERE version = ? AND board = ? AND item_key = ?",
+        params: [slim, bytes, version, board, row.item_key],
+      });
+    }
+
+    if (stmts.length > 0 && !dry) await client.batch(stmts);
+    if (page.results.length < PAGE) break;
+  }
+
+  return { rows, before, after };
+}
+
+/** 2) 回填 board_listed 的标量列 */
+async function fillColumns(client: D1Client, version: string): Promise<number> {
+  let cursor = "";
+  let rows = 0;
+
+  for (;;) {
+    const page = await client.query<{ item_key: string; card: string | null }>(
+      `SELECT item_key, card FROM board_listed
+        WHERE version = ? AND board = ? AND item_key > ?
+        ORDER BY item_key LIMIT ?`,
+      [version, board, cursor, PAGE],
+    );
+    if (page.results.length === 0) break;
+
+    const stmts = [];
+    for (const row of page.results) {
+      cursor = row.item_key;
+      let card: unknown = {};
+      try {
+        card = JSON.parse(row.card ?? "{}");
+      } catch {
+        card = {};
+      }
+      rows += 1;
+      stmts.push({
+        sql: `UPDATE board_listed
+                 SET stars = ?, forks = ?, language = ?, description = ?,
+                     pushed_at = ?, last_crawled_at = ?, grade = ?
+               WHERE version = ? AND board = ? AND item_key = ?`,
+        params: [
+          ...cardColumns(board, card),
+          version,
+          board,
+          row.item_key,
+        ],
+      });
+    }
+
+    if (stmts.length > 0 && !dry) await client.batch(stmts);
+    if (page.results.length < PAGE) break;
+  }
+
+  return rows;
+}
+
+/** 3) board_stats.bytes：整榜体积，读的是每行的整数，不再碰 detail 正文 */
+async function fillStats(client: D1Client, version: string): Promise<number> {
+  const res = await client.query<{ n: number | null }>(
+    "SELECT SUM(bytes) AS n FROM board_listed_details WHERE version = ? AND board = ?",
+    [version, board],
+  );
+  const bytes = res.results[0]?.n ?? 0;
+  if (!dry) {
+    await client.query(
+      `UPDATE board_stats SET bytes = ? WHERE board = ?`,
+      [bytes, board],
+    );
+  }
+  return bytes;
+}
+
+function mb(n: number): string {
+  return `${(n / 1024 / 1024).toFixed(1)}MB`;
+}
+
+async function main(): Promise<void> {
+  if (!d1Configured()) {
+    throw new Error("需要 D1 通道：配置 CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID，或 wrangler login");
+  }
+  const client = createD1Client();
+
+  const all = process.argv.includes("--all");
+  const versions = all
+    ? await listVersions(client)
+    : [arg("version") ?? (await currentBoardVersion())].filter((v): v is string => Boolean(v));
+
+  if (versions.length === 0) throw new Error("找不到要处理的版本");
+
+  for (const version of versions) {
+    const slim = await slimDetails(client, version);
+    const filled = await fillColumns(client, version);
+    const bytes = await fillStats(client, version);
+    console.log(
+      `[backfill] ${board} @ ${version}｜瘦身 ${slim.rows} 条 ${mb(slim.before)} → ${mb(slim.after)}` +
+        `｜回填列 ${filled} 行｜board_stats.bytes = ${mb(bytes)}${dry ? "（dry-run）" : ""}`,
+    );
+  }
+  console.log(`[backfill] 完成${dry ? "（dry-run，未写库）" : ""}｜cwd ${path.relative(ROOT, process.cwd()) || "."}`);
+}
+
+main().catch((e: unknown) => {
+  console.error("[backfill] 失败：", e);
+  process.exitCode = 1;
+});
