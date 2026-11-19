@@ -651,9 +651,20 @@ function renderListed(data: ListedResp): void {
   const { slice, pages } = pageSlice(rows, state.listedPage, LISTED_PAGE_SIZE);
   state.listedPage = Math.min(state.listedPage, pages);
 
+  /*
+   * 整版的数据时间：这一版里最新一条是什么时候采的。
+   *
+   * 「更新时间」列显示的就是它，而不是每条自己的 updatedAt —— 一版 487 条里
+   * 有的 10-29、有的 10-31，逐条显示的话版本号 20261031 永远和列里对不上，
+   * 看着就像串了版。每条自己的时间退到 title，需要时鼠标一悬停就看得见。
+   */
+  const vDataAt = pickedDataAt(data);
+
   body.innerHTML = slice
     .map((row) => {
-      const age = ageDays(row.lastSeenAt);
+      const own = row.updatedAt ?? row.lastSeenAt;
+      const stamp = vDataAt ?? own;
+      const age = ageDays(stamp);
       const stage = row.staging ? STAGE_BADGES[row.staging] ?? { label: row.staging, cls: "bg-surface-2 text-ink-muted" } : null;
 
       /*
@@ -668,8 +679,9 @@ function renderListed(data: ListedResp): void {
           : `<span class="text-xs text-ink-muted">—</span>`;
 
       /*
-       * 更新时间：上行是具体时间，下行是距今天数，并按 7 / 10 / 30 天染色。
-       * 筛选档位就是按这三个阈值切的，颜色和筛选项一一对应。
+       * 更新时间：上行是本版采集时刻（各条相同，和版本号一天），下行是距今天数。
+       * 「7 / 10 / 30 天未更新」的筛选仍按每条自己最后被采到的日期算，
+       * 想找老数据还是用它 —— 那个信息没丢，只是不再显示在这一列上。
        */
       const ageNote =
         age === null
@@ -702,7 +714,9 @@ function renderListed(data: ListedResp): void {
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${score(row.scores.opportunity)}</td>
           <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${score(row.scores.overall)}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-xs tabular-nums text-ink-secondary">
-            <span class="block" title="记录被更新的时刻">${esc(fmtStamp(row.updatedAt ?? row.lastSeenAt))}</span>
+            <span class="block" title="${
+              own && own !== stamp ? `本版采集时间；该条最后变化 ${esc(fmtStamp(own))}` : "本版采集时间"
+            }">${esc(fmtStamp(stamp))}</span>
             ${ageNote ? `<span class="text-[11px]">${ageNote}</span>` : ""}
           </td>
           <td class="px-4 py-2.5">${status}</td>

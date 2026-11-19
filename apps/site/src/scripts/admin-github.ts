@@ -735,9 +735,18 @@ function renderListed(data: ListedResp): void {
     state.listedPage * LISTED_PAGE_SIZE,
   );
 
+  /* 整版的数据时间：这一版里最新一条是什么时候采的（见 trends 同名逻辑） */
+  const vDataAt = pickedDataAt(data);
+
   body.innerHTML = slice
     .map((row) => {
-      const age = ageDays(row.lastCrawledAt);
+      /*
+       * 「更新时间」列显示整版的采集时刻，而不是每条自己的 lastCrawledAt：
+       * 一版 1500 个仓库各有各的采集时间，和版本号 20261030 永远对不上。
+       * 每条自己的时间退到 title。
+       */
+      const stamp = vDataAt ?? row.lastCrawledAt;
+      const age = ageDays(stamp);
       const ageNote =
         age === null
           ? ""
@@ -769,7 +778,11 @@ function renderListed(data: ListedResp): void {
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${fmtStars(row.stars)}</td>
           <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${row.score.toFixed(1)}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-xs tabular-nums text-ink-secondary">
-            <span class="block" title="上次采集到的时刻">${esc(fmtStamp(row.lastCrawledAt))}</span>
+            <span class="block" title="${
+              row.lastCrawledAt && row.lastCrawledAt !== stamp
+                ? `本版采集时间；该仓库上次采集 ${esc(fmtStamp(row.lastCrawledAt))}`
+                : "本版采集时间"
+            }">${esc(fmtStamp(stamp))}</span>
             ${ageNote ? `<span class="text-[11px]">${ageNote}</span>` : ""}
           </td>
           <td class="px-4 py-2.5">${listedStage(row.staging)}</td>
