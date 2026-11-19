@@ -4,7 +4,9 @@ import path from "node:path";
 import type { AITrend, TrendSeries, TrendSourceRef, ValueVerdict } from "@horizons/shared";
 import { toRankRow } from "@horizons/shared";
 import { hasLLM } from "../sources/llm";
-import { RateLimitError, sleep } from "./http";
+import { exitCount, exitLabel } from "../proxy";
+import { ExitUnusableError, RateLimitError, sleep } from "./http";
+import { runProbe } from "./probe";
 import {
   COMPARE_LIMIT,
   fetchInterest,
@@ -59,6 +61,7 @@ import {
  *   → DeepSeek 单次富化 → 落库 content/trends.json
  *
  * 用法：
+ *   pnpm trends:collect --probe               # 先体检出口：哪个 IP 能用、429 卡在哪一步
  *   pnpm trends:collect --limit 80            # 本次验证 80 个词
  *   pnpm trends:collect --dry                 # 只看排队结果，不联网不花钱
  *   pnpm trends:collect --rescore             # 不联网，按最新口径重算全库分数
@@ -131,6 +134,8 @@ interface Args {
    * 跳过发现与准入判定，也不看 refreshAfter —— 用户点「更新」就是现在要。
    */
   slugs: string[];
+  /** 只体检出口：逐个打一遍 explore + 接口，报出哪个能用，不采集 */
+  probe: boolean;
 }
 
 function parseArgs(): Args {
@@ -159,6 +164,7 @@ function parseArgs(): Args {
       .split(",")
       .map((s) => s.trim().toLowerCase())
       .filter((s) => /^[a-z0-9-]+$/.test(s)),
+    probe: process.argv.includes("--probe"),
   };
 }
 
@@ -369,6 +375,11 @@ function planForcedBatch(
 
 async function main(): Promise<void> {
   const args = parseArgs();
+  // 自检要最先跑：出口不通时后面所有步骤都只是白等
+  if (args.probe) {
+    await runProbe(args.geo);
+    return;
+  }
   // 未富化的词只有占位字段，直接写进榜单就会生成空详情页。
   // 本地跑全流程不传 --no-enrich，这条只会在误用时拦住。
   if (args.noEnrich && !args.staging) {
@@ -742,28 +753,58 @@ async function main(): Promise<void> {
   };
 
   // ---------- 采集调度：批量对比 + 软熔断 ----------
-  // 429 不再一触即停：单词退回队尾重试，只有「最近 10 分钟限流率 > 60%」才收工。
+  // 429 的根因几乎都是「这个出口被 Google 判定异常」，不是请求太快：
+  // 一批 5 个词只花 2 次请求、间隔 3–7 秒，这个速率本身撞不到限流。
+  // 所以策略改成「先换出口 → 换不到就长睡 → 睡两轮还不行就收工」，
+  // 不再用 8s/16s/32s 一路撞到 512s —— 那等于自己在给封禁加码。
   const WINDOW_MS = 10 * 60_000;
   const MAX_RETRY = 2;
-  /** 耐心模式：被限流就长睡等解封，而不是收工 */
-  const PATIENT_ROUNDS = 10;
-  const PATIENT_BASE_WAIT = 4 * 60_000;
-  const PATIENT_MAX_WAIT = 20 * 60_000;
+  const exitsTotal = exitCount();
+  const multiExit = exitsTotal > 1;
+  /** 每个出口各试 2 遍还是 429：那就不是姿势问题，是整条链路被挡了 */
+  const LIMIT_TRIP = exitsTotal * 2;
+  /** 单出口换不了 IP：长睡两轮（10 + 20 分钟）正好覆盖一次典型封禁窗口 */
+  const PATIENT_ROUNDS = multiExit ? 10 : 2;
+  const PATIENT_BASE_WAIT = (multiExit ? 4 : 10) * 60_000;
+  const PATIENT_MAX_WAIT = (multiExit ? 20 : 30) * 60_000;
   let patientRounds = 0;
+  let stoppedByLimit = false;
   const events: { t: number; limited: boolean }[] = [];
-  let backoffLevel = 0;
 
   const note = (limited: boolean): void => {
     const nowMs = Date.now();
     events.push({ t: nowMs, limited });
     while (events.length > 0 && nowMs - events[0].t > WINDOW_MS) events.shift();
-    if (!limited) backoffLevel = 0;
   };
 
+  const limitedCount = (): number => events.filter((e) => e.limited).length;
+
   const overloaded = (): boolean => {
-    const limited = events.filter((e) => e.limited).length;
-    return events.length >= 6 && limited / events.length > 0.6;
+    const n = events.length;
+    if (n === 0) return false;
+    const limited = limitedCount();
+    // 单出口连续 2 次、多出口每个出口各 2 遍，就别再撞了：换出口或长睡才有用
+    if (limited >= LIMIT_TRIP && limited / n > 0.6) return true;
+    return n >= 6 && limited / n > 0.6;
   };
+
+  let lastSeenExit = exitLabel();
+  /** trendsGet 内部换过出口时返回 true：新 IP 值得立刻验证，不用长等 */
+  const rotatedNow = (): boolean => {
+    const nowLabel = exitLabel();
+    if (nowLabel === lastSeenExit) return false;
+    lastSeenExit = nowLabel;
+    return true;
+  };
+
+  /**
+   * 429 后的短休：换到新出口就 3–7 秒立刻验；单出口 10–20 秒探一次，
+   * 真正的长睡交给 patience 轮次，避免两处等待叠成半小时。
+   */
+  const rateLimitWait = (rotated: boolean): number =>
+    rotated
+      ? 3000 + Math.floor(Math.random() * 4000)
+      : 10_000 + Math.floor(Math.random() * 10_000);
 
   const queue = [...batch];
   const attempts = new Map<string, number>();
@@ -807,24 +848,26 @@ async function main(): Promise<void> {
   while (queue.length > 0) {
     if (overloaded()) {
       if (!args.patient) {
-        console.warn("[trends] 最近 10 分钟限流率 > 60%，提前收工，已采集结果保留");
+        stoppedByLimit = true;
+        console.warn("[trends] 连续限流，提前收工，已采集结果保留（词留着下轮再采）");
         break;
       }
       patientRounds++;
       if (patientRounds > PATIENT_ROUNDS) {
+        stoppedByLimit = true;
         console.warn(
-          `[trends] 已休眠 ${patientRounds - 1} 轮仍被限流，收工：本次成功 ${ok} 个，词库 ${keywords.length} 个`,
+          `[trends] 已休眠 ${patientRounds - 1} 轮仍被限流（出口 ${exitLabel()}），收工：本次成功 ${ok} 个，词库 ${keywords.length} 个`,
         );
         break;
       }
       const wait = Math.min(PATIENT_MAX_WAIT, PATIENT_BASE_WAIT * patientRounds);
       console.log(
-        `[trends] 限流中（第 ${patientRounds}/${PATIENT_ROUNDS} 轮），休眠 ${Math.round(wait / 60_000)} 分钟后继续，队列剩 ${queue.length} 个词`,
+        `[trends] 限流中（第 ${patientRounds}/${PATIENT_ROUNDS} 轮，出口 ${exitLabel()}），休眠 ${Math.round(wait / 60_000)} 分钟后继续，队列剩 ${queue.length} 个词`,
       );
       await sleep(wait);
       events.length = 0;
       attempts.clear();
-      backoffLevel = 0;
+      lastSeenExit = exitLabel();
       continue;
     }
 
@@ -905,15 +948,22 @@ async function main(): Promise<void> {
 
       await sleep(randomDelay());
     } catch (e) {
+      // 出口被挡（验证页 / 页面打不开）：换不到出口就只能收工，退避没有意义
+      if (e instanceof ExitUnusableError) {
+        stoppedByLimit = true;
+        console.warn(`[trends] 出口不可用（${e.message}），本次收工，已采集结果保留`);
+        break;
+      }
       if (e instanceof RateLimitError) {
         note(true);
         for (const item of chunk) requeueOrDrop(item);
-        // 60 秒封顶会在限流期反复撞击，反而拖长封禁；指数退到 10 分钟，
-        // 连续 429 就一直等到配额恢复
-        const wait = Math.min(10 * 60_000, 8000 * 2 ** backoffLevel);
-        backoffLevel++;
+        // 换到新出口就短等立刻验证；单出口只能等，长睡交给 patience 轮次
+        const rotated = rotatedNow();
+        const wait = rateLimitWait(rotated);
         console.warn(
-          `[trends] 批量 429（${chunk.length} 词回队列），退避 ${Math.round(wait / 1000)}s`,
+          rotated
+            ? `[trends] 批量 429 → 已换到出口 ${exitLabel()}，${Math.round(wait / 1000)}s 后重试（${chunk.length} 词回队列）`
+            : `[trends] 批量 429（${chunk.length} 词回队列，10 分钟内第 ${limitedCount()} 次），等 ${Math.round(wait / 1000)}s`,
         );
         await sleep(wait);
       } else {
@@ -947,6 +997,15 @@ async function main(): Promise<void> {
         await sleep(randomDelay());
       }
     }
+  }
+
+  // 被限流提前收工时，把「为什么停、还剩多少、下一步怎么办」说清楚，
+  // 否则日志只剩一串 429，看不出该等还是该换出口
+  if (stoppedByLimit) {
+    console.warn(
+      `[trends] 因限流提前收工：出口 ${exitLabel()}，剩余 ${queue.length} 个词未采。` +
+        "同一出口通常 30–60 分钟才解封；想立刻恢复就配多出口，先跑 pnpm trends:collect --probe 体检",
+    );
   }
 
   // 原则自审：距上次修订超过间隔，就用本轮判定样本把误杀/漏放修回条目

@@ -30,6 +30,7 @@
     "screenshot": "tsx scripts/fetch/screenshot.ts",
     "ph:oauth": "tsx scripts/fetch/ph-oauth.ts",
     "trends:collect": "tsx scripts/fetch/trends/run.ts",
+    "trends:probe": "tsx scripts/fetch/trends/run.ts --probe",
     "trends:dry": "tsx scripts/fetch/trends/run.ts --dry",
     "trends:rescore": "tsx scripts/fetch/trends/run.ts --rescore",
     "models:collect": "node scripts/collect/index.mjs",

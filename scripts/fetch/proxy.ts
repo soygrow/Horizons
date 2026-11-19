@@ -83,6 +83,19 @@ export function rotateProxy(): boolean {
   return true;
 }
 
+/** 出口总数：1 表示被限流时只能原地等解封，换不了 IP */
+export function exitCount(): number {
+  return exitList().length;
+}
+
+/** 指定第 index 个出口（自检用，按顺序体检每一个） */
+export function useExit(index: number): boolean {
+  const list = exitList();
+  if (index < 0 || index >= list.length) return false;
+  activeExit = index;
+  return true;
+}
+
 function tunnelAgent(proxy: URL): Agent {
   const port = Number(proxy.port || (proxy.protocol === "https:" ? 443 : 80));
   const auth =
