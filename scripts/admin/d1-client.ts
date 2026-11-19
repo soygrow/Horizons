@@ -331,9 +331,31 @@ function createWranglerClient(): D1Client {
   ): Promise<D1QueryResult<T>> {
     let rows: Array<Record<string, unknown>>;
     try {
-      rows = parseWranglerJson(
-        runWrangler(["execute", dbName, "--remote", "--json", "--command", inlineParams(sql, params)]),
-      );
+      /*
+       * 查询是只读的，抖动重试绝对安全。之前只有 batch 带重试，
+       * 结果全量还原跑到一半会因为一次 7403 / fetch failed 整个中断。
+       */
+      let lastError: unknown;
+      for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        try {
+          rows = parseWranglerJson(
+            runWrangler([
+              "execute",
+              dbName,
+              "--remote",
+              "--json",
+              "--command",
+              inlineParams(sql, params),
+            ]),
+          );
+          lastError = undefined;
+          break;
+        } catch (e) {
+          lastError = e;
+          if (attempt < MAX_ATTEMPTS) await sleep(1500 * attempt);
+        }
+      }
+      if (lastError) throw lastError;
     } catch (e) {
       throw new Error(`${String(e)}\nSQL: ${sql.slice(0, 300)}`);
     }
