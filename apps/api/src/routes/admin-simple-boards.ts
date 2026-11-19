@@ -149,7 +149,8 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
               json_extract(card, '$.context')      AS context,
               json_extract(card, '$.price.input')  AS priceIn,
               json_extract(card, '$.price.output') AS priceOut,
-              json_extract(card, '$.tags')         AS tags
+              json_extract(card, '$.tags')         AS tags,
+              json_extract(card, '$.dataAt')       AS dataAt
          FROM board_listed
         WHERE version = ? AND board = ?
         ORDER BY rank ASC`,
@@ -168,6 +169,7 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
         priceIn: number | null;
         priceOut: number | null;
         tags: string | null;
+        dataAt: string | null;
       }>();
 
     const rows = results ?? [];
@@ -188,6 +190,7 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
         priceIn: r.priceIn,
         priceOut: r.priceOut,
         tags: parseCats(r.cats).length ? parseCats(r.cats) : parseCats(r.tags),
+        dataAt: r.dataAt,
       })),
     });
   });

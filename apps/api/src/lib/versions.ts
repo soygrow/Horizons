@@ -41,14 +41,17 @@ export interface VersionOption {
 }
 
 /**
- * 「这版数据截止到哪天」取哪个字段。
+ * 「这版数据截止到哪天」取哪个字段。按来源各取各的：
  *
- * GitHub 有整列的 last_crawled_at，趋势榜只有卡片里的 updatedAt / lastSeenAt；
- * 模型榜卡片没有任何逐条时间（只有 releasedAt 这种模型发布日，不是采集时间），
- * 算出来是 null，后台就回落到发布日。
+ * - GitHub：整列 last_crawled_at
+ * - 趋势榜：卡片里的 updatedAt / lastSeenAt
+ * - 模型榜：卡片里的 dataAt（发布时从 models.json 的采集日写进去，
+ *   卡片没有逐条时间，一版共用一个）
+ *
+ * 都取不到才是 null，后台就回落到发布日。
  */
 const DATA_AT_EXPR =
-  "MAX(COALESCE(last_crawled_at, json_extract(card, '$.updatedAt'), json_extract(card, '$.lastSeenAt')))";
+  "MAX(COALESCE(last_crawled_at, json_extract(card, '$.dataAt'), json_extract(card, '$.updatedAt'), json_extract(card, '$.lastSeenAt')))";
 
 /**
  * 该榜库里还留着哪些版本（倒序）。

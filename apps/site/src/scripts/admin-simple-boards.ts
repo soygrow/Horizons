@@ -16,6 +16,7 @@ import {
   esc,
   fillVersionSelect,
   fmtNum,
+  fmtStamp,
   fmtTime,
   pickedDataAt,
   versionNote,
@@ -90,6 +91,8 @@ interface ListedItem {
   priceIn: number | null;
   priceOut: number | null;
   tags: string[];
+  /** 这一版数据是哪天采的；老版本卡片里没有这个字段，是 null */
+  dataAt: string | null;
 }
 
 interface ListedRes {
@@ -128,6 +131,28 @@ const kTok = (v: number | null): string => {
 
 const price = (v: number | null): string =>
   typeof v === "number" && Number.isFinite(v) ? (v === 0 ? "免费" : `$${v}`) : "—";
+
+/** 距离采集多少天；null 表示没有可用日期 */
+function ageDays(date: string | null): number | null {
+  if (!date) return null;
+  const ms = Date.parse(date);
+  if (!Number.isFinite(ms)) return null;
+  return Math.max(0, Math.floor((Date.now() - ms) / 86_400_000));
+}
+
+/** 「更新时间」列下方的年龄标签，色阶与 GitHub 榜一致 */
+function ageNote(age: number | null): string {
+  if (age === null) return "";
+  return age >= 30
+    ? `<span class="text-danger">${age} 天前</span>`
+    : age >= 10
+      ? `<span class="text-accent">${age} 天前</span>`
+      : age >= 7
+        ? `<span class="text-ink-secondary">${age} 天前</span>`
+        : `<span class="text-ink-muted">${age === 0 ? "今天" : `${age} 天前`}</span>`;
+}
+
+/* fmtStamp 对「只到天」的值原样返回，所以模型榜直接用它就够，不会补 00:00:00 */
 
 function msg(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
@@ -257,7 +282,7 @@ function renderListed(): void {
   if (!body || !pager) return;
 
   if (meta) {
-    /* 版本号取数据截止日（20261119）；模型卡片没有逐条时间，退回发布日并写明 */
+    /* 版本号取数据截止日（20261119）；老版本没有 dataAt 时退回发布日并写明 */
     meta.textContent = modelsState.version
       ? `${versionNote(modelsState.version, pickedDataAt(modelsState))} · 共 ${fmtNum(modelsState.all.length)} 条 · 筛选后 ${fmtNum(modelsState.filtered.length)} 条`
       : "还没有发布过任何版本";
@@ -267,12 +292,19 @@ function renderListed(): void {
   if (modelsState.page > pages) modelsState.page = pages;
   const rows = modelsState.filtered.slice((modelsState.page - 1) * PAGE_SIZE, modelsState.page * PAGE_SIZE);
 
+  /*
+   * 整版的数据截止日：模型榜一版共用一个采集日（发布时写进每条卡片的 dataAt），
+   * 和 GitHub / 趋势榜同一个口径 —— 列里只留一个日期，才好和版本号对上。
+   */
+  const vDataAt = pickedDataAt(modelsState);
+
   if (!rows.length) {
-    body.innerHTML = `<tr><td colspan="9" class="px-4 py-6 text-center text-xs text-ink-muted">没有匹配的模型</td></tr>`;
+    body.innerHTML = `<tr><td colspan="10" class="px-4 py-6 text-center text-xs text-ink-muted">没有匹配的模型</td></tr>`;
   } else {
     body.innerHTML = rows
       .map((m) => {
         const checked = modelsState.selected.has(m.key) ? "checked" : "";
+        const rowAt = vDataAt ?? m.dataAt;
         return `<tr class="hover:bg-surface-2/40">
           <td class="px-3 py-2.5">
             <input type="checkbox" data-pick="${esc(m.key)}" ${checked} class="h-3.5 w-3.5 accent-primary" />
@@ -287,6 +319,10 @@ function renderListed(): void {
           <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${num(m.score)}</td>
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${kTok(m.context)}</td>
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${price(m.priceIn)} / ${price(m.priceOut)}</td>
+          <td class="whitespace-nowrap px-4 py-2.5 text-xs tabular-nums text-ink-secondary">
+            <span class="block" title="本版数据的采集日，和版本号同一天">${esc(fmtStamp(rowAt))}</span>
+            ${ageNote(ageDays(rowAt))}
+          </td>
           <td class="px-4 py-2.5 text-right">
             <button type="button" data-only="${esc(m.key)}" class="text-[11px] text-primary transition hover:underline">更新</button>
           </td>
@@ -398,7 +434,7 @@ async function loadListed(): Promise<void> {
     applyFilter();
   } catch (e) {
     if (body) {
-      body.innerHTML = `<tr><td colspan="9" class="px-4 py-4 text-center text-xs text-red-600">读取失败：${esc(msg(e))}</td></tr>`;
+      body.innerHTML = `<tr><td colspan="10" class="px-4 py-4 text-center text-xs text-red-600">读取失败：${esc(msg(e))}</td></tr>`;
     }
   }
 }

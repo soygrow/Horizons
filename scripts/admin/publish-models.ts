@@ -82,6 +82,15 @@ async function main(): Promise<void> {
     return a.name.localeCompare(b.name);
   });
 
+  /* 版本与数据截止日共用同一个时刻，避免两次取时间跨零点错一天 */
+  const version = versionOf();
+  /*
+   * 这一版数据是哪天采的：模型文件只有一个采集日（`updatedAt`，精确到天），
+   * 不像 GitHub 有整列 last_crawled_at，所以整版共用这一个值。
+   * 没有就退回发布日 —— 至少版本号和「更新时间」列能对上，不会空着。
+   */
+  const dataAt = (file.updatedAt ?? version).slice(0, 10);
+
   const rows: PublishRow[] = ordered.map((model, i) => {
     const rank = i + 1;
     const value = valueMap.get(model.slug) ?? 0;
@@ -96,7 +105,7 @@ async function main(): Promise<void> {
       url: null,
       cats: model.tags?.length ? model.tags : null,
       // 单条最大 1KB，卡片直接带全量字段，不必剔除
-      card: { rank, score, value, ...model },
+      card: { rank, score, value, ...model, dataAt },
       detail: { data: model, derived: { rank, score, value } },
     };
   });
@@ -118,7 +127,7 @@ async function main(): Promise<void> {
      * 反而多一处时区格式不一致的风险（文件里可能是本地时间）。
      * 版本就是「这一次快照」，总量由 pruneVersions 控制。
      */
-    version: versionOf(),
+    version,
     /*
      * 默认增量：只 UPSERT 变化的行，不新建版本。
      * 模型榜三百多条里日常刷新通常只动几条到几十条，整版要连其余五个榜一起重写，

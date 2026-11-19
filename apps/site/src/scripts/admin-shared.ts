@@ -82,7 +82,7 @@ export function fmtNum(n: number | null | undefined): string {
 export interface VersionOption {
   version: string;
   count: number;
-  /** 该版数据里最新一条的更新时间；模型榜卡片没有逐条时间，是 null */
+  /** 该版数据里最新一条的更新时间；老版本卡片没带时间时是 null */
   dataAt?: string | null;
 }
 
