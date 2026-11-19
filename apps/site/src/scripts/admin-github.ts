@@ -664,7 +664,7 @@ function syncListedHead(): void {
   if (all) {
     const pickable = visible.filter(listedPickable);
     const on = listedOn(pickable);
-    all.textContent = on && pickable.length > 0 ? "取消" : "全选";
+    all.textContent = on && pickable.length > 0 ? "取消全选" : "全选";
     all.title =
       pickable.length === 0
         ? "当前筛选结果里没有可勾选的仓库"

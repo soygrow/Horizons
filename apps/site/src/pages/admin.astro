@@ -1083,6 +1083,27 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                     placeholder="搜索关键词"
                     class="w-40 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary sm:w-52"
                   />
+                  <!-- 勾选范围放在工具条：表头那一列只留复选框，列宽才能收到 40px -->
+                  <div class="flex items-center gap-1.5 text-[11px]">
+                    <span class="text-ink-muted">勾选</span>
+                    <button
+                      type="button"
+                      id="trends-pick-current"
+                      class="whitespace-nowrap font-medium text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                      title="只勾选当前页可以富化的候选词；再点一次取消"
+                    >
+                      本页
+                    </button>
+                    <span class="text-ink-muted">·</span>
+                    <button
+                      type="button"
+                      id="trends-pick-page"
+                      class="whitespace-nowrap font-medium text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                      title="全选当前筛选结果（跨页，含所有页）；再点一次取消"
+                    >
+                      全选
+                    </button>
+                  </div>
                   <button
                     id="trends-enrich-btn"
                     type="button"
@@ -1104,26 +1125,8 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 <table class="w-full min-w-[900px] text-left text-sm">
                   <thead class="bg-surface-2/60 text-xs text-ink-muted">
                     <tr>
-                      <th class="w-[132px] px-3 py-2.5">
-                        <div class="flex items-center gap-1.5">
-                          <input id="trends-select-all" type="checkbox" class="h-3.5 w-3.5 accent-primary" title="全选本页可以富化的候选词" />
-                          <button
-                            type="button"
-                            id="trends-pick-current"
-                            class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                            title="只勾选当前页可以富化的候选词；再点一次取消"
-                          >
-                            本页
-                          </button>
-                          <button
-                            type="button"
-                            id="trends-pick-page"
-                            class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                            title="全选当前筛选结果（跨页，含所有页）；再点一次取消"
-                          >
-                            全选
-                          </button>
-                        </div>
+                      <th class="w-10 px-3 py-2.5">
+                        <input id="trends-select-all" type="checkbox" class="h-3.5 w-3.5 accent-primary" title="全选本页可以富化的候选词" aria-label="全选本页" />
                       </th>
                       <th class="px-4 py-2.5 font-medium">关键词</th>
                       <th class="px-4 py-2.5 text-right font-medium">趋势分</th>
@@ -1193,6 +1196,27 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                     placeholder="搜索关键词"
                     class="w-40 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary sm:w-52"
                   />
+                  <!-- 勾选范围放在工具条：表头那一列只留复选框，列宽才能收到 40px -->
+                  <div class="flex items-center gap-1.5 text-[11px]">
+                    <span class="text-ink-muted">勾选</span>
+                    <button
+                      type="button"
+                      id="trends-listed-pick-current"
+                      class="whitespace-nowrap font-medium text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                      title="只勾选当前页可以更新的词；再点一次取消"
+                    >
+                      本页
+                    </button>
+                    <span class="text-ink-muted">·</span>
+                    <button
+                      type="button"
+                      id="trends-listed-pick-page"
+                      class="whitespace-nowrap font-medium text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                      title="全选当前筛选结果（跨页，含所有页）；再点一次取消"
+                    >
+                      全选
+                    </button>
+                  </div>
                   <button
                     id="trends-listed-refresh"
                     type="button"
@@ -1207,31 +1231,14 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 <table class="w-full min-w-[900px] text-left text-sm">
                   <thead class="bg-surface-2/60 text-xs text-ink-muted">
                     <tr>
-                      <th class="w-[132px] px-3 py-2.5">
-                        <div class="flex items-center gap-1.5">
-                          <input
-                            id="trends-listed-select-all"
-                            type="checkbox"
-                            class="h-3.5 w-3.5 accent-primary"
-                            title="全选本页可以更新的词"
-                          />
-                          <button
-                            type="button"
-                            id="trends-listed-pick-current"
-                            class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                            title="只勾选当前页可以更新的词；再点一次取消"
-                          >
-                            本页
-                          </button>
-                          <button
-                            type="button"
-                            id="trends-listed-pick-page"
-                            class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                            title="全选当前筛选结果（跨页，含所有页）；再点一次取消"
-                          >
-                            全选
-                          </button>
-                        </div>
+                      <th class="w-10 px-3 py-2.5">
+                        <input
+                          id="trends-listed-select-all"
+                          type="checkbox"
+                          class="h-3.5 w-3.5 accent-primary"
+                          title="全选本页可以更新的词"
+                          aria-label="全选本页"
+                        />
                       </th>
                       <th class="px-4 py-2.5 text-right font-medium">名次</th>
                       <th class="px-4 py-2.5 font-medium">关键词</th>
@@ -1479,6 +1486,27 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                     placeholder="搜索仓库"
                     class="w-40 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary sm:w-52"
                   />
+                  <!-- 勾选范围放在工具条：表头那一列只留复选框，列宽才能收到 40px -->
+                  <div class="flex items-center gap-1.5 text-[11px]">
+                    <span class="text-ink-muted">勾选</span>
+                    <button
+                      type="button"
+                      id="gh-listed-pick-current"
+                      class="whitespace-nowrap font-medium text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                      title="只勾选当前页可以更新的仓库；再点一次取消"
+                    >
+                      本页
+                    </button>
+                    <span class="text-ink-muted">·</span>
+                    <button
+                      type="button"
+                      id="gh-listed-pick-page"
+                      class="whitespace-nowrap font-medium text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                      title="全选当前筛选结果（跨页，含所有页）；再点一次取消"
+                    >
+                      全选
+                    </button>
+                  </div>
                   <button
                     id="gh-listed-refresh"
                     type="button"
@@ -1493,31 +1521,14 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 <table class="w-full min-w-[980px] text-left text-sm">
                   <thead class="bg-surface-2/60 text-xs text-ink-muted">
                     <tr>
-                      <th class="w-[132px] px-3 py-2.5">
-                        <div class="flex items-center gap-1.5">
-                          <input
-                            id="gh-listed-select-all"
-                            type="checkbox"
-                            class="h-3.5 w-3.5 accent-primary"
-                            title="全选本页可以更新的仓库"
-                          />
-                          <button
-                            type="button"
-                            id="gh-listed-pick-current"
-                            class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                            title="只勾选当前页可以更新的仓库；再点一次取消"
-                          >
-                            本页
-                          </button>
-                          <button
-                            type="button"
-                            id="gh-listed-pick-page"
-                            class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                            title="全选当前筛选结果（跨页，含所有页）；再点一次取消"
-                          >
-                            全选
-                          </button>
-                        </div>
+                      <th class="w-10 px-3 py-2.5">
+                        <input
+                          id="gh-listed-select-all"
+                          type="checkbox"
+                          class="h-3.5 w-3.5 accent-primary"
+                          title="全选本页可以更新的仓库"
+                          aria-label="全选本页"
+                        />
                       </th>
                       <th class="px-4 py-2.5 text-right font-medium">名次</th>
                       <th class="px-4 py-2.5 font-medium">仓库</th>
@@ -1667,6 +1678,27 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                     placeholder="搜索模型 / slug"
                     class="w-40 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary sm:w-52"
                   />
+                  <!-- 勾选范围放在工具条：表头那一列只留复选框，列宽才能收到 40px -->
+                  <div class="flex items-center gap-1.5 text-[11px]">
+                    <span class="text-ink-muted">勾选</span>
+                    <button
+                      type="button"
+                      id="mdl-listed-pick-current"
+                      class="whitespace-nowrap font-medium text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                      title="只勾选当前页；再点一次取消"
+                    >
+                      本页
+                    </button>
+                    <span class="text-ink-muted">·</span>
+                    <button
+                      type="button"
+                      id="mdl-listed-pick-page"
+                      class="whitespace-nowrap font-medium text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                      title="勾选当前筛选结果（跨页）；再点一次取消"
+                    >
+                      全选
+                    </button>
+                  </div>
                   <button
                     id="mdl-listed-refresh"
                     type="button"
@@ -1681,31 +1713,14 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 <table class="w-full min-w-[980px] text-left text-sm">
                   <thead class="bg-surface-2/60 text-xs text-ink-muted">
                     <tr>
-                      <th class="w-[132px] px-3 py-2.5">
-                        <div class="flex items-center gap-1.5">
-                          <input
-                            id="mdl-listed-select-all"
-                            type="checkbox"
-                            class="h-3.5 w-3.5 accent-primary"
-                            title="全选本页"
-                          />
-                          <button
-                            type="button"
-                            id="mdl-listed-pick-current"
-                            class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                            title="只勾选当前页；再点一次取消"
-                          >
-                            本页
-                          </button>
-                          <button
-                            type="button"
-                            id="mdl-listed-pick-page"
-                            class="whitespace-nowrap text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                            title="勾选当前筛选结果（跨页）；再点一次取消"
-                          >
-                            全选
-                          </button>
-                        </div>
+                      <th class="w-10 px-3 py-2.5">
+                        <input
+                          id="mdl-listed-select-all"
+                          type="checkbox"
+                          class="h-3.5 w-3.5 accent-primary"
+                          title="全选本页"
+                          aria-label="全选本页"
+                        />
                       </th>
                       <th class="px-4 py-2.5 text-right font-medium">名次</th>
                       <th class="px-4 py-2.5 font-medium">模型</th>

@@ -513,15 +513,15 @@ function syncHeadCheck<T>(
 }
 
 /**
- * 表头「全选」按钮：作用域是筛选后的全部结果（跨页）。
+ * 「全选」按钮：作用域是筛选后的全部结果（跨页）。
  *
- * 数量只写在 title 里——「全选（487）」会把这一列撑宽，表头本来就挤；
+ * 数量只写在 title 里——「全选（487）」会把工具条挤换行；
  * 想知道会选中多少，看右侧「更新选中（N）」的计数更直接。
  */
 function syncAllPickBtn(id: string, allOn: boolean, total: number): void {
   const btn = $(id) as HTMLButtonElement | null;
   if (!btn) return;
-  btn.textContent = allOn && total > 0 ? "取消" : "全选";
+  btn.textContent = allOn && total > 0 ? "取消全选" : "全选";
   btn.title =
     total === 0
       ? "当前筛选结果里没有可勾选的词"

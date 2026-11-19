@@ -307,7 +307,11 @@ function renderListed(): void {
   });
 
   syncSelectHead();
-  if (refreshBtn) refreshBtn.disabled = modelsState.selected.size === 0;
+  if (refreshBtn) {
+    const n = modelsState.selected.size;
+    refreshBtn.disabled = n === 0;
+    refreshBtn.textContent = n > 0 ? `更新选中（${n}）` : "更新选中";
+  }
 }
 
 function applyFilter(): void {
@@ -330,6 +334,22 @@ function syncSelectHead(): void {
   const picked = pageKeys.filter((k) => modelsState.selected.has(k)).length;
   head.checked = pageKeys.length > 0 && picked === pageKeys.length;
   head.indeterminate = picked > 0 && picked < pageKeys.length;
+
+  /* 「本页 / 全选」在工具条上，勾满后翻成取消态，和趋势榜、GitHub 榜同一套口径 */
+  const cur = $("mdl-listed-pick-current") as HTMLButtonElement | null;
+  if (cur) {
+    const on = pageKeys.length > 0 && picked === pageKeys.length;
+    cur.textContent = on ? "取消本页" : "本页";
+    cur.disabled = pageKeys.length === 0;
+  }
+
+  const all = $("mdl-listed-pick-page") as HTMLButtonElement | null;
+  if (all) {
+    const allKeys = modelsState.filtered.map((m) => m.key);
+    const on = allKeys.length > 0 && allKeys.every((k) => modelsState.selected.has(k));
+    all.textContent = on ? "取消全选" : "全选";
+    all.disabled = allKeys.length === 0;
+  }
 }
 
 async function loadListed(): Promise<void> {
