@@ -33,7 +33,9 @@ export interface SyncOptions {
   version?: string;
   /**
    * 增量发布：在当前生效版本上原地改差异行，不建新版本、不继承其它榜、不剪枝。
-   * 默认为 false，也可用命令行 `--patch` 打开。
+   *
+   * **默认开启**。需要新建一个可回滚的完整版本时，命令行加 `--full`
+   * （或显式传 `patch: false`）。`--patch` 仍被接受，但已无实际作用。
    */
   patch?: boolean;
   /**
@@ -71,6 +73,29 @@ export interface SyncResult {
  */
 export function versionOf(date = new Date()): string {
   return date.toISOString().slice(0, 19);
+}
+
+/**
+ * 当前生效版本里这个榜有多少行。
+ *
+ * 增量的前提是「已经有基线」：patchBoard 拿它跟新数据逐行比对，
+ * 才知道哪些是新增、哪些变了、哪些下榜。没有基线时它只能把整榜当新增写，
+ * 于是既没有 board_releases 记录，也回滚不了 —— 所以先探一下。
+ *
+ * 返回 0 表示「没有当前版本，或这个榜在当前版本里一行都没有」。
+ */
+async function currentListedCount(client: D1Client, board: Board): Promise<number> {
+  const cur = await client.query<{ val: string }>(
+    "SELECT val FROM app_config WHERE key = 'config.current_version'",
+  );
+  const version = cur.results[0]?.val;
+  if (!version) return 0;
+
+  const res = await client.query<{ n: number }>(
+    "SELECT COUNT(*) AS n FROM board_listed WHERE version = ? AND board = ?",
+    [version, board],
+  );
+  return res.results[0]?.n ?? 0;
 }
 
 /**
@@ -186,15 +211,35 @@ export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
   const version = opts.version ?? versionOf();
 
   /*
-   * 增量模式：在当前生效版本上原地改差异行。
+   * 默认增量：在当前生效版本上原地改差异行。
    *
    * 完整发布要新建全局版本、把其余五个榜整份继承过来、最后再剪掉一个旧版本，
-   * 一次约 3.8 万 rows_written（免费版每天才 10 万）。日常「刷新已有条目的数据」
+   * 一次约 2.3 万 rows_written（免费版每天才 10 万）。日常「刷新已有条目的数据」
    * 根本不需要这些动作 —— 逐行比对后只写变了的那些，几十条就是几百次写。
    *
-   * 代价见 publish-board.ts 的 PatchInput 注释：不产生新版本、回滚不到这次之前。
+   * 要完整发布就显式加 `--full`（或传 patch: false）：新增大量条目、换口径、
+   * 需要留一个可回滚的快照时用它。代价见 publish-board.ts 的 PatchInput 注释。
    */
-  if (opts.patch ?? process.argv.includes("--patch")) {
+  let usePatch = opts.patch ?? !process.argv.includes("--full");
+
+  if (usePatch) {
+    try {
+      if ((await currentListedCount(client, board)) === 0) {
+        usePatch = false;
+        console.log(
+          `[sync] ${board} 在当前版本还没有数据（新库 / 新榜 / 刚切流），本次改为完整发布`,
+        );
+      }
+    } catch (e) {
+      /*
+       * 读不到基线时不要贸然改走完整发布：那要写两三万行，一次误判就吃掉
+       * 五分之一日额度。交给 patchBoard 自己抛错更诚实（strict 会中止发布）。
+       */
+      console.warn("[sync] 读取当前版本基线失败，仍按增量尝试：", e);
+    }
+  }
+
+  if (usePatch) {
     try {
       const res = await patchBoard(client, {
         board,
@@ -203,7 +248,19 @@ export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
         allowShrink: process.argv.includes("--allow-shrink"),
       });
 
-      await recordBoardStat(client, board, res.listed, res.version, opts.meta);
+      /*
+       * 增量不推进版本号，`board_stats.updated_at` 不能继续写版本时间 ——
+       * 否则数据天天在改，后台和站点上的「更新于」却永远停在首版那一天。
+       * 真的写进去行了才刷时间；一行没变（全 unchanged）就保持原样。
+       */
+      const touched = res.inserted + res.updated + res.dropped > 0;
+      await recordBoardStat(
+        client,
+        board,
+        res.listed,
+        touched ? versionOf() : res.version,
+        opts.meta,
+      );
 
       console.log(
         `[sync] ${board} 增量更新版本 ${res.version}：${res.listed} 条` +

@@ -525,15 +525,13 @@ github.post("/publish", async (c) => {
   const { report } = buildView(file);
 
   /*
-   * 增量还是整版：全是「在榜仓库重新采集」时走 patch。
+   * 一律增量。
    *
    * 整版发布要建新快照 = 全榜两万三千行 rows_written，只刷新十几个星标
-   * 也这么干太亏；patch 只改变动行（外加版本元数据），是工具榜验证过的作法。
-   * 只要有一个新仓库要进榜，就得走整版 —— 新版本才对应一个可回滚的名次表。
+   * 也这么干太亏；patch 只改变动行，新增的仓库同样是插入几行。
+   * 需要留一个可回滚的版本时，手动在 Actions 里传 patch=0。
    */
-  const boardKeys = new Set((file.board?.rows ?? []).map((r) => r.fullName.toLowerCase()));
-  const allInBoard = boardKeys.size > 0 && pending.every((x) => boardKeys.has(x.repo.fullName.toLowerCase()));
-  const patch = allInBoard;
+  const patch = true;
 
   try {
     const run = await dispatchWorkflow(cfg, PUBLISH_WORKFLOW, {

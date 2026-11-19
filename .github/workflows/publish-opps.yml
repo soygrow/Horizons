@@ -16,6 +16,10 @@ on:
         description: "D1 写入失败时让本次任务失败（切流后打开）"
         type: boolean
         default: false
+      full:
+        description: "全量发布（新建版本快照）；不勾选=增量，只替换最新批次"
+        type: boolean
+        default: false
 
 concurrency:
   group: publish-opps
@@ -50,8 +54,7 @@ jobs:
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: |
-          if [ "${{ inputs.strict_d1 }}" = "true" ]; then
-            pnpm tsx scripts/admin/publish-opps.ts --strict-d1
-          else
-            pnpm tsx scripts/admin/publish-opps.ts
-          fi
+          FLAGS=""
+          if [ "${{ inputs.full }}" = "true" ]; then FLAGS="$FLAGS --full"; fi
+          if [ "${{ inputs.strict_d1 }}" = "true" ]; then FLAGS="$FLAGS --strict-d1"; fi
+          pnpm tsx scripts/admin/publish-opps.ts $FLAGS

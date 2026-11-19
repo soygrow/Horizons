@@ -12,7 +12,7 @@
  * 用法：
  *   pnpm tsx scripts/admin/publish-models.ts                     # 读 content/models.json（hydrate 出来的缓存）
  *   pnpm tsx scripts/admin/publish-models.ts --input content/cache/models-pending.json
- *   pnpm tsx scripts/admin/publish-models.ts --patch             # 只写变化行，不建新版本
+ *   pnpm tsx scripts/admin/publish-models.ts --full               # 完整发布，建一个新版本（默认走增量）
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -120,11 +120,11 @@ async function main(): Promise<void> {
      */
     version: versionOf(),
     /*
-     * --patch 走增量：只 UPSERT 变化的行，不新建版本。
-     * 模型榜 366 条里日常刷新通常只动几条到几十条，整版要连其余五个榜一起重写，
-     * 省下来的写库额度就是这里来的。代价是这一版回滚不了 —— 所以只在「只改数值」时用。
+     * 默认增量：只 UPSERT 变化的行，不新建版本。
+     * 模型榜三百多条里日常刷新通常只动几条到几十条，整版要连其余五个榜一起重写，
+     * 省下来的写库额度就是这里来的。要留一个可回滚的完整版本就加 --full。
      */
-    patch: process.argv.includes("--patch"),
+    patch: !process.argv.includes("--full"),
     meta,
   });
 

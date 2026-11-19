@@ -27,6 +27,10 @@ on:
         description: "目标日期 YYYY-MM-DD，留空=今天（UTC+8）"
         type: string
         default: ""
+      full:
+        description: "全量发布（新建版本快照）；不勾选=增量，只替换本期名次"
+        type: boolean
+        default: false
 
 concurrency:
   group: daily-digest
@@ -82,7 +86,10 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
           GITHUB_ACTOR: ${{ github.actor }}
-        run: pnpm tsx scripts/admin/publish-digest.ts --date ${{ steps.issue.outputs.date }}
+        run: |
+          FLAGS="--date ${{ steps.issue.outputs.date }}"
+          if [ "${{ inputs.full }}" = "true" ]; then FLAGS="$FLAGS --full"; fi
+          pnpm tsx scripts/admin/publish-digest.ts $FLAGS
 
       # 采集与成稿的产物必须提交，否则 /daily/[date] 读不到这一期。
       # 用 git -c 传身份，不动仓库级 git config。

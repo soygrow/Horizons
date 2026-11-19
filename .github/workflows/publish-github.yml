@@ -23,9 +23,9 @@ on:
         required: false
         default: ""
       patch:
-        description: "1 = 增量发布：只改写变动的行，不新建榜单快照（只更新在榜仓库时用）"
+        description: "1 = 增量（默认）：只改写变动的行；0 = 全量：新建版本快照（约 2.3 万行写入）"
         required: false
-        default: "0"
+        default: "1"
 
 concurrency:
   group: publish-github
@@ -70,8 +70,9 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: |
+          # 默认增量；只有显式传 patch=0 才做完整发布
           ARGS=""
-          if [ "${{ inputs.patch }}" = "1" ]; then ARGS="--patch"; fi
+          if [ "${{ inputs.patch }}" = "0" ]; then ARGS="--full"; fi
           out=$(pnpm exec tsx scripts/admin/publish-github.ts ${ARGS})
           echo "$out"
           summary=$(echo "$out" | grep '##GH_PUBLISH_RESULT##' | tail -1)

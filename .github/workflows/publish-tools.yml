@@ -31,9 +31,9 @@ on:
         required: false
         default: "new"
       patch:
-        description: "增量发布（1=只在当前版本上改变化的行；0=新建完整版本快照）"
+        description: "1 = 增量（默认）：只在当前版本上改变化的行；0 = 全量：新建完整版本快照"
         required: false
-        default: "0"
+        default: "1"
       job_id:
         description: "后台任务 ID（仅回显）"
         required: false
@@ -76,8 +76,8 @@ jobs:
           ARGS="--kind ${{ inputs.kind }} --report content/tools-publish.json"
           if [ -n "${{ inputs.domains }}" ]; then ARGS="$ARGS --domains ${{ inputs.domains }}"; fi
           if [ "${{ inputs.drops }}" = "1" ]; then ARGS="$ARGS --drops"; fi
-          # 增量发布：只写变化的行。刷新已有条目时用，省掉「新建版本 + 继承六榜 + 剪枝」
-          if [ "${{ inputs.patch }}" = "1" ]; then ARGS="$ARGS --patch"; fi
+          # 默认增量（只写变化的行）；显式传 patch=0 才走完整发布
+          if [ "${{ inputs.patch }}" = "0" ]; then ARGS="$ARGS --full"; fi
           pnpm tsx scripts/admin/publish-tools.ts $ARGS
 
       - name: 提交统计快照

@@ -517,7 +517,8 @@ export async function lastReleaseRanks(
  *      所有语句都是 UPSERT / 按 key DELETE，重跑一次即收敛。
  *   3. `board_releases.stats` 仍是这个版本创建时的条数，`board_stats` 会更新。
  *
- * 触发方式：`--patch`（scripts/admin/board-sync.ts 读 argv，或 SyncOptions.patch）。
+ * 触发方式：**默认就是它**（scripts/admin/board-sync.ts 读 argv，或 SyncOptions.patch）。
+ * 需要完整发布时显式加 `--full`。
  */
 export interface PatchInput {
   board: Board;
@@ -580,7 +581,7 @@ export async function patchBoard(client: D1Client, input: PatchInput): Promise<P
   );
   const version = cur.results[0]?.val;
   if (!version) {
-    throw new Error("库里还没有任何生效版本，无法增量发布。先跑一次完整发布（不带 --patch）。");
+    throw new Error("库里还没有任何生效版本，无法增量发布。先跑一次完整发布（--full）。");
   }
 
   /*

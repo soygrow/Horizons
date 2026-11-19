@@ -109,8 +109,8 @@ const { records: merged, stats } = mergeRecords(metas, buckets);
 /**
  * 落盘 + 同步 D1。
  *
- * 定向刷新只写变化行（patch），全量采集建完整版本（可回滚）——
- * 与 GitHub 榜同一个口径：改几个条目不该付出重写全榜的代价。
+ * 默认增量（只写变化行）；加 --full 才建完整版本（可回滚）——
+ * 与其它榜同一个口径：改几个条目不该付出重写全榜的代价。
  */
 function writeAndSync(out, { patch }) {
   mkdirSync(dirname(PENDING_PATH), { recursive: true });
@@ -122,7 +122,7 @@ function writeAndSync(out, { patch }) {
    */
   try {
     execSync(
-      `pnpm tsx scripts/admin/publish-models.ts --input "${PENDING_PATH}"${patch ? " --patch" : ""}`,
+      `pnpm tsx scripts/admin/publish-models.ts --input "${PENDING_PATH}"${patch ? "" : " --full"}`,
       {
         // 必须是仓库根：用 OUT_PATH 往上推容易多退一级，退到仓库外面去了，
         // 而这里的失败又只打一行告警，等于永远静默失败
@@ -230,7 +230,7 @@ assignSlugs(picked);
 const out = buildOutput({ records: picked, metas, stats });
 
 // ---------- 4. 落盘 ----------
-if (!DRY) writeAndSync(out, { patch: false });
+if (!DRY) writeAndSync(out, { patch: !process.argv.includes("--full") });
 
 // ---------- 5. 报告 ----------
 const kb = (DRY ? Buffer.byteLength(JSON.stringify(out)) : statSync(PENDING_PATH).size) / 1024;

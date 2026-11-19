@@ -14,6 +14,7 @@
  * 用法：
  *   pnpm tsx scripts/admin/publish-digest.ts
  *   pnpm tsx scripts/admin/publish-digest.ts --date 2026-11-03
+ *   pnpm tsx scripts/admin/publish-digest.ts --full              # 建新版本（默认只增量替换本期）
  *   pnpm tsx scripts/admin/publish-digest.ts --no-d1
  */
 import fs from "node:fs";
@@ -104,12 +105,15 @@ async function main(): Promise<void> {
     rows,
     actor: process.env.GITHUB_ACTOR ?? "manual",
     /*
-     * 期号即版本号：同一天重跑会被当前生效版本挡下，避免把同一期发两遍。
+     * 默认增量：只有最新一期进名次表（历史期由 /daily/[date] 从文件读），
+     * 所以在当前版本上原地替换本期即可，不必为每天建一个新版本 ——
+     * 一次完整发布要连其余五个榜一起重写，约 2.3 万行写入，日更吃不消。
      *
-     * 但必须补成完整 ISO（`2026-11-03T00:00:00`）—— 版本号是全局的，
-     * 其余榜都是 19 位。只用 `2026-11-03` 会让「按 version 排序」的地方
-     * 把这一期排到同一天任何发布之前，后台看起来像是几天前发的。
+     * 加 --full 才建版本，此时期号即版本号：同一天重跑会被当前生效版本挡下。
+     * 必须补成完整 ISO（`2026-11-03T00:00:00`）—— 版本号是全局的，其余榜都是 19 位，
+     * 只用 `2026-11-03` 会让「按 version 排序」的地方把这一期排到当天任何发布之前。
      */
+    patch: !process.argv.includes("--full"),
     version: `${date}T00:00:00`,
   });
 

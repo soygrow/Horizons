@@ -10,6 +10,7 @@
  *
  * 用法：
  *   pnpm tsx scripts/admin/publish-opps.ts
+ *   pnpm tsx scripts/admin/publish-opps.ts --full     # 建新版本（默认只增量替换最新批次）
  *   pnpm tsx scripts/admin/publish-opps.ts --no-d1
  */
 import fs from "node:fs";
@@ -93,7 +94,11 @@ async function main(): Promise<void> {
     board: "opps",
     rows,
     actor: process.env.GITHUB_ACTOR ?? "manual",
-    // 同一批次重跑会撞上当前生效版本被拒绝，符合预期
+    /*
+     * 默认增量：名次表只放最新一批（历史批次用不到名次表），原地替换即可。
+     * 加 --full 才建版本，此时版本号取文件里的 updatedAt，同一批次重跑会被拒绝。
+     */
+    patch: !process.argv.includes("--full"),
     version: file.updatedAt ? isoVersion(file.updatedAt) : versionOf(),
   });
 
