@@ -969,8 +969,14 @@ function bind(): void {
       for (const b of document.querySelectorAll<HTMLElement>("[data-gh-view]")) {
         b.dataset.active = String(b === btn);
       }
-      $("gh-view-fetch").classList.toggle("hidden", view !== "fetch");
-      $("gh-view-listed").classList.toggle("hidden", view !== "listed");
+      /*
+       * 用 .hidden 属性而不是 classList.toggle("hidden")：
+       * 这两个容器在 HTML 里带的是 `hidden` 属性，Tailwind v4 的 preflight
+       * 对 `[hidden]` 是 `display: none !important` —— 只摘 class 摘不掉属性，
+       * 结果切到「线上榜单」时两块都不可见，页面那块直接空白。
+       */
+      $("gh-view-fetch").hidden = view !== "fetch";
+      $("gh-view-listed").hidden = view !== "listed";
       if (view === "listed") {
         syncListedHead();
         void loadListed();
