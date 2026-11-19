@@ -14,7 +14,7 @@ name: Fetch Models
 #
 # 需要的仓库 Secrets（写 D1 与触发部署）：
 #   CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID / D1_DATABASE_ID
-#   DEPLOY_TOKEN（PAT，用于 dispatch deploy-site）
+#   DEPLOY_TOKEN / ADMIN_BOT_TOKEN（PAT，用于 dispatch deploy-site；都没有时退回 GITHUB_TOKEN）
 
 on:
   workflow_dispatch:
@@ -105,7 +105,7 @@ jobs:
 
       - name: 触发站点重建
         env:
-          GH_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+          GH_TOKEN: ${{ secrets.DEPLOY_TOKEN || secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
           MODELS: ${{ inputs.models }}
         run: |
           gh workflow run deploy-site.yml --ref main \
