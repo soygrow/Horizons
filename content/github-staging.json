@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T08:58:19.344Z",
+  "updatedAt": "2026-11-19T10:12:56.130Z",
   "ruleVersion": "gh-rank-v1.6",
   "scoreModel": "pps-v4",
   "target": 2000,
@@ -21601,7 +21601,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:13.920Z",
+        "lastCrawledAt": "2026-11-19T10:12:50.458Z",
         "productScore": {
           "score": 82.4,
           "grade": "S",
@@ -21673,7 +21673,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:13.938Z"
+          "computedAt": "2026-11-19T10:12:50.481Z"
         },
         "readmeSummary": "<a name=\"readme top\" </a <div align=\"center\" https://github.com/user attachments/assets/4f1c1ded 0de3 4425 8ea7 605f19fc157a <h1 Lobe Icons</h1 <h3 Every AI Brand, One Icon Set</h3 340+ AI model and provider logos, ready for React, React Native, or as static SVG / PNG / WEBP. Documents https://icons.lobehub.com · Changelog ./CHANGELOG.md · Report Bug github issues link · Request Feature github iss",
         "contributorsCount": 36,
@@ -22075,7 +22075,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:14.170Z",
+        "lastCrawledAt": "2026-11-19T10:12:50.738Z",
         "productScore": {
           "score": 79.6,
           "grade": "S",
@@ -22147,7 +22147,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:14.171Z"
+          "computedAt": "2026-11-19T10:12:50.739Z"
         },
         "insight": {
           "taglineZh": "在自有硬件上做临床文本脱敏与结构化",
@@ -22614,7 +22614,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:14.475Z",
+        "lastCrawledAt": "2026-11-19T10:12:51.044Z",
         "productScore": {
           "score": 80.9,
           "grade": "S",
@@ -22686,7 +22686,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:14.475Z"
+          "computedAt": "2026-11-19T10:12:51.044Z"
         },
         "readmeSummary": "<div align=\"center\" <a href=\"https://workflow sdk.dev\" <picture <source media=\" prefers color scheme: dark \" srcset=\"https://workflow sdk.dev/workflow circle symbol dark.svg\" <img alt=\"Workflow SDK logo\" src=\"https://workflow sdk.dev/workflow circle symbol light.svg\" height=\"128\" </picture </a <h1 Workflow SDK</h1 <a href=\"https://vercel.com\" <img alt=\"Vercel logo\" src=\"https://img.shields.io/badg",
         "contributorsCount": 137,
@@ -23242,7 +23242,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:15.082Z",
+        "lastCrawledAt": "2026-11-19T10:12:51.636Z",
         "productScore": {
           "score": 80.8,
           "grade": "S",
@@ -23314,7 +23314,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:15.082Z"
+          "computedAt": "2026-11-19T10:12:51.636Z"
         },
         "insight": {
           "taglineZh": "用向量语义做路由，毫秒级决定请求走哪条链路",
@@ -23839,7 +23839,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:15.625Z",
+        "lastCrawledAt": "2026-11-19T10:12:52.222Z",
         "productScore": {
           "score": 81.3,
           "grade": "S",
@@ -23911,7 +23911,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:15.626Z"
+          "computedAt": "2026-11-19T10:12:52.223Z"
         },
         "insight": {
           "taglineZh": "用现成语音库，快速做出能赚钱的语音小工具",
@@ -24369,7 +24369,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:15.886Z",
+        "lastCrawledAt": "2026-11-19T10:12:52.461Z",
         "productScore": {
           "score": 77.2,
           "grade": "A",
@@ -24441,7 +24441,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:15.887Z"
+          "computedAt": "2026-11-19T10:12:52.461Z"
         },
         "insight": {
           "taglineZh": "Ruby 生态的统一 大模型 框架：一个接口接所有模型与工具",
@@ -24841,7 +24841,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:16.221Z",
+        "lastCrawledAt": "2026-11-19T10:12:52.996Z",
         "productScore": {
           "score": 78.6,
           "grade": "A",
@@ -24913,7 +24913,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:16.221Z"
+          "computedAt": "2026-11-19T10:12:52.997Z"
         },
         "insight": {
           "taglineZh": "10毫秒内完成语义搜索，让实时AI应用不再卡顿",
@@ -25166,7 +25166,7 @@
         "pushedAt": "2026-11-19T08:00:11Z",
         "stars": 3518,
         "forks": 783,
-        "openIssues": 358,
+        "openIssues": 361,
         "watchers": 3482,
         "categories": [
           "RAG"
@@ -25384,7 +25384,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:16.507Z",
+        "lastCrawledAt": "2026-11-19T10:12:53.270Z",
         "productScore": {
           "score": 79.9,
           "grade": "S",
@@ -25428,7 +25428,7 @@
               "weight": 12,
               "value": 94.3,
               "points": 11.3,
-              "note": "热度 3,518 星（1 万星即视为验证完成） · fork/star 22.3% · 未结 issue 358"
+              "note": "热度 3,518 星（1 万星即视为验证完成） · fork/star 22.3% · 未结 issue 361"
             },
             {
               "key": "dev",
@@ -25456,7 +25456,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:16.507Z"
+          "computedAt": "2026-11-19T10:12:53.271Z"
         },
         "insight": {
           "taglineZh": "选 embedding 模型的标准尺子，跨语言跨模态统一评测",
@@ -25856,7 +25856,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:16.775Z",
+        "lastCrawledAt": "2026-11-19T10:12:53.551Z",
         "productScore": {
           "score": 72.8,
           "grade": "B",
@@ -25928,7 +25928,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:16.775Z"
+          "computedAt": "2026-11-19T10:12:53.552Z"
         },
         "readmeSummary": "Hero GIF https://stripe.dev/images/badges/ai banner.gif Stripe AI This repo is the one stop shop for building AI powered products and businesses on top of Stripe. It contains a collection of SDKs to help you integrate Stripe with LLMs and agent frameworks, including: @stripe/ai sdk /llm/ai sdk for integrating Stripe's billing infrastructure with Vercel's ai https://npm.im/ai and @ai sdk https://ai",
         "contributorsCount": 42,
@@ -26454,7 +26454,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:17.344Z",
+        "lastCrawledAt": "2026-11-19T10:12:54.094Z",
         "productScore": {
           "score": 74.6,
           "grade": "A",
@@ -26526,7 +26526,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:17.344Z"
+          "computedAt": "2026-11-19T10:12:54.094Z"
         },
         "insight": {
           "taglineZh": "用 PHP 给现有系统加 AI 代理，两周上线",
@@ -27233,7 +27233,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:18.184Z",
+        "lastCrawledAt": "2026-11-19T10:12:54.974Z",
         "productScore": {
           "score": 73.5,
           "grade": "B",
@@ -27305,7 +27305,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:18.184Z"
+          "computedAt": "2026-11-19T10:12:54.974Z"
         },
         "insight": {
           "taglineZh": "自托管多引擎搜索，给AI和SEO用",
@@ -27544,10 +27544,10 @@
           "name": "Apache License 2.0"
         },
         "createdAt": "2026-03-22T14:52:26Z",
-        "pushedAt": "2026-11-19T08:57:09Z",
+        "pushedAt": "2026-11-19T10:12:50Z",
         "stars": 1216,
         "forks": 185,
-        "openIssues": 278,
+        "openIssues": 271,
         "watchers": 1343,
         "categories": [
           "Coding",
@@ -27766,7 +27766,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:18.573Z",
+        "lastCrawledAt": "2026-11-19T10:12:55.248Z",
         "productScore": {
           "score": 78.8,
           "grade": "A",
@@ -27810,7 +27810,7 @@
               "weight": 12,
               "value": 88.6,
               "points": 10.6,
-              "note": "热度 1,216 星（1 万星即视为验证完成） · fork/star 15.2% · 未结 issue 278"
+              "note": "热度 1,216 星（1 万星即视为验证完成） · fork/star 15.2% · 未结 issue 271"
             },
             {
               "key": "dev",
@@ -27838,7 +27838,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:18.573Z"
+          "computedAt": "2026-11-19T10:12:55.248Z"
         },
         "readmeSummary": "<div align=\"center\" <picture <source media=\" prefers color scheme: dark \" srcset=\"https://raw.githubusercontent.com/sipyourdrink ltd/bernstein/main/docs/assets/logo dark.svg\" <source media=\" prefers color scheme: light \" srcset=\"https://raw.githubusercontent.com/sipyourdrink ltd/bernstein/main/docs/assets/logo light.svg\" <img alt=\"Bernstein\" src=\"https://raw.githubusercontent.com/sipyourdrink ltd/",
         "contributorsCount": 113,
@@ -28406,7 +28406,7 @@
             "synthetic": true
           }
         ],
-        "lastCrawledAt": "2026-11-19T08:58:19.123Z",
+        "lastCrawledAt": "2026-11-19T10:12:55.891Z",
         "productScore": {
           "score": 78.4,
           "grade": "A",
@@ -28478,7 +28478,7 @@
             }
           ],
           "model": "pps-v3",
-          "computedAt": "2026-11-19T08:58:19.123Z"
+          "computedAt": "2026-11-19T10:12:55.892Z"
         },
         "insight": {
           "taglineZh": "用 PHP 快速接入 OpenAI，做能赚钱的 AI 小工具",
@@ -28793,6 +28793,899 @@
           ],
           "model": "pps-v3",
           "computedAt": "2026-11-19T08:58:19.344Z"
+        },
+        "readme": ""
+      },
+      "score": 65,
+      "grade": "C",
+      "estimatedRank": null,
+      "check": {
+        "ok": false,
+        "reason": "已归档"
+      }
+    },
+    {
+      "repo": {
+        "fullName": "Continuum-AI-Corp/OrcaRouter-Lite",
+        "owner": "Continuum-AI-Corp",
+        "repo": "OrcaRouter-Lite",
+        "name": "OrcaRouter-Lite",
+        "description": "Self-hosted LLM router with a managed safety net. OpenAI-compatible. BYOK. Single-workspace. Streaming. For more advanced routing choose hosted OrcaRouter",
+        "htmlUrl": "https://github.com/Continuum-AI-Corp/OrcaRouter-Lite",
+        "homepage": "https://www.orcarouter.ai",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/273996259?v=4",
+        "language": "Python",
+        "topics": [
+          "ai-gateway",
+          "ai-gateways",
+          "ai-model-gateway",
+          "anthropic-api",
+          "byok",
+          "gemini-api",
+          "litellm",
+          "llm-router",
+          "llm-router-server",
+          "one-api",
+          "openai",
+          "openai-api",
+          "openai-compatible",
+          "orcarouter",
+          "portkey"
+        ],
+        "license": {
+          "spdx": "MIT",
+          "name": "MIT License"
+        },
+        "createdAt": "2026-05-03T00:28:42Z",
+        "pushedAt": "2026-10-08T07:08:33Z",
+        "stars": 3424,
+        "forks": 482,
+        "openIssues": 51,
+        "watchers": 3424,
+        "categories": [
+          "AI Chat"
+        ],
+        "heatScore": 71,
+        "history": [],
+        "lastCrawledAt": "2026-11-19T10:12:51.320Z",
+        "productScore": {
+          "score": 64.8,
+          "grade": "C",
+          "summary": "谨慎：更适合练手。轻启动机会最强，维护活跃度是短板。",
+          "parts": [
+            {
+              "key": "light",
+              "label": "轻启动机会",
+              "weight": 22,
+              "value": 66,
+              "points": 14.5,
+              "note": "加分项：个人可驾驭"
+            },
+            {
+              "key": "derivative",
+              "label": "加工空间",
+              "weight": 18,
+              "value": 50,
+              "points": 9,
+              "note": "未评估，按中性 5/10 计"
+            },
+            {
+              "key": "commercial",
+              "label": "商业化潜力",
+              "weight": 14,
+              "value": 71.4,
+              "points": 10,
+              "note": "许可 可商用 · 领域付费需求 未发现 · 官网 独立域名"
+            },
+            {
+              "key": "effort",
+              "label": "落地门槛",
+              "weight": 13,
+              "value": 61.5,
+              "points": 8,
+              "note": "上手难度 未知 · 体量 3,424 星 · 无需额外付费资源 · 首版周期未知"
+            },
+            {
+              "key": "demand",
+              "label": "需求验证",
+              "weight": 12,
+              "value": 94.2,
+              "points": 11.3,
+              "note": "热度 3,424 星（1 万星即视为验证完成） · fork/star 14.1% · 未结 issue 51"
+            },
+            {
+              "key": "dev",
+              "label": "可开发性",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "描述 154 字符 · 标签 15 个 · 许可 MIT · 语言 Python · README 0 字符"
+            },
+            {
+              "key": "active",
+              "label": "维护活跃度",
+              "weight": 7,
+              "value": 50,
+              "points": 3.5,
+              "note": "最近提交 42 天前 · 近 4 周提交 null 次 · 贡献者 未采集"
+            },
+            {
+              "key": "growth",
+              "label": "增长动能",
+              "weight": 7,
+              "value": 50,
+              "points": 3.5,
+              "note": "暂无真实采样（榜单 2026-10 起逐日记录，满 7 天后才有增速），按中性 50 计"
+            }
+          ],
+          "model": "pps-v3",
+          "computedAt": "2026-11-19T10:12:51.320Z"
+        },
+        "readme": ""
+      },
+      "score": 64.8,
+      "grade": "C",
+      "estimatedRank": null,
+      "check": {
+        "ok": true
+      }
+    },
+    {
+      "repo": {
+        "fullName": "Vonage/vonage-php-sdk-core",
+        "owner": "Vonage",
+        "repo": "vonage-php-sdk-core",
+        "name": "vonage-php-sdk-core",
+        "description": "Vonage REST API client for PHP. API support for SMS, Voice, Text-to-Speech, Numbers, Verify (2FA) and more.",
+        "htmlUrl": "https://github.com/Vonage/vonage-php-sdk-core",
+        "homepage": "https://developer.vonage.com/",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/2683897?v=4",
+        "language": "PHP",
+        "topics": [
+          "developer-destination",
+          "messaging",
+          "nexmo",
+          "phone",
+          "php",
+          "server-sdk",
+          "sms",
+          "text-message",
+          "text-to-speech",
+          "two-factor-authentication",
+          "voice",
+          "vonage"
+        ],
+        "license": {
+          "spdx": "Apache-2.0",
+          "name": "Apache License 2.0"
+        },
+        "createdAt": "2013-07-04T15:38:33Z",
+        "pushedAt": "2026-10-20T13:49:44Z",
+        "stars": 931,
+        "forks": 178,
+        "openIssues": 6,
+        "watchers": 931,
+        "categories": [
+          "Voice & Audio",
+          "Coding"
+        ],
+        "heatScore": 59,
+        "history": [],
+        "lastCrawledAt": "2026-11-19T10:12:51.953Z",
+        "productScore": {
+          "score": 65,
+          "grade": "C",
+          "summary": "谨慎：更适合练手。轻启动机会最强，增长动能是短板。",
+          "parts": [
+            {
+              "key": "light",
+              "label": "轻启动机会",
+              "weight": 22,
+              "value": 68,
+              "points": 15,
+              "note": "加分项：小而美体量"
+            },
+            {
+              "key": "derivative",
+              "label": "加工空间",
+              "weight": 18,
+              "value": 50,
+              "points": 9,
+              "note": "未评估，按中性 5/10 计"
+            },
+            {
+              "key": "commercial",
+              "label": "商业化潜力",
+              "weight": 14,
+              "value": 71.4,
+              "points": 10,
+              "note": "许可 可商用 · 领域付费需求 未发现 · 官网 独立域名"
+            },
+            {
+              "key": "effort",
+              "label": "落地门槛",
+              "weight": 13,
+              "value": 69.2,
+              "points": 9,
+              "note": "上手难度 未知 · 体量 931 星 · 无需额外付费资源 · 首版周期未知"
+            },
+            {
+              "key": "demand",
+              "label": "需求验证",
+              "weight": 12,
+              "value": 70.5,
+              "points": 8.5,
+              "note": "热度 931 星（1 万星即视为验证完成） · fork/star 19.1% · 未结 issue 6"
+            },
+            {
+              "key": "dev",
+              "label": "可开发性",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "描述 107 字符 · 标签 12 个 · 许可 Apache-2.0 · 语言 PHP · README 0 字符"
+            },
+            {
+              "key": "active",
+              "label": "维护活跃度",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "最近提交 30 天前 · 近 4 周提交 null 次 · 贡献者 未采集"
+            },
+            {
+              "key": "growth",
+              "label": "增长动能",
+              "weight": 7,
+              "value": 50,
+              "points": 3.5,
+              "note": "暂无真实采样（榜单 2026-10 起逐日记录，满 7 天后才有增速），按中性 50 计"
+            }
+          ],
+          "model": "pps-v3",
+          "computedAt": "2026-11-19T10:12:51.953Z"
+        },
+        "readme": ""
+      },
+      "score": 65,
+      "grade": "C",
+      "estimatedRank": null,
+      "check": {
+        "ok": true
+      }
+    },
+    {
+      "repo": {
+        "fullName": "TanStack/ai",
+        "owner": "TanStack",
+        "repo": "ai",
+        "name": "ai",
+        "description": "🤖 Type-safe, provider-agnostic TypeScript AI SDK for streaming chat, tool calling, agents, and multimodal apps across OpenAI, Anthropic, Gemini, React, Vue, Svelte, and Solid.",
+        "htmlUrl": "https://github.com/TanStack/ai",
+        "homepage": "https://tanstack.com/ai/latest",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/72518640?v=4",
+        "language": "TypeScript",
+        "topics": [
+          "ai",
+          "ai-agents",
+          "ai-sdk",
+          "anthropic",
+          "chatbot",
+          "function-calling",
+          "gemini",
+          "generative-ai",
+          "llm",
+          "multimodal",
+          "openai",
+          "react",
+          "solidjs",
+          "streaming",
+          "svelte",
+          "tanstack",
+          "tool-calling",
+          "typescript",
+          "typescript-sdk",
+          "vue"
+        ],
+        "license": {
+          "spdx": "MIT",
+          "name": "MIT License"
+        },
+        "createdAt": "2025-10-08T17:52:48Z",
+        "pushedAt": "2026-11-19T08:41:58Z",
+        "stars": 3369,
+        "forks": 407,
+        "openIssues": 103,
+        "watchers": 3369,
+        "categories": [
+          "Coding",
+          "Agent",
+          "AI Chat"
+        ],
+        "heatScore": 71,
+        "history": [],
+        "lastCrawledAt": "2026-11-19T10:12:53.821Z",
+        "productScore": {
+          "score": 66.3,
+          "grade": "C",
+          "summary": "谨慎：更适合练手。轻启动机会最强，增长动能是短板。",
+          "parts": [
+            {
+              "key": "light",
+              "label": "轻启动机会",
+              "weight": 22,
+              "value": 66,
+              "points": 14.5,
+              "note": "加分项：个人可驾驭"
+            },
+            {
+              "key": "derivative",
+              "label": "加工空间",
+              "weight": 18,
+              "value": 50,
+              "points": 9,
+              "note": "未评估，按中性 5/10 计"
+            },
+            {
+              "key": "commercial",
+              "label": "商业化潜力",
+              "weight": 14,
+              "value": 71.4,
+              "points": 10,
+              "note": "许可 可商用 · 领域付费需求 未发现 · 官网 独立域名"
+            },
+            {
+              "key": "effort",
+              "label": "落地门槛",
+              "weight": 13,
+              "value": 61.5,
+              "points": 8,
+              "note": "上手难度 未知 · 体量 3,369 星 · 无需额外付费资源 · 首版周期未知"
+            },
+            {
+              "key": "demand",
+              "label": "需求验证",
+              "weight": 12,
+              "value": 94.1,
+              "points": 11.3,
+              "note": "热度 3,369 星（1 万星即视为验证完成） · fork/star 12.1% · 未结 issue 103"
+            },
+            {
+              "key": "dev",
+              "label": "可开发性",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "描述 176 字符 · 标签 20 个 · 许可 MIT · 语言 TypeScript · README 0 字符"
+            },
+            {
+              "key": "active",
+              "label": "维护活跃度",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "最近提交 0 天前 · 近 4 周提交 null 次 · 贡献者 未采集"
+            },
+            {
+              "key": "growth",
+              "label": "增长动能",
+              "weight": 7,
+              "value": 50,
+              "points": 3.5,
+              "note": "暂无真实采样（榜单 2026-10 起逐日记录，满 7 天后才有增速），按中性 50 计"
+            }
+          ],
+          "model": "pps-v3",
+          "computedAt": "2026-11-19T10:12:53.822Z"
+        },
+        "readme": ""
+      },
+      "score": 66.3,
+      "grade": "C",
+      "estimatedRank": null,
+      "check": {
+        "ok": true
+      }
+    },
+    {
+      "repo": {
+        "fullName": "Azure-Samples/azure-search-openai-demo",
+        "owner": "Azure-Samples",
+        "repo": "azure-search-openai-demo",
+        "name": "azure-search-openai-demo",
+        "description": "A sample app for the Retrieval-Augmented Generation pattern running in Azure, using Azure AI Search for retrieval and Azure OpenAI large language models  to power ChatGPT-style and Q&A experiences.",
+        "htmlUrl": "https://github.com/Azure-Samples/azure-search-openai-demo",
+        "homepage": "https://azure.microsoft.com/products/search",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/1844662?v=4",
+        "language": "Python",
+        "topics": [
+          "ai-azd-templates",
+          "azd-templates",
+          "azure",
+          "azure-ai-search",
+          "azurecognitivesearch",
+          "azureopenai",
+          "chatgpt",
+          "openai"
+        ],
+        "license": {
+          "spdx": "MIT",
+          "name": "MIT License"
+        },
+        "createdAt": "2023-02-08T21:00:54Z",
+        "pushedAt": "2026-11-17T22:07:06Z",
+        "stars": 7804,
+        "forks": 5468,
+        "openIssues": 531,
+        "watchers": 7804,
+        "categories": [
+          "AI Chat"
+        ],
+        "heatScore": 78,
+        "history": [],
+        "lastCrawledAt": "2026-11-19T10:12:54.450Z",
+        "productScore": {
+          "score": 66.4,
+          "grade": "C",
+          "summary": "谨慎：更适合练手。轻启动机会最强，增长动能是短板。",
+          "parts": [
+            {
+              "key": "light",
+              "label": "轻启动机会",
+              "weight": 22,
+              "value": 64,
+              "points": 14.1,
+              "note": "加分项：中等体量"
+            },
+            {
+              "key": "derivative",
+              "label": "加工空间",
+              "weight": 18,
+              "value": 50,
+              "points": 9,
+              "note": "未评估，按中性 5/10 计"
+            },
+            {
+              "key": "commercial",
+              "label": "商业化潜力",
+              "weight": 14,
+              "value": 71.4,
+              "points": 10,
+              "note": "许可 可商用 · 领域付费需求 未发现 · 官网 独立域名"
+            },
+            {
+              "key": "effort",
+              "label": "落地门槛",
+              "weight": 13,
+              "value": 61.5,
+              "points": 8,
+              "note": "上手难度 未知 · 体量 7,804 星 · 无需额外付费资源 · 首版周期未知"
+            },
+            {
+              "key": "demand",
+              "label": "需求验证",
+              "weight": 12,
+              "value": 98.7,
+              "points": 11.8,
+              "note": "热度 7,804 星（1 万星即视为验证完成） · fork/star 70.1% · 未结 issue 531"
+            },
+            {
+              "key": "dev",
+              "label": "可开发性",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "描述 197 字符 · 标签 8 个 · 许可 MIT · 语言 Python · README 0 字符"
+            },
+            {
+              "key": "active",
+              "label": "维护活跃度",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "最近提交 2 天前 · 近 4 周提交 null 次 · 贡献者 未采集"
+            },
+            {
+              "key": "growth",
+              "label": "增长动能",
+              "weight": 7,
+              "value": 50,
+              "points": 3.5,
+              "note": "暂无真实采样（榜单 2026-10 起逐日记录，满 7 天后才有增速），按中性 50 计"
+            }
+          ],
+          "model": "pps-v3",
+          "computedAt": "2026-11-19T10:12:54.450Z"
+        },
+        "readme": ""
+      },
+      "score": 66.4,
+      "grade": "C",
+      "estimatedRank": null,
+      "check": {
+        "ok": true
+      }
+    },
+    {
+      "repo": {
+        "fullName": "Giskard-AI/giskard-oss",
+        "owner": "Giskard-AI",
+        "repo": "giskard-oss",
+        "name": "giskard-oss",
+        "description": "🐢 Open-Source Evaluation & Testing library for LLM Agents",
+        "htmlUrl": "https://github.com/Giskard-AI/giskard-oss",
+        "homepage": "https://docs.giskard.ai",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/71782571?v=4",
+        "language": "Python",
+        "topics": [
+          "agent-evaluation",
+          "ai-red-team",
+          "ai-security",
+          "ai-testing",
+          "fairness-ai",
+          "llm",
+          "llm-eval",
+          "llm-evaluation",
+          "llm-security",
+          "llmops",
+          "ml-testing",
+          "ml-validation",
+          "mlops",
+          "rag-evaluation",
+          "red-team-tools",
+          "responsible-ai",
+          "trustworthy-ai"
+        ],
+        "license": {
+          "spdx": "Apache-2.0",
+          "name": "Apache License 2.0"
+        },
+        "createdAt": "2022-03-06T21:45:37Z",
+        "pushedAt": "2026-11-19T09:01:29Z",
+        "stars": 5957,
+        "forks": 574,
+        "openIssues": 89,
+        "watchers": 5957,
+        "categories": [
+          "RAG",
+          "Agent",
+          "AI Chat"
+        ],
+        "heatScore": 76,
+        "history": [],
+        "lastCrawledAt": "2026-11-19T10:12:54.736Z",
+        "productScore": {
+          "score": 63.3,
+          "grade": "C",
+          "summary": "谨慎：更适合练手。轻启动机会最强，增长动能是短板。",
+          "parts": [
+            {
+              "key": "light",
+              "label": "轻启动机会",
+              "weight": 22,
+              "value": 55,
+              "points": 12.1,
+              "note": "加分项：中等体量；减分项：含重型组件 mlops"
+            },
+            {
+              "key": "derivative",
+              "label": "加工空间",
+              "weight": 18,
+              "value": 50,
+              "points": 9,
+              "note": "未评估，按中性 5/10 计"
+            },
+            {
+              "key": "commercial",
+              "label": "商业化潜力",
+              "weight": 14,
+              "value": 71.4,
+              "points": 10,
+              "note": "许可 可商用 · 领域付费需求 未发现 · 官网 独立域名"
+            },
+            {
+              "key": "effort",
+              "label": "落地门槛",
+              "weight": 13,
+              "value": 61.5,
+              "points": 8,
+              "note": "上手难度 未知 · 体量 5,957 星 · 无需额外付费资源 · 首版周期未知"
+            },
+            {
+              "key": "demand",
+              "label": "需求验证",
+              "weight": 12,
+              "value": 88.9,
+              "points": 10.7,
+              "note": "热度 5,957 星（1 万星即视为验证完成） · fork/star 9.6% · 未结 issue 89"
+            },
+            {
+              "key": "dev",
+              "label": "可开发性",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "描述 58 字符 · 标签 17 个 · 许可 Apache-2.0 · 语言 Python · README 0 字符"
+            },
+            {
+              "key": "active",
+              "label": "维护活跃度",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "最近提交 0 天前 · 近 4 周提交 null 次 · 贡献者 未采集"
+            },
+            {
+              "key": "growth",
+              "label": "增长动能",
+              "weight": 7,
+              "value": 50,
+              "points": 3.5,
+              "note": "暂无真实采样（榜单 2026-10 起逐日记录，满 7 天后才有增速），按中性 50 计"
+            }
+          ],
+          "model": "pps-v3",
+          "computedAt": "2026-11-19T10:12:54.736Z"
+        },
+        "readme": ""
+      },
+      "score": 63.3,
+      "grade": "C",
+      "estimatedRank": null,
+      "check": {
+        "ok": true
+      }
+    },
+    {
+      "repo": {
+        "fullName": "LazyAGI/LazyLLM",
+        "owner": "LazyAGI",
+        "repo": "LazyLLM",
+        "name": "LazyLLM",
+        "description": "Easiest and laziest way for  building multi-agent LLMs applications.",
+        "htmlUrl": "https://github.com/LazyAGI/LazyLLM",
+        "homepage": "https://docs.lazyllm.ai/",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/171651681?v=4",
+        "language": "Python",
+        "topics": [
+          "agents",
+          "ai-agent",
+          "data",
+          "deep-learning",
+          "documentation-tool",
+          "finetuning",
+          "framework",
+          "knowlege-graph",
+          "langchain",
+          "lazyllm",
+          "llamaindex",
+          "llm",
+          "llms",
+          "rag"
+        ],
+        "license": {
+          "spdx": "Apache-2.0",
+          "name": "Apache License 2.0"
+        },
+        "createdAt": "2024-06-04T05:01:45Z",
+        "pushedAt": "2026-11-18T02:09:19Z",
+        "stars": 3891,
+        "forks": 435,
+        "openIssues": 88,
+        "watchers": 3891,
+        "categories": [
+          "RAG",
+          "Data & Analytics",
+          "Productivity"
+        ],
+        "heatScore": 72,
+        "history": [],
+        "lastCrawledAt": "2026-11-19T10:12:55.575Z",
+        "productScore": {
+          "score": 65.4,
+          "grade": "C",
+          "summary": "谨慎：更适合练手。轻启动机会最强，增长动能是短板。",
+          "parts": [
+            {
+              "key": "light",
+              "label": "轻启动机会",
+              "weight": 22,
+              "value": 66,
+              "points": 14.5,
+              "note": "加分项：个人可驾驭"
+            },
+            {
+              "key": "derivative",
+              "label": "加工空间",
+              "weight": 18,
+              "value": 50,
+              "points": 9,
+              "note": "未评估，按中性 5/10 计"
+            },
+            {
+              "key": "commercial",
+              "label": "商业化潜力",
+              "weight": 14,
+              "value": 71.4,
+              "points": 10,
+              "note": "许可 可商用 · 领域付费需求 未发现 · 官网 独立域名"
+            },
+            {
+              "key": "effort",
+              "label": "落地门槛",
+              "weight": 13,
+              "value": 61.5,
+              "points": 8,
+              "note": "上手难度 未知 · 体量 3,891 星 · 无需额外付费资源 · 首版周期未知"
+            },
+            {
+              "key": "demand",
+              "label": "需求验证",
+              "weight": 12,
+              "value": 86.5,
+              "points": 10.4,
+              "note": "热度 3,891 星（1 万星即视为验证完成） · fork/star 11.2% · 未结 issue 88"
+            },
+            {
+              "key": "dev",
+              "label": "可开发性",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "描述 68 字符 · 标签 14 个 · 许可 Apache-2.0 · 语言 Python · README 0 字符"
+            },
+            {
+              "key": "active",
+              "label": "维护活跃度",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "最近提交 1 天前 · 近 4 周提交 null 次 · 贡献者 未采集"
+            },
+            {
+              "key": "growth",
+              "label": "增长动能",
+              "weight": 7,
+              "value": 50,
+              "points": 3.5,
+              "note": "暂无真实采样（榜单 2026-10 起逐日记录，满 7 天后才有增速），按中性 50 计"
+            }
+          ],
+          "model": "pps-v3",
+          "computedAt": "2026-11-19T10:12:55.575Z"
+        },
+        "readme": ""
+      },
+      "score": 65.4,
+      "grade": "C",
+      "estimatedRank": null,
+      "check": {
+        "ok": true
+      }
+    },
+    {
+      "repo": {
+        "fullName": "OSideMedia/higgsfield-ai-prompt-skill",
+        "owner": "OSideMedia",
+        "repo": "higgsfield-ai-prompt-skill",
+        "name": "higgsfield-ai-prompt-skill",
+        "description": "No longer maintained (final release v3.42.0). Claude AI skill for cinematic Higgsfield AI prompts: 32 sub-skills covering Seedance 2.5 and 2.0, the Hell Grind feature-film pipeline, an acting system, Cinema Studio 2.5/3.0/3.5, MCSLA, Soul ID, Kling 3.0 Motion Control, the DISCIPLINE framework, and 18 templates.",
+        "htmlUrl": "https://github.com/OSideMedia/higgsfield-ai-prompt-skill",
+        "homepage": "https://higgsfield.ai",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/261988918?v=4",
+        "language": "Python",
+        "topics": [
+          "ai-cinema",
+          "ai-filmmaking",
+          "ai-video",
+          "character-acting",
+          "cinema-studio",
+          "claude-code",
+          "claude-cowork",
+          "claude-skill",
+          "dreamina",
+          "higgsfield",
+          "kling",
+          "mcsla",
+          "motion-control",
+          "prompt-engineering",
+          "seedance",
+          "seedance-2-5",
+          "soul-id",
+          "veo",
+          "video-generation",
+          "wan"
+        ],
+        "license": {
+          "spdx": "MIT",
+          "name": "MIT License"
+        },
+        "createdAt": "2026-03-08T18:03:41Z",
+        "pushedAt": "2026-11-18T14:34:35Z",
+        "stars": 950,
+        "forks": 167,
+        "openIssues": 0,
+        "watchers": 950,
+        "categories": [
+          "Video",
+          "Coding",
+          "AI Chat"
+        ],
+        "heatScore": 60,
+        "history": [],
+        "lastCrawledAt": "2026-11-19T10:12:56.130Z",
+        "productScore": {
+          "score": 65,
+          "grade": "C",
+          "summary": "谨慎：更适合练手。轻启动机会最强，增长动能是短板。",
+          "parts": [
+            {
+              "key": "light",
+              "label": "轻启动机会",
+              "weight": 22,
+              "value": 68,
+              "points": 15,
+              "note": "加分项：小而美体量"
+            },
+            {
+              "key": "derivative",
+              "label": "加工空间",
+              "weight": 18,
+              "value": 50,
+              "points": 9,
+              "note": "未评估，按中性 5/10 计"
+            },
+            {
+              "key": "commercial",
+              "label": "商业化潜力",
+              "weight": 14,
+              "value": 71.4,
+              "points": 10,
+              "note": "许可 可商用 · 领域付费需求 未发现 · 官网 独立域名"
+            },
+            {
+              "key": "effort",
+              "label": "落地门槛",
+              "weight": 13,
+              "value": 69.2,
+              "points": 9,
+              "note": "上手难度 未知 · 体量 950 星 · 无需额外付费资源 · 首版周期未知"
+            },
+            {
+              "key": "demand",
+              "label": "需求验证",
+              "weight": 12,
+              "value": 70.6,
+              "points": 8.5,
+              "note": "热度 950 星（1 万星即视为验证完成） · fork/star 17.6% · 未结 issue 0"
+            },
+            {
+              "key": "dev",
+              "label": "可开发性",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "描述 312 字符 · 标签 20 个 · 许可 MIT · 语言 Python · README 0 字符"
+            },
+            {
+              "key": "active",
+              "label": "维护活跃度",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "最近提交 1 天前 · 近 4 周提交 null 次 · 贡献者 未采集"
+            },
+            {
+              "key": "growth",
+              "label": "增长动能",
+              "weight": 7,
+              "value": 50,
+              "points": 3.5,
+              "note": "暂无真实采样（榜单 2026-10 起逐日记录，满 7 天后才有增速），按中性 50 计"
+            }
+          ],
+          "model": "pps-v3",
+          "computedAt": "2026-11-19T10:12:56.130Z"
         },
         "readme": ""
       },
@@ -45014,6 +45907,225 @@
       "forks": 185,
       "openIssues": 278,
       "pushedAt": "2026-11-19T08:57:09Z",
+      "description": "Open-source AI agent governance. Write the rules declaratively, Bernstein enforces them and produces the verifiable, replayable record. Free, Apache-2.0. https://bernstein.run",
+      "homepage": "https://bernstein.run",
+      "score": 78.8,
+      "grade": "A"
+    },
+    {
+      "fullName": "LazyAGI/LazyLLM",
+      "stars": 3891,
+      "forks": 435,
+      "openIssues": 88,
+      "pushedAt": "2026-11-18T02:09:19Z",
+      "description": "Easiest and laziest way for  building multi-agent LLMs applications.",
+      "homepage": "https://docs.lazyllm.ai/",
+      "score": 65.4,
+      "grade": "C"
+    },
+    {
+      "fullName": "openai-php/client",
+      "stars": 5838,
+      "forks": 684,
+      "openIssues": 25,
+      "pushedAt": "2026-11-19T01:15:34Z",
+      "description": "⚡️ OpenAI PHP is a supercharged community-maintained PHP API client that allows you to interact with OpenAI API.",
+      "score": 78.4,
+      "grade": "A"
+    },
+    {
+      "fullName": "OSideMedia/higgsfield-ai-prompt-skill",
+      "stars": 950,
+      "forks": 167,
+      "openIssues": 0,
+      "pushedAt": "2026-11-18T14:34:35Z",
+      "description": "No longer maintained (final release v3.42.0). Claude AI skill for cinematic Higgsfield AI prompts: 32 sub-skills covering Seedance 2.5 and 2.0, the Hell Grind feature-film pipeline, an acting system, Cinema Studio 2.5/3.0/3.5, MCSLA, Soul ID, Kling 3.0 Motion Control, the DISCIPLINE framework, and 18 templates.",
+      "homepage": "https://higgsfield.ai",
+      "score": 65,
+      "grade": "C"
+    },
+    {
+      "fullName": "lobehub/lobe-icons",
+      "stars": 2710,
+      "forks": 288,
+      "openIssues": 107,
+      "pushedAt": "2026-11-18T19:24:51Z",
+      "description": "🥨 Lobe Icons - Brings AI/LLM brand logos to your React & React Native apps — static SVG/PNG/WebP, no dependencies.",
+      "homepage": "https://icons.lobehub.com",
+      "score": 82.4,
+      "grade": "S"
+    },
+    {
+      "fullName": "maziyarpanahi/openmed",
+      "stars": 5826,
+      "forks": 769,
+      "openIssues": 1291,
+      "pushedAt": "2026-11-16T19:25:45Z",
+      "description": "Local-first healthcare AI: clinical NER and HIPAA PII de-identification on hardware you control. 2,200+ medical models, 35 model-backed PII languages, and Python, MLX, Android and browser runtimes. Apache-2.0 SDK.",
+      "homepage": "https://openmed.life/",
+      "score": 79.6,
+      "grade": "S"
+    },
+    {
+      "fullName": "vercel/workflow",
+      "stars": 2524,
+      "forks": 405,
+      "openIssues": 534,
+      "pushedAt": "2026-11-19T04:45:23Z",
+      "description": "Workflow SDK: Build durable, reliable, and observable apps and AI Agents in TypeScript",
+      "homepage": "https://workflow-sdk.dev",
+      "score": 80.9,
+      "grade": "S"
+    },
+    {
+      "fullName": "Continuum-AI-Corp/OrcaRouter-Lite",
+      "stars": 3424,
+      "forks": 482,
+      "openIssues": 51,
+      "pushedAt": "2026-10-08T07:08:33Z",
+      "description": "Self-hosted LLM router with a managed safety net. OpenAI-compatible. BYOK. Single-workspace. Streaming. For more advanced routing choose hosted OrcaRouter",
+      "homepage": "https://www.orcarouter.ai",
+      "score": 64.8,
+      "grade": "C"
+    },
+    {
+      "fullName": "aurelio-labs/semantic-router",
+      "stars": 4040,
+      "forks": 396,
+      "openIssues": 105,
+      "pushedAt": "2026-11-09T02:48:44Z",
+      "description": "Superfast AI decision making and intelligent processing of multi-modal data.",
+      "homepage": "https://www.aurelio.ai/semantic-router",
+      "score": 80.8,
+      "grade": "S"
+    },
+    {
+      "fullName": "Vonage/vonage-php-sdk-core",
+      "stars": 931,
+      "forks": 178,
+      "openIssues": 6,
+      "pushedAt": "2026-10-20T13:49:44Z",
+      "description": "Vonage REST API client for PHP. API support for SMS, Voice, Text-to-Speech, Numbers, Verify (2FA) and more.",
+      "homepage": "https://developer.vonage.com/",
+      "score": 65,
+      "grade": "C"
+    },
+    {
+      "fullName": "lobehub/lobe-tts",
+      "stars": 811,
+      "forks": 104,
+      "openIssues": 15,
+      "pushedAt": "2026-11-12T13:21:51Z",
+      "description": "🎤 Lobe TTS - A high-quality & reliable TTS/STT library for Server and Browser",
+      "homepage": "https://tts.lobehub.com",
+      "score": 81.3,
+      "grade": "S"
+    },
+    {
+      "fullName": "crmne/ruby_llm",
+      "stars": 4517,
+      "forks": 539,
+      "openIssues": 6,
+      "pushedAt": "2026-11-18T18:20:12Z",
+      "description": "The Ruby AI framework.",
+      "homepage": "https://rubyllm.com/",
+      "score": 77.2,
+      "grade": "A"
+    },
+    {
+      "fullName": "usemoss/moss",
+      "stars": 807,
+      "forks": 104,
+      "openIssues": 137,
+      "pushedAt": "2026-11-19T01:37:58Z",
+      "description": "The retrieval layer for production AI systems. Lightning-fast (<10ms) search without vector databases. Built for browser, edge, on-device, and cloud.",
+      "homepage": "https://moss.dev",
+      "score": 78.6,
+      "grade": "A"
+    },
+    {
+      "fullName": "embeddings-benchmark/mteb",
+      "stars": 3518,
+      "forks": 783,
+      "openIssues": 361,
+      "pushedAt": "2026-11-19T08:00:11Z",
+      "description": "MTEB: State-of-the-art evaluation of embeddings across languages and modalities",
+      "homepage": "https://docs.mteb.org",
+      "score": 79.9,
+      "grade": "S"
+    },
+    {
+      "fullName": "stripe/ai",
+      "stars": 2073,
+      "forks": 385,
+      "openIssues": 47,
+      "pushedAt": "2026-11-19T00:30:41Z",
+      "description": "One-stop shop for building AI-powered products and businesses with Stripe.",
+      "homepage": "https://docs.stripe.com/agents",
+      "score": 72.8,
+      "grade": "B"
+    },
+    {
+      "fullName": "TanStack/ai",
+      "stars": 3369,
+      "forks": 407,
+      "openIssues": 103,
+      "pushedAt": "2026-11-19T08:41:58Z",
+      "description": "🤖 Type-safe, provider-agnostic TypeScript AI SDK for streaming chat, tool calling, agents, and multimodal apps across OpenAI, Anthropic, Gemini, React, Vue, Svelte, and Solid.",
+      "homepage": "https://tanstack.com/ai/latest",
+      "score": 66.3,
+      "grade": "C"
+    },
+    {
+      "fullName": "neuron-core/neuron-ai",
+      "stars": 2177,
+      "forks": 262,
+      "openIssues": 6,
+      "pushedAt": "2026-11-17T18:35:58Z",
+      "description": "The Agentic Framework of the PHP ecosystem to build production-ready AI driven applications. Connect components (LLMs, Tools, vector DBs, memory) to agents that interact with your data and UI.",
+      "homepage": "https://neuron-ai.dev",
+      "score": 74.6,
+      "grade": "A"
+    },
+    {
+      "fullName": "Azure-Samples/azure-search-openai-demo",
+      "stars": 7804,
+      "forks": 5468,
+      "openIssues": 531,
+      "pushedAt": "2026-11-17T22:07:06Z",
+      "description": "A sample app for the Retrieval-Augmented Generation pattern running in Azure, using Azure AI Search for retrieval and Azure OpenAI large language models  to power ChatGPT-style and Q&A experiences.",
+      "homepage": "https://azure.microsoft.com/products/search",
+      "score": 66.4,
+      "grade": "C"
+    },
+    {
+      "fullName": "Giskard-AI/giskard-oss",
+      "stars": 5957,
+      "forks": 574,
+      "openIssues": 89,
+      "pushedAt": "2026-11-19T09:01:29Z",
+      "description": "🐢 Open-Source Evaluation & Testing library for LLM Agents",
+      "homepage": "https://docs.giskard.ai",
+      "score": 63.3,
+      "grade": "C"
+    },
+    {
+      "fullName": "karust/openserp",
+      "stars": 1603,
+      "forks": 192,
+      "openIssues": 34,
+      "pushedAt": "2026-11-18T20:52:03Z",
+      "description": "Self-hosted web search for AI agents and SEO. Google, Bing, Yandex, Baidu, DuckDuckGo & Ecosia, rendered in a real browser: ranked results and clean page Markdown. API, CLI, MCP 🎉",
+      "homepage": "https://openserp.org",
+      "score": 73.5,
+      "grade": "B"
+    },
+    {
+      "fullName": "sipyourdrink-ltd/bernstein",
+      "stars": 1216,
+      "forks": 185,
+      "openIssues": 271,
+      "pushedAt": "2026-11-19T10:12:50Z",
       "description": "Open-source AI agent governance. Write the rules declaratively, Bernstein enforces them and produces the verifiable, replayable record. Free, Apache-2.0. https://bernstein.run",
       "homepage": "https://bernstein.run",
       "score": 78.8,
