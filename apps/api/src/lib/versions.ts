@@ -30,7 +30,25 @@ export async function currentVersion(db: D1Database): Promise<string | null> {
 export interface VersionOption {
   version: string;
   count: number;
+  /**
+   * 该版数据里最新的一条是什么时候更新的（日期或 ISO 时间），拿不到是 null。
+   *
+   * 版本号本身是**发布时间**，两者经常对不上：GitHub 采集停在 10-30，
+   * 之后每天照常发版，版本号一路 11-18、11-19，点进去每行都写着 10-30。
+   * 后台的版本号按这个字段的日期显示，才和列表里的「更新时间」是一回事。
+   */
+  dataAt: string | null;
 }
+
+/**
+ * 「这版数据截止到哪天」取哪个字段。
+ *
+ * GitHub 有整列的 last_crawled_at，趋势榜只有卡片里的 updatedAt / lastSeenAt；
+ * 模型榜卡片没有任何逐条时间（只有 releasedAt 这种模型发布日，不是采集时间），
+ * 算出来是 null，后台就回落到发布日。
+ */
+const DATA_AT_EXPR =
+  "MAX(COALESCE(last_crawled_at, json_extract(card, '$.updatedAt'), json_extract(card, '$.lastSeenAt')))";
 
 /**
  * 该榜库里还留着哪些版本（倒序）。
@@ -42,15 +60,15 @@ export interface VersionOption {
 export async function listBoardVersions(db: D1Database, board: Board): Promise<VersionOption[]> {
   const { results } = await db
     .prepare(
-      `SELECT version, COUNT(*) AS n
+      `SELECT version, COUNT(*) AS n, ${DATA_AT_EXPR} AS data_at
        FROM board_listed
        WHERE board = ?
        GROUP BY version
        ORDER BY version DESC`,
     )
     .bind(board)
-    .all<{ version: string; n: number }>();
-  return (results ?? []).map((r) => ({ version: r.version, count: r.n }));
+    .all<{ version: string; n: number; data_at: string | null }>();
+  return (results ?? []).map((r) => ({ version: r.version, count: r.n, dataAt: r.data_at ?? null }));
 }
 
 /**

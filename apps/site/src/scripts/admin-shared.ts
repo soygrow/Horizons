@@ -71,10 +71,19 @@ export function fmtNum(n: number | null | undefined): string {
 
 /* --------------------------------- 版本 --------------------------------- */
 
-/** 库里的一个发布版本（version 是 UTC 秒级时间串）+ 该榜的条数 */
+/**
+ * 库里的一个发布版本（version 是 UTC 秒级时间串）+ 该榜的条数。
+ *
+ * dataAt 是「这一版的数据最新到什么时候」：版本号本身是**发布时间**，
+ * 数据经常比它早好几天（GitHub 采集停在 10-30，之后每天照发版，
+ * 版本号 11-18、11-19，点进去每行都写着 10-30）。版本号按 dataAt 的
+ * 日期显示，才跟列表里的「更新时间」对得上。
+ */
 export interface VersionOption {
   version: string;
   count: number;
+  /** 该版数据里最新一条的更新时间；模型榜卡片没有逐条时间，是 null */
+  dataAt?: string | null;
 }
 
 /**
@@ -92,12 +101,32 @@ function versionMs(version: string): number | null {
   return Number.isFinite(ms) ? ms : null;
 }
 
-/** 版本号：发布时刻的本地日期，`2026-11-19T01:20:17Z` → `20261119` */
-export function versionLabel(version: string | null | undefined): string {
-  const ms = version ? versionMs(version) : null;
+/**
+ * 任意时刻串 → 版本号形态的本地日期：`2026-11-19T01:20:17Z` → `20261119`。
+ *
+ * 只有日期（趋势榜的 lastSeenAt 就是 `2026-11-18`）的值直接去横杠，
+ * 不再过一遍时区 —— 它是「哪一天采的」，不是一个瞬间，偏移一天都是错。
+ */
+export function dayOf(raw: string | null | undefined): string {
+  const s = (raw ?? "").trim();
+  if (!s) return "—";
+  const onlyDay = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  if (onlyDay) return `${onlyDay[1]}${onlyDay[2]}${onlyDay[3]}`;
+  const ms = versionMs(s);
   if (ms === null) return "—";
   const d = new Date(ms);
   return `${d.getFullYear()}${p2(d.getMonth() + 1)}${p2(d.getDate())}`;
+}
+
+/**
+ * 版本号：优先用**数据截止日**，拿不到才退回发布日。
+ *
+ * `versionLabel("2026-11-10T06:50:31", "2026-10-30T08:51:42.336Z")` → `20261030`。
+ * 那一版是 11-10 发的，但里面最新的数据就是 10-30 的 —— 叫 20261110
+ * 会让下拉和列表里的「更新时间」互相打脸。
+ */
+export function versionLabel(version: string | null | undefined, dataAt?: string | null): string {
+  return dayOf(dataAt ?? version);
 }
 
 /** 版本对应的发布时间（年月日时分秒，本地） */
@@ -107,12 +136,34 @@ export function versionAt(version: string | null | undefined): string {
 }
 
 /**
- * 历史版本 → 每天留一条，给后台的版本下拉用。
+ * 列表标题里的版本描述：
+ * `版本 20261030（数据截止 2026-10-30 16:51:42，2026-11-10 14:50:31 发布）`
  *
- * 同一天可能发过好几版（改数据重发），而版本号只到「日」：
- * 中间那几版点进去看到的是半成品，列出来只会让下拉更长、更难选。
- * 所以按本地日期分组只留当天最后一版；下拉的 value 仍然是完整的
- * 版本串 —— 版本号是给人看的，查询还得用真实版本。
+ * 数据日期和发布日不一致时两个都写出来 —— 只写版本号，看的人会以为数据
+ * 是那天采的；只写数据日期，又不知道这份快照是什么时候放出去的。
+ */
+export function versionNote(version: string | null | undefined, dataAt?: string | null): string {
+  if (!version) return "版本 —";
+  const parts = [`发布于 ${versionAt(version)}`];
+  if (dataAt) parts.unshift(`数据截止 ${fmtStamp(dataAt)}`);
+  return `版本 ${versionLabel(version, dataAt)}（${parts.join("，")}）`;
+}
+
+/** 从接口响应里取出「正在看的这一版」的数据截止时间 */
+export function pickedDataAt(data: {
+  version?: string | null;
+  versions?: VersionOption[] | null;
+}): string | null {
+  return data.versions?.find((o) => o.version === data.version)?.dataAt ?? null;
+}
+
+/**
+ * 历史版本 → 每个数据日期留一条，给后台的版本下拉用。
+ *
+ * 分组键是**数据日期**而不是发布日：数据没动就重发一次，条数、名次、
+ * 更新时间全一样，硬列成两版只会让人翻半天找不出区别。同一数据日期
+ * 有好几版时留发布时间最晚的那版；下拉的 value 仍是完整版本串 ——
+ * 版本号是给人看的，查询还得用真实版本。
  */
 export function dayVersions(
   list: VersionOption[] | null | undefined,
@@ -120,7 +171,7 @@ export function dayVersions(
 ): Array<VersionOption & { label: string }> {
   const byDay = new Map<string, VersionOption & { label: string }>();
   for (const v of list ?? []) {
-    const label = versionLabel(v.version);
+    const label = versionLabel(v.version, v.dataAt);
     if (label === "—") continue;
     const prev = byDay.get(label);
     if (!prev) {
@@ -128,20 +179,23 @@ export function dayVersions(
       continue;
     }
     /*
-     * 正在看的那一版优先留下：回滚之后当前版本可能是当天更早的一版，
-     * 一律「取当天最后一版」会把它合掉，下拉就会显示成空白。
+     * 正在看的那一版优先留下：回滚之后当前版本可能不是这一天的最后一版，
+     * 一律「取最后一版」会把它合掉，下拉就会显示成空白。
      */
     if (v.version === prefer) byDay.set(label, { ...v, label });
     else if (prev.version !== prefer && prev.version < v.version) byDay.set(label, { ...v, label });
   }
-  return [...byDay.values()].sort((a, b) => (a.version < b.version ? 1 : -1));
+  return [...byDay.values()].sort((a, b) =>
+    a.label === b.label ? (a.version < b.version ? 1 : -1) : a.label < b.label ? 1 : -1,
+  );
 }
 
 /**
- * 填充版本下拉：倒序，第一项是最近一版。
+ * 填充版本下拉：倒序，第一项是数据最新的一版。
  *
- * 文案写成「20261119 · 1,500 条」—— 只看日期挑不出该看哪版，
- * 条数才能一眼看出哪版是完整的。完整发布时间放在 title 里。
+ * 文案写成「20261118 · 487 条」—— 只看日期挑不出该看哪版，
+ * 条数才能一眼看出哪版是完整的。数据日期和发布时间一起塞进 title，
+ * 两者不一致时才解释得清为什么版本号不是发布日。
  */
 export function fillVersionSelect(
   id: string,
@@ -163,10 +217,12 @@ export function fillVersionSelect(
   sel.hidden = false;
   sel.disabled = false;
   sel.innerHTML = opts
-    .map(
-      (o) =>
-        `<option value="${esc(o.version)}" title="发布 ${esc(versionAt(o.version))}">${o.label} · ${fmtNum(o.count)} 条</option>`,
-    )
+    .map((o) => {
+      const title = o.dataAt
+        ? `数据截止 ${fmtStamp(o.dataAt)} · 发布于 ${versionAt(o.version)}`
+        : `发布于 ${versionAt(o.version)}`;
+      return `<option value="${esc(o.version)}" title="${esc(title)}">${o.label} · ${fmtNum(o.count)} 条</option>`;
+    })
     .join("");
   const want = selected && opts.some((o) => o.version === selected) ? selected : (opts[0]?.version ?? "");
   sel.value = want;

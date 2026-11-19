@@ -19,8 +19,8 @@ import {
   fmtNum,
   fmtStamp,
   fmtTime,
-  versionAt,
-  versionLabel,
+  pickedDataAt,
+  versionNote,
   type VersionOption,
 } from "./admin-shared";
 
@@ -632,7 +632,7 @@ function renderListed(data: ListedResp): void {
   const never = data.items.filter((r) => !r.lastSeenAt).length;
   /* 版本号取发布日期（20261119），后面跟上发布时刻：只说日期不知道是哪一轮发的 */
   meta.textContent =
-    `版本 ${versionLabel(data.version)}（${versionAt(data.version)} 发布） · 共 ${fmtNum(data.total)} 条（含别名）`
+    `${versionNote(data.version, pickedDataAt(data))} · 共 ${fmtNum(data.total)} 条（含别名）`
     + ` · 7 天未更新 ${fmtNum(stale7)}${never ? `（其中从未采集 ${fmtNum(never)}）` : ""}`
     + ` · 30 天未更新 ${fmtNum(stale30)}`
     + (data.refreshPending ? ` · 候选池待发布 ${fmtNum(data.refreshPending)}` : "");

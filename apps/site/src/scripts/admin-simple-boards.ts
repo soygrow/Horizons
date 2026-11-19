@@ -17,8 +17,8 @@ import {
   fillVersionSelect,
   fmtNum,
   fmtTime,
-  versionAt,
-  versionLabel,
+  pickedDataAt,
+  versionNote,
   type VersionOption,
 } from "./admin-shared";
 
@@ -257,9 +257,9 @@ function renderListed(): void {
   if (!body || !pager) return;
 
   if (meta) {
-    /* 版本号取发布日期（20261119），后面跟上发布时刻：只说日期不知道是哪一轮发的 */
+    /* 版本号取数据截止日（20261119）；模型卡片没有逐条时间，退回发布日并写明 */
     meta.textContent = modelsState.version
-      ? `版本 ${versionLabel(modelsState.version)}（${versionAt(modelsState.version)} 发布） · 共 ${fmtNum(modelsState.all.length)} 条 · 筛选后 ${fmtNum(modelsState.filtered.length)} 条`
+      ? `${versionNote(modelsState.version, pickedDataAt(modelsState))} · 共 ${fmtNum(modelsState.all.length)} 条 · 筛选后 ${fmtNum(modelsState.filtered.length)} 条`
       : "还没有发布过任何版本";
   }
 

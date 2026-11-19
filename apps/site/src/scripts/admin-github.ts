@@ -23,8 +23,8 @@ import {
   fmtNum,
   fmtStamp,
   fmtTime,
-  versionAt,
-  versionLabel,
+  pickedDataAt,
+  versionNote,
   type VersionOption,
 } from "./admin-shared";
 
@@ -716,7 +716,7 @@ function renderListed(data: ListedResp): void {
   const stale30 = data.items.filter((r) => (ageDays(r.lastCrawledAt) ?? 999) >= 30).length;
   meta.textContent = data.detail
     ? data.detail
-    : `版本 ${versionLabel(data.version)}（${versionAt(data.version)} 发布） · 共 ${fmtNum(data.total)} 条 · 7 天未更新 ${fmtNum(stale7)} · 30 天未更新 ${fmtNum(stale30)}${
+    : `${versionNote(data.version, pickedDataAt(data))} · 共 ${fmtNum(data.total)} 条 · 7 天未更新 ${fmtNum(stale7)} · 30 天未更新 ${fmtNum(stale30)}${
         data.refreshPending ? ` · 候选池待发布 ${fmtNum(data.refreshPending)}` : ""
       }`;
 
