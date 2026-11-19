@@ -37,6 +37,7 @@ const board = (arg("board") ?? "github") as Board;
 interface DetailRow {
   item_key: string;
   detail: string;
+  bytes: number | null;
 }
 
 /** 保留的版本（prune 之后最多三期），从榜单本身取，不依赖版本登记表 */
@@ -57,7 +58,7 @@ async function slimDetails(client: D1Client, version: string): Promise<{ rows: n
 
   for (;;) {
     const page = await client.query<DetailRow>(
-      `SELECT item_key, detail FROM board_listed_details
+      `SELECT item_key, detail, bytes FROM board_listed_details
         WHERE version = ? AND board = ? AND item_key > ?
         ORDER BY item_key LIMIT ?`,
       [version, board, cursor, PAGE],
@@ -73,11 +74,20 @@ async function slimDetails(client: D1Client, version: string): Promise<{ rows: n
       before += Buffer.byteLength(row.detail);
       after += bytes;
       rows += 1;
-      if (slim === row.detail) continue; // 没东西可瘦，只补 bytes
-      stmts.push({
-        sql: "UPDATE board_listed_details SET detail = ?, bytes = ? WHERE version = ? AND board = ? AND item_key = ?",
-        params: [slim, bytes, version, board, row.item_key],
-      });
+      const needSlim = slim !== row.detail;
+      /* 没东西可瘦的榜（models/tools/trends…）只补 bytes；已经补过就不再写 */
+      if (!needSlim && row.bytes === bytes) continue;
+      stmts.push(
+        needSlim
+          ? {
+              sql: "UPDATE board_listed_details SET detail = ?, bytes = ? WHERE version = ? AND board = ? AND item_key = ?",
+              params: [slim, bytes, version, board, row.item_key],
+            }
+          : {
+              sql: "UPDATE board_listed_details SET bytes = ? WHERE version = ? AND board = ? AND item_key = ?",
+              params: [bytes, version, board, row.item_key],
+            },
+      );
     }
 
     if (stmts.length > 0 && !dry) await client.batch(stmts);
@@ -159,19 +169,30 @@ async function main(): Promise<void> {
   const client = createD1Client();
 
   const all = process.argv.includes("--all");
+  const current = await currentBoardVersion();
   const versions = all
     ? await listVersions(client)
-    : [arg("version") ?? (await currentBoardVersion())].filter((v): v is string => Boolean(v));
+    : [arg("version") ?? current].filter((v): v is string => Boolean(v));
 
   if (versions.length === 0) throw new Error("找不到要处理的版本");
 
   for (const version of versions) {
     const slim = await slimDetails(client, version);
-    const filled = await fillColumns(client, version);
-    const bytes = await fillStats(client, version);
+    /* 0021 那 7 列只有 github 有值（其余榜的 card 没有这些标量），别白写 1000 多行 NULL */
+    const filled = board === "github" ? await fillColumns(client, version) : 0;
+    /* board_stats 只记当前版本的体积：--all 会把三期都过一遍，写旧版会把线上数字改小 */
+    const bytes =
+      version === current
+        ? await fillStats(client, version)
+        : await client.query<{ n: number | null }>(
+            "SELECT SUM(bytes) AS n FROM board_listed_details WHERE version = ? AND board = ?",
+            [version, board],
+          ).then((r) => r.results[0]?.n ?? 0);
     console.log(
       `[backfill] ${board} @ ${version}｜瘦身 ${slim.rows} 条 ${mb(slim.before)} → ${mb(slim.after)}` +
-        `｜回填列 ${filled} 行｜board_stats.bytes = ${mb(bytes)}${dry ? "（dry-run）" : ""}`,
+        `｜回填列 ${filled} 行｜体积 ${mb(bytes)}${version === current ? "（已写入 board_stats）" : "（非当前版本，仅统计）"}${
+          dry ? "（dry-run）" : ""
+        }`,
     );
   }
   console.log(`[backfill] 完成${dry ? "（dry-run，未写库）" : ""}｜cwd ${path.relative(ROOT, process.cwd()) || "."}`);
