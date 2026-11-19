@@ -104,6 +104,7 @@ export function mountAdminBoards(): void {
   mounted = true;
 
   $("boards-refresh-sources").addEventListener("click", () => void loadAll());
+  $("boards-rebuild").addEventListener("click", () => void rebuild());
   $("boards-detail-close").addEventListener("click", () => {
     currentVersion = null;
     currentBoard = null;
@@ -419,5 +420,101 @@ async function rollback(version: string): Promise<void> {
     await loadAll();
   } catch (e) {
     window.alert(`回滚失败：${msg(e)}`);
+  }
+}
+
+/* -------------------------------- 全量发布 -------------------------------- */
+
+/**
+ * 全量发布的二次确认：要求手打「全量」两个字才放行。
+ *
+ * 不用 window.confirm —— 那个框两个按钮一样大，误点一次就是两万多行写入，
+ * 还会把版本号推上去、回滚也回不到这一版之前。这里把代价写清楚，
+ * 并让确认动作有成本。
+ */
+function confirmRebuild(): Promise<boolean> {
+  return new Promise((resolve) => {
+    const finish = (ok: boolean): void => {
+      document.removeEventListener("keydown", onKey);
+      mask.remove();
+      resolve(ok);
+    };
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === "Escape") finish(false);
+    };
+
+    const mask = document.createElement("div");
+    mask.style.cssText =
+      "position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.45)";
+    mask.addEventListener("click", (e) => {
+      if (e.target === mask) finish(false);
+    });
+
+    const panel = document.createElement("div");
+    panel.className = "w-full max-w-md rounded-2xl border border-border bg-surface p-5 shadow-xl";
+    panel.innerHTML = `
+      <h3 class="text-base font-semibold">确认全量发布？</h3>
+      <div class="mt-2 space-y-1.5 text-xs leading-relaxed text-ink-secondary">
+        <p>把六个榜的当前线上数据原样写成<strong class="text-ink">一个新版本</strong>，并立即切过去。</p>
+        <p>约 8 千行写入（D1 免费额度一天 10 万行）—— 一天点十几次都撑得住。</p>
+        <p>数据内容不变；还没发布的候选不会被带上。</p>
+      </div>
+      <label class="mt-4 block text-xs text-ink-secondary">
+        输入「全量」两个字确认
+        <input id="boards-rebuild-input" autocomplete="off" spellcheck="false"
+          class="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-sm text-ink outline-none focus:border-primary" />
+      </label>
+      <div class="mt-4 flex justify-end gap-2">
+        <button type="button" id="boards-rebuild-cancel"
+          class="${BTN_BASE} border-border text-ink-secondary hover:border-primary hover:text-primary">取消</button>
+        <button type="button" id="boards-rebuild-ok" disabled
+          class="${BTN_BASE} border-danger bg-danger text-white hover:bg-danger/90">确认全量发布</button>
+      </div>`;
+
+    mask.appendChild(panel);
+    document.body.appendChild(mask);
+    document.addEventListener("keydown", onKey);
+
+    const input = panel.querySelector<HTMLInputElement>("#boards-rebuild-input");
+    const ok = panel.querySelector<HTMLButtonElement>("#boards-rebuild-ok");
+    input?.addEventListener("input", () => {
+      if (ok) ok.disabled = input.value.trim() !== "全量";
+    });
+    input?.focus();
+    panel.querySelector("#boards-rebuild-cancel")?.addEventListener("click", () => finish(false));
+    ok?.addEventListener("click", () => finish(true));
+  });
+}
+
+/**
+ * 全量发布：六个榜的数据一次固化成新版本。
+ *
+ * 这里只切版本指针，不改数据内容 —— 日常增量已经把数据写进库里了，
+ * 这一步是「拍快照 + 收口」，不是重新发布。
+ */
+async function rebuild(): Promise<void> {
+  if (!(await confirmRebuild())) return;
+
+  const btn = $("boards-rebuild") as HTMLButtonElement;
+  const hint = $("boards-rebuild-hint");
+  const idle = btn.textContent ?? "全量发布…";
+  btn.disabled = true;
+  btn.textContent = "重建中…";
+  hint.textContent = "正在把六个榜的数据复制到新版本…";
+
+  try {
+    const res = await apiPost<{ from: string; to: string; pruned: string[]; swept: number }>(
+      "/boards/rebuild",
+      { confirm: "FULL" },
+    );
+    hint.textContent = `已切到新版本 ${res.to}（原 ${res.from}）${
+      res.pruned.length > 0 ? `，清理了 ${res.pruned.length} 个旧版本` : ""
+    }${res.swept > 0 ? `，顺手删掉 ${res.swept} 个空的版本记录` : ""}。`;
+    await loadAll();
+  } catch (e) {
+    hint.textContent = `全量发布失败：${msg(e)}`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = idle;
   }
 }

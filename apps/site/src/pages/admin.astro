@@ -484,6 +484,28 @@ const meta = {
           </div>
 
           <div class="rounded-2xl border border-border bg-surface p-4">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div class="min-w-0">
+                <h2 class="text-sm font-semibold">全量发布（重建版本）</h2>
+                <p class="mt-1 text-xs leading-relaxed text-ink-secondary">
+                  把六个榜的当前线上数据原样固化成一个新版本：换来一个可回滚的基线，并顺手剪掉最老的版本。
+                  数据内容不变，不会把还没发布的候选一起带上；一次约 8 千行写入（D1 免费额度一天 10 万行），定期点一次即可。
+                </p>
+                <p id="boards-rebuild-hint" class="mt-1 text-xs text-ink-muted">
+                  日常发布是增量的，版本号不会前进，靠这里定期收口。
+                </p>
+              </div>
+              <button
+                type="button"
+                id="boards-rebuild"
+                class="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-danger transition hover:border-danger disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                全量发布…
+              </button>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-border bg-surface p-4">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <h2 class="text-sm font-semibold">发布版本</h2>
               <span id="boards-current" class="text-xs text-ink-muted">—</span>
