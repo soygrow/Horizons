@@ -743,7 +743,7 @@ function renderListed(data: ListedResp): void {
       /*
        * 「更新时间」列显示整版的采集时刻，而不是每条自己的 lastCrawledAt：
        * 一版 1500 个仓库各有各的采集时间，和版本号 20261030 永远对不上。
-       * 每条自己的时间退到 title。
+       * 每条自己的时间不显示（title 里也不写），一版里只留一个日期。
        */
       const stamp = vDataAt ?? row.lastCrawledAt;
       const age = ageDays(stamp);
@@ -778,11 +778,7 @@ function renderListed(data: ListedResp): void {
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${fmtStars(row.stars)}</td>
           <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${row.score.toFixed(1)}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-xs tabular-nums text-ink-secondary">
-            <span class="block" title="${
-              row.lastCrawledAt && row.lastCrawledAt !== stamp
-                ? `本版采集时间；该仓库上次采集 ${esc(fmtStamp(row.lastCrawledAt))}`
-                : "本版采集时间"
-            }">${esc(fmtStamp(stamp))}</span>
+            <span class="block" title="本版数据的采集时间，和版本号同一天">${esc(fmtStamp(stamp))}</span>
             ${ageNote ? `<span class="text-[11px]">${ageNote}</span>` : ""}
           </td>
           <td class="px-4 py-2.5">${listedStage(row.staging)}</td>

@@ -656,7 +656,10 @@ function renderListed(data: ListedResp): void {
    *
    * 「更新时间」列显示的就是它，而不是每条自己的 updatedAt —— 一版 487 条里
    * 有的 10-29、有的 10-31，逐条显示的话版本号 20261031 永远和列里对不上，
-   * 看着就像串了版。每条自己的时间退到 title，需要时鼠标一悬停就看得见。
+   * 看着就像串了版。
+   *
+   * 每条自己的时间不在这里露头（连 title 里也不写）：版本号说的是「这一版」，
+   * 一个版本里出现第二个日期，就又变成了对不上。
    */
   const vDataAt = pickedDataAt(data);
 
@@ -714,9 +717,7 @@ function renderListed(data: ListedResp): void {
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${score(row.scores.opportunity)}</td>
           <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${score(row.scores.overall)}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-xs tabular-nums text-ink-secondary">
-            <span class="block" title="${
-              own && own !== stamp ? `本版采集时间；该条最后变化 ${esc(fmtStamp(own))}` : "本版采集时间"
-            }">${esc(fmtStamp(stamp))}</span>
+            <span class="block" title="本版数据的采集时间，和版本号同一天">${esc(fmtStamp(stamp))}</span>
             ${ageNote ? `<span class="text-[11px]">${ageNote}</span>` : ""}
           </td>
           <td class="px-4 py-2.5">${status}</td>
