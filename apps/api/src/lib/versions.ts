@@ -26,6 +26,50 @@ export async function currentVersion(db: D1Database): Promise<string | null> {
   return val && val.length > 0 ? val : null;
 }
 
+/** 库里的一个历史版本 + 该版本这个榜有多少条 */
+export interface VersionOption {
+  version: string;
+  count: number;
+}
+
+/**
+ * 该榜库里还留着哪些版本（倒序）。
+ *
+ * 后台的版本切换器就靠它 —— 只列真的还有数据的版本：
+ * pruneVersions 只留最近 KEEP_VERSIONS 期，更早的行已经删了，
+ * 列出来点进去只会是一张空表。
+ */
+export async function listBoardVersions(db: D1Database, board: Board): Promise<VersionOption[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT version, COUNT(*) AS n
+       FROM board_listed
+       WHERE board = ?
+       GROUP BY version
+       ORDER BY version DESC`,
+    )
+    .bind(board)
+    .all<{ version: string; n: number }>();
+  return (results ?? []).map((r) => ({ version: r.version, count: r.n }));
+}
+
+/**
+ * 解析后台传来的「看哪一版」。
+ *
+ * 只认清单里真实存在的版本：页面开着的时候旧版本可能被清理掉，
+ * 或者 URL 里塞了个瞎编的字符串 —— 这两种情况都回落到当前生效版本，
+ * 而不是查出一张空表让人以为数据没了。
+ */
+export async function resolveListedVersion(
+  db: D1Database,
+  board: Board,
+  want?: string | null,
+): Promise<{ version: string | null; current: string | null; versions: VersionOption[] }> {
+  const [current, versions] = await Promise.all([currentVersion(db), listBoardVersions(db, board)]);
+  const picked = want && versions.some((v) => v.version === want) ? want : current;
+  return { version: picked, current, versions };
+}
+
 /**
  * 该榜现在读哪儿。
  *

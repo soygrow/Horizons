@@ -1180,6 +1180,15 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                   <p id="trends-listed-meta" class="mt-1 text-xs text-ink-muted">—</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
+                  <!-- 版本号 = 发布时刻的日期（20261119），切过去看的是那一版快照 -->
+                  <select
+                    id="trends-listed-version"
+                    class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
+                    title="切换要查看的发布版本"
+                    aria-label="发布版本"
+                  >
+                    <option value="">加载中…</option>
+                  </select>
                   <select
                     id="trends-listed-filter"
                     class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
@@ -1470,6 +1479,15 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                   <p id="gh-listed-meta" class="mt-1 text-xs text-ink-muted">—</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
+                  <!-- 版本号 = 发布时刻的日期（20261119），切过去看的是那一版快照 -->
+                  <select
+                    id="gh-listed-version"
+                    class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
+                    title="切换要查看的发布版本"
+                    aria-label="发布版本"
+                  >
+                    <option value="">加载中…</option>
+                  </select>
                   <select
                     id="gh-listed-filter"
                     class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
@@ -1666,6 +1684,15 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                   <p id="mdl-listed-meta" class="mt-1 text-xs text-ink-muted">—</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
+                  <!-- 版本号 = 发布时刻的日期（20261119），切过去看的是那一版快照 -->
+                  <select
+                    id="mdl-listed-version"
+                    class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
+                    title="切换要查看的发布版本"
+                    aria-label="发布版本"
+                  >
+                    <option value="">加载中…</option>
+                  </select>
                   <select
                     id="mdl-listed-provider"
                     class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"

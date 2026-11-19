@@ -15,7 +15,7 @@ import { Hono } from "hono";
 import type { Env } from "../env";
 import { insertJob, listJobs } from "../lib/board-jobs";
 import { dispatchWorkflow, ghConfig, latestRun, mapStatus, missingSecrets } from "../lib/github";
-import { currentVersion, listReleased } from "../lib/versions";
+import { currentVersion, listReleased, resolveListedVersion } from "../lib/versions";
 
 const MAX_PAGE_SIZE = 100;
 /** 一次最多刷新多少个：与 fetch-models.yml 的入参校验保持一致 */
@@ -132,8 +132,14 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
    * 「搜索 + 厂商筛选 + 全选当前结果」这种交互，也更接近 GitHub 榜那页的用法。
    */
   routes.get("/listed", async (c) => {
-    const version = await currentVersion(c.env.DB);
-    if (!version) return c.json({ version: null, total: 0, items: [] });
+    const { version, current, versions } = await resolveListedVersion(
+      c.env.DB,
+      def.board,
+      c.req.query("version"),
+    );
+    if (!version) {
+      return c.json({ version: null, current, versions, total: 0, items: [] });
+    }
 
     const { results } = await c.env.DB.prepare(
       `SELECT item_key, rank, score, name, cats,
@@ -167,6 +173,8 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
     const rows = results ?? [];
     return c.json({
       version,
+      current,
+      versions,
       total: rows.length,
       items: rows.map((r) => ({
         key: r.item_key,

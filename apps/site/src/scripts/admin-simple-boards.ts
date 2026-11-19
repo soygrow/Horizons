@@ -9,7 +9,18 @@
  * 模型榜的「更新选中」不去候选池：采集结果直接写进 D1 的当前版本（不落仓库文件），
  * 所以没有「待发布」这一步 —— 勾选的意义只是缩小采集范围，不是缩小发布范围。
  */
-import { $, apiGet, apiPost, esc, fmtNum, fmtTime } from "./admin-shared";
+import {
+  $,
+  apiGet,
+  apiPost,
+  esc,
+  fillVersionSelect,
+  fmtNum,
+  fmtTime,
+  versionAt,
+  versionLabel,
+  type VersionOption,
+} from "./admin-shared";
 
 interface Job {
   id: string;
@@ -83,6 +94,10 @@ interface ListedItem {
 
 interface ListedRes {
   version: string | null;
+  /** 当前生效版本：版本下拉默认停在这 */
+  current?: string | null;
+  /** 库里还留着的版本（倒序）+ 每版条数 */
+  versions?: VersionOption[];
   total: number;
   items: ListedItem[];
 }
@@ -224,7 +239,12 @@ const modelsState = {
   provider: "all",
   q: "",
   page: 1,
+  /** 服务端解析出来的版本（这份数据是哪一版） */
   version: null as string | null,
+  /** 看哪一版快照（空 = 当前生效版本），用户在版本下拉里选 */
+  listedVersion: "",
+  /** 库里还留着的版本 + 每版条数 */
+  versions: [] as VersionOption[],
 };
 
 let modelsMounted = false;
@@ -237,8 +257,9 @@ function renderListed(): void {
   if (!body || !pager) return;
 
   if (meta) {
+    /* 版本号取发布日期（20261119），后面跟上发布时刻：只说日期不知道是哪一轮发的 */
     meta.textContent = modelsState.version
-      ? `版本 ${modelsState.version} · 共 ${fmtNum(modelsState.all.length)} 条 · 筛选后 ${fmtNum(modelsState.filtered.length)} 条`
+      ? `版本 ${versionLabel(modelsState.version)}（${versionAt(modelsState.version)} 发布） · 共 ${fmtNum(modelsState.all.length)} 条 · 筛选后 ${fmtNum(modelsState.filtered.length)} 条`
       : "还没有发布过任何版本";
   }
 
@@ -355,9 +376,13 @@ function syncSelectHead(): void {
 async function loadListed(): Promise<void> {
   const body = $("mdl-listed-body");
   try {
-    const res = await apiGet<ListedRes>("/models/listed");
+    /* 不带 version 就是「当前生效版本」，由服务端解析；选了旧版才带上 */
+    const qs = modelsState.listedVersion ? `?version=${encodeURIComponent(modelsState.listedVersion)}` : "";
+    const res = await apiGet<ListedRes>(`/models/listed${qs}`);
     modelsState.all = res.items;
     modelsState.version = res.version;
+    modelsState.versions = res.versions ?? [];
+    fillVersionSelect("mdl-listed-version", modelsState.versions, res.version);
 
     // 厂商下拉跟着数据走：不写死列表，新厂商出现时自动就有
     const sel = $("mdl-listed-provider") as HTMLSelectElement | null;
@@ -501,6 +526,15 @@ export function mountAdminModels(): void {
   provider?.addEventListener("change", () => {
     modelsState.provider = provider.value;
     applyFilter();
+  });
+
+  /* 换版本 = 换一份数据：已勾选的模型属于上一版，留着会让「更新选中」摸到看不见的模型 */
+  const versionSel = $("mdl-listed-version") as HTMLSelectElement | null;
+  versionSel?.addEventListener("change", () => {
+    modelsState.listedVersion = versionSel.value;
+    modelsState.selected.clear();
+    modelsState.page = 1;
+    void loadListed();
   });
 
   const head = $("mdl-listed-select-all") as HTMLInputElement | null;

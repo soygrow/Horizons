@@ -13,7 +13,20 @@
  * 采集结果只写 content/github-staging.json，点「发布」之前线上榜单一个字都不会变。
  */
 
-import { $, apiGet, apiPost, debounce, esc, fmtNum, fmtTime } from "./admin-shared";
+import {
+  $,
+  apiGet,
+  apiPost,
+  debounce,
+  esc,
+  fillVersionSelect,
+  fmtNum,
+  fmtStamp,
+  fmtTime,
+  versionAt,
+  versionLabel,
+  type VersionOption,
+} from "./admin-shared";
 
 /* --------------------------------- 类型 --------------------------------- */
 
@@ -46,6 +59,10 @@ interface ListedRepo {
 
 interface ListedResp {
   version: string;
+  /** 当前生效版本：版本下拉默认停在这 */
+  current?: string | null;
+  /** 库里还留着的版本（倒序）+ 每版条数 */
+  versions?: VersionOption[];
   total: number;
   refreshPending: number;
   items: ListedRepo[];
@@ -210,6 +227,8 @@ const state = {
   listed: null as ListedResp | null,
   listedFilter: "all",
   listedQ: "",
+  /** 看哪一版快照（空 = 当前生效版本） */
+  listedVersion: "",
   listedPage: 1,
   listedSelected: new Set<string>(),
 };
@@ -690,11 +709,14 @@ function renderListed(data: ListedResp): void {
   const body = $("gh-listed-body");
   const pager = $("gh-listed-pager");
 
+  /* 下拉以服务端解析出的版本为准：选的版本被清理掉了会自动落回当前版本 */
+  fillVersionSelect("gh-listed-version", data.versions, data.version);
+
   const stale7 = data.items.filter((r) => (ageDays(r.lastCrawledAt) ?? 999) >= 7).length;
   const stale30 = data.items.filter((r) => (ageDays(r.lastCrawledAt) ?? 999) >= 30).length;
   meta.textContent = data.detail
     ? data.detail
-    : `版本 ${data.version || "—"} · 共 ${fmtNum(data.total)} 条 · 7 天未更新 ${fmtNum(stale7)} · 30 天未更新 ${fmtNum(stale30)}${
+    : `版本 ${versionLabel(data.version)}（${versionAt(data.version)} 发布） · 共 ${fmtNum(data.total)} 条 · 7 天未更新 ${fmtNum(stale7)} · 30 天未更新 ${fmtNum(stale30)}${
         data.refreshPending ? ` · 候选池待发布 ${fmtNum(data.refreshPending)}` : ""
       }`;
 
@@ -747,7 +769,7 @@ function renderListed(data: ListedResp): void {
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${fmtStars(row.stars)}</td>
           <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${row.score.toFixed(1)}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-xs tabular-nums text-ink-secondary">
-            <span class="block">${row.lastCrawledAt ? fmtTime(row.lastCrawledAt) : "—"}</span>
+            <span class="block" title="上次采集到的时刻">${esc(fmtStamp(row.lastCrawledAt))}</span>
             ${ageNote ? `<span class="text-[11px]">${ageNote}</span>` : ""}
           </td>
           <td class="px-4 py-2.5">${listedStage(row.staging)}</td>
@@ -773,7 +795,9 @@ function renderListed(data: ListedResp): void {
 
 async function loadListed(): Promise<void> {
   try {
-    const data = await apiGet<ListedResp>("/github/listed");
+    /* 不带 version 就是「当前生效版本」，由服务端解析；选了旧版才带上 */
+    const qs = state.listedVersion ? `?version=${encodeURIComponent(state.listedVersion)}` : "";
+    const data = await apiGet<ListedResp>(`/github/listed${qs}`);
     /* 榜单换代后清掉已不在榜上的选择，避免带着旧的 key 去提交 */
     const onBoard = new Set(data.items.map((i) => i.fullName));
     for (const key of [...state.listedSelected]) {
@@ -990,6 +1014,14 @@ function bind(): void {
     state.listedFilter = (event.target as HTMLSelectElement).value;
     state.listedPage = 1;
     if (state.listed) renderListed(state.listed);
+  });
+
+  /* 换版本 = 换一份数据：已勾选的仓库属于上一版，留着会让「更新选中」摸到看不见的仓库 */
+  $("gh-listed-version")?.addEventListener("change", (event) => {
+    state.listedVersion = (event.target as HTMLSelectElement).value;
+    state.listedSelected.clear();
+    state.listedPage = 1;
+    void loadListed();
   });
 
   const search = $("gh-listed-search") as HTMLInputElement;

@@ -9,7 +9,20 @@
  * 分级口径来自 @horizons/shared 的 diffRankRows，与发布脚本完全一致。
  */
 
-import { $, apiGet, apiPost, debounce, esc, fmtNum, fmtTime } from "./admin-shared";
+import {
+  $,
+  apiGet,
+  apiPost,
+  debounce,
+  esc,
+  fillVersionSelect,
+  fmtNum,
+  fmtStamp,
+  fmtTime,
+  versionAt,
+  versionLabel,
+  type VersionOption,
+} from "./admin-shared";
 
 /* --------------------------------- 类型 --------------------------------- */
 
@@ -204,6 +217,8 @@ interface ListedTrend {
   firstSeenAt: string | null;
   /** 上次采到数据的日期，判断「该不该更新」就看它 */
   lastSeenAt: string | null;
+  /** 记录被重写的时刻（带时分秒），列表的「更新时间」显示它 */
+  updatedAt: string | null;
   /** 候选池里的状态（candidate/enriched/enriching/…），null 表示不在队列里 */
   staging: string | null;
   scores: { trend: number; opportunity: number; overall: number };
@@ -211,6 +226,10 @@ interface ListedTrend {
 
 interface ListedResp {
   version: string;
+  /** 当前生效版本：版本下拉默认停在这 */
+  current?: string | null;
+  /** 库里还留着的版本（倒序）+ 每版条数 */
+  versions?: VersionOption[];
   total: number;
   /** 候选池里已刷新、等发布的词数 */
   refreshPending: number;
@@ -276,6 +295,8 @@ const state = {
   listedQ: "",
   /** all / stale(≥30 天) / old(≥60 天) / queued(已在候选池) */
   listedFilter: "all",
+  /** 看哪一版快照（空 = 当前生效版本），用户在版本下拉里选 */
+  listedVersion: "",
   listedPage: 1,
   listedSelected: new Set<string>(),
   /** 勾选待富化的 slug，刷新后保留——富化是一次远程任务，选择不能被轮询清掉 */
@@ -591,6 +612,9 @@ function renderListed(data: ListedResp): void {
   const body = $("trends-listed-body");
   const pager = $("trends-listed-pager");
 
+  /* 下拉以服务端解析出的版本为准：选的版本被清理掉了会自动落回当前版本 */
+  fillVersionSelect("trends-listed-version", data.versions, data.version);
+
   if (!data.items.length) {
     meta.textContent = data.detail ?? "线上还没有趋势词，先采集并发布一次";
     body.innerHTML = `<tr><td colspan="10" class="px-4 py-10 text-center text-xs text-ink-muted">线上榜单还没有趋势词</td></tr>`;
@@ -606,8 +630,9 @@ function renderListed(data: ListedResp): void {
   const stale7 = data.items.filter((r) => (ageDays(r.lastSeenAt) ?? 999) >= 7).length;
   const stale30 = data.items.filter((r) => (ageDays(r.lastSeenAt) ?? 999) >= 30).length;
   const never = data.items.filter((r) => !r.lastSeenAt).length;
+  /* 版本号取发布日期（20261119），后面跟上发布时刻：只说日期不知道是哪一轮发的 */
   meta.textContent =
-    `版本 ${data.version || "—"} · 共 ${fmtNum(data.total)} 条（含别名）`
+    `版本 ${versionLabel(data.version)}（${versionAt(data.version)} 发布） · 共 ${fmtNum(data.total)} 条（含别名）`
     + ` · 7 天未更新 ${fmtNum(stale7)}${never ? `（其中从未采集 ${fmtNum(never)}）` : ""}`
     + ` · 30 天未更新 ${fmtNum(stale30)}`
     + (data.refreshPending ? ` · 候选池待发布 ${fmtNum(data.refreshPending)}` : "");
@@ -677,7 +702,7 @@ function renderListed(data: ListedResp): void {
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${score(row.scores.opportunity)}</td>
           <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${score(row.scores.overall)}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-xs tabular-nums text-ink-secondary">
-            <span class="block">${esc(fmtTime(row.lastSeenAt))}</span>
+            <span class="block" title="记录被更新的时刻">${esc(fmtStamp(row.updatedAt ?? row.lastSeenAt))}</span>
             ${ageNote ? `<span class="text-[11px]">${ageNote}</span>` : ""}
           </td>
           <td class="px-4 py-2.5">${status}</td>
@@ -1259,7 +1284,9 @@ async function loadStaging(): Promise<void> {
 
 async function loadListed(): Promise<void> {
   try {
-    renderListed(await apiGet<ListedResp>("/trends/listed"));
+    /* 不带 version 就是「当前生效版本」，由服务端解析；选了旧版才带上 */
+    const qs = state.listedVersion ? `?version=${encodeURIComponent(state.listedVersion)}` : "";
+    renderListed(await apiGet<ListedResp>(`/trends/listed${qs}`));
   } catch (e) {
     $("trends-listed-meta").textContent = `读取失败：${e instanceof Error ? e.message : String(e)}`;
   }
@@ -1762,6 +1789,14 @@ function bind(): void {
     state.listedFilter = (event.target as HTMLSelectElement).value;
     state.listedPage = 1;
     if (state.listed) renderListed(state.listed);
+  });
+
+  /* 换版本 = 换一份数据：已勾选的词属于上一版，留着会让「更新选中」摸到看不见的词 */
+  $("trends-listed-version")?.addEventListener("change", (event) => {
+    state.listedVersion = (event.target as HTMLSelectElement).value;
+    state.listedSelected.clear();
+    state.listedPage = 1;
+    void loadListed();
   });
 
   $("trends-listed-search").addEventListener(

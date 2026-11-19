@@ -20,7 +20,7 @@ import { dispatchWorkflow, ghConfig, missingSecrets, type WorkflowRun } from "..
 import { readBoardStats, type BoardStats } from "../lib/board-stats";
 import { listWorkspace, setItemsStatus, setItemStatus } from "../lib/board-items";
 import { readReport } from "../lib/reports";
-import { currentVersion } from "../lib/versions";
+import { resolveListedVersion } from "../lib/versions";
 
 const github = new Hono<{ Bindings: Env }>();
 
@@ -333,10 +333,16 @@ const MAX_REFRESH_REPOS = 60;
  * staging 用来避免「已经在队列里了又提交一遍」。
  */
 github.get("/listed", async (c) => {
-  const version = await currentVersion(c.env.DB);
+  const { version, current, versions } = await resolveListedVersion(
+    c.env.DB,
+    "github",
+    c.req.query("version"),
+  );
   if (!version) {
     return c.json({
       version: "",
+      current,
+      versions,
       total: 0,
       items: [],
       refreshPending: 0,
@@ -388,7 +394,7 @@ github.get("/listed", async (c) => {
   const onBoard = new Set(items.map((i) => i.fullName.toLowerCase()));
   const refreshPending = ws.items.filter((t) => onBoard.has(t.repo.fullName.toLowerCase())).length;
 
-  return c.json({ version, total: items.length, refreshPending, items });
+  return c.json({ version, current, versions, total: items.length, refreshPending, items });
 });
 
 /**

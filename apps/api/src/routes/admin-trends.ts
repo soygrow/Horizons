@@ -37,7 +37,7 @@ import {
 import { readBoardStats, type BoardStats } from "../lib/board-stats";
 import { listWorkspace, setItemsStatus } from "../lib/board-items";
 import { readReport } from "../lib/reports";
-import { currentVersion } from "../lib/versions";
+import { currentVersion, resolveListedVersion } from "../lib/versions";
 
 const trends = new Hono<{ Bindings: Env }>();
 type Ctx = Context<{ Bindings: Env }>;
@@ -648,9 +648,21 @@ function scoresFromParts(trendParts: string | null, oppParts: string | null): {
  * 因为它们各自有独立页面，内容同样需要更新。
  */
 trends.get("/listed", async (c) => {
-  const version = await currentVersion(c.env.DB);
+  const { version, current, versions } = await resolveListedVersion(
+    c.env.DB,
+    "trends",
+    c.req.query("version"),
+  );
   if (!version) {
-    return c.json({ version: "", total: 0, items: [], refreshPending: 0, detail: "库里还没有发布过趋势榜" });
+    return c.json({
+      version: "",
+      current,
+      versions,
+      total: 0,
+      items: [],
+      refreshPending: 0,
+      detail: "库里还没有发布过趋势榜",
+    });
   }
 
   const [{ results }, ws] = await Promise.all([
@@ -692,6 +704,8 @@ trends.get("/listed", async (c) => {
       firstSeenAt: r.first_seen,
       /** 上次真正采到数据的日期：判断「该不该更新」就看它 */
       lastSeenAt: r.last_seen ?? r.updated_at,
+      /* 记录被重写过的那一刻（带时分秒）：列表的「更新时间」显示它 */
+      updatedAt: r.updated_at,
       staging: staging.get(slug) ?? null,
       scores: scoresFromParts(r.trend_parts, r.opp_parts),
     };
@@ -708,7 +722,7 @@ trends.get("/listed", async (c) => {
     return onBoard.has(t.slug) && (stage === "enriched" || stage === "publish_failed");
   }).length;
 
-  return c.json({ version, total: items.length, refreshPending, items });
+  return c.json({ version, current, versions, total: items.length, refreshPending, items });
 });
 
 /* -------------------------------- 触发流水线 -------------------------------- */
