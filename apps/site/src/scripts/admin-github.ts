@@ -877,22 +877,34 @@ async function loadPreview(): Promise<void> {
   }
 }
 
-function reloadAll(): void {
+/**
+ * 状态区：概览 / 任务 / 候选池 / 发布预览 —— 都是几十行的轻查询。
+ *
+ * 轮询只跑这四样。线上榜单（1500 行）不进轮询：任务跑十分钟就是五十次，
+ * 一次 1500 行、还要回表，光看着进度就把库读空了。
+ */
+function reloadStatus(): void {
   void loadOverview();
   void loadJobs();
   void loadStaging();
   void loadPreview();
-  /* 线上榜单页签比候选池大一个量级，但接口只回 2000 行的轻字段，和候选池一起拉不心疼 */
+}
+
+/** 整页刷新：状态 + 线上榜单。切页签、发布完成、手动刷新时才用 */
+function reloadAll(): void {
+  reloadStatus();
   void loadListed();
 }
 
-/** 有任务在跑就每 12 秒刷一次，跑完自动停 */
+/** 有任务在跑就每 12 秒刷一次状态，跑完自动停并补刷一次榜单 */
 function schedulePolling(shouldRun: boolean): void {
   if (shouldRun && !state.polling) {
-    state.polling = window.setInterval(reloadAll, 12_000);
+    state.polling = window.setInterval(reloadStatus, 12_000);
   } else if (!shouldRun && state.polling) {
     window.clearInterval(state.polling);
     state.polling = undefined;
+    /* 任务结束：榜单里那些「更新中」要擦掉，这一次必须拉整版 */
+    void loadListed();
   }
 }
 

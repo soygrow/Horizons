@@ -160,7 +160,9 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
               json_extract(card, '$.price.input')  AS priceIn,
               json_extract(card, '$.price.output') AS priceOut,
               json_extract(card, '$.tags')         AS tags,
-              json_extract(card, '$.dataAt')       AS dataAt
+              json_extract(card, '$.dataAt')       AS dataAt,
+              /* 下拉分组用的列，行就按它筛，避免两边各算一套 */
+              data_day
          FROM board_listed
         WHERE version = ? AND board = ?
         ORDER BY rank ASC`,
@@ -180,6 +182,7 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
         priceOut: number | null;
         tags: string | null;
         dataAt: string | null;
+        data_day: string | null;
       }>();
 
     const rows = results ?? [];
@@ -202,6 +205,7 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
         priceOut: r.priceOut,
         tags: parseCats(r.cats).length ? parseCats(r.cats) : parseCats(r.tags),
         dataAt: r.dataAt,
+        dataDay: r.data_day,
       })),
     });
   });

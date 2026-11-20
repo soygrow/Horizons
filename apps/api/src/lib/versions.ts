@@ -69,7 +69,36 @@ const DATA_AT_ROW_EXPR =
  * 列出来点进去只会是一张空表。
  */
 export async function listBoardVersions(db: D1Database, board: Board): Promise<VersionOption[]> {
+  /*
+   * 先读物化表（0022）：发布时就把「这版多少条、数据截止到哪天」写进去了。
+   *
+   * 不读 board_listed 的原因：`WHERE board = ?` 撞不上任何索引（主键和
+   * idx_listed_rank 都以 version 打头），每条语句都是全表扫 + 每行
+   * json_extract(card)。后台每打开一次榜单就扫一遍 10k 行，一天几十万。
+   */
   const { results } = await db
+    .prepare(
+      `SELECT version, total AS n, data_at
+       FROM board_version_index
+       WHERE board = ?
+       ORDER BY version DESC`,
+    )
+    .bind(board)
+    .all<{ version: string; n: number; data_at: string | null }>();
+  if (results && results.length > 0) {
+    /*
+     * 物化表和「当前生效版本」对不上，说明这张表不是最新一次发布写的
+     * （发布脚本还是旧版、或发布中途失败）。这时候宁可慢一点扫全表，
+     * 也不能让版本下拉缺掉正在看的那一版。
+     */
+    const cur = await currentVersion(db);
+    if (!cur || results.some((r) => r.version === cur)) {
+      return results.map((r) => ({ version: r.version, count: r.n, dataAt: r.data_at ?? null }));
+    }
+  }
+
+  /* 物化表还没回填（迁移后第一次、或新建库）：回落扫一遍，宁可慢也不能让下拉空着 */
+  const fallback = await db
     .prepare(
       `SELECT version, COUNT(*) AS n, ${DATA_AT_EXPR} AS data_at
        FROM board_listed
@@ -79,7 +108,11 @@ export async function listBoardVersions(db: D1Database, board: Board): Promise<V
     )
     .bind(board)
     .all<{ version: string; n: number; data_at: string | null }>();
-  return (results ?? []).map((r) => ({ version: r.version, count: r.n, dataAt: r.data_at ?? null }));
+  return (fallback.results ?? []).map((r) => ({
+    version: r.version,
+    count: r.n,
+    dataAt: r.data_at ?? null,
+  }));
 }
 
 /** 「某一天采了多少条」 */
@@ -102,7 +135,28 @@ export async function listDataDays(
   board: Board,
   version: string,
 ): Promise<DataDayOption[]> {
+  /*
+   * 读真列 data_day（0022 加的）：idx_listed_day (version, board, data_day)
+   * 是覆盖索引，分组只扫索引不回表 —— 1500 行从「索引+回表 3000 行」降到 1500。
+   * 原来是逐行 json_extract(card)，每行都要把 1–3KB 的卡片读出来。
+   */
   const { results } = await db
+    .prepare(
+      `SELECT data_day AS day, COUNT(*) AS n
+       FROM board_listed
+       WHERE version = ? AND board = ? AND data_day IS NOT NULL
+       GROUP BY data_day
+       ORDER BY data_day DESC`,
+    )
+    .bind(version, board)
+    .all<{ day: string | null; n: number }>();
+  const rows = (results ?? []).filter(
+    (r): r is { day: string; n: number } => typeof r.day === "string" && r.day.length >= 10,
+  );
+  if (rows.length > 0) return rows.map((r) => ({ day: r.day, count: r.n }));
+
+  /* data_day 还没回填：回落逐行算，保证下拉有数 */
+  const fallback = await db
     .prepare(
       `SELECT substr(${DATA_AT_ROW_EXPR}, 1, 10) AS day, COUNT(*) AS n
        FROM board_listed
@@ -112,7 +166,7 @@ export async function listDataDays(
     )
     .bind(version, board)
     .all<{ day: string | null; n: number }>();
-  return (results ?? [])
+  return (fallback.results ?? [])
     .filter((r): r is { day: string; n: number } => typeof r.day === "string" && r.day.length >= 10)
     .map((r) => ({ day: r.day, count: r.n }));
 }
@@ -257,8 +311,20 @@ export async function assertVersionUsable(db: D1Database, version: string): Prom
   }
 }
 
-/** 旧版本清理：只保留最近 keep 期**已生效**的版本，返回被删的版本号 */
-export async function pruneVersions(db: D1Database, keep = KEEP_VERSIONS): Promise<string[]> {
+/**
+ * 旧版本清理：只保留最近 keep 期**已生效**的版本 + 清掉废弃草稿，返回被删的版本号。
+ *
+ * 草稿（applied=0）原来不清理，理由是「运营准备好的下期数据不能被无关发布清空」。
+ * 但没有任何地方真的去丢草稿：11-10 那四个发布中途失败留下的草稿，
+ * 到 11-20 还躺在 board_listed 里占 2,358 行（全库 23%），
+ * 每次全表扫、每次版本下拉都带着它们。所以加一条 24 小时超时：
+ * 开着超过一天还没生效的，就是废弃的，连发布记录一起删。
+ */
+export async function pruneVersions(
+  db: D1Database,
+  keep = KEEP_VERSIONS,
+  now = Date.now(),
+): Promise<string[]> {
   const alive = await db
     .prepare(
       `SELECT version FROM board_releases
@@ -272,7 +338,7 @@ export async function pruneVersions(db: D1Database, keep = KEEP_VERSIONS): Promi
 
   const placeholders = keepList.map(() => "?").join(", ");
 
-  // 草稿版本（applied=0）不参与存活名额，也不在这里清理 —— 它们由后台显式丢弃
+  /* 超出保留名额的已生效版本：只删数据行，board_release_items（永久名单）保留 */
   const doomed = await db
     .prepare(
       `SELECT version FROM board_releases
@@ -281,14 +347,40 @@ export async function pruneVersions(db: D1Database, keep = KEEP_VERSIONS): Promi
     .bind(...keepList)
     .all<{ version: string }>();
 
-  const doomedList = (doomed.results ?? []).map((r) => r.version);
+  const expiredList = (doomed.results ?? []).map((r) => r.version);
+
+  /* 废弃草稿：开版超过 24h 仍未生效。正常发布几分钟就切指针，留一天足够宽 */
+  const stale = await db
+    .prepare(
+      `SELECT version FROM board_releases
+       WHERE applied = 0 AND created_at < ?`,
+    )
+    .bind(now - 24 * 60 * 60 * 1000)
+    .all<{ version: string }>();
+
+  const draftList = (stale.results ?? []).map((r) => r.version);
+
+  const doomedList = [...expiredList, ...draftList];
   if (doomedList.length === 0) return [];
 
   const ph = doomedList.map(() => "?").join(", ");
-  await db.batch([
+  const stmts = [
     db.prepare(`DELETE FROM board_listed_details WHERE version IN (${ph})`).bind(...doomedList),
     db.prepare(`DELETE FROM board_listed WHERE version IN (${ph})`).bind(...doomedList),
-  ]);
+    db.prepare(`DELETE FROM board_version_index WHERE version IN (${ph})`).bind(...doomedList),
+  ];
+
+  /* 草稿从未上线：发布记录、审计、名单都是半截数据，一并清掉 */
+  if (draftList.length > 0) {
+    const dph = draftList.map(() => "?").join(", ");
+    stmts.push(
+      db.prepare(`DELETE FROM board_changes WHERE version IN (${dph})`).bind(...draftList),
+      db.prepare(`DELETE FROM board_release_items WHERE version IN (${dph})`).bind(...draftList),
+      db.prepare(`DELETE FROM board_releases WHERE version IN (${dph})`).bind(...draftList),
+    );
+  }
+
+  await db.batch(stmts);
 
   return doomedList;
 }

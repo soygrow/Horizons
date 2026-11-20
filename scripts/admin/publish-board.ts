@@ -98,6 +98,8 @@ const LISTED_SPEC: UpsertSpec = {
     "pushed_at",
     "last_crawled_at",
     "grade",
+    /* 0022：这一行是哪天采的。提成列之后，后台按数据日分组只扫索引不回表 */
+    "data_day",
   ],
   conflict: ["version", "board", "item_key"],
 };
@@ -128,6 +130,22 @@ export function slimDetail(board: Board, detail: unknown): unknown {
   const copy = { ...(detail as Record<string, unknown>) };
   for (const k of drop) delete copy[k];
   return copy;
+}
+
+/**
+ * 这一行是哪天采的：与后端 `DATA_AT_ROW_EXPR` 同一套回落顺序
+ * （last_crawled_at → card.lastCrawledAt → card.dataAt → card.updatedAt → card.lastSeenAt）。
+ *
+ * 顺序一旦和后端不一致，下拉里某天写着 200 条、点进去只剩 180 —— 两边算的不是同一个东西。
+ * github 的 last_crawled_at 列本身就是 card.lastCrawledAt，所以这里统一从 card 取。
+ */
+export function dataDayOf(card: unknown): string | null {
+  const c = (card ?? {}) as Record<string, unknown>;
+  for (const key of ["lastCrawledAt", "dataAt", "updatedAt", "lastSeenAt"]) {
+    const v = c[key];
+    if (typeof v === "string" && v.length >= 10) return v.slice(0, 10);
+  }
+  return null;
 }
 
 /** 某个榜要从 card 里提成列的标量；没有就是 7 个 null（顺序同 LISTED_SPEC 尾部） */
@@ -372,9 +390,9 @@ export async function publishBoard(
       {
         sql: `INSERT INTO board_listed
                 (version, board, item_key, rank, score, tier, name, url, cats, card, variant_of,
-                 stars, forks, language, description, pushed_at, last_crawled_at, grade)
+                 stars, forks, language, description, pushed_at, last_crawled_at, grade, data_day)
               SELECT ?, board, item_key, rank, score, tier, name, url, cats, card, variant_of,
-                 stars, forks, language, description, pushed_at, last_crawled_at, grade
+                 stars, forks, language, description, pushed_at, last_crawled_at, grade, data_day
               FROM board_listed WHERE version = ? AND board != ?
               ON CONFLICT (version, board, item_key) DO NOTHING`,
         params: [version, currentVersion, board],
@@ -410,6 +428,7 @@ export async function publishBoard(
     JSON.stringify(r.card),
     r.variantOf ?? null,
     ...cardColumns(board, r.card),
+    dataDayOf(r.card),
   ]);
   await client.batch(
     chunkForSpec(LISTED_SPEC, cardRows, client.statementByteLimit).map((part) => buildUpsert(LISTED_SPEC, part)),
@@ -440,8 +459,8 @@ export async function publishBoard(
   /* 7) 回填统计并标记生效（数据已全，但指针还没动） */
   // stats / board_scope 都按本版本实际含有的榜来写，继承来的榜也要算进去，
   // 否则后台会以为这个版本只有 github 一个榜
-  const counts = await client.query<{ board: string; n: number }>(
-    "SELECT board, COUNT(*) AS n FROM board_listed WHERE version = ? GROUP BY board",
+  const counts = await client.query<{ board: string; n: number; d: string | null }>(
+    "SELECT board, COUNT(*) AS n, MAX(data_day) AS d FROM board_listed WHERE version = ? GROUP BY board",
     [version],
   );
   const stats = Object.fromEntries(counts.results.map((r) => [r.board, r.n]));
@@ -451,6 +470,25 @@ export async function publishBoard(
     "UPDATE board_releases SET stats = ?, board_scope = ?, applied = 1 WHERE version = ?",
     [JSON.stringify(stats), JSON.stringify(scope), version],
   );
+
+  /*
+   * 版本下拉的数据源（0022）。
+   *
+   * 以前后台下拉是 `SELECT version, COUNT(*) FROM board_listed WHERE board = ?`
+   * —— 撞不上索引，每打开一次榜单就全表扫 10k 行、每行 json_extract 一次卡片。
+   * 而这几个数发布时就已经算出来了，顺手写进一行小表，读取从 10k 行降到 3 行。
+   */
+  if (counts.results.length > 0) {
+    const marks = counts.results.map(() => "(?, ?, ?, ?, ?)").join(", ");
+    const params = counts.results.flatMap((r) => [r.board, version, r.n, r.d ?? null, now]);
+    await client.query(
+      `INSERT INTO board_version_index (board, version, total, data_at, created_at)
+       VALUES ${marks}
+       ON CONFLICT (board, version) DO UPDATE SET
+         total = excluded.total, data_at = excluded.data_at, created_at = excluded.created_at`,
+      params,
+    );
+  }
   await client.query("UPDATE board_changes SET applied = 1 WHERE version = ? AND board = ?", [
     version,
     board,
@@ -703,6 +741,7 @@ export async function patchBoard(client: D1Client, input: PatchInput): Promise<P
       JSON.stringify(r.card),
       r.variantOf ?? null,
       ...cardColumns(board, r.card),
+      dataDayOf(r.card),
     ]);
     await client.batch(
       chunkForSpec(LISTED_SPEC, cardRows, client.statementByteLimit).map((part) =>
@@ -784,6 +823,28 @@ export async function patchBoard(client: D1Client, input: PatchInput): Promise<P
     );
   }
 
+  /*
+   * 4) 增量也算一次发布：本榜条数可能变了（新进 / 下榜），
+   *    版本下拉读的是 board_version_index，不清这里下拉就会一直显示旧条数。
+   *    board_releases.stats 保持「创建时快照」不变（那是发布记录，不是实时统计）。
+   */
+  if (inserted > 0 || dropped.length > 0) {
+    const counts = await client.query<{ n: number; d: string | null }>(
+      "SELECT COUNT(*) AS n, MAX(data_day) AS d FROM board_listed WHERE version = ? AND board = ?",
+      [version, board],
+    );
+    const c = counts.results[0];
+    if (c) {
+      await client.query(
+        `INSERT INTO board_version_index (board, version, total, data_at, created_at)
+         VALUES (?, ?, ?, ?, ?)
+         ON CONFLICT (board, version) DO UPDATE SET
+           total = excluded.total, data_at = excluded.data_at, created_at = excluded.created_at`,
+        [board, version, c.n, c.d ?? null, now],
+      );
+    }
+  }
+
   return {
     version,
     board,
@@ -796,49 +857,80 @@ export async function patchBoard(client: D1Client, input: PatchInput): Promise<P
 }
 
 /**
- * 清理旧版本：只保留最近 keep 期**已生效**的版本。
+ * 清理旧版本：只保留最近 keep 期**已生效**的版本 + 清掉废弃草稿。
  *
- * 草稿（applied=0）不占名额也不被删 —— 运营准备好的下期数据不能因为
- * 一次无关发布就被清空。
+ * 草稿（applied=0）原来一律不删，理由是「运营准备好的下期数据不能被无关发布清空」。
+ * 但没有别的地方真的去丢：11-10 那四个发布中途失败留下的草稿，到 11-20 还躺在
+ * board_listed 里占 2,358 行（全库 23%），每次全表扫、每次版本下拉都带着它们。
+ * 现在加一条 24 小时超时 —— 开版超过一天还没生效的，就是废弃的。
  */
-export async function pruneVersions(client: D1Client, keep = KEEP_VERSIONS): Promise<string[]> {
+export async function pruneVersions(
+  client: D1Client,
+  keep = KEEP_VERSIONS,
+  now = Date.now(),
+): Promise<string[]> {
+  /* ① 废弃草稿（不占保留名额，单独判断） */
+  const stale = await client.query<{ version: string }>(
+    `SELECT version FROM board_releases
+     WHERE applied = 0 AND created_at < ?`,
+    [now - 24 * 60 * 60 * 1000],
+  );
+  const draftList = stale.results.map((r) => r.version);
+
+  /* ② 超出保留名额的已生效版本 */
+  const list: string[] = [];
   const alive = await client.query<{ version: string }>(
     `SELECT version FROM board_releases
      WHERE applied = 1 ORDER BY created_at DESC LIMIT ?`,
     [keep],
   );
   const keepList = alive.results.map((r) => r.version);
-  if (keepList.length < keep) return [];
 
-  /*
-   * 当前生效版本无论如何都不删。
-   *
-   * 正常流程里 prune 只在指针切到新版本之后调用，current 必然在 keepList 内；
-   * 但回滚之后 current 可能是个更老的版本 —— 只要有人把 prune 挪到别的位置
-   * （或者将来做「只清理不回滚」的任务），就会把线上正在读的那一版删掉，
-   * 表现为全站榜单瞬间变空。这里显式保护一次，成本是一次查询。
-   */
-  const cur = await client.query<{ val: string }>(
-    "SELECT val FROM app_config WHERE key = 'config.current_version'",
-  );
-  const currentVersion = cur.results[0]?.val;
-  if (currentVersion && !keepList.includes(currentVersion)) keepList.push(currentVersion);
+  if (keepList.length >= keep) {
+    /*
+     * 当前生效版本无论如何都不删。
+     *
+     * 正常流程里 prune 只在指针切到新版本之后调用，current 必然在 keepList 内；
+     * 但回滚之后 current 可能是个更老的版本 —— 只要有人把 prune 挪到别的位置
+     * （或者将来做「只清理不回滚」的任务），就会把线上正在读的那一版删掉，
+     * 表现为全站榜单瞬间变空。这里显式保护一次，成本是一次查询。
+     */
+    const cur = await client.query<{ val: string }>(
+      "SELECT val FROM app_config WHERE key = 'config.current_version'",
+    );
+    const currentVersion = cur.results[0]?.val;
+    if (currentVersion && !keepList.includes(currentVersion)) keepList.push(currentVersion);
 
-  const ph = keepList.map(() => "?").join(", ");
-  const doomed = await client.query<{ version: string }>(
-    `SELECT version FROM board_releases
-     WHERE applied = 1 AND version NOT IN (${ph})`,
-    keepList,
-  );
+    const ph = keepList.map(() => "?").join(", ");
+    const doomed = await client.query<{ version: string }>(
+      `SELECT version FROM board_releases
+       WHERE applied = 1 AND version NOT IN (${ph})`,
+      keepList,
+    );
+    list.push(...doomed.results.map((r) => r.version));
+  }
 
-  const list = doomed.results.map((r) => r.version);
-  if (list.length === 0) return [];
+  const all = [...new Set([...list, ...draftList])];
+  if (all.length === 0) return [];
 
-  const marks = list.map(() => "?").join(", ");
-  await client.run([
-    { sql: `DELETE FROM board_listed_details WHERE version IN (${marks})`, params: list },
-    { sql: `DELETE FROM board_listed WHERE version IN (${marks})`, params: list },
-  ]);
+  const marks = all.map(() => "?").join(", ");
+  const stmts = [
+    { sql: `DELETE FROM board_listed_details WHERE version IN (${marks})`, params: all },
+    { sql: `DELETE FROM board_listed WHERE version IN (${marks})`, params: all },
+    { sql: `DELETE FROM board_version_index WHERE version IN (${marks})`, params: all },
+  ];
 
-  return list;
+  /* 草稿从未上线：发布记录、审计、名单都是半截数据，一并清掉 */
+  if (draftList.length > 0) {
+    const dmarks = draftList.map(() => "?").join(", ");
+    stmts.push(
+      { sql: `DELETE FROM board_changes WHERE version IN (${dmarks})`, params: draftList },
+      { sql: `DELETE FROM board_release_items WHERE version IN (${dmarks})`, params: draftList },
+      { sql: `DELETE FROM board_releases WHERE version IN (${dmarks})`, params: draftList },
+    );
+  }
+
+  await client.run(stmts);
+
+  return all;
 }

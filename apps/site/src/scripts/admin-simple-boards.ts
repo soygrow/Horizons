@@ -94,6 +94,8 @@ interface ListedItem {
   tags: string[];
   /** 这一版数据是哪天采的；老版本卡片里没有这个字段，是 null */
   dataAt: string | null;
+  /** 行级数据日（0022 的 data_day 列）：与下拉分组同一口径 */
+  dataDay?: string | null;
 }
 
 interface ListedRes {
@@ -397,7 +399,11 @@ function renderListed(): void {
 
 /** 这一行属于哪天（YYYY-MM-DD），和「更新时间」列、下拉项同一口径 */
 function itemDay(m: ListedItem): string {
-  const raw = m.dataAt ?? modelsState.version ?? "";
+  /*
+   * 优先用后端算好的 dataDay（0022 的 data_day 列），与下拉分组同源。
+   * 老接口没有这个字段时才回落到卡片上的 dataAt。
+   */
+  const raw = m.dataDay ?? m.dataAt ?? modelsState.version ?? "";
   return raw.slice(0, 10);
 }
 

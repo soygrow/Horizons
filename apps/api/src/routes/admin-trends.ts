@@ -609,6 +609,8 @@ interface ListedTrendRow {
   first_seen: string | null;
   last_seen: string | null;
   updated_at: string | null;
+  /** 0022 的真列：与 listDataDays 的分组同源 */
+  data_day: string | null;
 }
 
 /**
@@ -676,7 +678,9 @@ trends.get("/listed", async (c) => {
               json_extract(card,'$.oppParts') AS opp_parts,
               json_extract(card,'$.firstSeenAt') AS first_seen,
               json_extract(card,'$.lastSeenAt') AS last_seen,
-              json_extract(card,'$.updatedAt') AS updated_at
+              json_extract(card,'$.updatedAt') AS updated_at,
+              /* 下拉分组用的就是这一列：前端必须拿同一个值筛，不能自己拼 */
+              data_day
        FROM board_listed
        WHERE version = ? AND board = 'trends'
        ORDER BY rank ASC, variant_of IS NOT NULL, name ASC`,
@@ -711,6 +715,8 @@ trends.get("/listed", async (c) => {
       lastSeenAt: r.last_seen ?? r.updated_at,
       /* 记录被重写过的那一刻（带时分秒）：列表的「更新时间」显示它 */
       updatedAt: r.updated_at,
+      /* 与 days 同一列同一口径：下拉按它分天，行就按它筛 */
+      dataDay: r.data_day,
       staging: staging.get(slug) ?? null,
       scores: scoresFromParts(r.trend_parts, r.opp_parts),
     };

@@ -220,6 +220,8 @@ interface ListedTrend {
   lastSeenAt: string | null;
   /** 记录被重写的时刻（带时分秒），列表的「更新时间」显示它 */
   updatedAt: string | null;
+  /** 行级数据日：下拉分组用的就是它，筛也必须用它 */
+  dataDay: string | null;
   /** 候选池里的状态（candidate/enriched/enriching/…），null 表示不在队列里 */
   staging: string | null;
   scores: { trend: number; opportunity: number; overall: number };
@@ -499,7 +501,15 @@ function listedPickable(row: ListedTrend): boolean {
  * 否则下拉里某天写着 200 条、点进去只剩 180 —— 两边算的不是同一个东西。
  */
 function listedRowDay(row: ListedTrend): string {
-  return (row.updatedAt ?? row.lastSeenAt ?? "").slice(0, 10);
+  /*
+   * 优先用后端算好的 data_day。
+   *
+   * 自己拿 updatedAt ?? lastSeenAt 拼是不行的：后端 DATA_AT_ROW_EXPR 的顺序是
+   * last_crawled_at → card.lastCrawledAt → card.dataAt → card.updatedAt → card.lastSeenAt，
+   * 卡片上只要带 lastCrawledAt 或 dataAt，两边就会分到不同的天 ——
+   * 下拉说 289 条、点进去只剩 200 条，又是「算错了」。
+   */
+  return row.dataDay ?? (row.updatedAt ?? row.lastSeenAt ?? "").slice(0, 10);
 }
 
 function visibleListed(data: ListedResp): ListedTrend[] {

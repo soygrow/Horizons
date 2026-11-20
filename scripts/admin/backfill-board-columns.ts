@@ -142,6 +142,53 @@ async function fillColumns(client: D1Client, version: string): Promise<number> {
   return rows;
 }
 
+/**
+ * 4) data_day：行级采集日（0022）。
+ *
+ * 一条 UPDATE 扫完一万行：SQL 文本很短、没有绑定参数，不用像上面那样分页往返。
+ * 只填 NULL 的行，重跑不会再写。
+ */
+async function fillDataDays(client: D1Client): Promise<number> {
+  const pending = await client.query<{ n: number }>(
+    "SELECT COUNT(*) AS n FROM board_listed WHERE data_day IS NULL",
+  );
+  const n = pending.results[0]?.n ?? 0;
+  if (n === 0 || dry) return n;
+  await client.query(
+    `UPDATE board_listed
+        SET data_day = substr(COALESCE(
+              last_crawled_at,
+              json_extract(card, '$.lastCrawledAt'),
+              json_extract(card, '$.dataAt'),
+              json_extract(card, '$.updatedAt'),
+              json_extract(card, '$.lastSeenAt')), 1, 10)
+      WHERE data_day IS NULL`,
+  );
+  return n;
+}
+
+/**
+ * 5) board_version_index：后台版本下拉的数据源（0022）。
+ *
+ * 整表重建而不是增量对账：行数 = 榜数 × 版本数（十几行），
+ * 重建两条语句就完事，对账反而容易漏。
+ */
+async function rebuildVersionIndex(client: D1Client): Promise<number> {
+  if (dry) return 0;
+  await client.run([
+    { sql: "DELETE FROM board_version_index", params: [] },
+    {
+      sql: `INSERT INTO board_version_index (board, version, total, data_at, created_at)
+            SELECT board, version, COUNT(*), MAX(data_day), ?
+              FROM board_listed
+             GROUP BY board, version`,
+      params: [Date.now()],
+    },
+  ]);
+  const res = await client.query<{ n: number }>("SELECT COUNT(*) AS n FROM board_version_index");
+  return res.results[0]?.n ?? 0;
+}
+
 /** 3) board_stats.bytes：整榜体积，读的是每行的整数，不再碰 detail 正文 */
 async function fillStats(client: D1Client, version: string): Promise<number> {
   const res = await client.query<{ n: number | null }>(
@@ -167,6 +214,13 @@ async function main(): Promise<void> {
     throw new Error("需要 D1 通道：配置 CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID，或 wrangler login");
   }
   const client = createD1Client();
+
+  /* 0022 的两样：全库各来一遍，和 --board / --version 无关 */
+  const days = await fillDataDays(client);
+  const indexed = await rebuildVersionIndex(client);
+  console.log(
+    `[backfill] data_day 回填 ${days} 行｜版本索引 ${indexed} 行${dry ? "（dry-run）" : ""}`,
+  );
 
   const all = process.argv.includes("--all");
   const current = await currentBoardVersion();
