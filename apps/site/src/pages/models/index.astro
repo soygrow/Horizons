@@ -54,6 +54,15 @@ const firstPage = [...modelRows]
   .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
   .slice(0, PAGE_SIZE);
 
+// 页头速览卡：四个「看榜先看头」的落点，与左侧纯计数胶囊不重复
+const topScore = firstPage[0];
+const topCapability = [...modelRows].sort((a, b) => b.capability - a.capability)[0];
+const topValue = [...modelRows].sort((a, b) => b.value - a.value)[0];
+const cheapest = modelRows
+  .filter((r) => r.priceIn !== null)
+  .sort((a, b) => (a.priceIn ?? 0) - (b.priceIn ?? 0))[0];
+const openPct = Math.round((openCount / modelRows.length) * 100);
+
 const title = "AI 模型榜 · Horizons";
 const description =
   "按能力、价格与性价比排序的 AI 大模型榜单：上下文窗口、开源/闭源、每百万 token 输入输出价格一目了然，支持按厂商与模态筛选。";
@@ -61,7 +70,8 @@ const description =
 
 <Base title={title} description={description}>
   <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-    <header>
+    <header class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-14">
+      <div class="min-w-0">
       <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">AI 模型榜</h1>
       <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink-secondary">
         不是又一个模型参数表，而是把<strong class="font-medium text-ink">能力、价格与性价比</strong>放在一起看：
@@ -104,6 +114,83 @@ const description =
       <div class="mt-5">
         <SearchInput value="" action="/models" placeholder="搜索模型 / 厂商 / 简介" />
       </div>
+      </div>
+
+      <!-- 本期速览：给页头一个落点，避免右半屏空着 -->
+      <aside class="rounded-2xl border border-border bg-surface p-5">
+        <div class="flex items-baseline justify-between">
+          <h2 class="text-xs font-semibold tracking-wide text-ink">本期速览</h2>
+          <span class="font-mono text-[11px] text-ink-muted">{modelRows.length} 条</span>
+        </div>
+        <dl class="mt-4 space-y-3 text-xs">
+          <div class="flex items-baseline justify-between gap-3">
+            <dt class="shrink-0 text-ink-muted">综合榜首</dt>
+            <dd class="flex min-w-0 items-baseline gap-2">
+              <a
+                href={`/models/${topScore.slug}`}
+                class="truncate text-ink transition hover:text-primary">{topScore.name}</a
+              >
+              <span class="shrink-0 font-mono tabular-nums text-ink-secondary"
+                >{topScore.score.toFixed(1)}</span
+              >
+            </dd>
+          </div>
+          <div class="flex items-baseline justify-between gap-3">
+            <dt class="shrink-0 text-ink-muted">能力最强</dt>
+            <dd class="flex min-w-0 items-baseline gap-2">
+              <a
+                href={`/models/${topCapability.slug}`}
+                class="truncate text-ink transition hover:text-primary">{topCapability.name}</a
+              >
+              <span class="shrink-0 font-mono tabular-nums text-ink-secondary"
+                >{topCapability.capability.toFixed(1)}</span
+              >
+            </dd>
+          </div>
+          <div class="flex items-baseline justify-between gap-3">
+            <dt class="shrink-0 text-ink-muted">性价比</dt>
+            <dd class="flex min-w-0 items-baseline gap-2">
+              <a
+                href={`/models/${topValue.slug}`}
+                class="truncate text-ink transition hover:text-primary">{topValue.name}</a
+              >
+              <span class="shrink-0 font-mono tabular-nums text-ink-secondary"
+                >{topValue.value.toFixed(1)}</span
+              >
+            </dd>
+          </div>
+          {cheapest && (
+            <div class="flex items-baseline justify-between gap-3">
+              <dt class="shrink-0 text-ink-muted">最低输入价</dt>
+              <dd class="flex min-w-0 items-baseline gap-2">
+                <a
+                  href={`/models/${cheapest.slug}`}
+                  class="truncate text-ink transition hover:text-primary">{cheapest.name}</a
+                >
+                <span class="shrink-0 font-mono tabular-nums text-ink-secondary"
+                  >{cheapest.priceInText} /1M</span
+                >
+              </dd>
+            </div>
+          )}
+        </dl>
+        <div class="mt-4 border-t border-border pt-3">
+          <div class="flex items-center justify-between text-[11px] text-ink-muted">
+            <span>开源占比</span>
+            <span class="font-mono tabular-nums">{openPct}%</span>
+          </div>
+          <div class="mt-1.5 h-1 overflow-hidden rounded-full bg-surface-2">
+            <div class="h-full rounded-full bg-emerald-500/70" style={`width:${openPct}%`}></div>
+          </div>
+          <a
+            href="#method"
+            class="mt-4 flex items-center justify-between text-[11px] text-ink-secondary transition hover:text-primary"
+          >
+            <span>评分与价格口径</span>
+            <span class="font-mono text-ink-muted">↓</span>
+          </a>
+        </div>
+      </aside>
     </header>
 
     <div class="mt-6 space-y-3">
@@ -162,7 +249,7 @@ const description =
     </div>
     <div class="mt-6" id="models-pager" data-page-size={PAGE_SIZE}></div>
 
-    <section class="mt-10 rounded-2xl border border-border bg-surface p-5">
+    <section id="method" class="mt-10 scroll-mt-20 rounded-2xl border border-border bg-surface p-5">
       <h2 class="text-sm font-semibold text-ink">评分与价格是怎么算的</h2>
       <div class="mt-3 grid gap-3 text-xs leading-relaxed text-ink-secondary sm:grid-cols-3">
         <p>
