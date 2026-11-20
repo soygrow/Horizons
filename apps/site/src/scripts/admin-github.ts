@@ -215,7 +215,7 @@ const PAGE_SIZE = 30;
 /** 线上榜单每页 20 条：一屏看全，勾一页就更新一页 */
 const LISTED_PAGE_SIZE = 20;
 /** 与 API 的 MAX_REFRESH_REPOS 保持一致 */
-const MAX_REFRESH_REPOS = 60;
+const MAX_REFRESH_REPOS = 100;
 
 const state = {
   filter: "all",

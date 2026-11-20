@@ -321,10 +321,10 @@ interface ListedRepoRow {
 /**
  * 一次最多重采多少个。
  *
- * 定向重采是「一个仓库一次 /repos/{full}」，60 个 ≈ 一分钟，远低于
+ * 定向重采是「一个仓库一次 /repos/{full}」，100 个 ≈ 两分钟，远低于
  * token 限额（5000/h）；真正花钱的是发布那一步，所以上限配合增量写库一起用。
  */
-const MAX_REFRESH_REPOS = 60;
+const MAX_REFRESH_REPOS = 100;
 
 /**
  * 线上榜单：名次 + 数值 + 上次采集时间 + 候选池状态。
