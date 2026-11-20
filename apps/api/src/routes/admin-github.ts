@@ -569,10 +569,14 @@ github.post("/publish", async (c) => {
   }
 });
 
-/** 任务列表 */
+/**
+ * 任务列表：只给最近 5 次。
+ *
+ * 一天能跑十几轮采集/更新/发布，列表拉长了根本翻不到要看的那条；
+ * 页面标题写的也是「最近 5 次」，这里跟着钉死，别让 limit 参数再放大。
+ */
 github.get("/jobs", async (c) => {
-  const limit = Math.min(Number(c.req.query("limit") ?? 20) || 20, 50);
-  return c.json({ jobs: await listJobs(c.env, limit) });
+  return c.json({ jobs: await listJobs(c.env, 5) });
 });
 
 export { github };

@@ -783,7 +783,16 @@ function renderListed(data: ListedResp): void {
           </td>
           <td class="px-4 py-2.5">${listedStage(row.staging)}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-right">
-            <a href="https://github.com/${esc(row.fullName)}" target="_blank" rel="noopener" class="text-xs text-primary hover:underline">仓库</a>
+            <span class="inline-flex items-center gap-3">
+              <button
+                type="button"
+                data-gh-only="${esc(row.fullName)}"
+                class="text-xs text-ink-secondary transition hover:text-primary hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                ${listedPickable(row) ? "" : "disabled"}
+                title="${listedPickable(row) ? "只重采这一个仓库，结果进候选池，不动其它行" : "正在更新中"}"
+              >单独更新</button>
+              <a href="https://github.com/${esc(row.fullName)}" target="_blank" rel="noopener" class="text-xs text-primary hover:underline">仓库</a>
+            </span>
           </td>
         </tr>`;
     })
@@ -829,7 +838,8 @@ async function loadOverview(): Promise<void> {
 
 async function loadJobs(): Promise<void> {
   try {
-    const data = await apiGet<{ jobs: Job[] }>("/github/jobs?limit=8");
+    /* 只留最近 5 次：一天跑几轮就是十几条，全列出来翻不到有用信息 */
+    const data = await apiGet<{ jobs: Job[] }>("/github/jobs?limit=5");
     renderJobs(data.jobs ?? []);
   } catch {
     /* 任务列表失败不阻塞其它区域 */
@@ -1061,6 +1071,27 @@ function bind(): void {
     else state.listedSelected.delete(key);
     /* 只同步表头，不重渲染：重渲染会把滚动位置弹回顶部 */
     syncListedHead();
+  });
+
+  /* 单独更新：只提交这一行，走和「更新选中」同一条 /refresh，结果进候选池 */
+  $("gh-listed-body").addEventListener("click", async (event) => {
+    const btn = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-gh-only]");
+    const fullName = btn?.dataset.ghOnly;
+    if (!btn || !fullName || btn.disabled) return;
+    const label = btn.textContent ?? "单独更新";
+    btn.disabled = true;
+    btn.textContent = "提交中…";
+    try {
+      await apiPost("/github/refresh", { repos: [fullName] });
+      btn.textContent = "已提交";
+      void loadJobs();
+      /* 重拉列表：这一行会变成「更新中」，按钮随之禁用 */
+      void loadListed();
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = label;
+      window.alert(`提交失败：${e instanceof Error ? e.message : String(e)}`);
+    }
   });
 
   $("gh-listed-select-all").addEventListener("change", (event) => {
