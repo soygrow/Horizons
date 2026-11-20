@@ -20,7 +20,7 @@ import { dispatchWorkflow, ghConfig, missingSecrets, type WorkflowRun } from "..
 import { readBoardStats, type BoardStats } from "../lib/board-stats";
 import { listWorkspace, setItemsStatus, setItemStatus } from "../lib/board-items";
 import { readReport } from "../lib/reports";
-import { resolveListedVersion } from "../lib/versions";
+import { listDataDays, resolveListedVersion } from "../lib/versions";
 
 const github = new Hono<{ Bindings: Env }>();
 
@@ -343,6 +343,7 @@ github.get("/listed", async (c) => {
       version: "",
       current,
       versions,
+      days: [],
       total: 0,
       items: [],
       refreshPending: 0,
@@ -350,13 +351,17 @@ github.get("/listed", async (c) => {
     });
   }
 
+  /* 版本下拉列的是这一版内部的数据日分布：1500 行可能横跨几次采集，
+     按行分组各天条数之和才等于 total，行内「更新时间」也才和它一致 */
+  const days = await listDataDays(c.env.DB, "github", version);
+
   const [{ results }, ws] = await Promise.all([
     /* 0021 起这些标量是列：不再对 1500 行各做 7 次 json_extract（一次 2–4MB） */
     c.env.DB.prepare(
       `SELECT item_key, rank, score, name, url,
               stars, forks, language, description,
               pushed_at,
-              COALESCE(last_crawled_at, pushed_at) AS last_crawled,
+              COALESCE(last_crawled_at, json_extract(card, '$.lastCrawledAt')) AS last_crawled,
               grade
        FROM board_listed
        WHERE version = ? AND board = 'github'
@@ -384,8 +389,13 @@ github.get("/listed", async (c) => {
     description: r.description,
     grade: r.grade,
     pushedAt: r.pushed_at,
-    /** 上次真正采到数据的日期：判断「该不该更新」就看它 */
-    lastCrawledAt: r.last_crawled ?? r.pushed_at,
+    /**
+     * 上次真正采到数据的日期：判断「该不该更新」就看它。
+     *
+     * 不再回落到 pushed_at —— 那是仓库最后一次 push 的日期，拿它冒充
+     * 「我们什么时候采的」会让列表里出现一堆和采集无关的时间。
+     */
+    lastCrawledAt: r.last_crawled,
     /* board_listed 的 item_key 是原样的 fullName，工作区用小写，这里要转一道 */
     staging: staging.get(r.name.toLowerCase()) ?? null,
   }));
@@ -394,7 +404,7 @@ github.get("/listed", async (c) => {
   const onBoard = new Set(items.map((i) => i.fullName.toLowerCase()));
   const refreshPending = ws.items.filter((t) => onBoard.has(t.repo.fullName.toLowerCase())).length;
 
-  return c.json({ version, current, versions, total: items.length, refreshPending, items });
+  return c.json({ version, current, versions, days, total: items.length, refreshPending, items });
 });
 
 /**

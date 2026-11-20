@@ -19,12 +19,13 @@ import {
   apiPost,
   debounce,
   esc,
-  fillVersionSelect,
+  fillDaySelect,
   fmtNum,
   fmtStamp,
   fmtTime,
   pickedDataAt,
   versionNote,
+  type DataDay,
   type VersionOption,
 } from "./admin-shared";
 
@@ -63,6 +64,8 @@ interface ListedResp {
   current?: string | null;
   /** 库里还留着的版本（倒序）+ 每版条数 */
   versions?: VersionOption[];
+  /** 这一版内部按行级采集日分组：各天条数之和 = total */
+  days?: DataDay[];
   total: number;
   refreshPending: number;
   items: ListedRepo[];
@@ -229,6 +232,8 @@ const state = {
   listedQ: "",
   /** 看哪一版快照（空 = 当前生效版本） */
   listedVersion: "",
+  /** 按数据日筛（空 = 全部）：值形如 2026-10-30 */
+  listedDay: "",
   listedPage: 1,
   listedSelected: new Set<string>(),
 };
@@ -625,6 +630,8 @@ function listedPickable(row: ListedRepo): boolean {
 function visibleListed(data: ListedResp): ListedRepo[] {
   const q = state.listedQ.toLowerCase();
   return data.items.filter((row) => {
+    /* 数据日筛选：和「更新时间」列同一口径（lastCrawledAt 的前 10 位） */
+    if (state.listedDay && (row.lastCrawledAt ?? "").slice(0, 10) !== state.listedDay) return false;
     if (q && !row.fullName.toLowerCase().includes(q) && !(row.description ?? "").toLowerCase().includes(q)) {
       return false;
     }
@@ -709,14 +716,23 @@ function renderListed(data: ListedResp): void {
   const body = $("gh-listed-body");
   const pager = $("gh-listed-pager");
 
-  /* 下拉以服务端解析出的版本为准：选的版本被清理掉了会自动落回当前版本 */
-  fillVersionSelect("gh-listed-version", data.versions, data.version);
+  /*
+   * 下拉按「数据日」分，不按发布版本：同一个快照会被搬进下一版，
+   * 按版本分组就会列出 1500 / 1500 / 1500，加起来比总数还多。
+   * 按行分组各天条数之和恒等于 total，行内「更新时间」也正是这一天。
+   */
+  fillDaySelect("gh-listed-version", data.days, data.total, state.listedDay);
 
   const stale7 = data.items.filter((r) => (ageDays(r.lastCrawledAt) ?? 999) >= 7).length;
   const stale30 = data.items.filter((r) => (ageDays(r.lastCrawledAt) ?? 999) >= 30).length;
+  /* 选了某天，标题的版本号就跟着那天走，和下面每行的时间对齐 */
+  const dayLabel = state.listedDay ? state.listedDay.replace(/-/g, "") : null;
+  const head = dayLabel
+    ? `版本 ${dayLabel}（按数据日筛选）`
+    : versionNote(data.version, pickedDataAt(data));
   meta.textContent = data.detail
     ? data.detail
-    : `${versionNote(data.version, pickedDataAt(data))} · 共 ${fmtNum(data.total)} 条 · 7 天未更新 ${fmtNum(stale7)} · 30 天未更新 ${fmtNum(stale30)}${
+    : `${head} · 共 ${fmtNum(data.total)} 条 · 7 天未更新 ${fmtNum(stale7)} · 30 天未更新 ${fmtNum(stale30)}${
         data.refreshPending ? ` · 候选池待发布 ${fmtNum(data.refreshPending)}` : ""
       }`;
 
@@ -735,17 +751,13 @@ function renderListed(data: ListedResp): void {
     state.listedPage * LISTED_PAGE_SIZE,
   );
 
-  /* 整版的数据时间：这一版里最新一条是什么时候采的（见 trends 同名逻辑） */
-  const vDataAt = pickedDataAt(data);
-
   body.innerHTML = slice
     .map((row) => {
       /*
-       * 「更新时间」列显示整版的采集时刻，而不是每条自己的 lastCrawledAt：
-       * 一版 1500 个仓库各有各的采集时间，和版本号 20261030 永远对不上。
-       * 每条自己的时间不显示（title 里也不写），一版里只留一个日期。
+       * 「更新时间」显示这一行自己的采集时间 —— 上面按数据日筛过，选哪天
+       * 就全是哪天，版本号和它对得上；「全部」视图下它最短，不会超过版本号。
        */
-      const stamp = vDataAt ?? row.lastCrawledAt;
+      const stamp = row.lastCrawledAt;
       const age = ageDays(stamp);
       const ageNote =
         age === null
@@ -778,7 +790,7 @@ function renderListed(data: ListedResp): void {
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${fmtStars(row.stars)}</td>
           <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${row.score.toFixed(1)}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-xs tabular-nums text-ink-secondary">
-            <span class="block" title="本版数据的采集时间，和版本号同一天">${esc(fmtStamp(stamp))}</span>
+            <span class="block" title="这一条最后采集的时间，就是上面选的数据日">${esc(fmtStamp(stamp))}</span>
             ${ageNote ? `<span class="text-[11px]">${ageNote}</span>` : ""}
           </td>
           <td class="px-4 py-2.5">${listedStage(row.staging)}</td>
@@ -1035,12 +1047,13 @@ function bind(): void {
     if (state.listed) renderListed(state.listed);
   });
 
-  /* 换版本 = 换一份数据：已勾选的仓库属于上一版，留着会让「更新选中」摸到看不见的仓库 */
+  /* 选「数据日」= 在前端筛出这一天采的仓库，数据已经全在手里，不用再请求 */
   $("gh-listed-version")?.addEventListener("change", (event) => {
-    state.listedVersion = (event.target as HTMLSelectElement).value;
+    state.listedDay = (event.target as HTMLSelectElement).value;
+    /* 换筛选 = 换一批仓库，已勾选的不一定还看得见，清掉免得「更新选中」误伤 */
     state.listedSelected.clear();
     state.listedPage = 1;
-    void loadListed();
+    if (state.listed) renderListed(state.listed);
   });
 
   const search = $("gh-listed-search") as HTMLInputElement;

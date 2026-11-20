@@ -13,6 +13,7 @@
 import type { Board } from "@horizons/shared";
 import { createD1Client, d1Configured, type D1Client } from "./d1-client";
 import {
+  cardBody,
   lastReleaseRanks,
   patchBoard,
   pruneVersions,
@@ -139,6 +140,47 @@ export async function currentBoardDataAt(board: Board): Promise<string | null | 
 }
 
 /**
+ * 完整发布前，把「内容没变」的行的 `dataAt` 从上一版继承过来。
+ *
+ * 只对 models 做：它的卡片带行级数据日，是按天分组的依据；其余榜的
+ * `dataAt` 是整版口径，且行数不多，不必为此多读一遍库。
+ *
+ * 读不到就直接返回原样 —— 顶多这一轮日期回落成整版日期，不影响发布。
+ */
+async function inheritRowDataAt(
+  client: D1Client,
+  board: Board,
+  rows: readonly PublishRow[],
+): Promise<PublishRow[]> {
+  if (board !== "models" || rows.length === 0) return rows as PublishRow[];
+
+  const cur = await client.query<{ val: string }>(
+    "SELECT val FROM app_config WHERE key = 'config.current_version'",
+  );
+  const version = cur.results[0]?.val;
+  if (!version) return rows as PublishRow[];
+
+  const prev = await client.query<{ k: string; card: string | null; d: string | null }>(
+    `SELECT item_key AS k, card, json_extract(card, '$.dataAt') AS d
+       FROM board_listed WHERE version = ? AND board = ?`,
+    [version, board],
+  );
+  const oldByKey = new Map(prev.results.map((r) => [r.k, r]));
+
+  let kept = 0;
+  const out = rows.map((r) => {
+    const old = oldByKey.get(r.key);
+    if (!old?.d || !old.card) return r;
+    /* 内容（去掉 dataAt）没变 → 沿用旧日期；变了才用新的 */
+    if (cardBody(old.card) !== cardBody(JSON.stringify(r.card))) return r;
+    kept++;
+    return { ...r, card: { ...(r.card as Record<string, unknown>), dataAt: old.d } };
+  });
+  if (kept > 0) console.log(`[sync] ${board} ${kept} 条内容未变，沿用原有数据日`);
+  return out;
+}
+
+/**
  * 这个榜的线上数据源是否已切到 D1。
  *
  * 切流之后 D1 就是唯一数据源：写失败若只告警，文件链路会照常发版，
@@ -220,7 +262,7 @@ function totalDetailBytes(board: Board, rows: readonly PublishRow[]): number {
 }
 
 export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
-  const { board, rows, actor } = opts;
+  const { board, actor } = opts;
 
   if (process.argv.includes("--no-d1")) {
     console.log("[sync] --no-d1：跳过 D1 写入");
@@ -279,11 +321,26 @@ export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
     }
   }
 
+  /*
+   * 完整发布要新写整版，卡片里带着今天的 dataAt —— 内容没重采的行会跟着被
+   * 记成「今天采的」，按数据日分组立刻又变成一家独大（370 条全是今天）。
+   * 所以落库前先把「内容没变」的行的旧 dataAt 继承过来，只有真正变了的行
+   * 才算今天更新。增量模式不用管：patchBoard 比较时本来就忽略 dataAt。
+   */
+  let publishRows = opts.rows as PublishRow[];
+  if (!usePatch) {
+    try {
+      publishRows = await inheritRowDataAt(client, board, publishRows);
+    } catch (e) {
+      console.warn(`[sync] 继承 ${board} 的行级数据日失败，按整版日期写入：`, e);
+    }
+  }
+
   if (usePatch) {
     try {
       const res = await patchBoard(client, {
         board,
-        rows,
+        rows: publishRows,
         actor,
         allowShrink: process.argv.includes("--allow-shrink"),
       });
@@ -333,7 +390,7 @@ export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
     // 上期名次从库里取，不依赖 JSON 的历史顺序
     const previous = await lastReleaseRanks(client, board);
 
-    const res = await publishBoard(client, { board, version, rows, actor, previous });
+    const res = await publishBoard(client, { board, version, rows: publishRows, actor, previous });
 
     // 同版本号重发：内容没变，正常跳过，不是失败
     if (res.skipped) {
@@ -345,7 +402,7 @@ export async function syncBoardToD1(opts: SyncOptions): Promise<SyncResult> {
 
     // 顺带记下在榜条数与整榜字节：后台概览只查 board_stats，不再读仓库里的榜文件，
     // 也不再为了体积去 SUM(LENGTH(detail))
-    await recordBoardStat(client, board, res.listed, res.version, opts.meta, totalDetailBytes(board, rows));
+    await recordBoardStat(client, board, res.listed, res.version, opts.meta, totalDetailBytes(board, publishRows));
 
     console.log(
       `[sync] ${board} 已写入 ${res.version}：${res.listed} 条` +

@@ -15,7 +15,7 @@ import { Hono } from "hono";
 import type { Env } from "../env";
 import { insertJob, listJobs } from "../lib/board-jobs";
 import { dispatchWorkflow, ghConfig, latestRun, mapStatus, missingSecrets } from "../lib/github";
-import { currentVersion, listReleased, resolveListedVersion } from "../lib/versions";
+import { currentVersion, listDataDays, listReleased, resolveListedVersion } from "../lib/versions";
 
 const MAX_PAGE_SIZE = 100;
 /** 一次最多刷新多少个：与 fetch-models.yml 的入参校验保持一致 */
@@ -138,8 +138,13 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
       c.req.query("version"),
     );
     if (!version) {
-      return c.json({ version: null, current, versions, total: 0, items: [] });
+      return c.json({ version: null, current, versions, days: [], total: 0, items: [] });
     }
+
+    /* 版本下拉列的是这一版内部的数据日分布，不是「发布过几次」 ——
+       同一个快照会被搬进下一版，按版本分组会出现 370 / 370 / 366 三家分晋，
+       加起来比总数还多。按行分组才恒等于 total。 */
+    const days = await listDataDays(c.env.DB, def.board, version);
 
     const { results } = await c.env.DB.prepare(
       `SELECT item_key, rank, score, name, cats,
@@ -177,6 +182,7 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
       version,
       current,
       versions,
+      days,
       total: rows.length,
       items: rows.map((r) => ({
         key: r.item_key,

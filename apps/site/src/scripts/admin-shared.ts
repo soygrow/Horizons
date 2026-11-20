@@ -228,6 +228,47 @@ export function fillVersionSelect(
   sel.value = want;
 }
 
+/** 某一个数据日采了多少条（接口的 days 字段） */
+export interface DataDay {
+  /** YYYY-MM-DD */
+  day: string;
+  count: number;
+}
+
+/**
+ * 填充「数据日」下拉：第一项是全部，其余按天倒序。
+ *
+ * 和 fillVersionSelect 的区别是分组维度：那个按**发布版本**分组，同一个快照
+ * 会被原样搬进下一版，于是 370 条的榜会列出 370 / 370 / 366，加起来 1106，
+ * 比总数还多。这个按**行级采集日**分组：每个条目只属于一天，各天条数之和
+ * 恒等于总数，行内「更新时间」显示的也正是这一天 —— 选哪天就全是哪天。
+ */
+export function fillDaySelect(
+  id: string,
+  days: DataDay[] | null | undefined,
+  total: number,
+  selected?: string | null,
+): void {
+  const sel = $(id) as HTMLSelectElement | null;
+  if (!sel) return;
+  const list = days ?? [];
+  if (list.length === 0) {
+    sel.hidden = true;
+    sel.innerHTML = "";
+    return;
+  }
+  sel.hidden = false;
+  sel.disabled = false;
+  const opts = [`<option value="">全部 · ${fmtNum(total)} 条</option>`];
+  for (const d of list) {
+    opts.push(
+      `<option value="${esc(d.day)}" title="${esc(d.day)} 采集 · ${fmtNum(d.count)} 条">${dayOf(d.day)} · ${fmtNum(d.count)} 条</option>`,
+    );
+  }
+  sel.innerHTML = opts.join("");
+  sel.value = selected && list.some((d) => d.day === selected) ? selected : "";
+}
+
 export function debounce(fn: () => void, delay = 300): () => void {
   let timer: number | undefined;
   return () => {

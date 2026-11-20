@@ -578,6 +578,33 @@ function chunkKeys<T>(items: readonly T[], size: number): T[][] {
   return out;
 }
 
+/** 去掉 `dataAt` 再按键排序序列化：只用来看「内容有没有变」 */
+export function cardBody(json: string): string {
+  try {
+    const obj = JSON.parse(json) as Record<string, unknown>;
+    delete obj.dataAt;
+    const keys = Object.keys(obj).sort();
+    return JSON.stringify(obj, keys);
+  } catch {
+    return json;
+  }
+}
+
+/**
+ * 卡片内容是否一样（忽略 `dataAt`）。
+ *
+ * `dataAt` 是「这一行是哪天采的」，不是内容。发布时整版都会带上今天的日期，
+ * 若按整串比较，370 行里没被重采的 320 行也会判成「变了」而重写 —— 它们的
+ * 更新日期跟着被推到今天，按数据日分组就又只剩一家了。
+ * 内容没变就别动它，旧日期自然留下来，各天条数才分得开。
+ */
+function sameCardContent(oldJson: string | null, next: unknown): boolean {
+  const nextJson = JSON.stringify(next);
+  if ((oldJson ?? "") === nextJson) return true;
+  if (!oldJson) return nextJson === "null";
+  return cardBody(oldJson) === cardBody(nextJson);
+}
+
 export async function patchBoard(client: D1Client, input: PatchInput): Promise<PatchResult> {
   const { board, rows, actor } = input;
   const now = Date.now();
@@ -644,7 +671,7 @@ export async function patchBoard(client: D1Client, input: PatchInput): Promise<P
       (old.url ?? null) === (r.url ?? null) &&
       (old.cats ?? null) === cats &&
       (old.variant_of ?? null) === (r.variantOf ?? null) &&
-      old.card === JSON.stringify(r.card) &&
+      sameCardContent(old.card, r.card) &&
       prevSize.get(r.key) === nextBytes;
 
     if (same) unchanged++;

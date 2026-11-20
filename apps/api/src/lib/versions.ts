@@ -57,6 +57,10 @@ export interface VersionOption {
 const DATA_AT_EXPR =
   "MAX(COALESCE(last_crawled_at, json_extract(card, '$.lastCrawledAt'), json_extract(card, '$.dataAt'), json_extract(card, '$.updatedAt'), json_extract(card, '$.lastSeenAt')))";
 
+/** 同一套回落顺序，但不带 MAX —— 按行分组时每一行要算自己的日期 */
+const DATA_AT_ROW_EXPR =
+  "COALESCE(last_crawled_at, json_extract(card, '$.lastCrawledAt'), json_extract(card, '$.dataAt'), json_extract(card, '$.updatedAt'), json_extract(card, '$.lastSeenAt'))";
+
 /**
  * 该榜库里还留着哪些版本（倒序）。
  *
@@ -76,6 +80,41 @@ export async function listBoardVersions(db: D1Database, board: Board): Promise<V
     .bind(board)
     .all<{ version: string; n: number; data_at: string | null }>();
   return (results ?? []).map((r) => ({ version: r.version, count: r.n, dataAt: r.data_at ?? null }));
+}
+
+/** 「某一天采了多少条」 */
+export interface DataDayOption {
+  /** YYYY-MM-DD */
+  day: string;
+  count: number;
+}
+
+/**
+ * 当前版本内部，按**行级数据日**分组各有多少条。
+ *
+ * 版本号筛选不能按 `version` 分组：那是「哪次发布」，同一个快照会被
+ * 搬进下一版，于是三个版本各显示 370 条、加起来 1106 —— 比总数还多。
+ * 按行分组才对得上：每个模型只属于一个日期，各天条数之和恒等于总数，
+ * 而且行内「更新时间」显示的也是这个日期，选哪天就全是哪天。
+ */
+export async function listDataDays(
+  db: D1Database,
+  board: Board,
+  version: string,
+): Promise<DataDayOption[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT substr(${DATA_AT_ROW_EXPR}, 1, 10) AS day, COUNT(*) AS n
+       FROM board_listed
+       WHERE version = ? AND board = ?
+       GROUP BY day
+       ORDER BY day DESC`,
+    )
+    .bind(version, board)
+    .all<{ day: string | null; n: number }>();
+  return (results ?? [])
+    .filter((r): r is { day: string; n: number } => typeof r.day === "string" && r.day.length >= 10)
+    .map((r) => ({ day: r.day, count: r.n }));
 }
 
 /**

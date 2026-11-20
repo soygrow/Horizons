@@ -14,12 +14,13 @@ import {
   apiGet,
   apiPost,
   esc,
-  fillVersionSelect,
+  fillDaySelect,
   fmtNum,
   fmtStamp,
   fmtTime,
   pickedDataAt,
   versionNote,
+  type DataDay,
   type VersionOption,
 } from "./admin-shared";
 
@@ -101,6 +102,8 @@ interface ListedRes {
   current?: string | null;
   /** 库里还留着的版本（倒序）+ 每版条数 */
   versions?: VersionOption[];
+  /** 这一版内部按行级采集日分组：各天条数之和 = total */
+  days?: DataDay[];
   total: number;
   items: ListedItem[];
 }
@@ -273,6 +276,12 @@ const modelsState = {
   listedVersion: "",
   /** 库里还留着的版本 + 每版条数 */
   versions: [] as VersionOption[],
+  /** 按数据日筛（空 = 全部）：值形如 2026-11-20 */
+  day: "",
+  /** 这一版的行级数据日分布 */
+  days: [] as DataDay[],
+  /** 这一版总条数（下拉的「全部」用它） */
+  total: 0,
 };
 
 let modelsMounted = false;
@@ -285,9 +294,16 @@ function renderListed(): void {
   if (!body || !pager) return;
 
   if (meta) {
-    /* 版本号取数据截止日（20261119）；老版本没有 dataAt 时退回发布日并写明 */
+    /*
+     * 选了某个数据日，标题里的版本号就跟着那一天走 —— 否则会出现
+     * 「版本 20261120」而下面每行都写着 2026-11-18，正好是用户说的对不上。
+     */
+    const dayLabel = modelsState.day ? modelsState.day.replace(/-/g, "") : null;
+    const head = dayLabel
+      ? `版本 ${dayLabel}（按数据日筛选）`
+      : versionNote(modelsState.version, pickedDataAt(modelsState));
     meta.textContent = modelsState.version
-      ? `${versionNote(modelsState.version, pickedDataAt(modelsState))} · 共 ${fmtNum(modelsState.all.length)} 条 · 筛选后 ${fmtNum(modelsState.filtered.length)} 条`
+      ? `${head} · 共 ${fmtNum(modelsState.all.length)} 条 · 筛选后 ${fmtNum(modelsState.filtered.length)} 条`
       : "还没有发布过任何版本";
   }
 
@@ -379,9 +395,16 @@ function renderListed(): void {
   }
 }
 
+/** 这一行属于哪天（YYYY-MM-DD），和「更新时间」列、下拉项同一口径 */
+function itemDay(m: ListedItem): string {
+  const raw = m.dataAt ?? modelsState.version ?? "";
+  return raw.slice(0, 10);
+}
+
 function applyFilter(): void {
   const q = modelsState.q.trim().toLowerCase();
   modelsState.filtered = modelsState.all.filter((m) => {
+    if (modelsState.day && itemDay(m) !== modelsState.day) return false;
     if (modelsState.provider !== "all" && (m.provider ?? "") !== modelsState.provider) return false;
     if (!q) return true;
     return m.name.toLowerCase().includes(q) || m.key.toLowerCase().includes(q);
@@ -426,7 +449,11 @@ async function loadListed(): Promise<void> {
     modelsState.all = res.items;
     modelsState.version = res.version;
     modelsState.versions = res.versions ?? [];
-    fillVersionSelect("mdl-listed-version", modelsState.versions, res.version);
+    /* 下拉按「数据日」分，不按发布版本：一版里可能横跨两次采集，
+       各天条数相加才等于总数，且行内更新时间与本项一致 */
+    modelsState.days = res.days ?? [];
+    modelsState.total = res.total;
+    fillDaySelect("mdl-listed-version", modelsState.days, res.total, modelsState.day);
 
     // 厂商下拉跟着数据走：不写死列表，新厂商出现时自动就有
     const sel = $("mdl-listed-provider") as HTMLSelectElement | null;
@@ -640,13 +667,13 @@ export function mountAdminModels(): void {
     applyFilter();
   });
 
-  /* 换版本 = 换一份数据：已勾选的模型属于上一版，留着会让「更新选中」摸到看不见的模型 */
+  /* 选「数据日」= 在前端筛出这一天采的行，数据已经全在手里，不用再请求 */
   const versionSel = $("mdl-listed-version") as HTMLSelectElement | null;
   versionSel?.addEventListener("change", () => {
-    modelsState.listedVersion = versionSel.value;
+    modelsState.day = versionSel.value;
+    /* 换筛选 = 换一批模型，已勾选的不一定还看得见，清掉免得「更新选中」误伤 */
     modelsState.selected.clear();
-    modelsState.page = 1;
-    void loadListed();
+    applyFilter();
   });
 
   const head = $("mdl-listed-select-all") as HTMLInputElement | null;
