@@ -222,7 +222,14 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
     }
 
     const cfg = ghConfig(c.env);
-    if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 400);
+    if (!cfg) {
+      /* detail 是给人看的：前端直接把这条错误写到提交按钮下面 */
+      const missing = missingSecrets(c.env);
+      return c.json(
+        { error: "github_not_configured", detail: `未配置 GitHub 集成（缺 ${missing.join(" / ")}）`, missing },
+        400,
+      );
+    }
 
     try {
       const run = await dispatchWorkflow(cfg, def.refreshWorkflow, { models: keys.join(",") });

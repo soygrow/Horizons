@@ -121,6 +121,9 @@ const KIND_LABEL: Record<string, string> = {
 
 const PAGE_SIZE = 50;
 
+/** 单次定向刷新的条数上限，与 apps/api 的 MAX_REFRESH 一致（Actions 一次跑不完更多） */
+const MAX_REFRESH_KEYS = 60;
+
 const num = (v: unknown): string =>
   typeof v === "number" && Number.isFinite(v) ? v.toFixed(1) : "—";
 
@@ -324,7 +327,7 @@ function renderListed(): void {
             ${ageNote(ageDays(rowAt))}
           </td>
           <td class="px-4 py-2.5 text-right">
-            <button type="button" data-only="${esc(m.key)}" class="text-[11px] text-primary transition hover:underline">更新</button>
+            <button type="button" data-only="${esc(m.key)}" class="text-[11px] text-primary transition hover:underline disabled:cursor-not-allowed disabled:opacity-40">更新</button>
           </td>
         </tr>`;
       })
@@ -359,15 +362,16 @@ function renderListed(): void {
   body.querySelectorAll<HTMLButtonElement>("button[data-only]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const key = btn.dataset.only ?? "";
-      if (key) void refreshModels([key]);
+      if (key) void refreshModels([key], { keepSelection: true });
     });
   });
 
   syncSelectHead();
   if (refreshBtn) {
     const n = modelsState.selected.size;
-    refreshBtn.disabled = n === 0;
-    refreshBtn.textContent = n > 0 ? `更新选中（${n}）` : "更新选中";
+    /* 提交中重渲染（轮询刷新榜单会走到这）不能把按钮解禁，否则看着像能再点一次 */
+    refreshBtn.disabled = refreshInFlight || n === 0;
+    refreshBtn.textContent = refreshInFlight ? "提交中…" : n > 0 ? `更新选中（${n}）` : "更新选中";
   }
 }
 
@@ -439,27 +443,95 @@ async function loadListed(): Promise<void> {
   }
 }
 
-async function refreshModels(keys: string[]): Promise<void> {
-  if (!keys.length) return;
-  const btn = $("mdl-listed-refresh") as HTMLButtonElement | null;
-  if (btn) btn.disabled = true;
-  setStatus("mdl", `正在提交 ${keys.length} 个模型的定向刷新…`, "busy");
-
-  try {
-    await apiPost("/models/refresh", { keys });
-    modelsState.selected.clear();
-    setStatus(
-      "mdl",
-      `已提交 ${keys.length} 个模型的刷新，跑完会自动增量写库；日志见「运行记录」`,
-      "busy",
-    );
-    pollModels(10);
-  } catch (e) {
-    setStatus("mdl", `提交失败：${esc(msg(e))}`, "bad");
-    if (btn) btn.disabled = modelsState.selected.size === 0;
+/**
+ * 提交结果写在榜单面板自己的状态行里。
+ *
+ * 原来写的是 `#mdl-status`，那个元素在「采集同步」子页签里 —— 用户站在
+ * 「线上榜单」点「更新选中」，无论成功还是失败都看不到一个字，感觉就是
+ * 点了没反应。
+ */
+function setListedStatus(text: string, tone: "idle" | "busy" | "ok" | "bad"): void {
+  const el = $("mdl-listed-status");
+  if (!el) return;
+  if (!text) {
+    el.hidden = true;
+    el.innerHTML = "";
     return;
   }
-  if (btn) btn.disabled = modelsState.selected.size === 0;
+  el.hidden = false;
+  el.innerHTML = text;
+  const base = "border-b border-border px-4 py-2 text-xs ";
+  el.className =
+    base +
+    (tone === "bad"
+      ? "text-red-600"
+      : tone === "ok"
+        ? "text-emerald-600"
+        : tone === "busy"
+          ? "text-amber-600"
+          : "text-ink-muted");
+}
+
+/**
+ * 定向刷新是否在提交中。
+ *
+ * 派发 workflow 是一次网络往返，连点两下就会派发两次采集任务；而且成功
+ * 后勾选被清空，第二次点击拿到空数组会静默 return —— 用户看到的就是
+ * 「点了没反应」。所以这里锁住整段提交，期间按钮统一置灰。
+ */
+let refreshInFlight = false;
+
+async function refreshModels(keys: string[], opts: { keepSelection?: boolean } = {}): Promise<void> {
+  if (refreshInFlight) return;
+  const keepSelection = opts.keepSelection === true;
+
+  const btn = $("mdl-listed-refresh") as HTMLButtonElement | null;
+  if (!keys.length) {
+    setListedStatus("先勾选要更新的模型，再点「更新选中」", "idle");
+    return;
+  }
+  /* 和后端 MAX_REFRESH 对齐：Actions 一次跑不完更多，超了必被拒，别白等一次往返 */
+  if (keys.length > MAX_REFRESH_KEYS) {
+    setListedStatus(
+      `一次最多 ${MAX_REFRESH_KEYS} 个，当前选了 ${keys.length} 个 —— 点「本页」勾选，分批提交`,
+      "bad",
+    );
+    return;
+  }
+
+  refreshInFlight = true;
+  const idleLabel = btn?.textContent ?? "更新选中";
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "提交中…";
+  }
+  /* 行内「更新」走同一个提交，一起置灰，别让人以为还能再点一次 */
+  const rowBtns = [...document.querySelectorAll<HTMLButtonElement>("button[data-only]")];
+  rowBtns.forEach((b) => (b.disabled = true));
+  setListedStatus(`正在提交 ${keys.length} 个模型的定向刷新…`, "busy");
+
+  try {
+    const res = await apiPost<{ count?: number; run?: { url?: string } | null }>("/models/refresh", { keys });
+    if (!keepSelection) modelsState.selected.clear();
+    /* 勾选变了就得重渲染：不然复选框还打着勾、按钮还写着「更新选中（50）」 */
+    renderListed();
+
+    const link = res.run?.url
+      ? ` · <a class="underline" href="${esc(res.run.url)}" target="_blank" rel="noreferrer">查看运行</a>`
+      : "";
+    setListedStatus(`已提交 ${keys.length} 个模型的刷新，跑完会自动增量写库${link}`, "ok");
+    pollModels(10);
+  } catch (e) {
+    /* 失败时勾选留着：改完配置可以直接再点一次，不用重新勾 50 个 */
+    setListedStatus(`提交失败：${esc(msg(e))}`, "bad");
+    if (btn) {
+      btn.disabled = modelsState.selected.size === 0;
+      btn.textContent = idleLabel;
+    }
+    rowBtns.forEach((b) => (b.disabled = false));
+  } finally {
+    refreshInFlight = false;
+  }
 }
 
 async function publishModels(): Promise<void> {
