@@ -1,85 +1,78 @@
 {
-  "updatedAt": "2026-11-20T03:15:47.524Z",
+  "updatedAt": "2026-11-20T03:42:00.445Z",
   "ruleVersion": "gh-rank-v1.6",
   "scoreModel": "pps-v4",
   "target": 2000,
   "board": {
-    "updatedAt": "2026-11-19T10:33:25.766Z",
+    "updatedAt": "2026-11-20T03:42:00.445Z",
     "rows": [
       {
         "fullName": "lobehub/lobe-icons",
-        "score": 82.4,
-        "stars": 2710,
+        "score": 82.5,
+        "stars": 2713,
         "grade": "S",
         "dv": 9
       },
       {
-        "fullName": "Vonage/vonage-php-sdk-core",
-        "score": 81.4,
-        "stars": 931,
-        "grade": "S",
-        "dv": 8
-      },
-      {
         "fullName": "lobehub/lobe-tts",
         "score": 81.3,
-        "stars": 811,
+        "stars": 810,
         "grade": "S",
         "dv": 8
       },
       {
         "fullName": "vercel/workflow",
         "score": 80.9,
-        "stars": 2524,
+        "stars": 2482,
         "grade": "S",
         "dv": 8
       },
       {
         "fullName": "aurelio-labs/semantic-router",
         "score": 80.8,
-        "stars": 4040,
+        "stars": 3989,
         "grade": "S",
         "dv": 8
       },
       {
         "fullName": "LazyAGI/LazyLLM",
         "score": 80.1,
-        "stars": 3891,
+        "stars": 3888,
         "grade": "S",
         "dv": 8
       },
       {
-        "fullName": "zhayujie/bot-on-anything",
-        "score": 80,
-        "stars": 4219,
+        "fullName": "embeddings-benchmark/mteb",
+        "score": 79.9,
+        "stars": 3482,
         "grade": "S",
         "dv": 7
       },
       {
-        "fullName": "embeddings-benchmark/mteb",
+        "fullName": "Vonage/vonage-php-sdk-core",
         "score": 79.9,
-        "stars": 3518,
+        "stars": 930,
         "grade": "S",
-        "dv": 7
+        "dv": 8
       },
       {
         "fullName": "maziyarpanahi/openmed",
         "score": 79.6,
-        "stars": 5826,
+        "stars": 5724,
         "grade": "S",
         "dv": 8
       },
       {
         "fullName": "Azure-Samples/azure-search-openai-demo",
         "score": 79.3,
-        "stars": 7804,
+        "stars": 7796,
         "grade": "S",
         "dv": 7
       },
       {
         "fullName": "sipyourdrink-ltd/bernstein",
-        "score": 78.8,
-        "stars": 1216,
+        "score": 78.9,
+        "stars": 1343,
         "grade": "A",
         "dv": 8
       },
@@ -93,28 +86,21 @@
       {
         "fullName": "Giskard-AI/giskard-oss",
         "score": 78.7,
-        "stars": 5957,
+        "stars": 5934,
         "grade": "A",
         "dv": 8
       },
       {
-        "fullName": "TanStack/ai",
-        "score": 78.7,
-        "stars": 3369,
-        "grade": "A",
-        "dv": 9
-      },
-      {
         "fullName": "usemoss/moss",
         "score": 78.6,
-        "stars": 807,
+        "stars": 800,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "openai-php/client",
         "score": 78.4,
-        "stars": 5838,
+        "stars": 5837,
         "grade": "A",
         "dv": 9
       },
@@ -126,9 +112,16 @@
         "dv": 7
       },
       {
+        "fullName": "TanStack/ai",
+        "score": 77.7,
+        "stars": 3288,
+        "grade": "A",
+        "dv": 9
+      },
+      {
         "fullName": "crmne/ruby_llm",
         "score": 77.2,
-        "stars": 4517,
+        "stars": 4489,
         "grade": "A",
         "dv": 8
       },
@@ -574,13 +567,6 @@
         "dv": 8
       },
       {
-        "fullName": "neuron-core/neuron-ai",
-        "score": 74.6,
-        "stars": 2177,
-        "grade": "A",
-        "dv": 8
-      },
-      {
         "fullName": "patterns-ai-core/langchainrb",
         "score": 74.6,
         "stars": 2006,
@@ -621,6 +607,13 @@
         "stars": 7608,
         "grade": "A",
         "dv": 4
+      },
+      {
+        "fullName": "karust/openserp",
+        "score": 74.5,
+        "stars": 1520,
+        "grade": "A",
+        "dv": 8
       },
       {
         "fullName": "apache/doris",
@@ -721,6 +714,13 @@
         "dv": 8
       },
       {
+        "fullName": "zhayujie/bot-on-anything",
+        "score": 74,
+        "stars": 4219,
+        "grade": "A",
+        "dv": 7
+      },
+      {
         "fullName": "strukto-ai/mirage",
         "score": 74,
         "stars": 3755,
@@ -798,11 +798,11 @@
         "dv": 7
       },
       {
-        "fullName": "awslabs/dgl-ke",
+        "fullName": "stripe/ai",
         "score": 73.8,
-        "stars": 1337,
+        "stars": 2002,
         "grade": "B",
-        "dv": 8
+        "dv": 7
       },
       {
         "fullName": "promptise-com/Foundry",
@@ -824,13 +824,6 @@
         "stars": 16660,
         "grade": "B",
         "dv": 6
-      },
-      {
-        "fullName": "Continuum-AI-Corp/OrcaRouter-Lite",
-        "score": 73.7,
-        "stars": 3424,
-        "grade": "B",
-        "dv": 7
       },
       {
         "fullName": "he-yufeng/CoreCoder",
@@ -882,11 +875,25 @@
         "dv": 8
       },
       {
+        "fullName": "neuron-core/neuron-ai",
+        "score": 73.6,
+        "stars": 2163,
+        "grade": "B",
+        "dv": 8
+      },
+      {
         "fullName": "google/adk-java",
         "score": 73.6,
         "stars": 1759,
         "grade": "B",
         "dv": 8
+      },
+      {
+        "fullName": "Continuum-AI-Corp/OrcaRouter-Lite",
+        "score": 73.6,
+        "stars": 1443,
+        "grade": "B",
+        "dv": 7
       },
       {
         "fullName": "Arize-ai/openinference",
@@ -936,13 +943,6 @@
         "stars": 2074,
         "grade": "B",
         "dv": 9
-      },
-      {
-        "fullName": "karust/openserp",
-        "score": 73.5,
-        "stars": 1603,
-        "grade": "B",
-        "dv": 8
       },
       {
         "fullName": "dynamiq-ai/dynamiq",
@@ -1176,20 +1176,6 @@
         "dv": 8
       },
       {
-        "fullName": "open-gitagent/opengap",
-        "score": 72.8,
-        "stars": 2983,
-        "grade": "B",
-        "dv": 8
-      },
-      {
-        "fullName": "stripe/ai",
-        "score": 72.8,
-        "stars": 2073,
-        "grade": "B",
-        "dv": 7
-      },
-      {
         "fullName": "ihor-sokoliuk/mcp-searxng",
         "score": 72.8,
         "stars": 1339,
@@ -1202,13 +1188,6 @@
         "stars": 1014,
         "grade": "B",
         "dv": 8
-      },
-      {
-        "fullName": "OSideMedia/higgsfield-ai-prompt-skill",
-        "score": 72.8,
-        "stars": 950,
-        "grade": "B",
-        "dv": 7
       },
       {
         "fullName": "mvschwarz/openrig",
@@ -1263,6 +1242,13 @@
         "fullName": "Azure-Samples/serverless-chat-langchainjs",
         "score": 72.7,
         "stars": 866,
+        "grade": "B",
+        "dv": 7
+      },
+      {
+        "fullName": "OSideMedia/higgsfield-ai-prompt-skill",
+        "score": 72.7,
+        "stars": 823,
         "grade": "B",
         "dv": 7
       },
@@ -1375,13 +1361,6 @@
         "fullName": "fetchai/uAgents",
         "score": 72.4,
         "stars": 1643,
-        "grade": "B",
-        "dv": 8
-      },
-      {
-        "fullName": "BAI-LAB/MemoryOS",
-        "score": 72.4,
-        "stars": 1615,
         "grade": "B",
         "dv": 8
       },
@@ -1596,13 +1575,6 @@
         "dv": 7
       },
       {
-        "fullName": "tutti-os/tutti",
-        "score": 72,
-        "stars": 3873,
-        "grade": "B",
-        "dv": null
-      },
-      {
         "fullName": "modu-ai/moai-adk",
         "score": 72,
         "stars": 1251,
@@ -1671,6 +1643,13 @@
         "stars": 1654,
         "grade": "B",
         "dv": 5
+      },
+      {
+        "fullName": "awslabs/dgl-ke",
+        "score": 71.8,
+        "stars": 1337,
+        "grade": "B",
+        "dv": 8
       },
       {
         "fullName": "microsoft/prompty",
@@ -2359,6 +2338,13 @@
         "dv": 8
       },
       {
+        "fullName": "open-gitagent/opengap",
+        "score": 70.8,
+        "stars": 2983,
+        "grade": "B",
+        "dv": 8
+      },
+      {
         "fullName": "codigoencasa/builderbot",
         "score": 70.8,
         "stars": 2977,
@@ -2371,13 +2357,6 @@
         "stars": 2730,
         "grade": "B",
         "dv": 8
-      },
-      {
-        "fullName": "amElnagdy/delegate-skills",
-        "score": 70.8,
-        "stars": 2534,
-        "grade": "B",
-        "dv": null
       },
       {
         "fullName": "codewithMUHILAN/Lightswind-UI-Library",
@@ -2583,13 +2562,6 @@
         "dv": 7
       },
       {
-        "fullName": "metadist/synaplan",
-        "score": 70.5,
-        "stars": 827,
-        "grade": "B",
-        "dv": null
-      },
-      {
         "fullName": "mukul975/Anthropic-Cybersecurity-Skills",
         "score": 70.4,
         "stars": 35267,
@@ -2621,6 +2593,13 @@
         "fullName": "llm-as-a-verifier/llm-as-a-verifier",
         "score": 70.4,
         "stars": 3341,
+        "grade": "B",
+        "dv": 8
+      },
+      {
+        "fullName": "BAI-LAB/MemoryOS",
+        "score": 70.4,
+        "stars": 1615,
         "grade": "B",
         "dv": 8
       },
@@ -2751,25 +2730,11 @@
         "dv": 6
       },
       {
-        "fullName": "griptape-ai/griptape",
-        "score": 70.2,
-        "stars": 2586,
-        "grade": "B",
-        "dv": null
-      },
-      {
         "fullName": "mukul975/cve-mcp-server",
         "score": 70.2,
         "stars": 1727,
         "grade": "B",
         "dv": 7
-      },
-      {
-        "fullName": "Jwuthri/Tracely-ai",
-        "score": 70.2,
-        "stars": 1299,
-        "grade": "B",
-        "dv": null
       },
       {
         "fullName": "NVIDIA-AI-Blueprints/pdf-to-podcast",
@@ -3479,13 +3444,6 @@
         "dv": 7
       },
       {
-        "fullName": "SenteLabsAI/OpenExecutive",
-        "score": 69.2,
-        "stars": 5705,
-        "grade": "B",
-        "dv": null
-      },
-      {
         "fullName": "mvanhorn/cli-printing-press",
         "score": 69.2,
         "stars": 4888,
@@ -3563,13 +3521,6 @@
         "dv": 8
       },
       {
-        "fullName": "compozy/compozy",
-        "score": 69.1,
-        "stars": 2861,
-        "grade": "B",
-        "dv": null
-      },
-      {
         "fullName": "google-gemini/genai-processors",
         "score": 69.1,
         "stars": 2120,
@@ -3619,13 +3570,6 @@
         "dv": 8
       },
       {
-        "fullName": "TheR1D/shell_gpt",
-        "score": 69,
-        "stars": 12297,
-        "grade": "B",
-        "dv": 7
-      },
-      {
         "fullName": "homarr-labs/dashboard-icons",
         "score": 69,
         "stars": 8966,
@@ -3638,13 +3582,6 @@
         "stars": 8712,
         "grade": "B",
         "dv": 7
-      },
-      {
-        "fullName": "e2b-dev/fragments",
-        "score": 69,
-        "stars": 6408,
-        "grade": "B",
-        "dv": null
       },
       {
         "fullName": "wiltodelta/remove-ai-watermarks",
@@ -3899,13 +3836,6 @@
         "dv": 7
       },
       {
-        "fullName": "omnigent-ai/omnigent",
-        "score": 68.6,
-        "stars": 11124,
-        "grade": "B",
-        "dv": null
-      },
-      {
         "fullName": "algorithmicsuperintelligence/optillm",
         "score": 68.6,
         "stars": 4334,
@@ -3932,13 +3862,6 @@
         "stars": 3729,
         "grade": "B",
         "dv": 5
-      },
-      {
-        "fullName": "harbor-framework/terminal-bench-1",
-        "score": 68.6,
-        "stars": 2614,
-        "grade": "B",
-        "dv": 7
       },
       {
         "fullName": "pingcap/ossinsight",
@@ -4030,13 +3953,6 @@
         "stars": 2319,
         "grade": "B",
         "dv": 7
-      },
-      {
-        "fullName": "forloopcodes/contextplus",
-        "score": 68.5,
-        "stars": 1987,
-        "grade": "B",
-        "dv": 8
       },
       {
         "fullName": "SemiAnalysisAI/InferenceX",
@@ -4338,13 +4254,6 @@
         "stars": 11288,
         "grade": "B",
         "dv": 9
-      },
-      {
-        "fullName": "antvis/Infographic",
-        "score": 68.1,
-        "stars": 7087,
-        "grade": "B",
-        "dv": null
       },
       {
         "fullName": "mindcraft-bots/mindcraft",
@@ -4779,13 +4688,6 @@
         "stars": 2369,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "agentlas-ai/Agentlas-OS",
-        "score": 67.6,
-        "stars": 1589,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "jsmastery-pro/skills",
@@ -5264,13 +5166,6 @@
         "dv": 6
       },
       {
-        "fullName": "filtalgo/Filtmall-Shopping-Skill",
-        "score": 67,
-        "stars": 1029,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "bitjaru/styleseed",
         "score": 67,
         "stars": 992,
@@ -5376,13 +5271,6 @@
         "dv": 3
       },
       {
-        "fullName": "e2b-dev/code-interpreter",
-        "score": 66.8,
-        "stars": 2428,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "cortexkit/magic-context",
         "score": 66.8,
         "stars": 2424,
@@ -5402,13 +5290,6 @@
         "stars": 1382,
         "grade": "C",
         "dv": 3
-      },
-      {
-        "fullName": "tastyeffectco/sandboxd",
-        "score": 66.8,
-        "stars": 978,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "AgileRL/AgileRL",
@@ -5558,13 +5439,6 @@
         "dv": 7
       },
       {
-        "fullName": "HiThink-Tech/Financial-API",
-        "score": 66.6,
-        "stars": 4116,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "yaojingang/GEOFlow",
         "score": 66.6,
         "stars": 3970,
@@ -5670,6 +5544,13 @@
         "dv": 6
       },
       {
+        "fullName": "forloopcodes/contextplus",
+        "score": 66.5,
+        "stars": 1987,
+        "grade": "C",
+        "dv": 8
+      },
+      {
         "fullName": "LiteLLM-Labs/litellm-agent-control-plane",
         "score": 66.5,
         "stars": 1321,
@@ -5747,25 +5628,11 @@
         "dv": 3
       },
       {
-        "fullName": "inkeep/open-knowledge",
-        "score": 66.3,
-        "stars": 4739,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "agent-of-empires/agent-of-empires",
         "score": 66.3,
         "stars": 3394,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "openai/openai-dotnet",
-        "score": 66.3,
-        "stars": 2719,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "mattzcarey/shippie",
@@ -5885,13 +5752,6 @@
         "stars": 6437,
         "grade": "C",
         "dv": 7
-      },
-      {
-        "fullName": "huggingface/text-embeddings-inference",
-        "score": 66.1,
-        "stars": 5119,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "AgenticResourceRegistry/AgenticResourceRegistry",
@@ -6055,13 +5915,6 @@
         "dv": 4
       },
       {
-        "fullName": "fengshao1227/ccg-workflow",
-        "score": 65.9,
-        "stars": 5979,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "melgarafael/DeskcommCRM",
         "score": 65.9,
         "stars": 4947,
@@ -6074,6 +5927,13 @@
         "stars": 3031,
         "grade": "C",
         "dv": 8
+      },
+      {
+        "fullName": "harbor-framework/terminal-bench-1",
+        "score": 65.9,
+        "stars": 2614,
+        "grade": "C",
+        "dv": 7
       },
       {
         "fullName": "primocms/primo",
@@ -6123,13 +5983,6 @@
         "stars": 860,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "ahmadrosid/nakama",
-        "score": 65.9,
-        "stars": 803,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "volcengine/OpenViking",
@@ -6342,13 +6195,6 @@
         "dv": 4
       },
       {
-        "fullName": "rlaope/oh-my-hermes",
-        "score": 65.5,
-        "stars": 4894,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "code-yeongyu/lazycodex",
         "score": 65.5,
         "stars": 3852,
@@ -6410,13 +6256,6 @@
         "stars": 1319,
         "grade": "C",
         "dv": 3
-      },
-      {
-        "fullName": "alchaincyf/fanbox",
-        "score": 65.5,
-        "stars": 1064,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "indranilbanerjee/digital-marketing-pro",
@@ -6741,13 +6580,6 @@
         "dv": 3
       },
       {
-        "fullName": "cosmo-wander-ai/cosmo-edge",
-        "score": 65.1,
-        "stars": 2076,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "Agents365-ai/video-podcast-maker",
         "score": 65.1,
         "stars": 1707,
@@ -6830,13 +6662,6 @@
         "stars": 6848,
         "grade": "C",
         "dv": 7
-      },
-      {
-        "fullName": "Arthur-Ficial/apfel",
-        "score": 64.9,
-        "stars": 6596,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "Gaurav-Gosain/tuios",
@@ -7061,13 +6886,6 @@
         "stars": 2635,
         "grade": "C",
         "dv": 8
-      },
-      {
-        "fullName": "chubbyguan/chubbyskills",
-        "score": 64.7,
-        "stars": 1289,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "Fosowl/agenticSeek",
@@ -7322,13 +7140,6 @@
         "dv": 9
       },
       {
-        "fullName": "openai/openai-openapi",
-        "score": 64.2,
-        "stars": 2581,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "appleboy/CodeGPT",
         "score": 64.2,
         "stars": 1504,
@@ -7390,13 +7201,6 @@
         "stars": 2463,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "64bit/async-openai",
-        "score": 64.1,
-        "stars": 2033,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "shivammehta25/Matcha-TTS",
@@ -7497,13 +7301,6 @@
         "dv": 3
       },
       {
-        "fullName": "Neywa-Labs/mlx-vlm",
-        "score": 63.9,
-        "stars": 5833,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "ageerle/ruoyi-ai",
         "score": 63.9,
         "stars": 5799,
@@ -7572,20 +7369,6 @@
         "stars": 3305,
         "grade": "C",
         "dv": 3
-      },
-      {
-        "fullName": "Forward-Future/loopy",
-        "score": 63.8,
-        "stars": 3211,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "NarratorAI-Studio/narrator-ai-cli-skill",
-        "score": 63.8,
-        "stars": 3079,
-        "grade": "C",
-        "dv": 7
       },
       {
         "fullName": "google/tunix",
@@ -7742,13 +7525,6 @@
         "dv": 8
       },
       {
-        "fullName": "techjarves/Portable-Local-Studio",
-        "score": 63.6,
-        "stars": 1580,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "ttop32/MouseTooltipTranslator",
         "score": 63.6,
         "stars": 1362,
@@ -7787,13 +7563,6 @@
         "fullName": "AntigmaLabs/ante",
         "score": 63.5,
         "stars": 2010,
-        "grade": "C",
-        "dv": 4
-      },
-      {
-        "fullName": "stakpak/agent",
-        "score": 63.5,
-        "stars": 1838,
         "grade": "C",
         "dv": 4
       },
@@ -7854,9 +7623,9 @@
         "dv": 4
       },
       {
-        "fullName": "phuc-nt/my-translator",
+        "fullName": "stakpak/agent",
         "score": 63.4,
-        "stars": 1315,
+        "stars": 1838,
         "grade": "C",
         "dv": 4
       },
@@ -7908,13 +7677,6 @@
         "stars": 2616,
         "grade": "C",
         "dv": 7
-      },
-      {
-        "fullName": "cytostack/openwolf",
-        "score": 63.3,
-        "stars": 2398,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "CoderGamester/mcp-unity",
@@ -8057,6 +7819,13 @@
         "dv": 7
       },
       {
+        "fullName": "TheR1D/shell_gpt",
+        "score": 63,
+        "stars": 12297,
+        "grade": "C",
+        "dv": 7
+      },
+      {
         "fullName": "aden-hive/hive",
         "score": 63,
         "stars": 11132,
@@ -8153,13 +7922,6 @@
         "stars": 870,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "rshankras/claude-code-apple-skills",
-        "score": 62.9,
-        "stars": 842,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "aaif-goose/goose",
@@ -8295,13 +8057,6 @@
         "dv": 6
       },
       {
-        "fullName": "RightNow-AI/openfang",
-        "score": 62.6,
-        "stars": 18236,
-        "grade": "C",
-        "dv": 5
-      },
-      {
         "fullName": "nidhinjs/prompt-master",
         "score": 62.6,
         "stars": 15265,
@@ -8363,13 +8118,6 @@
         "stars": 37181,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "MiroMindAI/MiroFlow",
-        "score": 62.5,
-        "stars": 3124,
-        "grade": "C",
-        "dv": 6
       },
       {
         "fullName": "PhyAgentOS/PhyAgentOS-core",
@@ -8540,13 +8288,6 @@
         "dv": 4
       },
       {
-        "fullName": "cobusgreyling/loop-engineering",
-        "score": 62.2,
-        "stars": 11669,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "OpenRLHF/OpenRLHF",
         "score": 62.2,
         "stars": 10129,
@@ -8624,13 +8365,6 @@
         "dv": 4
       },
       {
-        "fullName": "foxhui/WebAI2API",
-        "score": 62.2,
-        "stars": 1412,
-        "grade": "C",
-        "dv": 4
-      },
-      {
         "fullName": "LangChat/langchat",
         "score": 62.2,
         "stars": 1321,
@@ -8664,13 +8398,6 @@
         "stars": 5569,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "MG1937/ASC",
-        "score": 62.1,
-        "stars": 2604,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "madox2/vim-ai",
@@ -8876,13 +8603,6 @@
         "dv": 4
       },
       {
-        "fullName": "Gourieff/ComfyUI-ReActor",
-        "score": 61.8,
-        "stars": 1392,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "Kuingsmile/word-GPT-Plus",
         "score": 61.8,
         "stars": 1374,
@@ -9072,18 +8792,18 @@
         "dv": 4
       },
       {
-        "fullName": "mvdctop/Movie_Data_Capture",
-        "score": 61.4,
-        "stars": 7450,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "NeoLabHQ/context-engineering-kit",
         "score": 61.4,
         "stars": 1793,
         "grade": "C",
         "dv": 6
+      },
+      {
+        "fullName": "phuc-nt/my-translator",
+        "score": 61.4,
+        "stars": 1315,
+        "grade": "C",
+        "dv": 4
       },
       {
         "fullName": "XiaoLuoLYG/GOD",
@@ -9105,20 +8825,6 @@
         "stars": 5551,
         "grade": "C",
         "dv": 8
-      },
-      {
-        "fullName": "ScrapeCreators/social-media-research-skills",
-        "score": 61.3,
-        "stars": 5099,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "RefoundAI/lenny-skills",
-        "score": 61.3,
-        "stars": 1453,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "AQBot-Desktop/AQBot",
@@ -9170,25 +8876,11 @@
         "dv": 6
       },
       {
-        "fullName": "JimLiu/baoyu-design",
-        "score": 61.2,
-        "stars": 5309,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "PeonPing/peon-ping",
         "score": 61.2,
         "stars": 5096,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "rednote-machine-learning/RedKnot",
-        "score": 61.2,
-        "stars": 3025,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "ongridio/ongrid",
@@ -9219,6 +8911,13 @@
         "dv": 5
       },
       {
+        "fullName": "NarratorAI-Studio/narrator-ai-cli-skill",
+        "score": 61.1,
+        "stars": 3079,
+        "grade": "C",
+        "dv": 7
+      },
+      {
         "fullName": "zarazhangrui/lark-coding-agent-bridge",
         "score": 61.1,
         "stars": 2774,
@@ -9231,13 +8930,6 @@
         "stars": 2766,
         "grade": "C",
         "dv": 2
-      },
-      {
-        "fullName": "orhanerday/open-ai",
-        "score": 61.1,
-        "stars": 2361,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "proma-ai/Proma",
@@ -9278,13 +8970,6 @@
         "fullName": "0x4m4/hexstrike-ai",
         "score": 61,
         "stars": 13196,
-        "grade": "C",
-        "dv": 4
-      },
-      {
-        "fullName": "PaperDebugger/paperdebugger",
-        "score": 61,
-        "stars": 1550,
         "grade": "C",
         "dv": 4
       },
@@ -9485,13 +9170,6 @@
         "dv": 4
       },
       {
-        "fullName": "nolangz/pixel2motion",
-        "score": 60.6,
-        "stars": 2551,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "Dataojitori/nocturne_memory",
         "score": 60.6,
         "stars": 1412,
@@ -9534,6 +9212,13 @@
         "dv": 3
       },
       {
+        "fullName": "MiroMindAI/MiroFlow",
+        "score": 60.5,
+        "stars": 3124,
+        "grade": "C",
+        "dv": 6
+      },
+      {
         "fullName": "resemble-ai/chatterbox",
         "score": 60.4,
         "stars": 27418,
@@ -9569,25 +9254,11 @@
         "dv": 7
       },
       {
-        "fullName": "netease-youdao/BCEmbedding",
-        "score": 60.4,
-        "stars": 1880,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "gi-dellav/zerostack",
         "score": 60.4,
         "stars": 1727,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "huggingface/llm.nvim",
-        "score": 60.4,
-        "stars": 1193,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "data-goblin/power-bi-agentic-development",
@@ -9709,13 +9380,6 @@
         "dv": 2
       },
       {
-        "fullName": "Nerogar/OneTrainer",
-        "score": 60,
-        "stars": 3254,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "FrancyJGLisboa/agent-skills-platform",
         "score": 60,
         "stars": 2411,
@@ -9751,11 +9415,11 @@
         "dv": 2
       },
       {
-        "fullName": "lintsinghua/DeepAudit",
+        "fullName": "RightNow-AI/openfang",
         "score": 59.9,
-        "stars": 7228,
+        "stars": 18236,
         "grade": "C",
-        "dv": null
+        "dv": 5
       },
       {
         "fullName": "Tavris1/ComfyUI-Easy-Install",
@@ -9835,13 +9499,6 @@
         "dv": 3
       },
       {
-        "fullName": "lumina-ai-inc/chunkr",
-        "score": 59.7,
-        "stars": 4152,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "bbruceyuan/LLMs-Zero-to-Hero",
         "score": 59.7,
         "stars": 2319,
@@ -9912,6 +9569,13 @@
         "dv": 7
       },
       {
+        "fullName": "foxhui/WebAI2API",
+        "score": 59.6,
+        "stars": 1412,
+        "grade": "C",
+        "dv": 4
+      },
+      {
         "fullName": "Woolverine94/biniou",
         "score": 59.6,
         "stars": 1150,
@@ -9947,13 +9611,6 @@
         "dv": 3
       },
       {
-        "fullName": "microsoft/typeagent-py",
-        "score": 59.5,
-        "stars": 894,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "OpenHands/OpenHands",
         "score": 59.4,
         "stars": 92237,
@@ -9966,20 +9623,6 @@
         "stars": 1892,
         "grade": "C",
         "dv": 6
-      },
-      {
-        "fullName": "abus-aikorea/voice-pro",
-        "score": 59.3,
-        "stars": 13384,
-        "grade": "C",
-        "dv": 4
-      },
-      {
-        "fullName": "Armur-Ai/Pentest-Swarm-AI",
-        "score": 59.3,
-        "stars": 3089,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "rush86999/atom",
@@ -10024,13 +9667,6 @@
         "dv": 6
       },
       {
-        "fullName": "hananedupouy/LLMs-in-Finance",
-        "score": 59.2,
-        "stars": 893,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "unslothai/unsloth",
         "score": 59.1,
         "stars": 78782,
@@ -10050,13 +9686,6 @@
         "stars": 1022,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "1038lab/ComfyUI-QwenVL",
-        "score": 59.1,
-        "stars": 922,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "Notely-Voice/NotelyVoice",
@@ -10108,25 +9737,11 @@
         "dv": 3
       },
       {
-        "fullName": "sakalond/StableGen",
-        "score": 59,
-        "stars": 1011,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "alesaccoia/VoiceStreamAI",
         "score": 59,
         "stars": 961,
         "grade": "C",
         "dv": 8
-      },
-      {
-        "fullName": "weirdmachine64/GhidraGPT",
-        "score": 59,
-        "stars": 836,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "ZhuLinsen/daily_stock_analysis",
@@ -10162,13 +9777,6 @@
         "stars": 2267,
         "grade": "C",
         "dv": 3
-      },
-      {
-        "fullName": "tripleyak/SkillForge",
-        "score": 58.9,
-        "stars": 914,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "sangrokjung/claude-forge",
@@ -10276,13 +9884,6 @@
         "dv": 5
       },
       {
-        "fullName": "microsoft/TinyTroupe",
-        "score": 58.5,
-        "stars": 7626,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "HaujetZhao/CapsWriter-Offline",
         "score": 58.5,
         "stars": 7042,
@@ -10325,25 +9926,11 @@
         "dv": 3
       },
       {
-        "fullName": "DietrichGebert/ponytail",
-        "score": 58.2,
-        "stars": 180470,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "upstash/context7",
         "score": 58.2,
         "stars": 63939,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "GalTransl/GalTransl",
-        "score": 58.1,
-        "stars": 2377,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "Comfy-Org/ComfyUI_frontend",
@@ -10374,13 +9961,6 @@
         "dv": 4
       },
       {
-        "fullName": "oritera/Cairn",
-        "score": 58,
-        "stars": 4679,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "SaiAkhil066/CORTEX-AI-SUPER-RAG",
         "score": 58,
         "stars": 1977,
@@ -10409,13 +9989,6 @@
         "dv": 5
       },
       {
-        "fullName": "gluonfield/enchanted",
-        "score": 57.9,
-        "stars": 6016,
-        "grade": "C",
-        "dv": 3
-      },
-      {
         "fullName": "Marker-Inc-Korea/AutoRAG",
         "score": 57.9,
         "stars": 5243,
@@ -10442,13 +10015,6 @@
         "stars": 7363,
         "grade": "C",
         "dv": 2
-      },
-      {
-        "fullName": "Akegarasu/lora-scripts",
-        "score": 57.8,
-        "stars": 6200,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "Stability-AI/StableSwarmUI",
@@ -10484,13 +10050,6 @@
         "stars": 25837,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "alchaincyf/darwin-skill",
-        "score": 57.7,
-        "stars": 6877,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "Mobile-Artificial-Intelligence/maid",
@@ -10549,13 +10108,6 @@
         "dv": 7
       },
       {
-        "fullName": "op7418/Humanizer-zh",
-        "score": 57.4,
-        "stars": 21523,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "karthink/gptel",
         "score": 57.4,
         "stars": 3555,
@@ -10577,11 +10129,11 @@
         "dv": 4
       },
       {
-        "fullName": "yohey-w/multi-agent-shogun",
+        "fullName": "abus-aikorea/voice-pro",
         "score": 57.3,
-        "stars": 1423,
+        "stars": 13384,
         "grade": "C",
-        "dv": null
+        "dv": 4
       },
       {
         "fullName": "via007/bilibili-rag",
@@ -10605,6 +10157,13 @@
         "dv": 8
       },
       {
+        "fullName": "PaperDebugger/paperdebugger",
+        "score": 57.2,
+        "stars": 1550,
+        "grade": "C",
+        "dv": 4
+      },
+      {
         "fullName": "HG-ha/MTools",
         "score": 57.2,
         "stars": 1376,
@@ -10624,20 +10183,6 @@
         "stars": 3297,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "heshengtao/comfyui_LLM_party",
-        "score": 57.1,
-        "stars": 2386,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "MahmoudAshraf97/whisper-diarization",
-        "score": 57,
-        "stars": 5670,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "mvanhorn/last30days-skill",
@@ -10666,20 +10211,6 @@
         "stars": 5168,
         "grade": "C",
         "dv": 7
-      },
-      {
-        "fullName": "scraed/LanPaint",
-        "score": 56.8,
-        "stars": 1472,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "onvoyage-ai/gtm-engineer-skills",
-        "score": 56.8,
-        "stars": 1340,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "Acly/krita-ai-diffusion",
@@ -10745,32 +10276,11 @@
         "dv": 3
       },
       {
-        "fullName": "garrytan/gstack",
-        "score": 56.2,
-        "stars": 138228,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "warpdotdev/warp",
         "score": 56.2,
         "stars": 65787,
         "grade": "C",
         "dv": 3
-      },
-      {
-        "fullName": "xlite-dev/lite.ai.toolkit",
-        "score": 56.2,
-        "stars": 4445,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "hgmzhn/manga-translator-ui",
-        "score": 56.2,
-        "stars": 3154,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "SanMuzZzZz/LuaN1aoAgent",
@@ -10787,18 +10297,18 @@
         "dv": 4
       },
       {
-        "fullName": "twostraws/SwiftUI-Agent-Skill",
-        "score": 56.1,
-        "stars": 6414,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "zai-org/CogAgent",
         "score": 56.1,
         "stars": 1196,
         "grade": "C",
         "dv": 8
+      },
+      {
+        "fullName": "gluonfield/enchanted",
+        "score": 55.9,
+        "stars": 6016,
+        "grade": "C",
+        "dv": 3
       },
       {
         "fullName": "Comfy-Org/ComfyUI",
@@ -10808,20 +10318,6 @@
         "dv": 6
       },
       {
-        "fullName": "chuspeeism/dashi-ppt-skill",
-        "score": 55.7,
-        "stars": 10189,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "carson-katri/dream-textures",
-        "score": 55.7,
-        "stars": 8232,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "kubeshark/kubeshark",
         "score": 55.6,
         "stars": 12113,
@@ -10829,46 +10325,11 @@
         "dv": 4
       },
       {
-        "fullName": "NVIDIA/GenerativeAIExamples",
-        "score": 55.6,
-        "stars": 4218,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "MochiDiffusion/MochiDiffusion",
-        "score": 55.5,
-        "stars": 7973,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "microsoft/BitNet",
-        "score": 55.4,
-        "stars": 41349,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "GaiZhenbiao/ChuanhuChatGPT",
         "score": 55.3,
         "stars": 15257,
         "grade": "C",
         "dv": 3
-      },
-      {
-        "fullName": "OpenBMB/MiniCPM",
-        "score": 55.2,
-        "stars": 11755,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "AmberSahdev/Open-Interface",
-        "score": 55.2,
-        "stars": 2729,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "alchaincyf/huashu-design",
@@ -10934,13 +10395,6 @@
         "dv": 4
       },
       {
-        "fullName": "Acly/comfyui-inpaint-nodes",
-        "score": 54.6,
-        "stars": 1252,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "xszyou/Fay",
         "score": 54.5,
         "stars": 13604,
@@ -10960,41 +10414,6 @@
         "stars": 873,
         "grade": "C",
         "dv": 3
-      },
-      {
-        "fullName": "hgneng/ekho",
-        "score": 54.2,
-        "stars": 1217,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "zhu1090093659/spec_driven_develop",
-        "score": 54.1,
-        "stars": 993,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "pluja/whishper",
-        "score": 54,
-        "stars": 3093,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "bghira/SimpleTuner",
-        "score": 53.8,
-        "stars": 2950,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "xcanwin/KeepChatGPT",
-        "score": 53.6,
-        "stars": 14894,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "OpenRaiser/NanoResearch",
@@ -11018,25 +10437,11 @@
         "dv": 3
       },
       {
-        "fullName": "obra/superpowers",
-        "score": 53.3,
-        "stars": 309031,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "tisfeng/Easydict",
         "score": 53.1,
         "stars": 15125,
         "grade": "C",
         "dv": 3
-      },
-      {
-        "fullName": "milanglacier/minuet-ai.nvim",
-        "score": 52.8,
-        "stars": 1438,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "oobabooga/textgen",
@@ -11060,25 +10465,11 @@
         "dv": 2
       },
       {
-        "fullName": "microsoft/generative-ai-for-beginners",
-        "score": 52.3,
-        "stars": 122449,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "pathwaycom/serviette",
         "score": 52.3,
         "stars": 58753,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "op7418/guizang-ppt-skill",
-        "score": 52,
-        "stars": 28962,
-        "grade": "C",
-        "dv": null
       },
       {
         "fullName": "ZhangJinHaHaHa/AgentLens",
@@ -11102,20 +10493,6 @@
         "dv": 3
       },
       {
-        "fullName": "elder-plinius/CL4R1T4S",
-        "score": 50.1,
-        "stars": 51604,
-        "grade": "C",
-        "dv": null
-      },
-      {
-        "fullName": "x1xhlol/system-prompts-and-models-of-ai-tools",
-        "score": 49.8,
-        "stars": 144351,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "openobserve/openobserve",
         "score": 49.4,
         "stars": 22605,
@@ -11131,628 +10508,8 @@
       }
     ]
   },
-  "candidates": [
-    {
-      "repo": {
-        "fullName": "lobehub/lobe-icons",
-        "owner": "lobehub",
-        "repo": "lobe-icons",
-        "name": "lobe-icons",
-        "description": "🥨 Lobe Icons - Brings AI/LLM brand logos to your React & React Native apps — static SVG/PNG/WebP, no dependencies.",
-        "htmlUrl": "https://github.com/lobehub/lobe-icons",
-        "homepage": "https://icons.lobehub.com",
-        "avatarUrl": "https://avatars.githubusercontent.com/u/131470832?v=4",
-        "language": "TypeScript",
-        "topics": [
-          "ai",
-          "ai-brands",
-          "ai-icons",
-          "brand-colors",
-          "brands",
-          "component",
-          "design",
-          "design-assets",
-          "icon-pack",
-          "icon-packs",
-          "icons",
-          "llm",
-          "llm-brands",
-          "llm-icons",
-          "logo",
-          "model-icon",
-          "model-logo",
-          "react",
-          "svg",
-          "svg-icons"
-        ],
-        "license": {
-          "spdx": "MIT",
-          "name": "MIT License"
-        },
-        "createdAt": "2024-01-30T03:13:18Z",
-        "pushedAt": "2026-11-18T19:24:51Z",
-        "stars": 2713,
-        "forks": 288,
-        "openIssues": 107,
-        "watchers": 2659,
-        "categories": [
-          "AI Chat"
-        ],
-        "heatScore": 69,
-        "history": [
-          {
-            "date": "2026-10-01",
-            "stars": 2588,
-            "forks": 268,
-            "openIssues": 94,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-02",
-            "stars": 2590,
-            "forks": 268,
-            "openIssues": 94,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-03",
-            "stars": 2592,
-            "forks": 268,
-            "openIssues": 95,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-04",
-            "stars": 2595,
-            "forks": 268,
-            "openIssues": 95,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-05",
-            "stars": 2597,
-            "forks": 269,
-            "openIssues": 95,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-06",
-            "stars": 2600,
-            "forks": 269,
-            "openIssues": 95,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-07",
-            "stars": 2602,
-            "forks": 269,
-            "openIssues": 95,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-08",
-            "stars": 2605,
-            "forks": 269,
-            "openIssues": 95,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-09",
-            "stars": 2607,
-            "forks": 270,
-            "openIssues": 95,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-10",
-            "stars": 2610,
-            "forks": 270,
-            "openIssues": 95,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-11",
-            "stars": 2612,
-            "forks": 270,
-            "openIssues": 95,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-12",
-            "stars": 2614,
-            "forks": 270,
-            "openIssues": 95,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-13",
-            "stars": 2617,
-            "forks": 271,
-            "openIssues": 95,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-14",
-            "stars": 2619,
-            "forks": 271,
-            "openIssues": 96,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-15",
-            "stars": 2622,
-            "forks": 271,
-            "openIssues": 96,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-16",
-            "stars": 2624,
-            "forks": 271,
-            "openIssues": 96,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-17",
-            "stars": 2627,
-            "forks": 272,
-            "openIssues": 96,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-18",
-            "stars": 2629,
-            "forks": 272,
-            "openIssues": 96,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-19",
-            "stars": 2632,
-            "forks": 272,
-            "openIssues": 96,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-20",
-            "stars": 2634,
-            "forks": 272,
-            "openIssues": 96,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-21",
-            "stars": 2637,
-            "forks": 273,
-            "openIssues": 96,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-22",
-            "stars": 2639,
-            "forks": 273,
-            "openIssues": 96,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-23",
-            "stars": 2642,
-            "forks": 273,
-            "openIssues": 96,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-24",
-            "stars": 2644,
-            "forks": 273,
-            "openIssues": 96,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-25",
-            "stars": 2647,
-            "forks": 274,
-            "openIssues": 97,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-26",
-            "stars": 2649,
-            "forks": 274,
-            "openIssues": 97,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-27",
-            "stars": 2652,
-            "forks": 274,
-            "openIssues": 97,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-28",
-            "stars": 2654,
-            "forks": 274,
-            "openIssues": 97,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-29",
-            "stars": 2657,
-            "forks": 275,
-            "openIssues": 97,
-            "synthetic": true
-          },
-          {
-            "date": "2026-10-30",
-            "stars": 2659,
-            "forks": 275,
-            "openIssues": 97,
-            "synthetic": true
-          }
-        ],
-        "lastCrawledAt": "2026-11-20T03:15:47.163Z",
-        "productScore": {
-          "score": 82.5,
-          "grade": "S",
-          "summary": "强推：现在就能开工。轻启动机会最强，增长动能是短板。",
-          "parts": [
-            {
-              "key": "light",
-              "label": "轻启动机会",
-              "weight": 22,
-              "value": 89,
-              "points": 19.6,
-              "note": "加分项：个人可驾驭、月成本≈0、首版≤3周、上手容易"
-            },
-            {
-              "key": "derivative",
-              "label": "加工空间",
-              "weight": 18,
-              "value": 90,
-              "points": 16.2,
-              "note": "形态 一个图标资源库：340+ AI 品牌 logo，提供 React/React Native 组件、静态 SVG/PNG/WebP 文件和 CDN 图片链接。 · 尚未占住具体产品场景 · 接入点 npm 包 @lobehub/icons 可按品牌名/模型 ID 导入组件；静态资源通过 unpkg CDN 按 light/dark 目录和 png/webp 格式直接取 URL；提供 skills.md 供编码代理自动学习接入方式。"
-            },
-            {
-              "key": "commercial",
-              "label": "商业化潜力",
-              "weight": 14,
-              "value": 71.4,
-              "points": 10,
-              "note": "许可 可商用 · 领域付费需求 未发现 · 官网 独立域名"
-            },
-            {
-              "key": "effort",
-              "label": "落地门槛",
-              "weight": 13,
-              "value": 92.3,
-              "points": 12,
-              "note": "上手难度 低 · 体量 2,713 星 · 无需额外付费资源 · 首版 1-2周"
-            },
-            {
-              "key": "demand",
-              "label": "需求验证",
-              "weight": 12,
-              "value": 84.6,
-              "points": 10.2,
-              "note": "热度 2,713 星（1 万星即视为验证完成） · fork/star 10.6% · 未结 issue 107"
-            },
-            {
-              "key": "dev",
-              "label": "可开发性",
-              "weight": 7,
-              "value": 71.4,
-              "points": 5,
-              "note": "描述 115 字符 · 标签 20 个 · 许可 MIT · 语言 TypeScript · README 0 字符"
-            },
-            {
-              "key": "active",
-              "label": "维护活跃度",
-              "weight": 7,
-              "value": 85.7,
-              "points": 6,
-              "note": "最近提交 1 天前 · 近 4 周提交 null 次 · 贡献者 36"
-            },
-            {
-              "key": "growth",
-              "label": "增长动能",
-              "weight": 7,
-              "value": 50,
-              "points": 3.5,
-              "note": "暂无真实采样（榜单 2026-10 起逐日记录，满 7 天后才有增速），按中性 50 计"
-            }
-          ],
-          "model": "pps-v3",
-          "computedAt": "2026-11-20T03:15:47.190Z"
-        },
-        "readmeSummary": "<a name=\"readme top\" </a <div align=\"center\" https://github.com/user attachments/assets/4f1c1ded 0de3 4425 8ea7 605f19fc157a <h1 Lobe Icons</h1 <h3 Every AI Brand, One Icon Set</h3 340+ AI model and provider logos, ready for React, React Native, or as static SVG / PNG / WEBP. Documents https://icons.lobehub.com · Changelog ./CHANGELOG.md · Report Bug github issues link · Request Feature github iss",
-        "contributorsCount": 36,
-        "insight": {
-          "taglineZh": "用340+AI品牌图标，快速做出AI应用界面",
-          "whatZh": "Lobe Icons 是一个包含340多个AI模型、提供商和应用品牌图标的开源图标库，提供React组件、React Native组件以及静态SVG/PNG/WebP资源。支持单色、彩色、文字和头像等多种样式，适配明暗主题。可通过模型ID（如gpt-4o）自动匹配图标，支持按需引入以减小打包体积，也可通过CDN直接使用图片链接。",
-          "capabilities": [
-            "340+ AI品牌图标，覆盖模型、提供商、应用",
-            "多种样式：单色、彩色、文字、头像，适配明暗主题",
-            "通过模型ID自动匹配图标，如gpt-4o对应OpenAI",
-            "支持React、React Native、静态图片和CDN链接"
-          ],
-          "buildIdeas": [
-            {
-              "title": "AI模型导航站",
-              "audience": "AI开发者、技术选型人员",
-              "product": "一个聚合主流AI模型信息的导航网站，每个模型展示图标、简介、定价和接口文档链接。",
-              "monetization": "通过模型提供商赞助或推广位收费，每月¥500-2000/家；或提供高级筛选功能订阅¥19/月。",
-              "effort": "1人 / 2周",
-              "stackHint": "Next.js + Lobe Icons React组件，静态生成模型页面，用ModelIcon根据模型ID渲染图标。"
-            },
-            {
-              "title": "AI工具目录小程序",
-              "audience": "普通用户、AI爱好者",
-              "product": "微信小程序，分类展示AI工具（聊天、绘画、写作等），每个工具带品牌图标和直达链接。",
-              "monetization": "工具收录费¥200/个，或点击广告分成；会员免广告¥9.9/月。",
-              "effort": "1人 / 3周",
-              "stackHint": "小程序原生开发，使用Lobe Icons的静态PNG图片通过CDN链接展示，避免引入React依赖。"
-            },
-            {
-              "title": "AI模型对比仪表盘",
-              "audience": "企业技术团队、AI产品经理",
-              "product": "一个可定制的仪表盘，并排对比多个AI模型的参数、价格、性能，图标增强视觉识别。",
-              "monetization": "订阅服务订阅，基础版免费，团队版¥99/月，支持私有化部署¥9999/年。",
-              "effort": "2人 / 4周",
-              "stackHint": "React + Lobe Icons组件，结合公开接口数据，用ModelIcon动态渲染模型图标。"
-            },
-            {
-              "title": "AI品牌图标定制服务",
-              "audience": "AI初创公司、开源项目",
-              "product": "为AI公司提供品牌图标设计并集成到Lobe Icons库中，同时提供图标使用咨询。",
-              "monetization": "按项目收费¥2000-5000/个图标，或年费¥10000包含多个图标更新。",
-              "effort": "1人 / 1周（需设计能力）",
-              "stackHint": "基于Lobe Icons的SVG规范设计，提交PR合并到主库，获得曝光。"
-            }
-          ],
-          "buildSteps": [
-            {
-              "step": "验证需求",
-              "detail": "在AI开发者社区（如V2EX、Reddit）发起投票，询问是否需要一个带品牌图标的AI模型导航站，收集20个潜在用户反馈。",
-              "phase": "验证",
-              "output": "需求验证报告和10个种子用户邮箱",
-              "duration": "2-3天"
-            },
-            {
-              "step": "搭建原型",
-              "detail": "用Next.js和Lobe Icons快速搭建一个静态页面，展示20个热门AI模型，每个模型用ModelIcon渲染图标，部署到Vercel。",
-              "phase": "起步",
-              "output": "可访问的首版网站",
-              "duration": "3-5天"
-            },
-            {
-              "step": "集成数据",
-              "detail": "手动整理30个模型的简介、定价和接口链接，存入JSON文件，页面动态读取并展示。",
-              "phase": "起步",
-              "output": "包含30个模型信息的完整页面",
-              "duration": "2天"
-            },
-            {
-              "step": "上线收费",
-              "detail": "添加赞助商展示位，联系5家AI工具提供商，以每月¥500的价格出售首页logo展示位。",
-              "phase": "变现",
-              "output": "首个付费赞助商合同",
-              "duration": "1周"
-            },
-            {
-              "step": "增长推广",
-              "detail": "在Product Hunt、Hacker News发布，并撰写博客《如何用Lobe Icons快速构建AI导航站》，吸引开发者关注。",
-              "phase": "增长",
-              "output": "每月5000访问量",
-              "duration": "2周"
-            }
-          ],
-          "effects": [
-            {
-              "metric": "图标集成时间",
-              "value": "从2小时缩短到5分钟"
-            },
-            {
-              "metric": "页面加载速度",
-              "value": "按需引入图标，打包体积减少60%"
-            },
-            {
-              "metric": "品牌识别度",
-              "value": "用户通过图标快速识别模型，点击率提升30%"
-            },
-            {
-              "metric": "开发成本",
-              "value": "节省图标设计费用约¥2000"
-            }
-          ],
-          "moat": "340+官方品牌图标库持续更新，与AI生态深度绑定，形成开发者习惯。",
-          "risks": [
-            "图标库依赖第三方品牌，若品牌变更logo需及时更新，否则影响准确性",
-            "导航站模式竞争激烈，需差异化内容（如深度评测）才能留住用户",
-            "赞助商收费模式可能因流量不足而难以持续，需探索多元变现"
-          ],
-          "techNotes": "React项目直接安装@lobehub/icons，通过ModelIcon组件传入模型ID渲染；非React项目使用CDN链接引用静态PNG。",
-          "difficulty": "低",
-          "timeToMvp": "1-2周",
-          "costToMvp": "¥0-200/月",
-          "competitors": [
-            "Simple Icons",
-            "SVG Logos"
-          ],
-          "differentiators": [
-            "专注AI品牌，覆盖340+模型和提供商",
-            "支持通过模型ID自动匹配图标，开发体验好"
-          ]
-        },
-        "insightSource": "llm",
-        "derivative": {
-          "base": "一个图标资源库：340+ AI 品牌 logo，提供 React/React Native 组件、静态 SVG/PNG/WebP 文件和 CDN 图片链接。",
-          "space": 9,
-          "untapped": [
-            "面向企业内部 AI 网关/模型路由平台：把图标库作为品牌识别层嵌入，自动根据模型 ID 渲染对应厂商 logo，并叠加用量、延迟、成本等运营数据，做成「模型资产目录」产品。",
-            "面向 AI 产品设计团队：做一个品牌合规检查与图标资产托管工具，扫描设计稿/代码中 AI 品牌 logo 的使用是否用了最新版本、配色和留白规范，并自动替换为库中正确变体。"
-          ],
-          "hook": "npm 包 @lobehub/icons 可按品牌名/模型 ID 导入组件；静态资源通过 unpkg CDN 按 light/dark 目录和 png/webp 格式直接取 URL；提供 skills.md 供编码代理自动学习接入方式。"
-        },
-        "derivativeSource": "llm",
-        "readme": ""
-      },
-      "score": 82.5,
-      "grade": "S",
-      "estimatedRank": null,
-      "check": {
-        "ok": true
-      }
-    },
-    {
-      "repo": {
-        "fullName": "Vonage/vonage-php-sdk-core",
-        "owner": "Vonage",
-        "repo": "vonage-php-sdk-core",
-        "name": "vonage-php-sdk-core",
-        "description": "Vonage REST API client for PHP. API support for SMS, Voice, Text-to-Speech, Numbers, Verify (2FA) and more.",
-        "htmlUrl": "https://github.com/Vonage/vonage-php-sdk-core",
-        "homepage": "https://developer.vonage.com/",
-        "avatarUrl": "https://avatars.githubusercontent.com/u/2683897?v=4",
-        "language": "PHP",
-        "topics": [
-          "developer-destination",
-          "messaging",
-          "nexmo",
-          "phone",
-          "php",
-          "server-sdk",
-          "sms",
-          "text-message",
-          "text-to-speech",
-          "two-factor-authentication",
-          "voice",
-          "vonage"
-        ],
-        "license": {
-          "spdx": "Apache-2.0",
-          "name": "Apache License 2.0"
-        },
-        "createdAt": "2013-07-04T15:38:33Z",
-        "pushedAt": "2026-10-20T13:49:44Z",
-        "stars": 930,
-        "forks": 178,
-        "openIssues": 6,
-        "watchers": 930,
-        "categories": [
-          "Voice & Audio",
-          "Coding"
-        ],
-        "heatScore": 59,
-        "history": [],
-        "lastCrawledAt": "2026-11-20T03:15:47.523Z",
-        "productScore": {
-          "score": 63.5,
-          "grade": "C",
-          "summary": "谨慎：更适合练手。轻启动机会最强，维护活跃度是短板。",
-          "parts": [
-            {
-              "key": "light",
-              "label": "轻启动机会",
-              "weight": 22,
-              "value": 68,
-              "points": 15,
-              "note": "加分项：小而美体量"
-            },
-            {
-              "key": "derivative",
-              "label": "加工空间",
-              "weight": 18,
-              "value": 50,
-              "points": 9,
-              "note": "未评估，按中性 5/10 计"
-            },
-            {
-              "key": "commercial",
-              "label": "商业化潜力",
-              "weight": 14,
-              "value": 71.4,
-              "points": 10,
-              "note": "许可 可商用 · 领域付费需求 未发现 · 官网 独立域名"
-            },
-            {
-              "key": "effort",
-              "label": "落地门槛",
-              "weight": 13,
-              "value": 69.2,
-              "points": 9,
-              "note": "上手难度 未知 · 体量 930 星 · 无需额外付费资源 · 首版周期未知"
-            },
-            {
-              "key": "demand",
-              "label": "需求验证",
-              "weight": 12,
-              "value": 70.4,
-              "points": 8.5,
-              "note": "热度 930 星（1 万星即视为验证完成） · fork/star 19.1% · 未结 issue 6"
-            },
-            {
-              "key": "dev",
-              "label": "可开发性",
-              "weight": 7,
-              "value": 71.4,
-              "points": 5,
-              "note": "描述 107 字符 · 标签 12 个 · 许可 Apache-2.0 · 语言 PHP · README 0 字符"
-            },
-            {
-              "key": "active",
-              "label": "维护活跃度",
-              "weight": 7,
-              "value": 50,
-              "points": 3.5,
-              "note": "最近提交 31 天前 · 近 4 周提交 null 次 · 贡献者 未采集"
-            },
-            {
-              "key": "growth",
-              "label": "增长动能",
-              "weight": 7,
-              "value": 50,
-              "points": 3.5,
-              "note": "暂无真实采样（榜单 2026-10 起逐日记录，满 7 天后才有增速），按中性 50 计"
-            }
-          ],
-          "model": "pps-v3",
-          "computedAt": "2026-11-20T03:15:47.524Z"
-        },
-        "readme": ""
-      },
-      "score": 63.5,
-      "grade": "C",
-      "estimatedRank": null,
-      "check": {
-        "ok": true
-      }
-    }
-  ],
-  "updates": [
-    {
-      "fullName": "lobehub/lobe-icons",
-      "stars": 2713,
-      "forks": 288,
-      "openIssues": 107,
-      "pushedAt": "2026-11-18T19:24:51Z",
-      "description": "🥨 Lobe Icons - Brings AI/LLM brand logos to your React & React Native apps — static SVG/PNG/WebP, no dependencies.",
-      "homepage": "https://icons.lobehub.com",
-      "score": 82.5,
-      "grade": "S"
-    },
-    {
-      "fullName": "Vonage/vonage-php-sdk-core",
-      "stars": 930,
-      "forks": 178,
-      "openIssues": 6,
-      "pushedAt": "2026-10-20T13:49:44Z",
-      "description": "Vonage REST API client for PHP. API support for SMS, Voice, Text-to-Speech, Numbers, Verify (2FA) and more.",
-      "homepage": "https://developer.vonage.com/",
-      "score": 63.5,
-      "grade": "C"
-    }
-  ],
+  "candidates": [],
+  "updates": [],
   "rejected": [],
   "preview": null,
   "lastRun": {
@@ -11766,15 +10523,15 @@
     "elapsedMs": 2959995
   },
   "lastPublish": {
-    "at": "2026-11-19T10:33:25.766Z",
-    "total": 1589,
+    "at": "2026-11-20T03:42:00.445Z",
+    "total": 1500,
     "source": "manual",
     "report": {
-      "entered": 89,
+      "entered": 0,
       "exited": 0,
       "ups": 0,
       "downs": 0,
-      "significant": 89
+      "significant": 0
     }
   }
 }
