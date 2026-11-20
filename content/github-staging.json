@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-11-20T06:42:34.095Z",
+  "updatedAt": "2026-11-20T06:57:15.078Z",
   "ruleVersion": "gh-rank-v1.6",
   "scoreModel": "pps-v4",
   "target": 2000,
   "board": {
-    "updatedAt": "2026-11-20T06:42:34.095Z",
+    "updatedAt": "2026-11-20T06:57:15.078Z",
     "rows": [
       {
         "fullName": "lobehub/lobe-icons",
@@ -23,28 +23,28 @@
       {
         "fullName": "vercel/workflow",
         "score": 80.9,
-        "stars": 2525,
+        "stars": 2482,
         "grade": "S",
         "dv": 8
       },
       {
         "fullName": "aurelio-labs/semantic-router",
         "score": 80.8,
-        "stars": 4038,
+        "stars": 3989,
         "grade": "S",
         "dv": 8
       },
       {
         "fullName": "LazyAGI/LazyLLM",
         "score": 80.1,
-        "stars": 3889,
+        "stars": 3888,
         "grade": "S",
         "dv": 8
       },
       {
         "fullName": "embeddings-benchmark/mteb",
         "score": 79.9,
-        "stars": 3518,
+        "stars": 3482,
         "grade": "S",
         "dv": 7
       },
@@ -58,49 +58,42 @@
       {
         "fullName": "maziyarpanahi/openmed",
         "score": 79.6,
-        "stars": 5828,
+        "stars": 5724,
         "grade": "S",
         "dv": 8
       },
       {
         "fullName": "Azure-Samples/azure-search-openai-demo",
         "score": 79.3,
-        "stars": 7805,
+        "stars": 7796,
         "grade": "S",
         "dv": 7
       },
       {
         "fullName": "sipyourdrink-ltd/bernstein",
-        "score": 78.8,
-        "stars": 1216,
+        "score": 78.9,
+        "stars": 1343,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "openai/openai-node",
         "score": 78.7,
-        "stars": 11273,
+        "stars": 11243,
         "grade": "A",
         "dv": 9
       },
       {
         "fullName": "Giskard-AI/giskard-oss",
         "score": 78.7,
-        "stars": 5959,
+        "stars": 5934,
         "grade": "A",
         "dv": 8
       },
       {
-        "fullName": "TanStack/ai",
-        "score": 78.7,
-        "stars": 3372,
-        "grade": "A",
-        "dv": 9
-      },
-      {
         "fullName": "usemoss/moss",
         "score": 78.6,
-        "stars": 807,
+        "stars": 800,
         "grade": "A",
         "dv": 8
       },
@@ -112,471 +105,429 @@
         "dv": 9
       },
       {
-        "fullName": "niieani/gpt-tokenizer",
-        "score": 78.3,
-        "stars": 862,
+        "fullName": "prism-php/prism",
+        "score": 77.8,
+        "stars": 2433,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "sergebulaev/linkedin-skills",
-        "score": 77.8,
-        "stars": 6066,
+        "score": 77.7,
+        "stars": 5369,
         "grade": "A",
         "dv": 7
       },
       {
+        "fullName": "TanStack/ai",
+        "score": 77.7,
+        "stars": 3288,
+        "grade": "A",
+        "dv": 9
+      },
+      {
         "fullName": "crmne/ruby_llm",
         "score": 77.2,
-        "stars": 4521,
+        "stars": 4489,
         "grade": "A",
         "dv": 8
+      },
+      {
+        "fullName": "ollama/ollama-js",
+        "score": 77,
+        "stars": 4420,
+        "grade": "A",
+        "dv": 9
       },
       {
         "fullName": "FluidInference/FluidAudio",
         "score": 77,
-        "stars": 3316,
+        "stars": 3234,
         "grade": "A",
         "dv": 8
       },
       {
+        "fullName": "tomasz-tomczyk/crit",
+        "score": 77,
+        "stars": 1344,
+        "grade": "A",
+        "dv": 4
+      },
+      {
         "fullName": "atlassian/atlassian-mcp-server",
         "score": 77,
-        "stars": 1183,
+        "stars": 1138,
+        "grade": "A",
+        "dv": 7
+      },
+      {
+        "fullName": "zzet/gortex",
+        "score": 76.9,
+        "stars": 1946,
+        "grade": "A",
+        "dv": 7
+      },
+      {
+        "fullName": "epoko77-ai/im-not-ai",
+        "score": 76.8,
+        "stars": 6686,
         "grade": "A",
         "dv": 7
       },
       {
         "fullName": "boxlite-ai/boxlite",
         "score": 76.8,
-        "stars": 2673,
+        "stars": 2644,
+        "grade": "A",
+        "dv": 8
+      },
+      {
+        "fullName": "niieani/gpt-tokenizer",
+        "score": 76.8,
+        "stars": 857,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "handy-computer/transcribe.cpp",
         "score": 76.6,
-        "stars": 2111,
+        "stars": 2194,
         "grade": "A",
         "dv": 9
       },
       {
         "fullName": "undertheseanlp/underthesea",
         "score": 76.5,
-        "stars": 1814,
-        "grade": "A",
-        "dv": 8
-      },
-      {
-        "fullName": "prism-php/prism",
-        "score": 76.3,
-        "stars": 2428,
+        "stars": 1817,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "qualcomm/GenieX",
         "score": 76.2,
-        "stars": 8480,
+        "stars": 8541,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "genkit-ai/genkit",
         "score": 76.2,
-        "stars": 6558,
+        "stars": 6605,
+        "grade": "A",
+        "dv": 8
+      },
+      {
+        "fullName": "kagent-dev/kagent",
+        "score": 76.2,
+        "stars": 4447,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "confident-ai/deepeval",
         "score": 76.1,
-        "stars": 19191,
+        "stars": 19570,
         "grade": "A",
         "dv": 7
       },
       {
-        "fullName": "kagent-dev/kagent",
+        "fullName": "mark3labs/mcp-go",
         "score": 76.1,
-        "stars": 4126,
+        "stars": 9245,
         "grade": "A",
-        "dv": 8
+        "dv": 9
       },
       {
         "fullName": "oceanbase/seekdb",
         "score": 76.1,
-        "stars": 3208,
+        "stars": 3253,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "EverMind-AI/EverOS",
         "score": 76,
-        "stars": 13713,
+        "stars": 13943,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "OvidijusParsiunas/deep-chat",
         "score": 76,
-        "stars": 3739,
+        "stars": 3750,
         "grade": "A",
         "dv": 8
-      },
-      {
-        "fullName": "zzet/gortex",
-        "score": 76,
-        "stars": 2089,
-        "grade": "A",
-        "dv": 7
       },
       {
         "fullName": "Runfusion/Fusion",
         "score": 76,
-        "stars": 1302,
+        "stars": 1341,
         "grade": "A",
         "dv": 7
       },
       {
-        "fullName": "tomasz-tomczyk/crit",
-        "score": 76,
-        "stars": 1260,
-        "grade": "A",
-        "dv": 4
-      },
-      {
-        "fullName": "strands-agents/tools",
-        "score": 75.9,
-        "stars": 1340,
-        "grade": "A",
-        "dv": 8
-      },
-      {
         "fullName": "qdrant/fastembed",
         "score": 75.8,
-        "stars": 3272,
+        "stars": 3305,
         "grade": "A",
         "dv": 9
       },
       {
         "fullName": "confident-ai/deepteam",
         "score": 75.8,
-        "stars": 3073,
-        "grade": "A",
-        "dv": 8
-      },
-      {
-        "fullName": "floneum/kalosm",
-        "score": 75.8,
-        "stars": 2232,
+        "stars": 3111,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "pykeio/ort",
         "score": 75.7,
-        "stars": 2598,
+        "stars": 2624,
         "grade": "A",
         "dv": 9
       },
       {
-        "fullName": "generative-computing/mellea",
-        "score": 75.6,
-        "stars": 1844,
+        "fullName": "platonai/Browser4",
+        "score": 75.7,
+        "stars": 1185,
         "grade": "A",
-        "dv": 8
+        "dv": 7
       },
       {
-        "fullName": "nonebot/nonebot2",
-        "score": 75.5,
-        "stars": 7774,
+        "fullName": "generative-computing/mellea",
+        "score": 75.6,
+        "stars": 1853,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "ruvnet/RuVector",
         "score": 75.5,
-        "stars": 4647,
+        "stars": 4713,
         "grade": "A",
         "dv": 7
       },
       {
-        "fullName": "ollama/ollama-js",
-        "score": 75.5,
-        "stars": 4404,
-        "grade": "A",
-        "dv": 9
-      },
-      {
         "fullName": "SylphAI-Inc/AdalFlow",
         "score": 75.4,
-        "stars": 4223,
+        "stars": 4236,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "rivet-dev/agents",
         "score": 75.4,
-        "stars": 1617,
+        "stars": 1651,
         "grade": "A",
         "dv": 8
       },
       {
-        "fullName": "FalkorDB/GraphRAG-SDK",
+        "fullName": "strands-agents/samples",
         "score": 75.4,
-        "stars": 1028,
+        "stars": 942,
         "grade": "A",
         "dv": 8
       },
       {
-        "fullName": "epoko77-ai/im-not-ai",
+        "fullName": "modelscope/evalscope",
         "score": 75.3,
-        "stars": 6334,
+        "stars": 3713,
         "grade": "A",
         "dv": 7
       },
       {
-        "fullName": "strands-agents/samples",
-        "score": 75.3,
-        "stars": 920,
-        "grade": "A",
-        "dv": 8
-      },
-      {
         "fullName": "apify/crawlee-python",
         "score": 75.2,
-        "stars": 9633,
+        "stars": 9678,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "vinta/pangu.js",
         "score": 75.2,
-        "stars": 4856,
-        "grade": "A",
-        "dv": 7
-      },
-      {
-        "fullName": "feyninc/chonkie",
-        "score": 75.2,
-        "stars": 4813,
-        "grade": "A",
-        "dv": 8
-      },
-      {
-        "fullName": "modelscope/evalscope",
-        "score": 75.2,
-        "stars": 3613,
+        "stars": 4860,
         "grade": "A",
         "dv": 7
       },
       {
         "fullName": "waybarrios/vllm-mlx",
         "score": 75.2,
-        "stars": 1641,
+        "stars": 1656,
         "grade": "A",
         "dv": 8
       },
       {
-        "fullName": "mark3labs/mcp-go",
-        "score": 75.1,
-        "stars": 9208,
-        "grade": "A",
-        "dv": 9
-      },
-      {
         "fullName": "cocoindex-io/cocoindex-code",
         "score": 75.1,
-        "stars": 2954,
+        "stars": 2987,
         "grade": "A",
         "dv": 7
       },
       {
         "fullName": "gooseworks-ai/goose-skills",
         "score": 75.1,
-        "stars": 1273,
+        "stars": 1329,
         "grade": "A",
         "dv": 7
       },
       {
-        "fullName": "snap-stanford/Biomni",
+        "fullName": "google-antigravity/antigravity-sdk-python",
         "score": 75,
-        "stars": 4030,
+        "stars": 4123,
         "grade": "A",
         "dv": 8
       },
       {
-        "fullName": "google-antigravity/antigravity-sdk-python",
+        "fullName": "snap-stanford/Biomni",
         "score": 75,
-        "stars": 3883,
+        "stars": 4097,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "TencentCloudBase/CloudBase-AI-Toolkit",
         "score": 75,
-        "stars": 1152,
+        "stars": 1168,
+        "grade": "A",
+        "dv": 7
+      },
+      {
+        "fullName": "alpacahq/alpaca-mcp-server",
+        "score": 75,
+        "stars": 1099,
         "grade": "A",
         "dv": 7
       },
       {
         "fullName": "assistant-ui/assistant-ui",
         "score": 74.9,
-        "stars": 12826,
+        "stars": 13346,
+        "grade": "A",
+        "dv": 8
+      },
+      {
+        "fullName": "steel-dev/steel-browser",
+        "score": 74.9,
+        "stars": 7994,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "i-am-bee/beeai-framework",
         "score": 74.9,
-        "stars": 3448,
+        "stars": 3459,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "fatwang2/search2ai",
         "score": 74.9,
-        "stars": 1284,
+        "stars": 1286,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "basetenlabs/truss",
         "score": 74.9,
-        "stars": 1226,
-        "grade": "A",
-        "dv": 7
-      },
-      {
-        "fullName": "alpacahq/alpaca-mcp-server",
-        "score": 74.9,
-        "stars": 1050,
+        "stars": 1235,
         "grade": "A",
         "dv": 7
       },
       {
         "fullName": "jitsi/jiwer",
         "score": 74.9,
-        "stars": 940,
-        "grade": "A",
-        "dv": 8
-      },
-      {
-        "fullName": "steel-dev/steel-browser",
-        "score": 74.8,
-        "stars": 7888,
+        "stars": 945,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "apache/burr",
         "score": 74.8,
-        "stars": 2586,
+        "stars": 2607,
+        "grade": "A",
+        "dv": 8
+      },
+      {
+        "fullName": "soniqo/speech-swift",
+        "score": 74.8,
+        "stars": 1283,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "anush008/fastembed-rs",
         "score": 74.8,
-        "stars": 1050,
+        "stars": 1052,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "openai/openai-python",
         "score": 74.7,
-        "stars": 31982,
+        "stars": 32203,
         "grade": "A",
         "dv": 9
       },
       {
         "fullName": "cloudflare/agents",
         "score": 74.7,
-        "stars": 5916,
+        "stars": 6012,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "awslabs/agentcore-samples",
         "score": 74.7,
-        "stars": 3492,
+        "stars": 3538,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "huggingface/lighteval",
         "score": 74.7,
-        "stars": 2573,
+        "stars": 2586,
         "grade": "A",
         "dv": 8
       },
       {
         "fullName": "imxv/Pretty-mermaid-skills",
         "score": 74.7,
-        "stars": 1555,
+        "stars": 1590,
         "grade": "A",
         "dv": 7
       },
       {
         "fullName": "explosion/spacy-llm",
         "score": 74.7,
-        "stars": 1399,
+        "stars": 1400,
         "grade": "A",
         "dv": 8
       },
       {
-        "fullName": "soniqo/speech-swift",
+        "fullName": "ArcadeAI/arcade-mcp",
         "score": 74.7,
-        "stars": 1251,
+        "stars": 1103,
         "grade": "A",
         "dv": 8
-      },
-      {
-        "fullName": "platonai/Browser4",
-        "score": 74.7,
-        "stars": 1170,
-        "grade": "A",
-        "dv": 7
       },
       {
         "fullName": "bolna-ai/bolna",
         "score": 74.7,
-        "stars": 809,
+        "stars": 831,
         "grade": "A",
         "dv": 7
       },
       {
         "fullName": "MrLesk/Backlog.md",
         "score": 74.6,
-        "stars": 7203,
+        "stars": 7444,
         "grade": "A",
         "dv": 4
-      },
-      {
-        "fullName": "infiniflow/infinity",
-        "score": 74.6,
-        "stars": 4750,
-        "grade": "A",
-        "dv": 8
-      },
-      {
-        "fullName": "mozilla-ai/any-llm",
-        "score": 74.6,
-        "stars": 2238,
-        "grade": "A",
-        "dv": 8
       },
       {
         "fullName": "patterns-ai-core/langchainrb",
         "score": 74.6,
         "stars": 2006,
-        "grade": "A",
-        "dv": 8
-      },
-      {
-        "fullName": "ArcadeAI/arcade-mcp",
-        "score": 74.6,
-        "stars": 1065,
         "grade": "A",
         "dv": 8
       },
@@ -602,6 +553,13 @@
         "dv": 8
       },
       {
+        "fullName": "nonebot/nonebot2",
+        "score": 74.5,
+        "stars": 7789,
+        "grade": "A",
+        "dv": 8
+      },
+      {
         "fullName": "mnfst/llm-gateway",
         "score": 74.5,
         "stars": 7608,
@@ -612,6 +570,13 @@
         "fullName": "karust/openserp",
         "score": 74.5,
         "stars": 1520,
+        "grade": "A",
+        "dv": 8
+      },
+      {
+        "fullName": "FalkorDB/GraphRAG-SDK",
+        "score": 74.4,
+        "stars": 1036,
         "grade": "A",
         "dv": 8
       },
@@ -756,6 +721,13 @@
         "dv": 8
       },
       {
+        "fullName": "strands-agents/tools",
+        "score": 73.9,
+        "stars": 1348,
+        "grade": "B",
+        "dv": 8
+      },
+      {
         "fullName": "ag-ui-protocol/ag-ui",
         "score": 73.8,
         "stars": 16925,
@@ -789,6 +761,13 @@
         "stars": 2373,
         "grade": "B",
         "dv": 7
+      },
+      {
+        "fullName": "floneum/kalosm",
+        "score": 73.8,
+        "stars": 2236,
+        "grade": "B",
+        "dv": 8
       },
       {
         "fullName": "uber/ADR",
@@ -868,9 +847,23 @@
         "dv": 8
       },
       {
+        "fullName": "infiniflow/infinity",
+        "score": 73.6,
+        "stars": 4769,
+        "grade": "B",
+        "dv": 8
+      },
+      {
         "fullName": "MemMachine/MemMachine",
         "score": 73.6,
         "stars": 3078,
+        "grade": "B",
+        "dv": 8
+      },
+      {
+        "fullName": "mozilla-ai/any-llm",
+        "score": 73.6,
+        "stars": 2261,
         "grade": "B",
         "dv": 8
       },
@@ -999,6 +992,13 @@
         "stars": 11896,
         "grade": "B",
         "dv": 7
+      },
+      {
+        "fullName": "feyninc/chonkie",
+        "score": 73.2,
+        "stars": 4849,
+        "grade": "B",
+        "dv": 8
       },
       {
         "fullName": "simonlin1212/TradingAgents-astock",
@@ -10523,7 +10523,7 @@
     "elapsedMs": 2959995
   },
   "lastPublish": {
-    "at": "2026-11-20T06:42:34.095Z",
+    "at": "2026-11-20T06:57:15.078Z",
     "total": 1500,
     "source": "manual",
     "report": {
