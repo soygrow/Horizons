@@ -485,6 +485,8 @@ async function refreshRepos(keys: string[]): Promise<void> {
       pushedAt: merged.pushedAt,
       description: merged.description,
       homepage: merged.homepage,
+      /* 采集时间一起带上：发布时它就是 board_listed.last_crawled_at */
+      lastCrawledAt: merged.lastCrawledAt,
       score: score.score,
       grade: score.grade,
     });

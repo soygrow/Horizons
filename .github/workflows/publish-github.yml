@@ -133,8 +133,9 @@ jobs:
             echo "::warning::加工空间判定部分失败，可稍后重跑"
           echo "::endgroup::"
 
-      # 富化改的是文件，推回库才算真的补上
-      - name: 中文情报回写 D1
+      # 富化改的是文件，推回库才算真的补上。
+      # 合并步骤已经写过一遍新数据，这一步通常「未变 / 写入 0 行」，属正常。
+      - name: 中文情报回写 D1（与库一致时 0 行为正常）
         if: always()
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

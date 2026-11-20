@@ -195,6 +195,14 @@ export interface StagingUpdate {
   pushedAt?: string;
   description?: string;
   homepage?: string;
+  /**
+   * 这次真的打到 GitHub 了，是什么时候。
+   *
+   * 必须带上：发布时 `board_listed.last_crawled_at` 就取 `card.lastCrawledAt`，
+   * 少了它，刷新过的条目线上还写着上次采集日 —— 后台「7 天未更新」永远
+   * 是满榜 1500，按数据日分组也永远只有旧的那一天。
+   */
+  lastCrawledAt?: string;
   score: number;
   grade: string;
 }

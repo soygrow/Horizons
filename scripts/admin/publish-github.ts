@@ -198,7 +198,7 @@ async function main(): Promise<void> {
     };
     const rows = toRows(board.repos ?? []);
     console.log(`[publish] repost：按本地 ${rows.length} 条回写 D1（不动候选池、不算位次）`);
-    await syncBoardToD1({
+    const res = await syncBoardToD1({
       board: "github",
       rows,
       actor: process.env.GITHUB_ACTOR ?? "manual",
@@ -209,6 +209,15 @@ async function main(): Promise<void> {
         scoreModel: board.scoreModel,
       },
     });
+    /*
+     * 这一步在发布流水线里固定排在合并之后，只负责把补完中文情报的文件推回库。
+     * 合并已经写过一遍，这里通常「未变 0 行」—— 那是在说「库已是最新」，
+     * 不是「这次没更新」。日志里把这句话写清楚，免得和小结里的更新数对不上。
+     */
+    console.log(
+      `[publish] repost 完成：库内 ${res.listed} 条；与库一致的行不会重写，` +
+        `「未变 / 实际写入 0 行」属正常（合并步骤已经写过一遍）`,
+    );
     return;
   }
 
@@ -252,6 +261,12 @@ async function main(): Promise<void> {
     if (u.pushedAt) repo.pushedAt = u.pushedAt;
     if (u.description) repo.description = u.description;
     if (u.homepage) repo.homepage = u.homepage;
+    /*
+     * 采集时间必须跟着走：`board_listed.last_crawled_at` 就是取它的。
+     * 漏了这一步，行内「更新时间」还写着上次采集日，后台「7 天未更新」
+     * 永远是满榜，按数据日分组也永远只有老的那一天 —— 看起来像没生效。
+     */
+    if (u.lastCrawledAt) repo.lastCrawledAt = u.lastCrawledAt;
     repo.productScore = computeProductScore(repo);
     updated++;
   }
@@ -270,6 +285,8 @@ async function main(): Promise<void> {
       existing.forks = c.repo.forks;
       existing.openIssues = c.repo.openIssues;
       existing.pushedAt = c.repo.pushedAt;
+      /* 定向刷新走的是候选这条路，采集时间同样要带过来（见 StagingUpdate 注释） */
+      if (c.repo.lastCrawledAt) existing.lastCrawledAt = c.repo.lastCrawledAt;
       existing.productScore = computeProductScore(existing);
       continue;
     }
