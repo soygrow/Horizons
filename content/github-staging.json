@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-19T10:33:25.766Z",
+  "updatedAt": "2026-11-20T03:15:47.524Z",
   "ruleVersion": "gh-rank-v1.6",
   "scoreModel": "pps-v4",
   "target": 2000,
@@ -11131,8 +11131,628 @@
       }
     ]
   },
-  "candidates": [],
-  "updates": [],
+  "candidates": [
+    {
+      "repo": {
+        "fullName": "lobehub/lobe-icons",
+        "owner": "lobehub",
+        "repo": "lobe-icons",
+        "name": "lobe-icons",
+        "description": "🥨 Lobe Icons - Brings AI/LLM brand logos to your React & React Native apps — static SVG/PNG/WebP, no dependencies.",
+        "htmlUrl": "https://github.com/lobehub/lobe-icons",
+        "homepage": "https://icons.lobehub.com",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/131470832?v=4",
+        "language": "TypeScript",
+        "topics": [
+          "ai",
+          "ai-brands",
+          "ai-icons",
+          "brand-colors",
+          "brands",
+          "component",
+          "design",
+          "design-assets",
+          "icon-pack",
+          "icon-packs",
+          "icons",
+          "llm",
+          "llm-brands",
+          "llm-icons",
+          "logo",
+          "model-icon",
+          "model-logo",
+          "react",
+          "svg",
+          "svg-icons"
+        ],
+        "license": {
+          "spdx": "MIT",
+          "name": "MIT License"
+        },
+        "createdAt": "2024-01-30T03:13:18Z",
+        "pushedAt": "2026-11-18T19:24:51Z",
+        "stars": 2713,
+        "forks": 288,
+        "openIssues": 107,
+        "watchers": 2659,
+        "categories": [
+          "AI Chat"
+        ],
+        "heatScore": 69,
+        "history": [
+          {
+            "date": "2026-10-01",
+            "stars": 2588,
+            "forks": 268,
+            "openIssues": 94,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-02",
+            "stars": 2590,
+            "forks": 268,
+            "openIssues": 94,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-03",
+            "stars": 2592,
+            "forks": 268,
+            "openIssues": 95,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-04",
+            "stars": 2595,
+            "forks": 268,
+            "openIssues": 95,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-05",
+            "stars": 2597,
+            "forks": 269,
+            "openIssues": 95,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-06",
+            "stars": 2600,
+            "forks": 269,
+            "openIssues": 95,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-07",
+            "stars": 2602,
+            "forks": 269,
+            "openIssues": 95,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-08",
+            "stars": 2605,
+            "forks": 269,
+            "openIssues": 95,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-09",
+            "stars": 2607,
+            "forks": 270,
+            "openIssues": 95,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-10",
+            "stars": 2610,
+            "forks": 270,
+            "openIssues": 95,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-11",
+            "stars": 2612,
+            "forks": 270,
+            "openIssues": 95,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-12",
+            "stars": 2614,
+            "forks": 270,
+            "openIssues": 95,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-13",
+            "stars": 2617,
+            "forks": 271,
+            "openIssues": 95,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-14",
+            "stars": 2619,
+            "forks": 271,
+            "openIssues": 96,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-15",
+            "stars": 2622,
+            "forks": 271,
+            "openIssues": 96,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-16",
+            "stars": 2624,
+            "forks": 271,
+            "openIssues": 96,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-17",
+            "stars": 2627,
+            "forks": 272,
+            "openIssues": 96,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-18",
+            "stars": 2629,
+            "forks": 272,
+            "openIssues": 96,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-19",
+            "stars": 2632,
+            "forks": 272,
+            "openIssues": 96,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-20",
+            "stars": 2634,
+            "forks": 272,
+            "openIssues": 96,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-21",
+            "stars": 2637,
+            "forks": 273,
+            "openIssues": 96,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-22",
+            "stars": 2639,
+            "forks": 273,
+            "openIssues": 96,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-23",
+            "stars": 2642,
+            "forks": 273,
+            "openIssues": 96,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-24",
+            "stars": 2644,
+            "forks": 273,
+            "openIssues": 96,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-25",
+            "stars": 2647,
+            "forks": 274,
+            "openIssues": 97,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-26",
+            "stars": 2649,
+            "forks": 274,
+            "openIssues": 97,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-27",
+            "stars": 2652,
+            "forks": 274,
+            "openIssues": 97,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-28",
+            "stars": 2654,
+            "forks": 274,
+            "openIssues": 97,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-29",
+            "stars": 2657,
+            "forks": 275,
+            "openIssues": 97,
+            "synthetic": true
+          },
+          {
+            "date": "2026-10-30",
+            "stars": 2659,
+            "forks": 275,
+            "openIssues": 97,
+            "synthetic": true
+          }
+        ],
+        "lastCrawledAt": "2026-11-20T03:15:47.163Z",
+        "productScore": {
+          "score": 82.5,
+          "grade": "S",
+          "summary": "强推：现在就能开工。轻启动机会最强，增长动能是短板。",
+          "parts": [
+            {
+              "key": "light",
+              "label": "轻启动机会",
+              "weight": 22,
+              "value": 89,
+              "points": 19.6,
+              "note": "加分项：个人可驾驭、月成本≈0、首版≤3周、上手容易"
+            },
+            {
+              "key": "derivative",
+              "label": "加工空间",
+              "weight": 18,
+              "value": 90,
+              "points": 16.2,
+              "note": "形态 一个图标资源库：340+ AI 品牌 logo，提供 React/React Native 组件、静态 SVG/PNG/WebP 文件和 CDN 图片链接。 · 尚未占住具体产品场景 · 接入点 npm 包 @lobehub/icons 可按品牌名/模型 ID 导入组件；静态资源通过 unpkg CDN 按 light/dark 目录和 png/webp 格式直接取 URL；提供 skills.md 供编码代理自动学习接入方式。"
+            },
+            {
+              "key": "commercial",
+              "label": "商业化潜力",
+              "weight": 14,
+              "value": 71.4,
+              "points": 10,
+              "note": "许可 可商用 · 领域付费需求 未发现 · 官网 独立域名"
+            },
+            {
+              "key": "effort",
+              "label": "落地门槛",
+              "weight": 13,
+              "value": 92.3,
+              "points": 12,
+              "note": "上手难度 低 · 体量 2,713 星 · 无需额外付费资源 · 首版 1-2周"
+            },
+            {
+              "key": "demand",
+              "label": "需求验证",
+              "weight": 12,
+              "value": 84.6,
+              "points": 10.2,
+              "note": "热度 2,713 星（1 万星即视为验证完成） · fork/star 10.6% · 未结 issue 107"
+            },
+            {
+              "key": "dev",
+              "label": "可开发性",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "描述 115 字符 · 标签 20 个 · 许可 MIT · 语言 TypeScript · README 0 字符"
+            },
+            {
+              "key": "active",
+              "label": "维护活跃度",
+              "weight": 7,
+              "value": 85.7,
+              "points": 6,
+              "note": "最近提交 1 天前 · 近 4 周提交 null 次 · 贡献者 36"
+            },
+            {
+              "key": "growth",
+              "label": "增长动能",
+              "weight": 7,
+              "value": 50,
+              "points": 3.5,
+              "note": "暂无真实采样（榜单 2026-10 起逐日记录，满 7 天后才有增速），按中性 50 计"
+            }
+          ],
+          "model": "pps-v3",
+          "computedAt": "2026-11-20T03:15:47.190Z"
+        },
+        "readmeSummary": "<a name=\"readme top\" </a <div align=\"center\" https://github.com/user attachments/assets/4f1c1ded 0de3 4425 8ea7 605f19fc157a <h1 Lobe Icons</h1 <h3 Every AI Brand, One Icon Set</h3 340+ AI model and provider logos, ready for React, React Native, or as static SVG / PNG / WEBP. Documents https://icons.lobehub.com · Changelog ./CHANGELOG.md · Report Bug github issues link · Request Feature github iss",
+        "contributorsCount": 36,
+        "insight": {
+          "taglineZh": "用340+AI品牌图标，快速做出AI应用界面",
+          "whatZh": "Lobe Icons 是一个包含340多个AI模型、提供商和应用品牌图标的开源图标库，提供React组件、React Native组件以及静态SVG/PNG/WebP资源。支持单色、彩色、文字和头像等多种样式，适配明暗主题。可通过模型ID（如gpt-4o）自动匹配图标，支持按需引入以减小打包体积，也可通过CDN直接使用图片链接。",
+          "capabilities": [
+            "340+ AI品牌图标，覆盖模型、提供商、应用",
+            "多种样式：单色、彩色、文字、头像，适配明暗主题",
+            "通过模型ID自动匹配图标，如gpt-4o对应OpenAI",
+            "支持React、React Native、静态图片和CDN链接"
+          ],
+          "buildIdeas": [
+            {
+              "title": "AI模型导航站",
+              "audience": "AI开发者、技术选型人员",
+              "product": "一个聚合主流AI模型信息的导航网站，每个模型展示图标、简介、定价和接口文档链接。",
+              "monetization": "通过模型提供商赞助或推广位收费，每月¥500-2000/家；或提供高级筛选功能订阅¥19/月。",
+              "effort": "1人 / 2周",
+              "stackHint": "Next.js + Lobe Icons React组件，静态生成模型页面，用ModelIcon根据模型ID渲染图标。"
+            },
+            {
+              "title": "AI工具目录小程序",
+              "audience": "普通用户、AI爱好者",
+              "product": "微信小程序，分类展示AI工具（聊天、绘画、写作等），每个工具带品牌图标和直达链接。",
+              "monetization": "工具收录费¥200/个，或点击广告分成；会员免广告¥9.9/月。",
+              "effort": "1人 / 3周",
+              "stackHint": "小程序原生开发，使用Lobe Icons的静态PNG图片通过CDN链接展示，避免引入React依赖。"
+            },
+            {
+              "title": "AI模型对比仪表盘",
+              "audience": "企业技术团队、AI产品经理",
+              "product": "一个可定制的仪表盘，并排对比多个AI模型的参数、价格、性能，图标增强视觉识别。",
+              "monetization": "订阅服务订阅，基础版免费，团队版¥99/月，支持私有化部署¥9999/年。",
+              "effort": "2人 / 4周",
+              "stackHint": "React + Lobe Icons组件，结合公开接口数据，用ModelIcon动态渲染模型图标。"
+            },
+            {
+              "title": "AI品牌图标定制服务",
+              "audience": "AI初创公司、开源项目",
+              "product": "为AI公司提供品牌图标设计并集成到Lobe Icons库中，同时提供图标使用咨询。",
+              "monetization": "按项目收费¥2000-5000/个图标，或年费¥10000包含多个图标更新。",
+              "effort": "1人 / 1周（需设计能力）",
+              "stackHint": "基于Lobe Icons的SVG规范设计，提交PR合并到主库，获得曝光。"
+            }
+          ],
+          "buildSteps": [
+            {
+              "step": "验证需求",
+              "detail": "在AI开发者社区（如V2EX、Reddit）发起投票，询问是否需要一个带品牌图标的AI模型导航站，收集20个潜在用户反馈。",
+              "phase": "验证",
+              "output": "需求验证报告和10个种子用户邮箱",
+              "duration": "2-3天"
+            },
+            {
+              "step": "搭建原型",
+              "detail": "用Next.js和Lobe Icons快速搭建一个静态页面，展示20个热门AI模型，每个模型用ModelIcon渲染图标，部署到Vercel。",
+              "phase": "起步",
+              "output": "可访问的首版网站",
+              "duration": "3-5天"
+            },
+            {
+              "step": "集成数据",
+              "detail": "手动整理30个模型的简介、定价和接口链接，存入JSON文件，页面动态读取并展示。",
+              "phase": "起步",
+              "output": "包含30个模型信息的完整页面",
+              "duration": "2天"
+            },
+            {
+              "step": "上线收费",
+              "detail": "添加赞助商展示位，联系5家AI工具提供商，以每月¥500的价格出售首页logo展示位。",
+              "phase": "变现",
+              "output": "首个付费赞助商合同",
+              "duration": "1周"
+            },
+            {
+              "step": "增长推广",
+              "detail": "在Product Hunt、Hacker News发布，并撰写博客《如何用Lobe Icons快速构建AI导航站》，吸引开发者关注。",
+              "phase": "增长",
+              "output": "每月5000访问量",
+              "duration": "2周"
+            }
+          ],
+          "effects": [
+            {
+              "metric": "图标集成时间",
+              "value": "从2小时缩短到5分钟"
+            },
+            {
+              "metric": "页面加载速度",
+              "value": "按需引入图标，打包体积减少60%"
+            },
+            {
+              "metric": "品牌识别度",
+              "value": "用户通过图标快速识别模型，点击率提升30%"
+            },
+            {
+              "metric": "开发成本",
+              "value": "节省图标设计费用约¥2000"
+            }
+          ],
+          "moat": "340+官方品牌图标库持续更新，与AI生态深度绑定，形成开发者习惯。",
+          "risks": [
+            "图标库依赖第三方品牌，若品牌变更logo需及时更新，否则影响准确性",
+            "导航站模式竞争激烈，需差异化内容（如深度评测）才能留住用户",
+            "赞助商收费模式可能因流量不足而难以持续，需探索多元变现"
+          ],
+          "techNotes": "React项目直接安装@lobehub/icons，通过ModelIcon组件传入模型ID渲染；非React项目使用CDN链接引用静态PNG。",
+          "difficulty": "低",
+          "timeToMvp": "1-2周",
+          "costToMvp": "¥0-200/月",
+          "competitors": [
+            "Simple Icons",
+            "SVG Logos"
+          ],
+          "differentiators": [
+            "专注AI品牌，覆盖340+模型和提供商",
+            "支持通过模型ID自动匹配图标，开发体验好"
+          ]
+        },
+        "insightSource": "llm",
+        "derivative": {
+          "base": "一个图标资源库：340+ AI 品牌 logo，提供 React/React Native 组件、静态 SVG/PNG/WebP 文件和 CDN 图片链接。",
+          "space": 9,
+          "untapped": [
+            "面向企业内部 AI 网关/模型路由平台：把图标库作为品牌识别层嵌入，自动根据模型 ID 渲染对应厂商 logo，并叠加用量、延迟、成本等运营数据，做成「模型资产目录」产品。",
+            "面向 AI 产品设计团队：做一个品牌合规检查与图标资产托管工具，扫描设计稿/代码中 AI 品牌 logo 的使用是否用了最新版本、配色和留白规范，并自动替换为库中正确变体。"
+          ],
+          "hook": "npm 包 @lobehub/icons 可按品牌名/模型 ID 导入组件；静态资源通过 unpkg CDN 按 light/dark 目录和 png/webp 格式直接取 URL；提供 skills.md 供编码代理自动学习接入方式。"
+        },
+        "derivativeSource": "llm",
+        "readme": ""
+      },
+      "score": 82.5,
+      "grade": "S",
+      "estimatedRank": null,
+      "check": {
+        "ok": true
+      }
+    },
+    {
+      "repo": {
+        "fullName": "Vonage/vonage-php-sdk-core",
+        "owner": "Vonage",
+        "repo": "vonage-php-sdk-core",
+        "name": "vonage-php-sdk-core",
+        "description": "Vonage REST API client for PHP. API support for SMS, Voice, Text-to-Speech, Numbers, Verify (2FA) and more.",
+        "htmlUrl": "https://github.com/Vonage/vonage-php-sdk-core",
+        "homepage": "https://developer.vonage.com/",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/2683897?v=4",
+        "language": "PHP",
+        "topics": [
+          "developer-destination",
+          "messaging",
+          "nexmo",
+          "phone",
+          "php",
+          "server-sdk",
+          "sms",
+          "text-message",
+          "text-to-speech",
+          "two-factor-authentication",
+          "voice",
+          "vonage"
+        ],
+        "license": {
+          "spdx": "Apache-2.0",
+          "name": "Apache License 2.0"
+        },
+        "createdAt": "2013-07-04T15:38:33Z",
+        "pushedAt": "2026-10-20T13:49:44Z",
+        "stars": 930,
+        "forks": 178,
+        "openIssues": 6,
+        "watchers": 930,
+        "categories": [
+          "Voice & Audio",
+          "Coding"
+        ],
+        "heatScore": 59,
+        "history": [],
+        "lastCrawledAt": "2026-11-20T03:15:47.523Z",
+        "productScore": {
+          "score": 63.5,
+          "grade": "C",
+          "summary": "谨慎：更适合练手。轻启动机会最强，维护活跃度是短板。",
+          "parts": [
+            {
+              "key": "light",
+              "label": "轻启动机会",
+              "weight": 22,
+              "value": 68,
+              "points": 15,
+              "note": "加分项：小而美体量"
+            },
+            {
+              "key": "derivative",
+              "label": "加工空间",
+              "weight": 18,
+              "value": 50,
+              "points": 9,
+              "note": "未评估，按中性 5/10 计"
+            },
+            {
+              "key": "commercial",
+              "label": "商业化潜力",
+              "weight": 14,
+              "value": 71.4,
+              "points": 10,
+              "note": "许可 可商用 · 领域付费需求 未发现 · 官网 独立域名"
+            },
+            {
+              "key": "effort",
+              "label": "落地门槛",
+              "weight": 13,
+              "value": 69.2,
+              "points": 9,
+              "note": "上手难度 未知 · 体量 930 星 · 无需额外付费资源 · 首版周期未知"
+            },
+            {
+              "key": "demand",
+              "label": "需求验证",
+              "weight": 12,
+              "value": 70.4,
+              "points": 8.5,
+              "note": "热度 930 星（1 万星即视为验证完成） · fork/star 19.1% · 未结 issue 6"
+            },
+            {
+              "key": "dev",
+              "label": "可开发性",
+              "weight": 7,
+              "value": 71.4,
+              "points": 5,
+              "note": "描述 107 字符 · 标签 12 个 · 许可 Apache-2.0 · 语言 PHP · README 0 字符"
+            },
+            {
+              "key": "active",
+              "label": "维护活跃度",
+              "weight": 7,
+              "value": 50,
+              "points": 3.5,
+              "note": "最近提交 31 天前 · 近 4 周提交 null 次 · 贡献者 未采集"
+            },
+            {
+              "key": "growth",
+              "label": "增长动能",
+              "weight": 7,
+              "value": 50,
+              "points": 3.5,
+              "note": "暂无真实采样（榜单 2026-10 起逐日记录，满 7 天后才有增速），按中性 50 计"
+            }
+          ],
+          "model": "pps-v3",
+          "computedAt": "2026-11-20T03:15:47.524Z"
+        },
+        "readme": ""
+      },
+      "score": 63.5,
+      "grade": "C",
+      "estimatedRank": null,
+      "check": {
+        "ok": true
+      }
+    }
+  ],
+  "updates": [
+    {
+      "fullName": "lobehub/lobe-icons",
+      "stars": 2713,
+      "forks": 288,
+      "openIssues": 107,
+      "pushedAt": "2026-11-18T19:24:51Z",
+      "description": "🥨 Lobe Icons - Brings AI/LLM brand logos to your React & React Native apps — static SVG/PNG/WebP, no dependencies.",
+      "homepage": "https://icons.lobehub.com",
+      "score": 82.5,
+      "grade": "S"
+    },
+    {
+      "fullName": "Vonage/vonage-php-sdk-core",
+      "stars": 930,
+      "forks": 178,
+      "openIssues": 6,
+      "pushedAt": "2026-10-20T13:49:44Z",
+      "description": "Vonage REST API client for PHP. API support for SMS, Voice, Text-to-Speech, Numbers, Verify (2FA) and more.",
+      "homepage": "https://developer.vonage.com/",
+      "score": 63.5,
+      "grade": "C"
+    }
+  ],
   "rejected": [],
   "preview": null,
   "lastRun": {
