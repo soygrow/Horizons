@@ -18,8 +18,13 @@ import { dispatchWorkflow, ghConfig, latestRun, mapStatus, missingSecrets } from
 import { currentVersion, listDataDays, listReleased, resolveListedVersion } from "../lib/versions";
 
 const MAX_PAGE_SIZE = 100;
-/** 一次最多刷新多少个：与 fetch-models.yml 的入参校验保持一致 */
-const MAX_REFRESH = 60;
+/**
+ * 一次最多刷新多少个：与 fetch-models.yml 的入参校验保持一致。
+ *
+ * 定向刷新不是逐个请求：采集先把两个源各拉一遍，再按 slug 在本地筛，
+ * 所以耗时几乎与条数无关（50 个约 46 秒），200 个也撑不满 15 分钟的 job。
+ */
+const MAX_REFRESH = 200;
 
 interface Def {
   board: "models" | "opps";

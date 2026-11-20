@@ -20,7 +20,7 @@ on:
   workflow_dispatch:
     inputs:
       models:
-        description: "要刷新的模型 slug，逗号分隔（一次最多 60 个）"
+        description: "要刷新的模型 slug，逗号分隔（一次最多 200 个）"
         required: true
         type: string
 
@@ -62,8 +62,8 @@ jobs:
             echo "::error::没有要刷新的 slug"
             exit 1
           fi
-          if [ "$n" -gt 60 ]; then
-            echo "::error::一次最多 60 个，当前 $n 个"
+          if [ "$n" -gt 200 ]; then
+            echo "::error::一次最多 200 个，当前 $n 个"
             exit 1
           fi
 

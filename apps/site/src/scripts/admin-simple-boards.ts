@@ -124,8 +124,8 @@ const KIND_LABEL: Record<string, string> = {
 
 const PAGE_SIZE = 50;
 
-/** 单次定向刷新的条数上限，与 apps/api 的 MAX_REFRESH 一致（Actions 一次跑不完更多） */
-const MAX_REFRESH_KEYS = 60;
+/** 单次定向刷新的条数上限，与 apps/api 的 MAX_REFRESH 一致 */
+const MAX_REFRESH_KEYS = 200;
 
 const num = (v: unknown): string =>
   typeof v === "number" && Number.isFinite(v) ? v.toFixed(1) : "—";
@@ -521,7 +521,7 @@ async function refreshModels(keys: string[], opts: { keepSelection?: boolean } =
     setListedStatus("先勾选要更新的模型，再点「更新选中」", "idle");
     return;
   }
-  /* 和后端 MAX_REFRESH 对齐：Actions 一次跑不完更多，超了必被拒，别白等一次往返 */
+  /* 和后端 MAX_REFRESH 对齐：超了必被拒，别白等一次往返 */
   if (keys.length > MAX_REFRESH_KEYS) {
     setListedStatus(
       `一次最多 ${MAX_REFRESH_KEYS} 个，当前选了 ${keys.length} 个 —— 点「本页」勾选，分批提交`,
