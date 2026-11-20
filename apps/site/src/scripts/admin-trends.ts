@@ -15,12 +15,13 @@ import {
   apiPost,
   debounce,
   esc,
-  fillVersionSelect,
+  fillDaySelect,
   fmtNum,
   fmtStamp,
   fmtTime,
   pickedDataAt,
   versionNote,
+  type DataDay,
   type VersionOption,
 } from "./admin-shared";
 
@@ -230,6 +231,8 @@ interface ListedResp {
   current?: string | null;
   /** 库里还留着的版本（倒序）+ 每版条数 */
   versions?: VersionOption[];
+  /** 当前版本内部按行级采集日分组：各天条数之和恒等于 total */
+  days?: DataDay[];
   total: number;
   /** 候选池里已刷新、等发布的词数 */
   refreshPending: number;
@@ -295,8 +298,8 @@ const state = {
   listedQ: "",
   /** all / stale(≥30 天) / old(≥60 天) / queued(已在候选池) */
   listedFilter: "all",
-  /** 看哪一版快照（空 = 当前生效版本），用户在版本下拉里选 */
-  listedVersion: "",
+  /** 数据日筛选（YYYY-MM-DD，空 = 全部）：筛的是行级采集日，不换版本 */
+  listedDay: "",
   listedPage: 1,
   listedSelected: new Set<string>(),
   /** 勾选待富化的 slug，刷新后保留——富化是一次远程任务，选择不能被轮询清掉 */
@@ -489,9 +492,20 @@ function listedPickable(row: ListedTrend): boolean {
   return row.staging !== "enriching" && row.staging !== "publishing";
 }
 
+/**
+ * 这一行的数据日。
+ *
+ * 取法必须和后端 `DATA_AT_EXPR` 一致（updatedAt 优先、回 lastSeenAt），
+ * 否则下拉里某天写着 200 条、点进去只剩 180 —— 两边算的不是同一个东西。
+ */
+function listedRowDay(row: ListedTrend): string {
+  return (row.updatedAt ?? row.lastSeenAt ?? "").slice(0, 10);
+}
+
 function visibleListed(data: ListedResp): ListedTrend[] {
   const q = state.listedQ.toLowerCase();
   return data.items.filter((row) => {
+    if (state.listedDay && listedRowDay(row) !== state.listedDay) return false;
     if (q && !row.keyword.toLowerCase().includes(q) && !row.slug.includes(q)) return false;
     // 从未采集的按「很久没更新」算，落在所有未更新档里
     const age = ageDays(row.lastSeenAt) ?? 999;
@@ -612,8 +626,14 @@ function renderListed(data: ListedResp): void {
   const body = $("trends-listed-body");
   const pager = $("trends-listed-pager");
 
-  /* 下拉以服务端解析出的版本为准：选的版本被清理掉了会自动落回当前版本 */
-  fillVersionSelect("trends-listed-version", data.versions, data.version);
+  /*
+   * 下拉按「数据日」分，不按发布批次。
+   *
+   * 版本是快照：同一份榜单会被整版搬进下一版，按版本列就是 487 / 367 / 140
+   * 三家分晋（加起来 994），比总数 487 还多 —— 看着就像条数算错了。
+   * 按行级采集日分，每个词只归一天，各天之和恒等于「全部」。
+   */
+  fillDaySelect("trends-listed-version", data.days, data.total, state.listedDay);
 
   if (!data.items.length) {
     meta.textContent = data.detail ?? "线上还没有趋势词，先采集并发布一次";
@@ -626,13 +646,23 @@ function renderListed(data: ListedResp): void {
     return;
   }
 
+  /*
+   * 选了某一天，后面这些数字就都只看那一天。
+   *
+   * 不然下拉说「20261031 · 367 条」、标题写「共 487 条 · 7 天未更新 120」，
+   * 三处各说各的，用户只能认定是算错了。
+   */
+  const scoped = state.listedDay
+    ? data.items.filter((r) => listedRowDay(r) === state.listedDay)
+    : data.items;
+
   // 和筛选档位同口径：7 天 / 30 天，中间那档（10 天）看下拉筛就行
-  const stale7 = data.items.filter((r) => (ageDays(r.lastSeenAt) ?? 999) >= 7).length;
-  const stale30 = data.items.filter((r) => (ageDays(r.lastSeenAt) ?? 999) >= 30).length;
-  const never = data.items.filter((r) => !r.lastSeenAt).length;
+  const stale7 = scoped.filter((r) => (ageDays(r.lastSeenAt) ?? 999) >= 7).length;
+  const stale30 = scoped.filter((r) => (ageDays(r.lastSeenAt) ?? 999) >= 30).length;
+  const never = scoped.filter((r) => !r.lastSeenAt).length;
   /* 版本号取发布日期（20261119），后面跟上发布时刻：只说日期不知道是哪一轮发的 */
   meta.textContent =
-    `${versionNote(data.version, pickedDataAt(data))} · 共 ${fmtNum(data.total)} 条（含别名）`
+    `${versionNote(data.version, state.listedDay || pickedDataAt(data))} · 共 ${fmtNum(scoped.length)} 条（含别名）`
     + ` · 7 天未更新 ${fmtNum(stale7)}${never ? `（其中从未采集 ${fmtNum(never)}）` : ""}`
     + ` · 30 天未更新 ${fmtNum(stale30)}`
     + (data.refreshPending ? ` · 候选池待发布 ${fmtNum(data.refreshPending)}` : "");
@@ -652,21 +682,17 @@ function renderListed(data: ListedResp): void {
   state.listedPage = Math.min(state.listedPage, pages);
 
   /*
-   * 整版的数据时间：这一版里最新一条是什么时候采的。
+   * 「更新时间」列按行取：行级采集日优先，缺了才回落到版本级最新日。
    *
-   * 「更新时间」列显示的就是它，而不是每条自己的 updatedAt —— 一版 487 条里
-   * 有的 10-29、有的 10-31，逐条显示的话版本号 20261031 永远和列里对不上，
-   * 看着就像串了版。
-   *
-   * 每条自己的时间不在这里露头（连 title 里也不写）：版本号说的是「这一版」，
-   * 一个版本里出现第二个日期，就又变成了对不上。
+   * 一版 487 条里有的 10-29、有的 10-31，下拉筛的也正是这些日子 ——
+   * 整列显示版本级最新日的话，选「20261031」却出现 11-18，一眼就是错的。
    */
   const vDataAt = pickedDataAt(data);
 
   body.innerHTML = slice
     .map((row) => {
       const own = row.updatedAt ?? row.lastSeenAt;
-      const stamp = vDataAt ?? own;
+      const stamp = own ?? vDataAt;
       const age = ageDays(stamp);
       const stage = row.staging ? STAGE_BADGES[row.staging] ?? { label: row.staging, cls: "bg-surface-2 text-ink-muted" } : null;
 
@@ -717,7 +743,7 @@ function renderListed(data: ListedResp): void {
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${score(row.scores.opportunity)}</td>
           <td class="px-4 py-2.5 text-right text-xs font-medium tabular-nums text-ink">${score(row.scores.overall)}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-xs tabular-nums text-ink-secondary">
-            <span class="block" title="本版数据的采集时间，和版本号同一天">${esc(fmtStamp(stamp))}</span>
+            <span class="block" title="这条词上次被采到的时间">${esc(fmtStamp(stamp))}</span>
             ${ageNote ? `<span class="text-[11px]">${ageNote}</span>` : ""}
           </td>
           <td class="px-4 py-2.5">${status}</td>
@@ -1299,9 +1325,8 @@ async function loadStaging(): Promise<void> {
 
 async function loadListed(): Promise<void> {
   try {
-    /* 不带 version 就是「当前生效版本」，由服务端解析；选了旧版才带上 */
-    const qs = state.listedVersion ? `?version=${encodeURIComponent(state.listedVersion)}` : "";
-    renderListed(await apiGet<ListedResp>(`/trends/listed${qs}`));
+    /* 固定看当前生效版本；历史版本由服务端 prune 掉后没有独立页面，不再提供入口 */
+    renderListed(await apiGet<ListedResp>("/trends/listed"));
   } catch (e) {
     $("trends-listed-meta").textContent = `读取失败：${e instanceof Error ? e.message : String(e)}`;
   }
@@ -1806,12 +1831,14 @@ function bind(): void {
     if (state.listed) renderListed(state.listed);
   });
 
-  /* 换版本 = 换一份数据：已勾选的词属于上一版，留着会让「更新选中」摸到看不见的词 */
+  /*
+   * 换的是「数据日」不是版本：数据没重新拉，只是本地换个视角筛一遍。
+   * 勾选保留（和模型榜一致）—— 筛 10-31 勾了几个、切回全部还在，不用重勾。
+   */
   $("trends-listed-version")?.addEventListener("change", (event) => {
-    state.listedVersion = (event.target as HTMLSelectElement).value;
-    state.listedSelected.clear();
+    state.listedDay = (event.target as HTMLSelectElement).value;
     state.listedPage = 1;
-    void loadListed();
+    if (state.listed) renderListed(state.listed);
   });
 
   $("trends-listed-search").addEventListener(

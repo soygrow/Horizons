@@ -1180,12 +1180,12 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                   <p id="trends-listed-meta" class="mt-1 text-xs text-ink-muted">—</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                  <!-- 版本号 = 发布时刻的日期（20261119），切过去看的是那一版快照 -->
+                  <!-- 按「数据日」筛：全部 = 本版所有词，其余各项之和恒等于它 -->
                   <select
                     id="trends-listed-version"
                     class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
-                    title="切换要查看的发布版本"
-                    aria-label="发布版本"
+                    title="按数据日筛选：全部 = 本版总词数，以下各天之和等于它"
+                    aria-label="数据日筛选"
                   >
                     <option value="">加载中…</option>
                   </select>

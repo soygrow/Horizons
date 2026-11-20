@@ -37,7 +37,7 @@ import {
 import { readBoardStats, type BoardStats } from "../lib/board-stats";
 import { listWorkspace, setItemsStatus } from "../lib/board-items";
 import { readReport } from "../lib/reports";
-import { currentVersion, resolveListedVersion } from "../lib/versions";
+import { currentVersion, listDataDays, resolveListedVersion } from "../lib/versions";
 
 const trends = new Hono<{ Bindings: Env }>();
 type Ctx = Context<{ Bindings: Env }>;
@@ -658,6 +658,7 @@ trends.get("/listed", async (c) => {
       version: "",
       current,
       versions,
+      days: [],
       total: 0,
       items: [],
       refreshPending: 0,
@@ -665,7 +666,7 @@ trends.get("/listed", async (c) => {
     });
   }
 
-  const [{ results }, ws] = await Promise.all([
+  const [{ results }, ws, days] = await Promise.all([
     c.env.DB.prepare(
       `SELECT item_key, rank, name, variant_of,
               json_extract(card,'$.slug') AS slug,
@@ -683,6 +684,10 @@ trends.get("/listed", async (c) => {
       .bind(version)
       .all<ListedTrendRow>(),
     listWorkspace<AITrend>(c.env.DB, "trends"),
+    /* 版本下拉按「数据日」分组，不按发布批次：同一份快照会被搬进下一版，
+       按版本分组就是 487 / 367 / 140 三家分晋，加起来比总数还多；
+       按行分组每个词只属于一天，各天之和恒等于 total。 */
+    listDataDays(c.env.DB, "trends", version),
   ]);
 
   // 候选池状态：同一个词已经在队列里（更新中/待发布）就标出来，避免重复提交
@@ -722,7 +727,7 @@ trends.get("/listed", async (c) => {
     return onBoard.has(t.slug) && (stage === "enriched" || stage === "publish_failed");
   }).length;
 
-  return c.json({ version, current, versions, total: items.length, refreshPending, items });
+  return c.json({ version, current, versions, days, total: items.length, refreshPending, items });
 });
 
 /* -------------------------------- 触发流水线 -------------------------------- */
