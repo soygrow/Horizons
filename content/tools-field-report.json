@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-19T08:22:35.707Z",
+  "generatedAt": "2026-11-20T03:46:02.130Z",
   "total": 13,
-  "itemsWithIssues": 6,
+  "itemsWithIssues": 1,
   "dimensions": [
     {
       "key": "description",
@@ -9,34 +9,9 @@
       "missing": 0,
       "missingRatio": 0,
       "missingDomains": [],
-      "invalid": 6,
-      "invalidRatio": 46,
-      "invalidSamples": [
-        {
-          "domain": "claudeduet.com",
-          "reason": "简介过短（19 字）"
-        },
-        {
-          "domain": "maxma.com",
-          "reason": "简介过短（16 字）"
-        },
-        {
-          "domain": "quest.app",
-          "reason": "简介过短（16 字）"
-        },
-        {
-          "domain": "rerun.io",
-          "reason": "简介过短（15 字）"
-        },
-        {
-          "domain": "wanaka.app",
-          "reason": "简介过短（18 字）"
-        },
-        {
-          "domain": "xmind.com",
-          "reason": "简介过短（13 字）"
-        }
-      ]
+      "invalid": 0,
+      "invalidRatio": 0,
+      "invalidSamples": []
     },
     {
       "key": "categories",
@@ -54,8 +29,8 @@
       "missing": 2,
       "missingRatio": 15,
       "missingDomains": [
-        "claudeduet.com",
-        "wanaka.app"
+        "wanaka.app",
+        "claudeduet.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -67,30 +42,25 @@
       "missing": 3,
       "missingRatio": 23,
       "missingDomains": [
-        "claudeduet.com",
+        "wanaka.app",
         "kixy.ai",
-        "wanaka.app"
+        "claudeduet.com"
       ],
-      "invalid": 0,
-      "invalidRatio": 0,
-      "invalidSamples": []
+      "invalid": 1,
+      "invalidRatio": 8,
+      "invalidSamples": [
+        {
+          "domain": "cliputils.com",
+          "reason": "环比涨幅异常（13314%）"
+        }
+      ]
     },
     {
       "key": "metrics.registeredAt",
       "label": "域名注册时间",
-      "missing": 9,
-      "missingRatio": 69,
-      "missingDomains": [
-        "agenthunt.io",
-        "claudeduet.com",
-        "maxma.com",
-        "quest.app",
-        "rerun.io",
-        "teamily.com",
-        "tobira.ai",
-        "wanaka.app",
-        "xmind.com"
-      ],
+      "missing": 0,
+      "missingRatio": 0,
+      "missingDomains": [],
       "invalid": 0,
       "invalidRatio": 0,
       "invalidSamples": []
@@ -98,21 +68,11 @@
     {
       "key": "trafficMetrics.organicSearchVisits",
       "label": "自然搜索流量",
-      "missing": 12,
-      "missingRatio": 92,
+      "missing": 2,
+      "missingRatio": 15,
       "missingDomains": [
-        "tiden.ai",
-        "agenthunt.io",
-        "alsona.com",
-        "claudeduet.com",
-        "cliputils.com",
-        "maxma.com",
-        "quest.app",
-        "rerun.io",
-        "teamily.com",
-        "tobira.ai",
         "wanaka.app",
-        "xmind.com"
+        "claudeduet.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -124,8 +84,8 @@
       "missing": 2,
       "missingRatio": 15,
       "missingDomains": [
-        "claudeduet.com",
-        "wanaka.app"
+        "wanaka.app",
+        "claudeduet.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -137,17 +97,17 @@
       "missing": 11,
       "missingRatio": 85,
       "missingDomains": [
-        "tiden.ai",
-        "agenthunt.io",
-        "claudeduet.com",
+        "xmind.com",
+        "wanaka.app",
+        "teamily.com",
+        "scroogefrog.com",
+        "tobira.ai",
         "kixy.ai",
         "maxma.com",
-        "quest.app",
         "rerun.io",
-        "teamily.com",
-        "tobira.ai",
-        "wanaka.app",
-        "xmind.com"
+        "quest.app",
+        "claudeduet.com",
+        "agenthunt.io"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -156,15 +116,9 @@
     {
       "key": "observations.competitors",
       "label": "竞品",
-      "missing": 5,
-      "missingRatio": 38,
-      "missingDomains": [
-        "claudeduet.com",
-        "quest.app",
-        "teamily.com",
-        "tobira.ai",
-        "wanaka.app"
-      ],
+      "missing": 0,
+      "missingRatio": 0,
+      "missingDomains": [],
       "invalid": 0,
       "invalidRatio": 0,
       "invalidSamples": []
@@ -172,18 +126,15 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 9,
-      "missingRatio": 69,
+      "missing": 6,
+      "missingRatio": 46,
       "missingDomains": [
-        "agenthunt.io",
-        "claudeduet.com",
-        "maxma.com",
-        "quest.app",
-        "rerun.io",
-        "teamily.com",
-        "tobira.ai",
         "wanaka.app",
-        "xmind.com"
+        "teamily.com",
+        "scroogefrog.com",
+        "maxma.com",
+        "rerun.io",
+        "quest.app"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -192,19 +143,9 @@
     {
       "key": "pageStructure",
       "label": "页面结构",
-      "missing": 9,
-      "missingRatio": 69,
-      "missingDomains": [
-        "agenthunt.io",
-        "claudeduet.com",
-        "maxma.com",
-        "quest.app",
-        "rerun.io",
-        "teamily.com",
-        "tobira.ai",
-        "wanaka.app",
-        "xmind.com"
-      ],
+      "missing": 0,
+      "missingRatio": 0,
+      "missingDomains": [],
       "invalid": 0,
       "invalidRatio": 0,
       "invalidSamples": []
@@ -212,20 +153,9 @@
     {
       "key": "screenshotDesktopUrl",
       "label": "官网截图",
-      "missing": 10,
-      "missingRatio": 77,
-      "missingDomains": [
-        "agenthunt.io",
-        "alsona.com",
-        "claudeduet.com",
-        "maxma.com",
-        "quest.app",
-        "rerun.io",
-        "teamily.com",
-        "tobira.ai",
-        "wanaka.app",
-        "xmind.com"
-      ],
+      "missing": 0,
+      "missingRatio": 0,
+      "missingDomains": [],
       "invalid": 0,
       "invalidRatio": 0,
       "invalidSamples": []
@@ -233,19 +163,9 @@
     {
       "key": "siteAudit",
       "label": "站点体检",
-      "missing": 9,
-      "missingRatio": 69,
-      "missingDomains": [
-        "agenthunt.io",
-        "claudeduet.com",
-        "maxma.com",
-        "quest.app",
-        "rerun.io",
-        "teamily.com",
-        "tobira.ai",
-        "wanaka.app",
-        "xmind.com"
-      ],
+      "missing": 0,
+      "missingRatio": 0,
+      "missingDomains": [],
       "invalid": 0,
       "invalidRatio": 0,
       "invalidSamples": []
@@ -253,19 +173,9 @@
     {
       "key": "aiInsight",
       "label": "AI 叙事",
-      "missing": 9,
-      "missingRatio": 69,
-      "missingDomains": [
-        "agenthunt.io",
-        "claudeduet.com",
-        "maxma.com",
-        "quest.app",
-        "rerun.io",
-        "teamily.com",
-        "tobira.ai",
-        "wanaka.app",
-        "xmind.com"
-      ],
+      "missing": 0,
+      "missingRatio": 0,
+      "missingDomains": [],
       "invalid": 0,
       "invalidRatio": 0,
       "invalidSamples": []
@@ -273,19 +183,9 @@
     {
       "key": "performanceInsight",
       "label": "AI 判断",
-      "missing": 9,
-      "missingRatio": 69,
-      "missingDomains": [
-        "agenthunt.io",
-        "claudeduet.com",
-        "maxma.com",
-        "quest.app",
-        "rerun.io",
-        "teamily.com",
-        "tobira.ai",
-        "wanaka.app",
-        "xmind.com"
-      ],
+      "missing": 0,
+      "missingRatio": 0,
+      "missingDomains": [],
       "invalid": 0,
       "invalidRatio": 0,
       "invalidSamples": []
@@ -294,93 +194,72 @@
   "entryIssues": [],
   "items": [
     {
-      "domain": "tiden.ai",
-      "name": "Tiden",
-      "tier": "?",
+      "domain": "xmind.com",
+      "name": "Xmind 2027",
+      "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 1150,
-      "gapCount": 2,
+      "monthlyVisits": 1109852,
+      "gapCount": 1,
       "gaps": [
-        "trafficMetrics.organicSearchVisits",
         "keywords"
       ],
       "issueCount": 0,
       "issues": []
     },
     {
-      "domain": "agenthunt.io",
-      "name": "Agent Hunt",
+      "domain": "wanaka.app",
+      "name": "Wanaka Studio",
       "tier": "watch",
-      "stage": "approved",
-      "monthlyVisits": 9792,
-      "gapCount": 9,
-      "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "keywords",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "alsona.com",
-      "name": "Alsona",
-      "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 12513,
-      "gapCount": 2,
-      "gaps": [
-        "trafficMetrics.organicSearchVisits",
-        "screenshotDesktopUrl"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "claudeduet.com",
-      "name": "Claude Duet",
-      "tier": "watch",
-      "stage": "approved",
-      "gapCount": 13,
+      "gapCount": 6,
       "gaps": [
         "trafficMetrics.monthlyVisits",
         "trafficMetrics.monthlyVisitsGrowth",
-        "metrics.registeredAt",
         "trafficMetrics.organicSearchVisits",
         "geoDistribution",
         "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
+        "pricing"
       ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "description",
-          "label": "简介",
-          "reason": "简介过短（19 字）"
-        }
-      ]
+      "issueCount": 0,
+      "issues": []
     },
     {
-      "domain": "cliputils.com",
-      "name": "Cliputils",
+      "domain": "teamily.com",
+      "name": "Teamily AI",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 58351,
+      "monthlyVisits": 4244,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "scroogefrog.com",
+      "name": "ScroogeFrog AI",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 15885,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "tobira.ai",
+      "name": "Tobira Site Agent",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 2949,
       "gapCount": 1,
       "gaps": [
-        "trafficMetrics.organicSearchVisits"
+        "keywords"
       ],
       "issueCount": 0,
       "issues": []
@@ -403,184 +282,100 @@
       "domain": "maxma.com",
       "name": "Maxma",
       "tier": "core",
-      "stage": "approved",
+      "stage": "enriched",
       "monthlyVisits": 89336,
-      "gapCount": 9,
+      "gapCount": 2,
       "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
         "keywords",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
+        "pricing"
       ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "description",
-          "label": "简介",
-          "reason": "简介过短（16 字）"
-        }
-      ]
-    },
-    {
-      "domain": "quest.app",
-      "name": "Quest",
-      "tier": "watch",
-      "stage": "approved",
-      "monthlyVisits": 1317,
-      "gapCount": 10,
-      "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "description",
-          "label": "简介",
-          "reason": "简介过短（16 字）"
-        }
-      ]
+      "issueCount": 0,
+      "issues": []
     },
     {
       "domain": "rerun.io",
       "name": "Rerun",
       "tier": "core",
-      "stage": "approved",
+      "stage": "enriched",
       "monthlyVisits": 54018,
-      "gapCount": 9,
+      "gapCount": 2,
       "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
         "keywords",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
+        "pricing"
       ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "quest.app",
+      "name": "Quest",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 1317,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "cliputils.com",
+      "name": "Cliputils",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 58351,
+      "gapCount": 0,
+      "gaps": [],
       "issueCount": 1,
       "issues": [
         {
-          "key": "description",
-          "label": "简介",
-          "reason": "简介过短（15 字）"
+          "key": "trafficMetrics.monthlyVisitsGrowth",
+          "label": "环比增长",
+          "reason": "环比涨幅异常（13314%）"
         }
       ]
     },
     {
-      "domain": "teamily.com",
-      "name": "Teamily AI",
+      "domain": "alsona.com",
+      "name": "Alsona",
       "tier": "core",
-      "stage": "approved",
-      "monthlyVisits": 4244,
-      "gapCount": 10,
-      "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
+      "stage": "enriched",
+      "monthlyVisits": 12513,
+      "gapCount": 0,
+      "gaps": [],
       "issueCount": 0,
       "issues": []
     },
     {
-      "domain": "tobira.ai",
-      "name": "Tobira Site Agent",
-      "tier": "core",
-      "stage": "approved",
-      "monthlyVisits": 2949,
-      "gapCount": 10,
-      "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "wanaka.app",
-      "name": "Wanaka Studio",
+      "domain": "claudeduet.com",
+      "name": "Claude Duet",
       "tier": "watch",
-      "stage": "approved",
-      "gapCount": 13,
+      "stage": "enriched",
+      "gapCount": 5,
       "gaps": [
         "trafficMetrics.monthlyVisits",
         "trafficMetrics.monthlyVisitsGrowth",
-        "metrics.registeredAt",
         "trafficMetrics.organicSearchVisits",
         "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
+        "keywords"
       ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "description",
-          "label": "简介",
-          "reason": "简介过短（18 字）"
-        }
-      ]
+      "issueCount": 0,
+      "issues": []
     },
     {
-      "domain": "xmind.com",
-      "name": "Xmind 2027",
-      "tier": "core",
-      "stage": "approved",
-      "monthlyVisits": 1109852,
-      "gapCount": 9,
+      "domain": "agenthunt.io",
+      "name": "Agent Hunt",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 9792,
+      "gapCount": 1,
       "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "keywords",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
+        "keywords"
       ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "description",
-          "label": "简介",
-          "reason": "简介过短（13 字）"
-        }
-      ]
+      "issueCount": 0,
+      "issues": []
     }
   ]
 }
