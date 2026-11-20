@@ -91,12 +91,17 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       # 把刚发布的结果还原成文件，供下面两步对文件动手（富化 + 统计）
-      - name: 还原发布结果到文件
+      #
+      # 必须 --no-snapshot 直读 D1：R2 快照是**上一次**构建导出的，
+      # 刚写进去的 128 行新数据它还没有。以前这里默认优先快照，文件就被
+      # 还原成发布前的样子，后面 --repost 再原样推回库 —— 等于把这次
+      # 发布悄悄回滚了，日志还显示「更新 128 行」，查不出问题。
+      - name: 还原发布结果到文件（直读 D1，不吃过期快照）
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
-        run: pnpm exec tsx scripts/admin/hydrate-github.ts
+        run: pnpm exec tsx scripts/admin/hydrate-github.ts --no-snapshot
 
       # 新进榜的条目没有中文情报（采集阶段为了控制候选池体积没有生成），
       # 这里补上，否则详情页是空模板。
@@ -159,10 +164,27 @@ jobs:
           if [ -f content/github-staging.json ]; then git add content/github-staging.json; fi
           if git diff --cached --quiet; then
             echo "::notice::候选池与统计没有变化，未产生提交"
-          else
-            git commit -m "chore(github): 发布后同步候选池与统计"
-            git push
+            exit 0
           fi
+          git commit -m "chore(github): 发布后同步候选池与统计"
+          # 发布要跑几分钟，这期间人工推送或其它 workflow 都可能推进 main；
+          # 裸 push 被拒会让整步红叉（数据其实已经发布成功，白报一次错）
+          for i in 1 2 3; do
+            if git push origin "HEAD:${GITHUB_REF_NAME:-main}"; then
+              exit 0
+            fi
+            echo "::warning::push 被拒（第 ${i} 次），rebase 后重试"
+            git fetch --quiet origin "${GITHUB_REF_NAME:-main}"
+            if ! git rebase "origin/${GITHUB_REF_NAME:-main}"; then
+              # 只会是候选池/统计文件冲突：本次发布产出的版本为准
+              git checkout --theirs -- content/github-staging.json content/board-stats.json 2>/dev/null || true
+              git add content/github-staging.json content/board-stats.json 2>/dev/null || true
+              GIT_EDITOR=true git rebase --continue
+            fi
+            sleep 5
+          done
+          echo "::error::统计与候选池推送失败，远程 main 持续被改动"
+          exit 1
 
       # 把这一版导出成 R2 快照：之后构建读对象存储（0 rows read），不再分页扫 D1。
       # 失败即中断，宁可这次不部署，也不让构建读到落后于库的快照。

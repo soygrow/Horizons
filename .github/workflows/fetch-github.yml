@@ -115,5 +115,25 @@ jobs:
           n=$(node -e "const s=require('./content/github-staging.json');console.log(s.candidates.length)")
           t=$(node -e "const s=require('./content/github-staging.json');console.log(s.lastRun?.qualified ?? s.target)")
           git commit -m "chore(github): 采集待发布候选 ${n} 个（合格池 ${t} 条）"
-          git push
-          echo "::notice::候选池已更新：${n} 个待审核候选"
+
+          # 采集要跑几十秒到几十分钟，这期间人工推送或别的 workflow 都可能
+          # 推进 main。以前是裸 git push，被拒就整步红叉 —— 候选池明明采到了
+          # 却提交不上去（日志里是 "! [rejected] main -> main"）。
+          # 被拒就 rebase 重试；冲突只可能是候选池本身，以本次采集为准。
+          for i in 1 2 3; do
+            if git push origin "HEAD:${GITHUB_REF_NAME:-main}"; then
+              echo "::notice::候选池已更新：${n} 个待审核候选"
+              exit 0
+            fi
+            echo "::warning::push 被拒（第 ${i} 次），rebase 后重试"
+            git fetch --quiet origin "${GITHUB_REF_NAME:-main}"
+            if ! git rebase "origin/${GITHUB_REF_NAME:-main}"; then
+              # rebase 里 --theirs 是本次重放的提交，也就是这次采集的结果
+              git checkout --theirs -- content/github-staging.json
+              git add content/github-staging.json
+              GIT_EDITOR=true git rebase --continue
+            fi
+            sleep 5
+          done
+          echo "::error::候选池推送失败，远程 main 持续被改动"
+          exit 1
