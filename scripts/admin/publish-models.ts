@@ -17,7 +17,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { overallScore, valueScores } from "../../apps/site/src/lib/model-score";
-import { syncBoardToD1, versionOf } from "./board-sync";
+import { currentBoardDataAt, syncBoardToD1, versionOf } from "./board-sync";
 import type { PublishRow } from "./publish-board";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
@@ -91,6 +91,26 @@ async function main(): Promise<void> {
    */
   const dataAt = (file.updatedAt ?? version).slice(0, 10);
 
+  /*
+   * 跨天不原地 patch。
+   *
+   * 增量发布不推进版本号，数据日一变，旧版本槽里就装进了新一天的数据 ——
+   * 后台会显示「版本 20261120（数据截止 11-20，发布于 11-19 09:20）」，
+   * 看起来像时间算错了，其实是两份不同日期的数据被塞进同一个版本号；
+   * 那一天的原始快照也就跟着没了。同一天内重发仍走增量，不会天天涨版本。
+   */
+  const curDataAt = await currentBoardDataAt("models");
+  /* undefined = 读不到，别拦；null = 这版还没写 dataAt，也得落成新版本 */
+  const dayChanged = curDataAt !== undefined && curDataAt !== dataAt;
+  const patch = !process.argv.includes("--full") && !dayChanged;
+  if (dayChanged) {
+    console.log(
+      curDataAt === null
+        ? `[models] 当前版本没有数据日，新建版本写入 ${dataAt}`
+        : `[models] 数据日从 ${curDataAt} 变成 ${dataAt}，改为完整发布（新建版本）`,
+    );
+  }
+
   const rows: PublishRow[] = ordered.map((model, i) => {
     const rank = i + 1;
     const value = valueMap.get(model.slug) ?? 0;
@@ -132,8 +152,9 @@ async function main(): Promise<void> {
      * 默认增量：只 UPSERT 变化的行，不新建版本。
      * 模型榜三百多条里日常刷新通常只动几条到几十条，整版要连其余五个榜一起重写，
      * 省下来的写库额度就是这里来的。要留一个可回滚的完整版本就加 --full。
+     * 数据日变了的这一天例外（见上面的 dayChanged）：那天必须落成新版本。
      */
-    patch: !process.argv.includes("--full"),
+    patch,
     meta,
   });
 

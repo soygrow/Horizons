@@ -49,9 +49,13 @@ export interface VersionOption {
  *   卡片没有逐条时间，一版共用一个）
  *
  * 都取不到才是 null，后台就回落到发布日。
+ *
+ * `$.lastCrawledAt` 是 GitHub 列还没写时的兜底：卡片里本来就带着这个字段，
+ * 一旦哪次发布把 last_crawled_at 写丢了（例如搬其余榜的行时漏列），
+ * 这里仍然能算出真实的数据截止日，而不是让版本号顶替成发布日。
  */
 const DATA_AT_EXPR =
-  "MAX(COALESCE(last_crawled_at, json_extract(card, '$.dataAt'), json_extract(card, '$.updatedAt'), json_extract(card, '$.lastSeenAt')))";
+  "MAX(COALESCE(last_crawled_at, json_extract(card, '$.lastCrawledAt'), json_extract(card, '$.dataAt'), json_extract(card, '$.updatedAt'), json_extract(card, '$.lastSeenAt')))";
 
 /**
  * 该榜库里还留着哪些版本（倒序）。

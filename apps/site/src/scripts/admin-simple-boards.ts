@@ -296,10 +296,14 @@ function renderListed(): void {
   const rows = modelsState.filtered.slice((modelsState.page - 1) * PAGE_SIZE, modelsState.page * PAGE_SIZE);
 
   /*
-   * 整版的数据截止日：模型榜一版共用一个采集日（发布时写进每条卡片的 dataAt），
-   * 和 GitHub / 趋势榜同一个口径 —— 列里只留一个日期，才好和版本号对上。
+   * 行级采集日优先，回落该版本的发布日。
+   *
+   * 增量发布只重写变了的行：某天只刷了 50 条时，剩下的行还留着上一次的
+   * dataAt —— 一版里混着两个采集日，只有按行取才说得清。历史版本（早于
+   * dataAt 落库）卡片里没有这个字段，回落发布日，和下拉里的版本号一致，
+   * 而不是整列显示「—」。
    */
-  const vDataAt = pickedDataAt(modelsState);
+  const versionDay = modelsState.version ? modelsState.version.slice(0, 10) : null;
 
   if (!rows.length) {
     body.innerHTML = `<tr><td colspan="10" class="px-4 py-6 text-center text-xs text-ink-muted">没有匹配的模型</td></tr>`;
@@ -307,7 +311,7 @@ function renderListed(): void {
     body.innerHTML = rows
       .map((m) => {
         const checked = modelsState.selected.has(m.key) ? "checked" : "";
-        const rowAt = vDataAt ?? m.dataAt;
+        const rowAt = m.dataAt ?? versionDay;
         return `<tr class="hover:bg-surface-2/40">
           <td class="px-3 py-2.5">
             <input type="checkbox" data-pick="${esc(m.key)}" ${checked} class="h-3.5 w-3.5 accent-primary" />
@@ -323,7 +327,7 @@ function renderListed(): void {
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${kTok(m.context)}</td>
           <td class="px-4 py-2.5 text-right text-xs tabular-nums text-ink-secondary">${price(m.priceIn)} / ${price(m.priceOut)}</td>
           <td class="whitespace-nowrap px-4 py-2.5 text-xs tabular-nums text-ink-secondary">
-            <span class="block" title="本版数据的采集日，和版本号同一天">${esc(fmtStamp(rowAt))}</span>
+            <span class="block" title="这条数据的采集日；老版本没记采集日时用发布日">${esc(fmtStamp(rowAt))}</span>
             ${ageNote(ageDays(rowAt))}
           </td>
           <td class="px-4 py-2.5 text-right">

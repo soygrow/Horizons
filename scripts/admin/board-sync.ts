@@ -99,6 +99,46 @@ async function currentListedCount(client: D1Client, board: Board): Promise<numbe
 }
 
 /**
+ * 当前生效版本里这个榜的数据截止日（卡片里的 `dataAt`）。
+ *
+ * 模型榜的 `dataAt` 是「采集日」，而增量发布**不推进版本号**。跨天之后若
+ * 还在原地 patch，11-19 的版本槽里就会装进 11-20 的数据 —— 后台标题于是
+ * 出现「数据截止 11-20，发布于 11-19 09:20」这种自相矛盾的组合，那一天
+ * 的原始快照也被覆盖掉，回滚不回去。
+ *
+ * 所以发布前先拿它比一次：数据日变了就走完整发布，让新一天的数据落在
+ * 自己的版本号里。
+ *
+ * 返回值三态：
+ * - `string`   当前版本的数据日
+ * - `null`     当前版本没有 dataAt（早于这个字段落库）——同样要新建版本，
+ *              否则新写入的 dataAt 会挂在旧发布日下面，矛盾照旧
+ * - `undefined` 读不到（没凭据 / 网络错）——调用方跳过检查，按增量继续
+ */
+export async function currentBoardDataAt(board: Board): Promise<string | null | undefined> {
+  if (!d1Configured()) return undefined;
+  try {
+    const client = createD1Client();
+    const cur = await client.query<{ val: string }>(
+      "SELECT val FROM app_config WHERE key = 'config.current_version'",
+    );
+    const version = cur.results[0]?.val;
+    if (!version) return null;
+
+    const res = await client.query<{ d: string | null }>(
+      `SELECT MAX(json_extract(card, '$.dataAt')) AS d
+         FROM board_listed
+        WHERE version = ? AND board = ?`,
+      [version, board],
+    );
+    return res.results[0]?.d ?? null;
+  } catch (e) {
+    console.warn(`[sync] 读取 ${board} 当前版本的数据日失败，按增量继续：`, e);
+    return undefined;
+  }
+}
+
+/**
  * 这个榜的线上数据源是否已切到 D1。
  *
  * 切流之后 D1 就是唯一数据源：写失败若只告警，文件链路会照常发版，

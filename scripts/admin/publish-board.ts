@@ -360,20 +360,28 @@ export async function publishBoard(
    *
    * 用 INSERT ... SELECT 在库内搬，不走网络：1500 行也是毫秒级，
    * 且 SQL 文本本身很短，不触 D1 的单语句大小限制。
+   *
+   * 列必须写全：漏一列就是「新版本里其余榜全变 NULL」。0021 的七个标量
+   * 尤其致命 —— last_crawled_at 一丢，后台算不出该版数据的截止日，
+   * 版本号回落到发布日，和列表里的「更新时间」直接对不上；stars 一丢，
+   * 第 1 名可能显示 0 星。details 的 bytes 同理（体积汇总靠它）。
+   * 以后给 LISTED_SPEC / DETAIL_SPEC 加列，这里同步加。
    */
   if (currentVersion && currentVersion !== version) {
     await client.run([
       {
         sql: `INSERT INTO board_listed
-                (version, board, item_key, rank, score, tier, name, url, cats, card, variant_of)
-              SELECT ?, board, item_key, rank, score, tier, name, url, cats, card, variant_of
+                (version, board, item_key, rank, score, tier, name, url, cats, card, variant_of,
+                 stars, forks, language, description, pushed_at, last_crawled_at, grade)
+              SELECT ?, board, item_key, rank, score, tier, name, url, cats, card, variant_of,
+                 stars, forks, language, description, pushed_at, last_crawled_at, grade
               FROM board_listed WHERE version = ? AND board != ?
               ON CONFLICT (version, board, item_key) DO NOTHING`,
         params: [version, currentVersion, board],
       },
       {
-        sql: `INSERT INTO board_listed_details (version, board, item_key, detail)
-              SELECT ?, board, item_key, detail
+        sql: `INSERT INTO board_listed_details (version, board, item_key, detail, bytes)
+              SELECT ?, board, item_key, detail, bytes
               FROM board_listed_details WHERE version = ? AND board != ?
               ON CONFLICT (version, board, item_key) DO NOTHING`,
         params: [version, currentVersion, board],
