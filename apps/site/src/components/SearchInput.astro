@@ -8,9 +8,23 @@ interface Props {
   placeholder?: string;
   action?: string;
   size?: "md" | "lg";
+  /**
+   * 页面自带前端过滤脚本时置 true：回车不再提交表单（不跳转、不刷新），
+   * 只把输入交给页面的 data-search 逻辑。action 仅作为无 JS 时的兜底去处。
+   */
+  local?: boolean;
+  /** 放进工具栏时撑满可用宽度（不再限制 max-w-md） */
+  fluid?: boolean;
 }
 
-const { value = "", placeholder = "搜索名称 / 关键词", action = "/tools", size = "md" } = Astro.props;
+const {
+  value = "",
+  placeholder = "搜索名称 / 关键词",
+  action = "/tools",
+  size = "md",
+  local = false,
+  fluid = false,
+} = Astro.props;
 const lg = size === "lg";
 ---
 
@@ -65,8 +79,13 @@ const lg = size === "lg";
       </form>
     </div>
   ) : (
-    <div class="group relative w-full max-w-md">
-      <form action={action} method="get" class="relative w-full">
+    <div class:list={["group relative w-full", fluid ? "min-w-0 max-w-none" : "max-w-md"]}>
+      <form
+        action={action}
+        method="get"
+        class="relative w-full"
+        data-local-search={local ? "" : undefined}
+      >
         <svg
           class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted transition group-focus-within:text-primary"
           viewBox="0 0 20 20"
@@ -114,3 +133,18 @@ const lg = size === "lg";
     </script>
   )
 }
+
+<script is:inline>
+  // 列表页的搜索由前端脚本本地过滤，回车只触发过滤，不提交表单（避免跳去别的榜单）
+  (function () {
+    document.querySelectorAll("form[data-local-search]").forEach(function (form) {
+      if (form.dataset.localSearchBound === "1") return;
+      form.dataset.localSearchBound = "1";
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var el = form.querySelector("input[data-search]");
+        if (el) el.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+    });
+  })();
+</script>
