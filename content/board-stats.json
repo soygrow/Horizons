@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-21T14:38:16.789Z",
+  "generatedAt": "2026-11-21T14:53:59.968Z",
   "boards": {
     "tools": {
       "total": 203,
@@ -8,7 +8,7 @@
     },
     "github": {
       "total": 1502,
-      "updatedAt": "2026-11-21T14:37:20.083Z",
+      "updatedAt": "2026-11-21T14:53:00.335Z",
       "source": "content/github.json"
     },
     "opps": {
