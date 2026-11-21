@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-11-20T08:24:33.139Z",
+  "updatedAt": "2026-11-21T10:42:04.642Z",
   "ruleVersion": "gh-rank-v1.6",
   "scoreModel": "pps-v4",
   "target": 2000,
   "board": {
-    "updatedAt": "2026-11-20T08:24:33.139Z",
+    "updatedAt": "2026-11-21T10:42:04.642Z",
     "rows": [
       {
         "fullName": "lobehub/lobe-icons",
@@ -346,6 +346,13 @@
         "fullName": "apify/crawlee-python",
         "score": 75.2,
         "stars": 9678,
+        "grade": "A",
+        "dv": 8
+      },
+      {
+        "fullName": "Neywa-Labs/mlx-audio",
+        "score": 75.2,
+        "stars": 8307,
         "grade": "A",
         "dv": 8
       },
@@ -2485,6 +2492,13 @@
         "dv": 8
       },
       {
+        "fullName": "ythx-101/x-tweet-fetcher",
+        "score": 70.7,
+        "stars": 1012,
+        "grade": "B",
+        "dv": 8
+      },
+      {
         "fullName": "Purewhiter/mobilegym",
         "score": 70.7,
         "stars": 872,
@@ -2511,6 +2525,13 @@
         "stars": 3253,
         "grade": "B",
         "dv": 4
+      },
+      {
+        "fullName": "google-gemini/genai-processors",
+        "score": 70.6,
+        "stars": 2125,
+        "grade": "B",
+        "dv": 8
       },
       {
         "fullName": "Lynpoint/CyberVerse",
@@ -2546,6 +2567,13 @@
         "stars": 9927,
         "grade": "B",
         "dv": 7
+      },
+      {
+        "fullName": "ruc-datalab/DeepAnalyze",
+        "score": 70.5,
+        "stars": 4827,
+        "grade": "B",
+        "dv": 8
       },
       {
         "fullName": "arcboxlabs/arcbox",
@@ -2688,6 +2716,13 @@
         "dv": 7
       },
       {
+        "fullName": "yihong0618/xiaogpt",
+        "score": 70.2,
+        "stars": 7066,
+        "grade": "B",
+        "dv": 7
+      },
+      {
         "fullName": "microsoft/flint-chart",
         "score": 70.2,
         "stars": 4590,
@@ -2770,6 +2805,20 @@
         "stars": 4581,
         "grade": "B",
         "dv": 7
+      },
+      {
+        "fullName": "algorithmicsuperintelligence/optillm",
+        "score": 70.1,
+        "stars": 4345,
+        "grade": "B",
+        "dv": 8
+      },
+      {
+        "fullName": "dromara/liteflow",
+        "score": 70.1,
+        "stars": 3910,
+        "grade": "B",
+        "dv": 8
       },
       {
         "fullName": "dwgx/WindsurfAPI",
@@ -2947,6 +2996,13 @@
         "dv": 6
       },
       {
+        "fullName": "QwenAudio/Fun-ASR",
+        "score": 69.9,
+        "stars": 1612,
+        "grade": "B",
+        "dv": 9
+      },
+      {
         "fullName": "emcf/thepipe",
         "score": 69.9,
         "stars": 1529,
@@ -3022,6 +3078,13 @@
         "stars": 1603,
         "grade": "B",
         "dv": 6
+      },
+      {
+        "fullName": "octotools/octotools",
+        "score": 69.8,
+        "stars": 1499,
+        "grade": "B",
+        "dv": 8
       },
       {
         "fullName": "greyhaven-ai/autocontext",
@@ -3106,6 +3169,13 @@
         "stars": 2984,
         "grade": "B",
         "dv": 4
+      },
+      {
+        "fullName": "AnalyseDeCircuit/oxideterm",
+        "score": 69.7,
+        "stars": 1933,
+        "grade": "B",
+        "dv": 3
       },
       {
         "fullName": "OpenHands/software-agent-sdk",
@@ -3297,6 +3367,20 @@
         "dv": 6
       },
       {
+        "fullName": "Agent-Field/SWE-AF",
+        "score": 69.4,
+        "stars": 1133,
+        "grade": "B",
+        "dv": 6
+      },
+      {
+        "fullName": "CodeAbra/iai-personal-memory-engine",
+        "score": 69.4,
+        "stars": 924,
+        "grade": "B",
+        "dv": 4
+      },
+      {
         "fullName": "lidge-ai/ima2-gen",
         "score": 69.4,
         "stars": 890,
@@ -3423,6 +3507,13 @@
         "dv": 7
       },
       {
+        "fullName": "Gentleman-Programming/gentle-ai",
+        "score": 69.2,
+        "stars": 9421,
+        "grade": "B",
+        "dv": 4
+      },
+      {
         "fullName": "google/agents-cli",
         "score": 69.2,
         "stars": 6376,
@@ -3465,429 +3556,359 @@
         "dv": 6
       },
       {
-        "fullName": "ythx-101/x-tweet-fetcher",
+        "fullName": "fastcrw/crw",
         "score": 69.2,
-        "stars": 996,
+        "stars": 1280,
         "grade": "B",
-        "dv": 8
+        "dv": 7
+      },
+      {
+        "fullName": "desplega-ai/agent-swarm",
+        "score": 69.2,
+        "stars": 1091,
+        "grade": "B",
+        "dv": 4
+      },
+      {
+        "fullName": "pocketpaw/pocketpaw",
+        "score": 69.2,
+        "stars": 934,
+        "grade": "B",
+        "dv": 3
       },
       {
         "fullName": "huggingface/diffusers",
         "score": 69.1,
-        "stars": 34840,
+        "stars": 34956,
         "grade": "B",
         "dv": 9
       },
       {
         "fullName": "jnMetaCode/superpowers-zh",
         "score": 69.1,
-        "stars": 8429,
+        "stars": 8572,
         "grade": "B",
         "dv": 7
       },
       {
-        "fullName": "Gentleman-Programming/gentle-ai",
-        "score": 69.1,
-        "stars": 8140,
-        "grade": "B",
-        "dv": 4
-      },
-      {
         "fullName": "interviewstreet/hiring-agent",
         "score": 69.1,
-        "stars": 7319,
+        "stars": 7347,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "Michael-A-Kuykendall/shimmy",
         "score": 69.1,
-        "stars": 6000,
+        "stars": 6021,
         "grade": "B",
         "dv": 8
-      },
-      {
-        "fullName": "google-gemini/genai-processors",
-        "score": 69.1,
-        "stars": 2120,
-        "grade": "B",
-        "dv": 8
-      },
-      {
-        "fullName": "amicalhq/amical",
-        "score": 69.1,
-        "stars": 1578,
-        "grade": "B",
-        "dv": 4
-      },
-      {
-        "fullName": "fastcrw/crw",
-        "score": 69.1,
-        "stars": 1195,
-        "grade": "B",
-        "dv": 7
-      },
-      {
-        "fullName": "desplega-ai/agent-swarm",
-        "score": 69.1,
-        "stars": 968,
-        "grade": "B",
-        "dv": 4
-      },
-      {
-        "fullName": "pocketpaw/pocketpaw",
-        "score": 69.1,
-        "stars": 908,
-        "grade": "B",
-        "dv": 3
       },
       {
         "fullName": "zeroclaw-labs/zeroclaw",
         "score": 69,
-        "stars": 33074,
+        "stars": 33522,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "lsdefine/GenericAgent",
         "score": 69,
-        "stars": 14364,
+        "stars": 14436,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "homarr-labs/dashboard-icons",
         "score": 69,
-        "stars": 8966,
+        "stars": 9126,
         "grade": "B",
         "dv": 4
       },
       {
         "fullName": "EvoMap/evolver",
         "score": 69,
-        "stars": 8712,
+        "stars": 8748,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "wiltodelta/remove-ai-watermarks",
         "score": 69,
-        "stars": 6211,
+        "stars": 6468,
         "grade": "B",
         "dv": 7
       },
       {
-        "fullName": "ruc-datalab/DeepAnalyze",
-        "score": 69,
-        "stars": 4763,
-        "grade": "B",
-        "dv": 8
-      },
-      {
         "fullName": "NVIDIA-NeMo/Switchyard",
         "score": 69,
-        "stars": 3466,
+        "stars": 3659,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "digitalsamba/claude-code-video-toolkit",
         "score": 69,
-        "stars": 2385,
+        "stars": 2676,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "MemPalace/mempalace",
         "score": 68.9,
-        "stars": 60103,
+        "stars": 60634,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "VectifyAI/PageIndex",
         "score": 68.9,
-        "stars": 39905,
+        "stars": 40494,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "NVIDIA/SkillSpector",
         "score": 68.9,
-        "stars": 23428,
+        "stars": 26994,
         "grade": "B",
         "dv": 7
       },
       {
-        "fullName": "b4rtaz/distributed-llama",
+        "fullName": "microsoft/apm",
         "score": 68.9,
-        "stars": 3123,
+        "stars": 4414,
         "grade": "B",
         "dv": 8
       },
       {
+        "fullName": "b4rtaz/distributed-llama",
+        "score": 68.9,
+        "stars": 3141,
+        "grade": "B",
+        "dv": 8
+      },
+      {
+        "fullName": "0Chencc/clawgod",
+        "score": 68.9,
+        "stars": 2329,
+        "grade": "B",
+        "dv": 7
+      },
+      {
         "fullName": "samchon/nestia",
         "score": 68.9,
-        "stars": 2178,
+        "stars": 2182,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "intentee/paddler",
         "score": 68.9,
-        "stars": 1685,
+        "stars": 1694,
         "grade": "B",
         "dv": 6
       },
       {
         "fullName": "nicobailon/pi-mcp-adapter",
         "score": 68.9,
-        "stars": 1633,
+        "stars": 1665,
         "grade": "B",
         "dv": 6
       },
       {
         "fullName": "guanyang/open-agent-hub",
         "score": 68.9,
-        "stars": 984,
+        "stars": 1005,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "NVlabs/Sana",
         "score": 68.8,
-        "stars": 9721,
+        "stars": 9862,
         "grade": "B",
         "dv": 8
       },
       {
-        "fullName": "microsoft/apm",
+        "fullName": "agentgateway/agentgateway",
         "score": 68.8,
-        "stars": 4151,
+        "stars": 6321,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "vibheksoni/stealth-browser-mcp",
         "score": 68.8,
-        "stars": 3302,
+        "stars": 3382,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "Bitterbot-AI/bitterbot-desktop",
         "score": 68.8,
-        "stars": 2478,
+        "stars": 2480,
         "grade": "B",
         "dv": 3
       },
       {
-        "fullName": "0Chencc/clawgod",
-        "score": 68.8,
-        "stars": 2242,
-        "grade": "B",
-        "dv": 7
-      },
-      {
         "fullName": "Anil-matcha/open-agent-email",
         "score": 68.8,
-        "stars": 2118,
+        "stars": 2135,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "dphnAI/sonar",
         "score": 68.8,
-        "stars": 1897,
-        "grade": "B",
-        "dv": 8
-      },
-      {
-        "fullName": "1CatAI/1Cat-vLLM",
-        "score": 68.8,
-        "stars": 1427,
+        "stars": 1911,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "alibaba/rtp-llm",
         "score": 68.8,
-        "stars": 1381,
+        "stars": 1402,
         "grade": "B",
         "dv": 9
       },
       {
         "fullName": "gexgd0419/NaturalVoiceSAPIAdapter",
         "score": 68.8,
-        "stars": 1003,
+        "stars": 1023,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "ggml-org/llama.cpp",
         "score": 68.7,
-        "stars": 132819,
+        "stars": 135801,
         "grade": "B",
         "dv": 9
       },
       {
         "fullName": "google/adk-python",
         "score": 68.7,
-        "stars": 22047,
+        "stars": 22276,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "modelscope/FunASR",
         "score": 68.7,
-        "stars": 20884,
-        "grade": "B",
-        "dv": 8
-      },
-      {
-        "fullName": "yihong0618/xiaogpt",
-        "score": 68.7,
-        "stars": 6973,
-        "grade": "B",
-        "dv": 7
-      },
-      {
-        "fullName": "agentgateway/agentgateway",
-        "score": 68.7,
-        "stars": 5792,
+        "stars": 21081,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "Ironclad/rivet",
         "score": 68.7,
-        "stars": 4714,
+        "stars": 4734,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "eli64s/readme-ai",
         "score": 68.7,
-        "stars": 3004,
+        "stars": 3013,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "beelzebub-labs/beelzebub",
         "score": 68.7,
-        "stars": 2222,
+        "stars": 2253,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "aws/amazon-q-developer-cli",
         "score": 68.7,
-        "stars": 1985,
-        "grade": "B",
-        "dv": 4
-      },
-      {
-        "fullName": "AnalyseDeCircuit/oxideterm",
-        "score": 68.7,
-        "stars": 1750,
-        "grade": "B",
-        "dv": 3
-      },
-      {
-        "fullName": "alookai/alook",
-        "score": 68.7,
-        "stars": 1473,
+        "stars": 1986,
         "grade": "B",
         "dv": 4
       },
       {
         "fullName": "goodroot/hyprwhspr",
         "score": 68.7,
-        "stars": 1263,
+        "stars": 1285,
         "grade": "B",
         "dv": 4
       },
       {
         "fullName": "microsoft/WindowsAgentArena",
         "score": 68.7,
-        "stars": 912,
+        "stars": 918,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "iOfficeAI/OfficeCLI",
         "score": 68.6,
-        "stars": 32795,
+        "stars": 33472,
         "grade": "B",
         "dv": 7
       },
       {
-        "fullName": "algorithmicsuperintelligence/optillm",
-        "score": 68.6,
-        "stars": 4334,
-        "grade": "B",
-        "dv": 8
-      },
-      {
-        "fullName": "dromara/liteflow",
-        "score": 68.6,
-        "stars": 3893,
-        "grade": "B",
-        "dv": 8
-      },
-      {
         "fullName": "Ontos-AI/knowhere",
         "score": 68.6,
-        "stars": 3840,
+        "stars": 4074,
         "grade": "B",
         "dv": 5
       },
       {
         "fullName": "cosmicstack-labs/mercury-agent",
         "score": 68.6,
-        "stars": 3729,
+        "stars": 4047,
         "grade": "B",
         "dv": 5
       },
       {
+        "fullName": "theagentrouter/agent-router",
+        "score": 68.6,
+        "stars": 2423,
+        "grade": "B",
+        "dv": 7
+      },
+      {
         "fullName": "ClaudioDrews/memory-os",
         "score": 68.6,
-        "stars": 1383,
+        "stars": 1398,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "wanxingai/LightAgent",
         "score": 68.6,
-        "stars": 1241,
+        "stars": 1248,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "kossakovsky/selfhost-ai",
         "score": 68.6,
-        "stars": 953,
+        "stars": 964,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "Deodat-Lawson/LaunchStack",
         "score": 68.6,
-        "stars": 894,
+        "stars": 898,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "ayghri/i-have-adhd",
         "score": 68.5,
-        "stars": 59428,
+        "stars": 61740,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "codewhale-hq/Codewhale",
         "score": 68.5,
-        "stars": 41153,
+        "stars": 41189,
         "grade": "B",
         "dv": 4
       },
@@ -3901,63 +3922,49 @@
       {
         "fullName": "crestalnetwork/intentkit",
         "score": 68.5,
-        "stars": 6524,
+        "stars": 6515,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "h2oai/h2o-llmstudio",
         "score": 68.5,
-        "stars": 5189,
+        "stars": 5199,
         "grade": "B",
         "dv": 6
       },
       {
         "fullName": "landing-ai/ade-cli",
         "score": 68.5,
-        "stars": 2424,
-        "grade": "B",
-        "dv": 7
-      },
-      {
-        "fullName": "theagentrouter/agent-router",
-        "score": 68.5,
-        "stars": 2319,
-        "grade": "B",
-        "dv": 7
-      },
-      {
-        "fullName": "SemiAnalysisAI/InferenceX",
-        "score": 68.5,
-        "stars": 1949,
-        "grade": "B",
-        "dv": 6
-      },
-      {
-        "fullName": "Kaelio/ktx",
-        "score": 68.5,
-        "stars": 1625,
+        "stars": 2427,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "DEEIX-AI/DEEIX-Chat",
         "score": 68.5,
-        "stars": 1614,
+        "stars": 1637,
         "grade": "B",
         "dv": 3
       },
       {
+        "fullName": "Kaelio/ktx",
+        "score": 68.5,
+        "stars": 1632,
+        "grade": "B",
+        "dv": 7
+      },
+      {
         "fullName": "mrwadams/stride-gpt",
         "score": 68.5,
-        "stars": 1145,
+        "stars": 1156,
         "grade": "B",
         "dv": 4
       },
       {
         "fullName": "jakobdylanc/llmcord",
         "score": 68.5,
-        "stars": 836,
+        "stars": 843,
         "grade": "B",
         "dv": 6
       },
@@ -3971,44 +3978,51 @@
       {
         "fullName": "SWE-agent/SWE-agent",
         "score": 68.4,
-        "stars": 20684,
+        "stars": 20835,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "pestphp/pest",
         "score": 68.4,
-        "stars": 11753,
+        "stars": 11781,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "purocean/yn",
         "score": 68.4,
-        "stars": 6766,
+        "stars": 6780,
         "grade": "B",
         "dv": 4
       },
       {
         "fullName": "liaohch3/claude-tap",
         "score": 68.4,
-        "stars": 3314,
+        "stars": 3355,
         "grade": "B",
         "dv": 6
       },
       {
         "fullName": "Agent-Field/agentfield",
         "score": 68.4,
-        "stars": 2634,
+        "stars": 2661,
         "grade": "B",
         "dv": 8
       },
       {
-        "fullName": "QwenAudio/Fun-ASR",
+        "fullName": "spec-kitty/spec-kitty",
         "score": 68.4,
-        "stars": 1594,
+        "stars": 1734,
         "grade": "B",
-        "dv": 9
+        "dv": 5
+      },
+      {
+        "fullName": "1CatAI/1Cat-vLLM",
+        "score": 68.4,
+        "stars": 1556,
+        "grade": "B",
+        "dv": 8
       },
       {
         "fullName": "vamplabAI/sgr-agent-core",
@@ -4018,109 +4032,81 @@
         "dv": 7
       },
       {
-        "fullName": "Agent-Field/SWE-AF",
+        "fullName": "hashgraph-online/hol-guard",
         "score": 68.4,
-        "stars": 1122,
+        "stars": 1115,
         "grade": "B",
-        "dv": 6
+        "dv": 4
       },
       {
         "fullName": "THU-BPM/MarkLLM",
         "score": 68.4,
-        "stars": 1088,
+        "stars": 1093,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "Mininglamp-OSS/octo-cli",
         "score": 68.4,
-        "stars": 920,
+        "stars": 924,
         "grade": "B",
         "dv": 7
       },
       {
-        "fullName": "CodeAbra/iai-personal-memory-engine",
-        "score": 68.4,
-        "stars": 917,
-        "grade": "B",
-        "dv": 4
-      },
-      {
         "fullName": "BlinkDL/RWKV-LM",
         "score": 68.3,
-        "stars": 14767,
+        "stars": 14786,
         "grade": "B",
         "dv": 9
       },
       {
         "fullName": "alibaba/spring-ai-alibaba",
         "score": 68.3,
-        "stars": 11088,
+        "stars": 11166,
         "grade": "B",
         "dv": 7
       },
       {
         "fullName": "MinishLab/semble",
         "score": 68.3,
-        "stars": 6328,
+        "stars": 6459,
         "grade": "B",
         "dv": 6
       },
       {
         "fullName": "IvanMurzak/Unity-MCP",
         "score": 68.3,
-        "stars": 4552,
+        "stars": 4670,
         "grade": "B",
         "dv": 5
       },
       {
         "fullName": "UditAkhourii/adhd",
         "score": 68.3,
-        "stars": 4487,
+        "stars": 4570,
         "grade": "B",
         "dv": 6
       },
       {
-        "fullName": "nimbalyst/nimbalyst",
-        "score": 68.3,
-        "stars": 1998,
-        "grade": "B",
-        "dv": 3
-      },
-      {
         "fullName": "yoanbernabeu/grepai",
         "score": 68.3,
-        "stars": 1930,
+        "stars": 1954,
         "grade": "B",
         "dv": 7
       },
       {
-        "fullName": "sammcj/gollama",
-        "score": 68.3,
-        "stars": 1842,
-        "grade": "B",
-        "dv": 5
-      },
-      {
         "fullName": "iwe-org/iwe",
         "score": 68.3,
-        "stars": 1806,
+        "stars": 1829,
         "grade": "B",
         "dv": 4
       },
       {
         "fullName": "lucasastorian/llmwiki",
         "score": 68.3,
-        "stars": 1732,
+        "stars": 1783,
         "grade": "B",
         "dv": 4
-      },
-      {
-        "fullName": "spec-kitty/spec-kitty",
-        "score": 68.3,
-        "stars": 1709,
-        "grade": "B",
-        "dv": 5
       },
       {
         "fullName": "kubeflow/katib",
@@ -4132,44 +4118,30 @@
       {
         "fullName": "xLLM-AI/xllm",
         "score": 68.3,
-        "stars": 1613,
-        "grade": "B",
-        "dv": 8
-      },
-      {
-        "fullName": "octotools/octotools",
-        "score": 68.3,
-        "stars": 1495,
+        "stars": 1625,
         "grade": "B",
         "dv": 8
       },
       {
         "fullName": "Team-Commonly/commonly",
         "score": 68.3,
-        "stars": 1373,
+        "stars": 1409,
         "grade": "B",
         "dv": 3
       },
       {
         "fullName": "ENTERPILOT/GoModel",
         "score": 68.3,
-        "stars": 1293,
+        "stars": 1323,
         "grade": "B",
         "dv": 5
       },
       {
         "fullName": "letta-ai/agent-file",
         "score": 68.3,
-        "stars": 1209,
+        "stars": 1218,
         "grade": "B",
         "dv": 8
-      },
-      {
-        "fullName": "hashgraph-online/hol-guard",
-        "score": 68.3,
-        "stars": 1024,
-        "grade": "B",
-        "dv": 4
       },
       {
         "fullName": "morluto/rea",
@@ -4221,6 +4193,13 @@
         "dv": 5
       },
       {
+        "fullName": "alookai/alook",
+        "score": 68.2,
+        "stars": 1528,
+        "grade": "B",
+        "dv": 4
+      },
+      {
         "fullName": "huggingface/llm-ls",
         "score": 68.2,
         "stars": 883,
@@ -4249,13 +4228,6 @@
         "dv": 9
       },
       {
-        "fullName": "Neywa-Labs/mlx-audio",
-        "score": 68.1,
-        "stars": 8307,
-        "grade": "B",
-        "dv": null
-      },
-      {
         "fullName": "mindcraft-bots/mindcraft",
         "score": 68.1,
         "stars": 5952,
@@ -4268,6 +4240,13 @@
         "stars": 1841,
         "grade": "B",
         "dv": 8
+      },
+      {
+        "fullName": "amicalhq/amical",
+        "score": 68.1,
+        "stars": 1639,
+        "grade": "B",
+        "dv": 4
       },
       {
         "fullName": "JudgmentLabs/judgeval",
@@ -4683,6 +4662,13 @@
         "dv": 4
       },
       {
+        "fullName": "SemiAnalysisAI/InferenceX",
+        "score": 67.6,
+        "stars": 2070,
+        "grade": "C",
+        "dv": 6
+      },
+      {
         "fullName": "jsmastery-pro/skills",
         "score": 67.6,
         "stars": 1571,
@@ -4905,6 +4891,13 @@
         "stars": 2118,
         "grade": "C",
         "dv": 4
+      },
+      {
+        "fullName": "nimbalyst/nimbalyst",
+        "score": 67.3,
+        "stars": 2092,
+        "grade": "C",
+        "dv": 3
       },
       {
         "fullName": "u14app/neo-chat",
@@ -5290,6 +5283,13 @@
         "stars": 2296,
         "grade": "C",
         "dv": 8
+      },
+      {
+        "fullName": "sammcj/gollama",
+        "score": 66.8,
+        "stars": 1847,
+        "grade": "C",
+        "dv": 5
       },
       {
         "fullName": "coollabsio/jean",
@@ -10537,15 +10537,15 @@
     "elapsedMs": 2959995
   },
   "lastPublish": {
-    "at": "2026-11-20T08:24:33.139Z",
+    "at": "2026-11-21T10:42:04.642Z",
     "total": 1502,
     "source": "manual",
     "report": {
-      "entered": 1,
+      "entered": 0,
       "exited": 0,
       "ups": 0,
       "downs": 0,
-      "significant": 1
+      "significant": 0
     }
   }
 }
