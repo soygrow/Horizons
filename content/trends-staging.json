@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-11-21T10:47:44.343Z",
-  "runAt": "2026-11-21T10:47:44.126Z",
+  "updatedAt": "2026-11-21T14:54:10.221Z",
+  "runAt": "2026-11-21T14:54:09.818Z",
   "items": [],
   "rejected": [],
   "verdicts": {
@@ -12182,8 +12182,8 @@
   "lastRun": {
     "ok": 0,
     "failed": 0,
-    "total": 20,
-    "budget": 20,
+    "total": 40,
+    "budget": 40,
     "geo": "US"
   }
 }
