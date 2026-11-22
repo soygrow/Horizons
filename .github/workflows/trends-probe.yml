@@ -1,0 +1,95 @@
+name: Trends 出口体检
+
+# 只回答一个问题：当前出口能不能从 Google Trends 拿到数据。
+#
+# 不改候选池、不写 D1、不碰线上榜单，跑完看日志就行。
+# 三种出口依次体检，谁通了就用谁：
+#   1. direct            —— runner 自己的 IP（现状：explore 页 429）
+#   2. secrets.TRENDS_PROXY —— 仓库里配的代理（Webshare 等商业代理填这里）
+#   3. Cloudflare WARP   —— 临时起一个 usque，出口换成 Cloudflare 的 IP
+#
+# 判定标准：日志里出现 OK 且「点」数不是 0。
+
+on:
+  workflow_dispatch:
+    inputs:
+      use_warp:
+        description: "同时体检 Cloudflare WARP 出口（约多花 2 分钟）"
+        type: boolean
+        default: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+
+    env:
+      CONFIGURED_PROXY: ${{ secrets.TRENDS_PROXY }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      # 直连这条一定会 429，但需要一个对照，免得误判成「代理没生效」
+      - name: 体检 · 直连
+        run: pnpm trends:probe || true
+
+      - name: 体检 · 仓库已配置的代理
+        if: env.CONFIGURED_PROXY != ''
+        env:
+          TRENDS_PROXY: ${{ secrets.TRENDS_PROXY }}
+        run: pnpm trends:probe || true
+
+      - name: 未配置 TRENDS_PROXY 时的提示
+        if: env.CONFIGURED_PROXY == ''
+        run: echo "::notice::TRENDS_PROXY 未配置，本条跳过。方案 1 验证完请把它加到仓库 Secrets。"
+
+      # usque = WARP over MASQUE，不需要内核模块、不需要 sudo。
+      # 它自带 http-proxy 模式，正好对上 proxy.ts 的 HTTP CONNECT 实现。
+      - name: 启动 WARP（usque http-proxy）
+        if: inputs.use_warp
+        continue-on-error: true
+        run: |
+          set -x
+          curl -sSL -o /tmp/usque.zip \
+            https://github.com/Diniboy1123/usque/releases/download/v4.2.1/usque_4.2.1_linux_amd64.zip
+          mkdir -p /tmp/usque && unzip -o /tmp/usque.zip -d /tmp/usque
+          BIN=$(find /tmp/usque -type f -name 'usque*' | head -1)
+          chmod +x "$BIN"
+          echo "二进制：$BIN"
+
+          cd /tmp/usque
+          # 注册可能要求确认 TOS，喂一个 y 防止卡在这
+          printf 'y\n' | timeout 90 "$BIN" register -n gh-runner 2>&1 | tail -20 || true
+
+          nohup "$BIN" http-proxy -b 127.0.0.1 -p 18080 > /tmp/usque.log 2>&1 &
+          sleep 8
+          echo "=== usque 日志 ==="
+          tail -30 /tmp/usque.log
+
+          echo "=== 走 WARP 看出口 IP ==="
+          curl -s --max-time 20 -x http://127.0.0.1:18080 https://www.cloudflare.com/cdn-cgi/trace \
+            | grep -E '^(ip|warp|loc)=' || echo "WARP 出口不可用"
+
+      - name: 体检 · WARP
+        if: inputs.use_warp
+        continue-on-error: true
+        env:
+          TRENDS_PROXY: http://127.0.0.1:18080
+        run: pnpm trends:probe || true
+
+      - name: 结束
+        run: echo "::notice::三种出口的结果都在上面，看 OK / BAD 与「点」数即可判定。"
