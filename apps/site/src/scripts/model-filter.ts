@@ -119,8 +119,16 @@ export function initModelsFilter() {
       b.className = chipCls(sort === b.dataset.sort);
     });
     selects.forEach((s) => {
-      const desired = p.get(s.dataset.filterSelect || "") || "All";
+      // 缺省值取第一个 option（"All" 或 "all"），不能硬编码，否则小写档的 select 会渲染空白
+      const fallback = s.options[0]?.value || "";
+      const desired = p.get(s.dataset.filterSelect || "") || fallback;
       if (s.value !== desired) s.value = desired;
+      // 已生效的筛选项用主色描边，一眼看出哪几项在起作用
+      const active = s.value !== fallback;
+      s.classList.toggle("border-border", !active);
+      s.classList.toggle("border-primary/50", active);
+      s.classList.toggle("text-ink-secondary", !active);
+      s.classList.toggle("text-ink", active);
     });
 
     const all = await load();

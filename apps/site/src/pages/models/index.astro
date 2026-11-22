@@ -6,7 +6,6 @@
  */
 import Base from "../../layouts/Base.astro";
 import SearchInput from "../../components/SearchInput.astro";
-import FilterGroup from "../../components/FilterGroup.astro";
 import ModelListHead from "../../components/ModelListHead.astro";
 import { modelRows, modelFilters, PAGE_SIZE } from "../../lib/dataset";
 import { formatDateShort } from "../../lib/format";
@@ -48,6 +47,16 @@ const priceOptions = [
 const freeOptions = [
   { value: "all", label: "全部" },
   { value: "free", label: "有免费变体" },
+];
+
+// 工具栏下拉：与脚本的 [data-filter-select] 一一对应，可用 URL 参数预选
+const query = Astro.url.searchParams;
+const filterSelects = [
+  { key: "mod", label: "模态", all: "全部模态", options: modalityOptions, current: query.get("mod") || "All" },
+  { key: "type", label: "类型", all: "全部类型", options: typeOptions, current: query.get("type") || "all" },
+  { key: "price", label: "价格", all: "全部价格", options: priceOptions, current: query.get("price") || "all" },
+  { key: "free", label: "免费", all: "不限免费", options: freeOptions, current: query.get("free") || "all" },
+  { key: "prov", label: "厂商", all: "全部厂商", options: providerOptions, current: query.get("prov") || "All" },
 ];
 
 const firstPage = [...modelRows]
@@ -183,21 +192,35 @@ const description =
       </aside>
     </header>
 
-    <div class="mt-8 flex flex-col gap-3 lg:flex-row lg:items-center">
-      <div class="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+    <div class="mt-8 flex flex-col gap-3 xl:flex-row xl:items-center xl:gap-3">
+      <div class="min-w-0 xl:flex-1">
         <SearchInput fluid value="" action="/models" local placeholder="搜索模型 / 厂商 / 简介" />
-        <div class="flex shrink-0 items-center gap-2">
-          <span class="text-xs font-medium text-ink-muted">厂商</span>
-          <select
-            data-filter-select="prov"
-            aria-label="按厂商筛选"
-            class="max-w-32 rounded-full border border-border bg-surface px-3 py-2.5 text-xs font-medium text-ink-secondary transition hover:text-ink focus:border-primary/50 focus:outline-none"
-          >
-            {providerOptions.map((p) => <option value={p.value}>{p.label}</option>)}
-          </select>
-        </div>
       </div>
-      <div class="flex flex-wrap items-center gap-1 lg:shrink-0 lg:border-l lg:border-border lg:pl-4">
+      <div class="grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-3 lg:grid-cols-5 xl:flex xl:flex-nowrap xl:items-center xl:gap-x-3">
+        {filterSelects.map((s) => (
+          <label class="flex min-w-0 items-center gap-1.5">
+            <span class="shrink-0 text-[11px] text-ink-muted">{s.label}</span>
+            <select
+              data-filter-select={s.key}
+              aria-label={`按${s.label}筛选`}
+              class="h-[42px] min-w-0 flex-1 rounded-full border border-border bg-surface px-2.5 text-xs font-medium text-ink-secondary transition hover:text-ink focus:border-primary/50 focus:outline-none xl:w-[102px] xl:flex-none"
+            >
+              {s.options.map((o) => (
+                <option value={o.value} selected={o.value === s.current}>
+                  {o.value === "all" || o.value === "All" ? s.all : o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        ))}
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
+      <span id="models-meta" class="text-xs text-ink-muted">
+        共 {modelRows.length} 个模型 · 按综合得分排序
+      </span>
+      <div class="flex flex-wrap items-center gap-1">
         <a href="#" data-sort="score" class="rounded-full bg-primary px-3 py-1 text-xs font-medium text-white">
           综合得分
         </a>
@@ -213,19 +236,6 @@ const description =
             </a>
           ))}
       </div>
-    </div>
-
-    <div class="mt-3 grid grid-cols-1 gap-x-6 gap-y-2.5 sm:grid-cols-2 xl:flex xl:flex-wrap xl:items-center">
-      <FilterGroup title="模态" param="mod" options={modalityOptions} current="All" />
-      <FilterGroup title="类型" param="type" options={typeOptions} current="all" />
-      <FilterGroup title="均价档位" param="price" options={priceOptions} current="all" />
-      <FilterGroup title="免费变体" param="free" options={freeOptions} current="all" />
-    </div>
-
-    <div class="mt-6">
-      <span id="models-meta" class="text-xs text-ink-muted">
-        共 {modelRows.length} 个模型 · 按综合得分排序
-      </span>
     </div>
 
     <!-- 列表：首屏静态渲染第 1 页，浏览器接管后按筛选条件重绘 -->
