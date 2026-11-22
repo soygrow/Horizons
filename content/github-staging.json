@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-11-22T00:46:43.053Z",
+  "updatedAt": "2026-11-22T04:45:46.251Z",
   "ruleVersion": "gh-rank-v1.6",
   "scoreModel": "pps-v4",
   "target": 2000,
   "board": {
-    "updatedAt": "2026-11-22T00:46:43.053Z",
+    "updatedAt": "2026-11-22T04:45:46.251Z",
     "rows": [
       {
         "fullName": "lobehub/lobe-icons",
@@ -5516,13 +5516,6 @@
         "dv": 4
       },
       {
-        "fullName": "openBitFun/OpenBitFun",
-        "score": 66.5,
-        "stars": 4103,
-        "grade": "C",
-        "dv": null
-      },
-      {
         "fullName": "edison7009/EchoBird",
         "score": 66.5,
         "stars": 3578,
@@ -6853,6 +6846,13 @@
         "dv": 5
       },
       {
+        "fullName": "eugene1g/agent-safehouse",
+        "score": 64.8,
+        "stars": 2153,
+        "grade": "C",
+        "dv": 7
+      },
+      {
         "fullName": "0xSteph/pentest-ai",
         "score": 64.8,
         "stars": 1787,
@@ -7007,6 +7007,20 @@
         "dv": 7
       },
       {
+        "fullName": "thu-ml/Causal-Forcing",
+        "score": 64.6,
+        "stars": 1029,
+        "grade": "C",
+        "dv": 8
+      },
+      {
+        "fullName": "thedaviddias/Front-End-Checklist",
+        "score": 64.5,
+        "stars": 74789,
+        "grade": "C",
+        "dv": 7
+      },
+      {
         "fullName": "vectorize-io/hindsight",
         "score": 64.5,
         "stars": 56327,
@@ -7133,6 +7147,13 @@
         "dv": 8
       },
       {
+        "fullName": "zhaoxuya520/reverse-skill",
+        "score": 64.3,
+        "stars": 45041,
+        "grade": "C",
+        "dv": 7
+      },
+      {
         "fullName": "Yeachan-Heo/oh-my-claudecode",
         "score": 64.3,
         "stars": 40988,
@@ -7252,6 +7273,13 @@
         "dv": 7
       },
       {
+        "fullName": "darkrishabh/agent-skills-eval",
+        "score": 64.2,
+        "stars": 819,
+        "grade": "C",
+        "dv": 7
+      },
+      {
         "fullName": "builderz-labs/mission-control",
         "score": 64.1,
         "stars": 6415,
@@ -7294,9 +7322,23 @@
         "dv": 4
       },
       {
+        "fullName": "shivammehta25/Matcha-TTS",
+        "score": 64.1,
+        "stars": 1374,
+        "grade": "C",
+        "dv": 8
+      },
+      {
         "fullName": "lean-dojo/LeanCopilot",
         "score": 64.1,
         "stars": 1339,
+        "grade": "C",
+        "dv": 8
+      },
+      {
+        "fullName": "mosecorg/mosec",
+        "score": 64.1,
+        "stars": 905,
         "grade": "C",
         "dv": 8
       },
@@ -7392,6 +7434,13 @@
         "dv": 3
       },
       {
+        "fullName": "ageerle/ruoyi-ai",
+        "score": 63.9,
+        "stars": 5841,
+        "grade": "C",
+        "dv": 4
+      },
+      {
         "fullName": "OpenBMB/UltraRAG",
         "score": 63.9,
         "stars": 5736,
@@ -7427,6 +7476,13 @@
         "dv": 3
       },
       {
+        "fullName": "Kong/kong",
+        "score": 63.8,
+        "stars": 44404,
+        "grade": "C",
+        "dv": 7
+      },
+      {
         "fullName": "iflytek/astron-agent",
         "score": 63.8,
         "stars": 8947,
@@ -7437,6 +7493,13 @@
         "fullName": "Zipstack/unstract",
         "score": 63.8,
         "stars": 7352,
+        "grade": "C",
+        "dv": 4
+      },
+      {
+        "fullName": "openBitFun/OpenBitFun",
+        "score": 63.8,
+        "stars": 4103,
         "grade": "C",
         "dv": 4
       },
@@ -7469,6 +7532,13 @@
         "dv": 8
       },
       {
+        "fullName": "LiuMengxuan04/MiniCode",
+        "score": 63.8,
+        "stars": 1172,
+        "grade": "C",
+        "dv": 5
+      },
+      {
         "fullName": "hiyouga/LlamaFactory",
         "score": 63.7,
         "stars": 76172,
@@ -7481,6 +7551,13 @@
         "stars": 46608,
         "grade": "C",
         "dv": 6
+      },
+      {
+        "fullName": "OpenRLHF/OpenRLHF",
+        "score": 63.7,
+        "stars": 10173,
+        "grade": "C",
+        "dv": 9
       },
       {
         "fullName": "netease-youdao/EmotiVoice",
@@ -7516,6 +7593,13 @@
         "stars": 3324,
         "grade": "C",
         "dv": 4
+      },
+      {
+        "fullName": "zurawiki/gptcommit",
+        "score": 63.7,
+        "stars": 2411,
+        "grade": "C",
+        "dv": 7
       },
       {
         "fullName": "Stack-Cairn/LiveAgent",
@@ -7572,6 +7656,13 @@
         "stars": 896,
         "grade": "C",
         "dv": 3
+      },
+      {
+        "fullName": "HKUDS/Vibe-Trading",
+        "score": 63.5,
+        "stars": 38652,
+        "grade": "C",
+        "dv": 4
       },
       {
         "fullName": "comet-ml/opik",
@@ -7637,6 +7728,13 @@
         "dv": 9
       },
       {
+        "fullName": "Kilo-Org/kilocode",
+        "score": 63.3,
+        "stars": 28076,
+        "grade": "C",
+        "dv": 3
+      },
+      {
         "fullName": "modelscope/ms-swift",
         "score": 63.3,
         "stars": 16138,
@@ -7665,18 +7763,18 @@
         "dv": 7
       },
       {
-        "fullName": "eugene1g/agent-safehouse",
-        "score": 63.3,
-        "stars": 2128,
-        "grade": "C",
-        "dv": 7
-      },
-      {
         "fullName": "CoderGamester/mcp-unity",
         "score": 63.3,
         "stars": 2018,
         "grade": "C",
         "dv": 7
+      },
+      {
+        "fullName": "royshil/obs-localvocal",
+        "score": 63.3,
+        "stars": 1674,
+        "grade": "C",
+        "dv": 4
       },
       {
         "fullName": "esengine/DeepSeek-Reasonix",
@@ -7721,11 +7819,32 @@
         "dv": 7
       },
       {
+        "fullName": "seakee/CPA-Manager-Plus",
+        "score": 63.2,
+        "stars": 4099,
+        "grade": "C",
+        "dv": 3
+      },
+      {
         "fullName": "rzru/nightingale",
         "score": 63.2,
         "stars": 1559,
         "grade": "C",
         "dv": 3
+      },
+      {
+        "fullName": "VocaHQ/vocalinux",
+        "score": 63.2,
+        "stars": 1036,
+        "grade": "C",
+        "dv": 3
+      },
+      {
+        "fullName": "Haervwe/open-webui-tools",
+        "score": 63.2,
+        "stars": 839,
+        "grade": "C",
+        "dv": 7
       },
       {
         "fullName": "thesongzhu/Friday",
@@ -7756,6 +7875,13 @@
         "dv": 8
       },
       {
+        "fullName": "PurpleDoubleD/locally-uncensored",
+        "score": 63.1,
+        "stars": 4545,
+        "grade": "C",
+        "dv": 2
+      },
+      {
         "fullName": "IliasHad/edit-mind",
         "score": 63.1,
         "stars": 1820,
@@ -7782,6 +7908,13 @@
         "stars": 12680,
         "grade": "C",
         "dv": 7
+      },
+      {
+        "fullName": "dataelement/bisheng",
+        "score": 63,
+        "stars": 12391,
+        "grade": "C",
+        "dv": 3
       },
       {
         "fullName": "TheR1D/shell_gpt",
@@ -7945,6 +8078,13 @@
         "dv": 8
       },
       {
+        "fullName": "itayinbarr/little-coder",
+        "score": 62.7,
+        "stars": 2736,
+        "grade": "C",
+        "dv": 6
+      },
+      {
         "fullName": "cogwheel0/conduit",
         "score": 62.7,
         "stars": 2487,
@@ -7980,107 +8120,51 @@
         "dv": 5
       },
       {
-        "fullName": "darkrishabh/agent-skills-eval",
-        "score": 62.7,
-        "stars": 807,
-        "grade": "C",
-        "dv": 7
-      },
-      {
         "fullName": "colbymchenry/codegraph",
         "score": 62.6,
-        "stars": 75958,
+        "stars": 78331,
         "grade": "C",
         "dv": 6
-      },
-      {
-        "fullName": "nidhinjs/prompt-master",
-        "score": 62.6,
-        "stars": 15265,
-        "grade": "C",
-        "dv": 7
       },
       {
         "fullName": "getagentseal/codeburn",
         "score": 62.6,
-        "stars": 11618,
+        "stars": 11881,
         "grade": "C",
         "dv": 3
       },
       {
-        "fullName": "itayinbarr/little-coder",
-        "score": 62.6,
-        "stars": 2706,
-        "grade": "C",
-        "dv": 6
-      },
-      {
-        "fullName": "shivammehta25/Matcha-TTS",
-        "score": 62.6,
-        "stars": 1371,
-        "grade": "C",
-        "dv": 8
-      },
-      {
         "fullName": "agentrq/agentrq",
         "score": 62.6,
-        "stars": 1172,
-        "grade": "C",
-        "dv": 4
-      },
-      {
-        "fullName": "thu-ml/Causal-Forcing",
-        "score": 62.6,
-        "stars": 1017,
-        "grade": "C",
-        "dv": 8
-      },
-      {
-        "fullName": "mosecorg/mosec",
-        "score": 62.6,
-        "stars": 902,
-        "grade": "C",
-        "dv": 8
-      },
-      {
-        "fullName": "kepano/obsidian-skills",
-        "score": 62.5,
-        "stars": 50415,
-        "grade": "C",
-        "dv": 8
-      },
-      {
-        "fullName": "HKUDS/Vibe-Trading",
-        "score": 62.5,
-        "stars": 37181,
+        "stars": 1194,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "PhyAgentOS/PhyAgentOS-core",
         "score": 62.5,
-        "stars": 2988,
+        "stars": 3013,
         "grade": "C",
         "dv": 8
       },
       {
+        "fullName": "Zleap-AI/SAG",
+        "score": 62.5,
+        "stars": 3004,
+        "grade": "C",
+        "dv": 4
+      },
+      {
         "fullName": "KohakuBlueleaf/LyCORIS",
         "score": 62.5,
-        "stars": 2537,
+        "stars": 2539,
         "grade": "C",
         "dv": 8
       },
       {
         "fullName": "puppyone-ai/puppyone-cloud",
         "score": 62.5,
-        "stars": 1300,
-        "grade": "C",
-        "dv": 4
-      },
-      {
-        "fullName": "kittors/CliRelay",
-        "score": 62.5,
-        "stars": 1046,
+        "stars": 1301,
         "grade": "C",
         "dv": 4
       },
@@ -8094,203 +8178,147 @@
       {
         "fullName": "PaddlePaddle/PaddleSpeech",
         "score": 62.4,
-        "stars": 12701,
+        "stars": 12713,
         "grade": "C",
         "dv": 8
       },
       {
-        "fullName": "ageerle/ruoyi-ai",
-        "score": 62.4,
-        "stars": 5799,
-        "grade": "C",
-        "dv": 4
-      },
-      {
         "fullName": "bestruirui/octopus",
         "score": 62.4,
-        "stars": 2733,
+        "stars": 2750,
         "grade": "C",
         "dv": 5
       },
       {
-        "fullName": "Zleap-AI/SAG",
-        "score": 62.4,
-        "stars": 2644,
-        "grade": "C",
-        "dv": 4
-      },
-      {
         "fullName": "microsoft/intelligent-terminal",
         "score": 62.4,
-        "stars": 2091,
+        "stars": 2260,
         "grade": "C",
         "dv": 2
       },
       {
+        "fullName": "axoviq-ai/synthadoc",
+        "score": 62.4,
+        "stars": 1999,
+        "grade": "C",
+        "dv": 3
+      },
+      {
         "fullName": "fynnfluegge/agtx",
         "score": 62.4,
-        "stars": 1726,
+        "stars": 1746,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "memex-lab/memex",
         "score": 62.4,
-        "stars": 812,
+        "stars": 846,
         "grade": "C",
         "dv": 3
-      },
-      {
-        "fullName": "Kong/kong",
-        "score": 62.3,
-        "stars": 44325,
-        "grade": "C",
-        "dv": 7
       },
       {
         "fullName": "can1357/oh-my-pi",
         "score": 62.3,
-        "stars": 37143,
-        "grade": "C",
-        "dv": 3
-      },
-      {
-        "fullName": "Kilo-Org/kilocode",
-        "score": 62.3,
-        "stars": 27796,
+        "stars": 39598,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "google/ax",
         "score": 62.3,
-        "stars": 14368,
+        "stars": 14837,
         "grade": "C",
         "dv": 8
       },
       {
         "fullName": "SharpAI/DeepCamera",
         "score": 62.3,
-        "stars": 3120,
+        "stars": 3144,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "mxsm/rocketmq-rust",
         "score": 62.3,
-        "stars": 1533,
+        "stars": 1549,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "xtreme1-io/xtreme1",
         "score": 62.3,
-        "stars": 1386,
+        "stars": 1395,
         "grade": "C",
         "dv": 3
       },
       {
-        "fullName": "ZHangZHengEric/Sage",
-        "score": 62.3,
-        "stars": 1215,
-        "grade": "C",
-        "dv": 5
-      },
-      {
         "fullName": "tmwgsicp/wechat-download-api",
         "score": 62.3,
-        "stars": 1205,
+        "stars": 1249,
         "grade": "C",
         "dv": 5
       },
       {
-        "fullName": "LiuMengxuan04/MiniCode",
+        "fullName": "ZHangZHengEric/Sage",
         "score": 62.3,
-        "stars": 1160,
+        "stars": 1219,
         "grade": "C",
         "dv": 5
+      },
+      {
+        "fullName": "superdesigndev/superdesign-skill",
+        "score": 62.3,
+        "stars": 1043,
+        "grade": "C",
+        "dv": 3
       },
       {
         "fullName": "ling-stack-org/ling-stack",
         "score": 62.3,
-        "stars": 996,
+        "stars": 983,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "jeecgboot/JeecgBoot",
         "score": 62.2,
-        "stars": 48340,
+        "stars": 48569,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "herdrdev/herdr",
-        "score": 62.2,
-        "stars": 46730,
-        "grade": "C",
-        "dv": 4
-      },
-      {
-        "fullName": "OpenRLHF/OpenRLHF",
-        "score": 62.2,
-        "stars": 10129,
-        "grade": "C",
-        "dv": 9
       },
       {
         "fullName": "rikkahub/rikkahub",
         "score": 62.2,
-        "stars": 8548,
+        "stars": 9084,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "ArvinLovegood/go-stock",
         "score": 62.2,
-        "stars": 7992,
+        "stars": 8229,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "langflow-ai/openrag",
         "score": 62.2,
-        "stars": 4668,
+        "stars": 4692,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "seakee/CPA-Manager-Plus",
-        "score": 62.2,
-        "stars": 3983,
-        "grade": "C",
-        "dv": 3
       },
       {
         "fullName": "graykode/abtop",
         "score": 62.2,
-        "stars": 3783,
+        "stars": 3870,
         "grade": "C",
         "dv": 4
       },
       {
-        "fullName": "zurawiki/gptcommit",
-        "score": 62.2,
-        "stars": 2416,
-        "grade": "C",
-        "dv": 7
-      },
-      {
         "fullName": "legeling/PromptHub",
         "score": 62.2,
-        "stars": 1785,
-        "grade": "C",
-        "dv": 3
-      },
-      {
-        "fullName": "axoviq-ai/synthadoc",
-        "score": 62.2,
-        "stars": 1644,
+        "stars": 1832,
         "grade": "C",
         "dv": 3
       },
@@ -8304,91 +8332,77 @@
       {
         "fullName": "CloudAI-X/claude-workflow-v2",
         "score": 62.2,
-        "stars": 1420,
+        "stars": 1424,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "LangChat/langchat",
         "score": 62.2,
-        "stars": 1321,
+        "stars": 1367,
         "grade": "C",
         "dv": 4
       },
       {
-        "fullName": "VocaHQ/vocalinux",
-        "score": 62.2,
-        "stars": 976,
-        "grade": "C",
-        "dv": 3
-      },
-      {
-        "fullName": "superdesigndev/superdesign-skill",
-        "score": 62.2,
-        "stars": 918,
-        "grade": "C",
-        "dv": 3
-      },
-      {
         "fullName": "bytedance/UI-TARS-desktop",
         "score": 62.1,
-        "stars": 39444,
+        "stars": 39606,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "browser-use/web-ui",
         "score": 62.1,
-        "stars": 16629,
+        "stars": 16662,
         "grade": "C",
         "dv": 6
       },
       {
         "fullName": "ATH-MaaS/ComfyUI-Copilot",
         "score": 62.1,
-        "stars": 5569,
+        "stars": 5589,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "IliasHad/orcah-studio",
         "score": 62.1,
-        "stars": 1851,
+        "stars": 1854,
         "grade": "C",
         "dv": null
       },
       {
         "fullName": "madox2/vim-ai",
         "score": 62.1,
-        "stars": 1188,
+        "stars": 1190,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "RecursiveMAS/RecursiveMAS",
         "score": 62.1,
-        "stars": 983,
+        "stars": 991,
         "grade": "C",
         "dv": 8
       },
       {
-        "fullName": "thedaviddias/Front-End-Checklist",
-        "score": 62,
-        "stars": 74602,
-        "grade": "C",
-        "dv": 7
-      },
-      {
         "fullName": "microsoft/autogen",
         "score": 62,
-        "stars": 61627,
+        "stars": 61956,
+        "grade": "C",
+        "dv": 8
+      },
+      {
+        "fullName": "kepano/obsidian-skills",
+        "score": 62,
+        "stars": 53384,
         "grade": "C",
         "dv": 8
       },
       {
         "fullName": "cjpais/Handy",
         "score": 62,
-        "stars": 35112,
+        "stars": 39556,
         "grade": "C",
         "dv": 3
       },
@@ -8400,58 +8414,51 @@
         "dv": 3
       },
       {
-        "fullName": "dataelement/bisheng",
+        "fullName": "Mai-with-u/MaiBot",
         "score": 62,
-        "stars": 12095,
-        "grade": "C",
-        "dv": 3
-      },
-      {
-        "fullName": "pacifio/atlas",
-        "score": 62,
-        "stars": 9561,
+        "stars": 7093,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "stagewise-io/stagewise",
         "score": 62,
-        "stars": 6831,
+        "stars": 6836,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "modstart-lib/aigcpanel",
         "score": 62,
-        "stars": 5717,
+        "stars": 5816,
         "grade": "C",
         "dv": 2
       },
       {
         "fullName": "MoonInTheRiver/DiffSinger",
         "score": 62,
-        "stars": 4888,
+        "stars": 4903,
         "grade": "C",
         "dv": 9
       },
       {
         "fullName": "CoderLuii/HolyClaude",
         "score": 62,
-        "stars": 2597,
+        "stars": 2678,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "patrickchugh/terravision",
         "score": 62,
-        "stars": 1664,
+        "stars": 1698,
         "grade": "C",
         "dv": 5
       },
       {
         "fullName": "erha19/ping-island",
         "score": 62,
-        "stars": 1141,
+        "stars": 1148,
         "grade": "C",
         "dv": 4
       },
@@ -8465,196 +8472,161 @@
       {
         "fullName": "frankbria/ralph-claude-code",
         "score": 61.9,
-        "stars": 9721,
+        "stars": 9738,
         "grade": "C",
         "dv": 5
       },
       {
-        "fullName": "kvcache-ai/Mooncake",
+        "fullName": "pacifio/atlas",
         "score": 61.9,
-        "stars": 6927,
-        "grade": "C",
-        "dv": 9
-      },
-      {
-        "fullName": "Mai-with-u/MaiBot",
-        "score": 61.9,
-        "stars": 6729,
+        "stars": 9183,
         "grade": "C",
         "dv": 3
       },
       {
-        "fullName": "VectifyAI/OpenKB",
+        "fullName": "kvcache-ai/Mooncake",
         "score": 61.9,
-        "stars": 4831,
+        "stars": 7100,
         "grade": "C",
-        "dv": 4
+        "dv": 9
       },
       {
         "fullName": "dataelement/Clawith",
         "score": 61.9,
-        "stars": 4177,
+        "stars": 4195,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "Open-Less/openless",
         "score": 61.9,
-        "stars": 4003,
+        "stars": 4148,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "QuantumNous/new-api",
         "score": 61.8,
-        "stars": 51027,
+        "stars": 52321,
         "grade": "C",
         "dv": 5
       },
       {
-        "fullName": "zhaoxuya520/reverse-skill",
-        "score": 61.8,
-        "stars": 43778,
-        "grade": "C",
-        "dv": 7
-      },
-      {
         "fullName": "slopus/happy",
         "score": 61.8,
-        "stars": 24410,
+        "stars": 24749,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "Kuberwastaken/claurst",
         "score": 61.8,
-        "stars": 10330,
+        "stars": 10346,
         "grade": "C",
         "dv": 4
-      },
-      {
-        "fullName": "PurpleDoubleD/locally-uncensored",
-        "score": 61.8,
-        "stars": 3045,
-        "grade": "C",
-        "dv": 2
       },
       {
         "fullName": "zinja-coder/jadx-ai-mcp",
         "score": 61.8,
-        "stars": 2957,
+        "stars": 3024,
         "grade": "C",
         "dv": 6
       },
       {
-        "fullName": "royshil/obs-localvocal",
-        "score": 61.8,
-        "stars": 1655,
-        "grade": "C",
-        "dv": 4
-      },
-      {
         "fullName": "Kuingsmile/word-GPT-Plus",
         "score": 61.8,
-        "stars": 1374,
+        "stars": 1387,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "agent-sh/agentsys",
         "score": 61.8,
-        "stars": 1010,
+        "stars": 1018,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "cheaper-inference/OmniRoute",
         "score": 61.7,
-        "stars": 82661,
+        "stars": 89413,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "agentscope-ai/QwenPaw",
         "score": 61.7,
-        "stars": 36969,
+        "stars": 38080,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "Anil-matcha/Open-Generative-AI",
         "score": 61.7,
-        "stars": 31839,
+        "stars": 35645,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "yangjian102621/geekai",
         "score": 61.7,
-        "stars": 4724,
+        "stars": 4725,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "skyhook-io/radar",
         "score": 61.7,
-        "stars": 3983,
+        "stars": 4183,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "Josh-XT/AGiXT",
         "score": 61.7,
-        "stars": 3216,
+        "stars": 3213,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "fikrikarim/parlor",
         "score": 61.7,
-        "stars": 2109,
+        "stars": 2117,
         "grade": "C",
         "dv": 7
       },
       {
-        "fullName": "verl-project/verl-omni",
+        "fullName": "Sec-Link/Argus-Agentic-SOC-Platform",
         "score": 61.7,
-        "stars": 1410,
+        "stars": 1267,
         "grade": "C",
-        "dv": 8
-      },
-      {
-        "fullName": "Haervwe/open-webui-tools",
-        "score": 61.7,
-        "stars": 828,
-        "grade": "C",
-        "dv": 7
+        "dv": 3
       },
       {
         "fullName": "affaan-m/ECC",
         "score": 61.6,
-        "stars": 292927,
+        "stars": 308374,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "supabase/supabase",
         "score": 61.6,
-        "stars": 114335,
+        "stars": 115244,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "yamadashy/repomix",
         "score": 61.6,
-        "stars": 29076,
+        "stars": 29371,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "GreyDGL/PentestGPT",
         "score": 61.6,
-        "stars": 16192,
+        "stars": 16543,
         "grade": "C",
         "dv": 7
       },
@@ -8666,30 +8638,30 @@
         "dv": 5
       },
       {
+        "fullName": "VectifyAI/OpenKB",
+        "score": 61.6,
+        "stars": 5021,
+        "grade": "C",
+        "dv": 4
+      },
+      {
         "fullName": "xenodium/agent-shell",
         "score": 61.6,
-        "stars": 2013,
+        "stars": 2095,
         "grade": "C",
         "dv": 4
       },
       {
         "fullName": "TypeWhisper/typewhisper-mac",
         "score": 61.6,
-        "stars": 1891,
-        "grade": "C",
-        "dv": 3
-      },
-      {
-        "fullName": "Sec-Link/Argus-Agentic-SOC-Platform",
-        "score": 61.6,
-        "stars": 1179,
+        "stars": 1939,
         "grade": "C",
         "dv": 3
       },
       {
         "fullName": "zhayujie/CowAgent",
         "score": 61.5,
-        "stars": 47686,
+        "stars": 48032,
         "grade": "C",
         "dv": 4
       },
@@ -8743,6 +8715,13 @@
         "dv": 3
       },
       {
+        "fullName": "kittors/CliRelay",
+        "score": 61.5,
+        "stars": 1063,
+        "grade": "C",
+        "dv": 4
+      },
+      {
         "fullName": "urzeye/ophel",
         "score": 61.5,
         "stars": 1035,
@@ -8769,6 +8748,13 @@
         "stars": 1595,
         "grade": "C",
         "dv": 3
+      },
+      {
+        "fullName": "verl-project/verl-omni",
+        "score": 61.4,
+        "stars": 1563,
+        "grade": "C",
+        "dv": 8
       },
       {
         "fullName": "phuc-nt/my-translator",
@@ -8867,6 +8853,13 @@
         "stars": 88963,
         "grade": "C",
         "dv": 3
+      },
+      {
+        "fullName": "nidhinjs/prompt-master",
+        "score": 61.1,
+        "stars": 16216,
+        "grade": "C",
+        "dv": 7
       },
       {
         "fullName": "mikeyobrien/ralph-orchestrator",
@@ -9630,6 +9623,13 @@
         "stars": 859,
         "grade": "C",
         "dv": 5
+      },
+      {
+        "fullName": "herdrdev/herdr",
+        "score": 59.5,
+        "stars": 52206,
+        "grade": "C",
+        "dv": 4
       },
       {
         "fullName": "Agents365-ai/drawio-skill",
@@ -10558,15 +10558,15 @@
     "elapsedMs": 2959995
   },
   "lastPublish": {
-    "at": "2026-11-22T00:46:43.053Z",
+    "at": "2026-11-22T04:45:46.251Z",
     "total": 1505,
     "source": "manual",
     "report": {
-      "entered": 1,
+      "entered": 0,
       "exited": 0,
       "ups": 0,
       "downs": 0,
-      "significant": 1
+      "significant": 0
     }
   }
 }
