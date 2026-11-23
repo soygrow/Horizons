@@ -32,6 +32,17 @@ const META_KEY = "github-meta";
 /** 与实际写文件的脚本保持同一默认值 */
 const DEFAULT_TARGET = 2000;
 
+/**
+ * GitHub 榜的运行记录。
+ *
+ * github_jobs 是 GitHub / 模型 / 机会三条流水线共用的表，而 GitHub 榜的 kind
+ * 没有前缀（fetch / refresh / publish），没法正向挑，只能把别的流水线挡掉。
+ * 不挡就会出现：机会生成的任务显示在「GitHub 榜」的运行记录里，
+ * 看起来像 GitHub 榜自己跑了个 opps-generate。
+ */
+const listGithubJobs = (env: Env, limit: number) =>
+  listJobs(env, limit, undefined, ["models", "opps"]);
+
 /* --------------------------------- 计算 --------------------------------- */
 
 interface CandidateView {
@@ -202,7 +213,7 @@ github.get("/overview", async (c) => {
   // configured 只表示「能派发流水线」，数据本身不需要 GitHub 凭据就能读
   const configured = Boolean(ghConfig(c.env));
   const missing = missingSecrets(c.env);
-  const jobs = await listJobs(c.env, 5);
+  const jobs = await listGithubJobs(c.env, 5);
 
   try {
     const [{ file, updatesCount }, boardStats] = await Promise.all([
@@ -586,7 +597,7 @@ github.post("/publish", async (c) => {
  * 页面标题写的也是「最近 5 次」，这里跟着钉死，别让 limit 参数再放大。
  */
 github.get("/jobs", async (c) => {
-  return c.json({ jobs: await listJobs(c.env, 5) });
+  return c.json({ jobs: await listGithubJobs(c.env, 5) });
 });
 
 export { github };

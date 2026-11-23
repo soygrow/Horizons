@@ -614,6 +614,62 @@ export function summarizeBatches(rows: OpportunityRow[]): OpportunityBatch[] {
     }));
 }
 
+/**
+ * 归一化一张机会卡片。
+ *
+ * 类型是紧的（risks 是数组、outcome 有 targets/ceiling/reality），但库里可能躺着
+ * 按别的写法生成的卡片：`risks: { biggest, mitigation }`、`outcome: { success, fail }`。
+ * 详情页对这些字段直接 `.map()`，形状不符会在渲染时抛 TypeError ——
+ * 构建期等于让整站构建失败，预览页等于 500。
+ *
+ * 所以在这里补一次：能认的旧写法转成数组，认不出的留空。只补齐、不丢内容。
+ */
+function normalizeOpportunity(o: OpportunitySource): OpportunitySource {
+  const raw = o as unknown as Record<string, unknown>;
+  const asArray = (v: unknown): unknown[] => (Array.isArray(v) ? v : []);
+
+  const risksRaw = raw.risks as Record<string, unknown> | undefined;
+  const risks = Array.isArray(risksRaw)
+    ? risksRaw
+    : risksRaw && typeof risksRaw === "object"
+      ? [
+          {
+            risk: (risksRaw.risk ?? risksRaw.biggest ?? "") as string,
+            mitigation: (risksRaw.mitigation ?? "") as string,
+          },
+        ]
+      : [];
+
+  const outcomeRaw = (raw.outcome ?? {}) as Record<string, unknown>;
+  const outcome = {
+    targets: asArray(outcomeRaw.targets) as { metric: string; value: string }[],
+    ceiling: (outcomeRaw.ceiling ?? "") as string,
+    reality: (outcomeRaw.reality ?? outcomeRaw.fail ?? "") as string,
+  };
+
+  const buildRaw = (raw.build ?? {}) as Record<string, unknown>;
+  const pathRaw = asArray(raw.path) as Array<{ actions?: unknown }>;
+
+  return {
+    ...o,
+    evidence: asArray(raw.evidence) as OpportunitySource["evidence"],
+    solo: {
+      ...(o.solo ?? ({} as OpportunitySource["solo"])),
+      channels: asArray(o.solo?.channels) as string[],
+      firstWeek: asArray(o.solo?.firstWeek) as string[],
+    },
+    build: {
+      ...(o.build ?? ({} as OpportunitySource["build"])),
+      mvpScope: asArray(buildRaw.mvpScope) as string[],
+      stack: asArray(buildRaw.stack) as string[],
+      leverage: asArray(buildRaw.leverage) as OpportunitySource["build"]["leverage"],
+    },
+    path: pathRaw.map((p) => ({ ...p, actions: asArray(p.actions) })) as OpportunitySource["path"],
+    outcome: outcome as OpportunitySource["outcome"],
+    risks: risks as OpportunitySource["risks"],
+  } as OpportunitySource;
+}
+
 export function buildOpportunityDetails(
   file: OpportunityFile,
   rows: OpportunityRow[],
@@ -621,7 +677,8 @@ export function buildOpportunityDetails(
   updatedAt: string,
 ): OpportunityDetail[] {
   const rowBySlug = new Map(rows.map((r) => [r.slug, r]));
-  return file.opportunities.map((o) => {
+  return file.opportunities.map((rawOpp) => {
+    const o = normalizeOpportunity(rawOpp);
     const row = rowBySlug.get(o.slug);
     if (!row) throw new Error(`机会 ${o.slug} 缺少列表行`);
     const evidence = o.evidence

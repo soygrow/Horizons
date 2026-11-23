@@ -47,18 +47,34 @@ export async function refreshJob(
 /**
  * 最近的任务，按创建时间倒序。
  *
- * `kindPrefix` 用来只看某条流水线（比如模型榜只关心 models-*），
- * 否则模型榜的运行记录里会混进 GitHub 榜的采集任务。
+ * `kindPrefix` 用来只看某条流水线（比如模型榜只关心 models-*）。
+ * `excludePrefixes` 是它的反面：GitHub 榜的 job kind 没有前缀（fetch / refresh / publish），
+ * 没法用正向前缀挑出来，只能把别的流水线（models-* / opps-*）挡掉 ——
+ * 否则 GitHub 榜的运行记录里会冒出 opps-generate，看着像自己跑了个同名任务。
  */
-export async function listJobs(env: Env, limit: number, kindPrefix?: string): Promise<JobRow[]> {
-  const sql = kindPrefix
-    ? "SELECT * FROM github_jobs WHERE kind LIKE ? ORDER BY created_at DESC LIMIT ?"
-    : "SELECT * FROM github_jobs ORDER BY created_at DESC LIMIT ?";
-  const stmt = env.DB.prepare(sql);
-  const { results } = await (kindPrefix
-    ? stmt.bind(`${kindPrefix}%`, limit)
-    : stmt.bind(limit)
-  ).all<JobRow>();
+export async function listJobs(
+  env: Env,
+  limit: number,
+  kindPrefix?: string,
+  excludePrefixes: string[] = [],
+): Promise<JobRow[]> {
+  const conds: string[] = [];
+  const binds: unknown[] = [];
+  if (kindPrefix) {
+    conds.push("kind LIKE ?");
+    binds.push(`${kindPrefix}%`);
+  }
+  for (const prefix of excludePrefixes) {
+    conds.push("kind NOT LIKE ?");
+    binds.push(`${prefix}%`);
+  }
+
+  const where = conds.length ? ` WHERE ${conds.join(" AND ")}` : "";
+  const { results } = await env.DB.prepare(
+    `SELECT * FROM github_jobs${where} ORDER BY created_at DESC LIMIT ?`,
+  )
+    .bind(...binds, limit)
+    .all<JobRow>();
 
   const rows = results ?? [];
   const cfg = ghConfig(env);

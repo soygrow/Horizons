@@ -1,0 +1,211 @@
+---
+/**
+ * 机会候选预览（按需渲染）。
+ *
+ * 和线上 /opportunity/[slug] 用**同一个** OpportunityBody 渲染，只有数据来源不同：
+ *   1. 候选池里有这条（board_items 里 status=candidate）→ 渲染候选卡片；
+ *   2. 否则回落到当前线上版本（board_listed_details 里存的完整对象）。
+ *
+ * 候选卡片是「原始机会对象」，缺 rank / overall / 解析后的证据，所以这里现场跑
+ * 一遍构建期用的 buildOpportunityRows + buildOpportunityDetails（同一套函数、
+ * 同一份榜单产物），预览里看到的分数、证据数值和发布后完全一致。
+ *
+ * 只在后台内部使用：站点 Worker 对 /preview/* 统一校验管理员会话后才放行，
+ * Base 里非白名单路径自动 noindex，sitemap 也不收录。
+ */
+export const prerender = false;
+
+import { env } from "cloudflare:workers";
+import Base from "../../../layouts/Base.astro";
+import OpportunityBody from "../../../components/detail/OpportunityBody.astro";
+import {
+  buildOpportunityDetails,
+  buildOpportunityRows,
+  type BoardIndex,
+  type OpportunityDetail,
+  type OpportunityFile,
+  type OpportunitySource,
+} from "../../../lib/opportunity";
+import { modelRows, repoRows, toolRows, trendRows } from "../../../lib/dataset";
+
+/** 只有候选值得预览：rejected 是判定不收录的，published 直接看线上页 */
+const PREVIEW_STAGES = new Set(["candidate"]);
+
+const STAGE_LABEL: Record<string, string> = {
+  candidate: "候选，尚未发布",
+  published: "当前线上版本",
+};
+
+interface D1Like {
+  prepare(sql: string): {
+    bind(...values: unknown[]): {
+      first<T = Record<string, unknown>>(): Promise<T | null>;
+      all<T = Record<string, unknown>>(): Promise<{ results: T[] }>;
+    };
+  };
+}
+
+interface CardRow {
+  card?: string | Record<string, unknown> | null;
+  status?: string;
+  batch?: string | null;
+  detail?: string | Record<string, unknown> | null;
+}
+
+const { slug } = Astro.params;
+const db = (env as { DB?: D1Like }).DB;
+
+let source: "staging" | "listed" = "staging";
+let stage = "candidate";
+let detail: OpportunityDetail | null = null;
+let position = { index: 0, total: 0 };
+let batch = "";
+let failure = "";
+
+function parseJson<T>(raw: string | Record<string, unknown> | null | undefined): T | null {
+  if (!raw) return null;
+  try {
+    return typeof raw === "string" ? (JSON.parse(raw) as T) : (raw as T);
+  } catch {
+    return null;
+  }
+}
+
+/** 候选卡片 + 同批其它候选：排名要在批次内排，只拿一条算不出名次 */
+async function loadStaging(): Promise<OpportunityDetail[] | null> {
+  if (!slug || !db) return null;
+
+  const row = await db
+    .prepare(
+      `SELECT card, status, batch FROM board_items
+        WHERE board = 'opps'
+          AND (json_extract(card, '$.slug') = ? OR item_key = ?)
+        LIMIT 1`,
+    )
+    .bind(slug, slug)
+    .first<CardRow>()
+    .catch(() => null);
+
+  if (!row?.card || !PREVIEW_STAGES.has(String(row.status ?? ""))) return null;
+
+  const batchKey = String(row.batch ?? "");
+  const siblings = batchKey
+    ? await db
+        .prepare(
+          `SELECT card FROM board_items
+            WHERE board = 'opps' AND batch = ? AND status <> 'rejected'`,
+        )
+        .bind(batchKey)
+        .all<CardRow>()
+        .catch(() => ({ results: [] as CardRow[] }))
+    : { results: [] as CardRow[] };
+
+  const cards = [row, ...siblings.results]
+    .map((r) => parseJson<OpportunitySource>(r.card))
+    .filter((c): c is OpportunitySource => Boolean(c?.slug));
+
+  /* 同一条可能既在 row 又在 siblings 里（row 本身属于该批次），按 slug 去重 */
+  const unique = [...new Map(cards.map((c) => [c.slug, c])).values()];
+  if (!unique.length) return null;
+
+  const updatedAt = unique.find((c) => c.slug === slug)?.updatedAt ?? new Date().toISOString();
+  const file: OpportunityFile = {
+    version: "preview",
+    updatedAt,
+    opportunities: unique,
+  };
+  const idx: BoardIndex = { trendRows, toolRows, repoRows, modelRows };
+  const details = buildOpportunityDetails(file, buildOpportunityRows(file, updatedAt), idx, updatedAt);
+
+  batch = batchKey || String(unique[0].batch ?? "");
+  const ordered = details.filter((d) => (d.batch ?? "") === (details.find((x) => x.slug === slug)?.batch ?? ""));
+  position = {
+    index: ordered.findIndex((d) => d.slug === slug) + 1,
+    total: ordered.length,
+  };
+  return details;
+}
+
+/** 线上版本：board_listed_details 里存的就是完整 OpportunityDetail */
+async function loadListed(): Promise<OpportunityDetail | null> {
+  if (!slug || !db) return null;
+  const row = await db
+    .prepare(
+      `SELECT d.detail AS detail
+         FROM board_listed l
+         JOIN board_listed_details d
+           ON d.version = l.version AND d.board = l.board AND d.item_key = l.item_key
+        WHERE l.board = 'opps'
+          AND l.version = (SELECT val FROM app_config WHERE key = 'config.current_version')
+          AND (json_extract(l.card, '$.slug') = ? OR l.item_key = ?)
+        LIMIT 1`,
+    )
+    .bind(slug, slug)
+    .first<CardRow>()
+    .catch(() => null);
+
+  return parseJson<OpportunityDetail>(row?.detail);
+}
+
+if (db && slug) {
+  try {
+    const staging = await loadStaging();
+    detail = staging?.find((d) => d.slug === slug) ?? null;
+    if (detail) {
+      stage = "candidate";
+    } else {
+      detail = await loadListed();
+      if (detail) {
+        stage = "published";
+        source = "listed";
+      }
+    }
+  } catch (e) {
+    failure = e instanceof Error ? e.message : String(e);
+  }
+}
+
+if (!detail) {
+  return new Response(
+    failure
+      ? `预览渲染失败：${failure}`
+      : "预览不存在：候选池与线上榜单都没有这条机会，或 slug 有误。",
+    {
+      status: failure ? 500 : 404,
+      headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+    },
+  );
+}
+
+const opp = detail;
+const title = `[预览] ${opp.title}`;
+---
+
+<Base title={title} description={opp.oneLiner} noindex={true}>
+  {/* 预览条：一眼看出不是线上页面，并能跳回后台 */}
+  <div class="border-b border-primary/30 bg-primary-soft">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-xs text-primary sm:px-6">
+      <span class="rounded-full bg-primary px-2 py-0.5 font-semibold text-white">预览</span>
+      <span class="font-medium">{opp.title}</span>
+      <span class="text-primary/80">· {STAGE_LABEL[stage] ?? stage}</span>
+      {batch && <span class="text-primary/60">· 批次 {batch}</span>}
+      {
+        source === "staging" && position.total > 1 && (
+          <span class="text-primary/60">
+            · 批内第 {position.index}/{position.total} 条
+          </span>
+        )
+      }
+      {
+        source === "listed" ? (
+          <span class="text-primary/60">· 与外网当前内容一致</span>
+        ) : (
+          <span class="text-primary/60">· 尚未发布到榜单 · 仅管理员可见</span>
+        )
+      }
+      <a href="/admin" class="ml-auto font-medium underline underline-offset-2 hover:no-underline">返回后台</a>
+    </div>
+  </div>
+
+  <OpportunityBody opp={opp} prev={null} next={null} live={false} />
+</Base>

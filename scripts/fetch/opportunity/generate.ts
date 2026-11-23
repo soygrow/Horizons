@@ -257,10 +257,15 @@ interface Opportunity {
   money?: { price?: string; payer?: string; first10?: string };
   thesis?: { where?: string; whyNow?: string; dont?: string };
   evidence?: Array<{ board?: string; ref?: string; note?: string }>;
-  build?: Record<string, unknown>;
-  path?: unknown[];
-  outcome?: Record<string, unknown>;
-  risks?: Record<string, unknown>;
+  build?: {
+    form?: string;
+    mvpScope?: unknown;
+    stack?: unknown;
+    leverage?: unknown;
+  };
+  path?: Array<{ name?: string; actions?: unknown }>;
+  outcome?: { targets?: unknown; ceiling?: string; reality?: string };
+  risks?: unknown;
 }
 
 const REQUIRED: Array<[string, (o: Opportunity) => unknown]> = [
@@ -321,6 +326,46 @@ function validate(
   if (opp.solo?.weeks && opp.solo.weeks > 6) {
     problems.push(`solo.weeks=${opp.solo.weeks} 超过 6 周上限`);
   }
+
+  /*
+   * 结构校验：详情页对这些字段是直接 map 的，模型一旦换个写法（把 risks 写成
+   * { biggest, mitigation }、把 outcome 写成 { success, fail }），存进库后
+   * 发布出去的页面「效果」「风险」两节会渲染不出来，而且要到构建或点开详情才暴露。
+   * 所以形状不对就在生成阶段打回重试，别等到发布。
+   */
+  const isText = (v: unknown): v is string => typeof v === "string" && v.trim().length > 0;
+
+  const outcome = opp.outcome;
+  if (!Array.isArray(outcome?.targets) || !outcome.targets.length) {
+    problems.push(`outcome.targets 必须是非空数组，形如 [{ metric: "指标名", value: "目标值" }]`);
+  } else {
+    const bad = (outcome.targets as Array<{ metric?: unknown; value?: unknown }>).find(
+      (t) => !isText(t?.metric) || !isText(t?.value),
+    );
+    if (bad) problems.push(`outcome.targets 每一项都要有 metric 和 value：${JSON.stringify(bad)}`);
+  }
+  if (!isText(outcome?.ceiling)) problems.push("outcome.ceiling 必须是非空字符串（天花板怎么算）");
+  if (!isText(outcome?.reality)) problems.push("outcome.reality 必须是非空字符串（什么条件下不成立）");
+
+  if (!Array.isArray(opp.risks) || !opp.risks.length) {
+    problems.push(`risks 必须是非空数组，形如 [{ risk: "风险", mitigation: "怎么对冲" }]`);
+  } else {
+    const bad = (opp.risks as Array<{ risk?: unknown; mitigation?: unknown }>).find(
+      (r) => !isText(r?.risk) || !isText(r?.mitigation),
+    );
+    if (bad) problems.push(`risks 每一项都要有 risk 和 mitigation：${JSON.stringify(bad)}`);
+  }
+
+  for (const key of ["mvpScope", "stack", "leverage"] as const) {
+    if (!Array.isArray(opp.build?.[key]) || !(opp.build[key] as unknown[]).length) {
+      problems.push(`build.${key} 必须是非空数组`);
+    }
+  }
+  (opp.path ?? []).forEach((phase, i) => {
+    if (!Array.isArray(phase?.actions) || !phase.actions.length) {
+      problems.push(`path[${i}].actions 必须是非空数组`);
+    }
+  });
 
   const boardMap: Record<string, Set<string>> = {
     trends: refs.trends,
@@ -440,8 +485,12 @@ function userPrompt(options: {
         evidence: [{ board: "trends", ref: "素材里的 slug", note: "这条证据说明什么" }],
         build: { form: "产品形态", mvpScope: ["MVP 边界"], stack: ["技术栈"], leverage: [{ kind: "open-source", ref: "owner/repo", how: "怎么复用" }] },
         path: [{ phase: "0", name: "手工验证", weeks: "1–2 周", actions: ["做什么"], deliverable: "交付物", gate: "过了这道门才继续" }],
-        outcome: { success: "成功的具体样子", fail: "什么样算失败" },
-        risks: { biggest: "最大的风险", mitigation: "怎么对冲" },
+        outcome: {
+          targets: [{ metric: "可量化的指标名", value: "目标值" }],
+          ceiling: "天花板怎么算：单价 × 可触达客户数，说明为什么是这个量级",
+          reality: "这条机会在什么条件下不成立",
+        },
+        risks: [{ risk: "最大的风险", mitigation: "怎么对冲" }],
       },
       null,
       1,

@@ -1831,7 +1831,18 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 <h2 class="text-sm font-semibold">运行记录</h2>
                 <span class="text-[11px] text-ink-muted">最近 5 次</span>
               </div>
-              <span class="text-[11px] text-ink-muted">有任务在跑时每 12 秒自动刷新</span>
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] text-ink-muted">有任务在跑时每 12 秒自动刷新</span>
+                <!-- 刷新放在运行记录上而不是列表工具栏：它重读概览、批次、运行记录和列表，
+                     语义是「整页重读」，不是筛列表 -->
+                <button
+                  id="opp-refresh"
+                  type="button"
+                  class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
+                >
+                  刷新
+                </button>
+              </div>
             </div>
             <div id="opps-jobs"></div>
           </article>
@@ -1857,20 +1868,7 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                   placeholder="搜索名称"
                   class="w-36 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none placeholder:text-ink-muted focus:border-primary"
                 />
-                <button
-                  id="opp-refresh"
-                  type="button"
-                  class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
-                >
-                  刷新
-                </button>
-                <button
-                  id="opp-publish-btn"
-                  type="button"
-                  class="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  同步到线上
-                </button>
+                <!-- 这一栏只读：发布/重建都是写操作，放在「机会生成」页签里 -->
               </div>
             </div>
             <div class="overflow-x-auto">
@@ -1933,6 +1931,21 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
               </div>
               <div id="opps-preview" class="space-y-3 px-5 py-4">
                 <p class="text-xs text-ink-muted">选批次后点「看候选」只读已有候选池，点「生成 5 条」才会起任务。</p>
+              </div>
+              <!-- 兜底操作：正常情况下发布批次已经同时写文件和 D1，只有手改过
+                   content/opportunities.json 才需要按文件回灌一次 -->
+              <div class="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-2.5">
+                <p class="max-w-xl text-[11px] leading-relaxed text-ink-muted">
+                  手改过 <code class="rounded bg-surface-2 px-1 py-0.5 font-mono">content/opportunities.json</code>
+                  时，用「按文件重建线上」把它回灌进 D1：以文件为准重算排名，不新增条目。
+                </p>
+                <button
+                  id="opp-publish-btn"
+                  type="button"
+                  class="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  按文件重建线上
+                </button>
               </div>
             </article>
           </div>

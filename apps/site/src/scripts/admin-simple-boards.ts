@@ -850,6 +850,51 @@ async function loadOppsBatches(): Promise<void> {
   }
 }
 
+/** 机会流水线的 job kind → 中文，和别的榜一样用人话显示，不甩 opps-generate */
+const OPP_JOB_LABEL: Record<string, string> = {
+  "opps-generate": "生成候选",
+  "opps-refill": "拒绝补位",
+  "opps-publish-batch": "发布批次",
+  "opps-publish": "按文件重建",
+};
+
+/** 状态文案与 GitHub 榜的运行记录对齐：成功 / 运行中 / 失败 / 已取消 / 排队中 */
+function oppJobBadge(status: string): { label: string; cls: string } {
+  switch (status) {
+    case "success":
+      return { label: "成功", cls: "bg-emerald-50 text-emerald-700" };
+    case "running":
+      return { label: "运行中", cls: "bg-amber-50 text-amber-700" };
+    case "failure":
+      return { label: "失败", cls: "bg-red-50 text-red-600" };
+    case "cancelled":
+      return { label: "已取消", cls: "bg-surface-2 text-ink-muted" };
+    default:
+      return { label: "排队中", cls: "bg-amber-50 text-amber-700" };
+  }
+}
+
+/** 参数转成人话：以前直接把 {"batch":"2026-W48"} 甩在列表里，读不出发生了什么 */
+function oppJobDesc(job: Job): string {
+  if (job.error) return job.error;
+  try {
+    const p = JSON.parse(job.params ?? "{}") as {
+      batch?: string;
+      missing?: number;
+      reason?: string;
+      patch?: boolean;
+    };
+    const bits: string[] = [];
+    if (p.batch) bits.push(`批次 ${p.batch}`);
+    if (typeof p.missing === "number") bits.push(`补 ${p.missing} 条`);
+    if (p.reason) bits.push(p.reason);
+    if (typeof p.patch === "boolean") bits.push(p.patch ? "增量写库" : "全量写库");
+    return bits.join(" · ");
+  } catch {
+    return job.params ?? "";
+  }
+}
+
 function renderOppsJobs(jobs: Job[]): void {
   const box = $("opps-jobs");
   if (!box) return;
@@ -865,20 +910,15 @@ function renderOppsJobs(jobs: Job[]): void {
 
   box.innerHTML = jobs
     .map((job) => {
-      const cls =
-        job.status === "success"
-          ? "bg-emerald-50 text-emerald-700"
-          : job.status === "failure"
-            ? "bg-red-50 text-red-600"
-            : "bg-amber-50 text-amber-700";
+      const badge = oppJobBadge(job.status);
       const link = job.run_url
         ? `<a href="${esc(job.run_url)}" target="_blank" rel="noopener" class="text-primary hover:underline">日志</a>`
         : "—";
-      const desc = job.error ?? job.params ?? "";
+      const desc = oppJobDesc(job);
       return `<div class="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2.5 text-xs last:border-b-0">
-          <span class="w-24 shrink-0 font-mono text-[11px] text-ink-muted">${esc(job.kind)}</span>
+          <span class="w-16 shrink-0 text-ink-muted">${esc(OPP_JOB_LABEL[job.kind] ?? job.kind)}</span>
           <span class="min-w-0 flex-1 truncate text-ink-secondary" title="${esc(desc)}">${esc(desc) || "—"}</span>
-          <span class="shrink-0 rounded-full px-2 py-0.5 font-semibold ${cls}">${esc(job.status)}</span>
+          <span class="shrink-0 rounded-full px-2 py-0.5 font-semibold ${badge.cls}">${esc(badge.label)}</span>
           <span class="w-24 shrink-0 text-right text-ink-muted">${fmtTime(job.created_at)}</span>
           <span class="w-10 shrink-0 text-right">${link}</span>
         </div>`;
@@ -986,7 +1026,18 @@ function renderOppsPreview(res: OppStaging): void {
               i + 1
             }</span>
             <div class="min-w-0 flex-1">
-              <h3 class="text-sm font-semibold leading-snug text-ink">${esc(card.title ?? "(无标题)")}</h3>
+              <h3 class="text-sm font-semibold leading-snug text-ink">
+                <a
+                  href="/preview/opp/${esc(card.slug ?? "")}"
+                  target="_blank"
+                  rel="noopener"
+                  class="group inline-flex items-baseline gap-1.5 hover:text-primary"
+                  title="打开预览：发布后长这样"
+                >
+                  <span class="min-w-0 group-hover:underline group-hover:underline-offset-2">${esc(card.title ?? "(无标题)")}</span>
+                  <span class="shrink-0 text-[11px] font-normal text-ink-muted group-hover:text-primary">预览 ↗</span>
+                </a>
+              </h3>
               <p class="mt-1 text-xs leading-relaxed text-ink-secondary">${esc(card.oneLiner ?? "")}</p>
               <div class="mt-2 flex flex-wrap items-center gap-1.5">${chips}</div>
               ${evidence ? `<div class="mt-2 flex flex-wrap gap-1.5">${evidence}</div>` : ""}
@@ -1175,17 +1226,19 @@ export function mountAdminOpps(): void {
     reload();
   });
 
+  /* 状态写到 opp-gen：按钮在「机会生成」页签里，写 opp-status 的话人在这一页看不见 */
   $("opp-publish-btn")?.addEventListener("click", async () => {
     const btn = $("opp-publish-btn") as HTMLButtonElement | null;
     if (btn) btn.disabled = true;
-    setStatus("opp", "正在触发同步…", "busy");
+    setStatus("opp-gen", "正在触发重建…", "busy");
     try {
       await apiPost("/opps/publish", {});
-      setStatus("opp", "已提交到 GitHub Actions，正在等待启动…", "busy");
+      setStatus("opp-gen", "已提交到 GitHub Actions，正在按 content/opportunities.json 重建线上…", "busy");
+      void loadOppsJobs();
       window.setTimeout(() => void loadOppsOverview(), 5000);
       window.setTimeout(() => void loadOppsItems(1, goPage), 60_000);
     } catch (e) {
-      setStatus("opp", `触发失败：${esc(msg(e))}`, "bad");
+      setStatus("opp-gen", `触发失败：${esc(msg(e))}`, "bad");
     } finally {
       if (btn) btn.disabled = false;
     }
