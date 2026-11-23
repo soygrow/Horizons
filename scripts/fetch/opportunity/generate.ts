@@ -88,6 +88,8 @@ interface TrendRow {
   category?: string;
   status?: string;
   why?: string;
+  confidence?: string;
+  editorNote?: { audience?: string; entryAngle?: string; whyAccepted?: string };
 }
 interface ToolRow {
   id: string;
@@ -97,6 +99,8 @@ interface ToolRow {
   categories?: string[];
   heatScore?: number;
   trafficMetrics?: { monthlyVisits?: number; monthlyVisitsGrowth?: number };
+  opportunity?: { score?: number; verdict?: string; reason?: string };
+  ideaSparks?: Array<{ title?: string }>;
 }
 interface RepoRow {
   fullName: string;
@@ -104,6 +108,9 @@ interface RepoRow {
   stars?: number;
   starsGrowth?: number;
   language?: string;
+  productScore?: { score?: number; grade?: string };
+  derivative?: { untapped?: string[] };
+  insight?: { taglineZh?: string };
 }
 interface ModelRow {
   slug: string;
@@ -113,6 +120,7 @@ interface ModelRow {
   price?: { input?: number; output?: number };
   capability?: number;
   tags?: string[];
+  open?: boolean;
 }
 
 function readJSON<T>(file: string, fallback: T): T {
@@ -138,9 +146,12 @@ function truncate(text: string | undefined, max: number): string {
 }
 
 /**
- * 挑素材：每榜只送上「最近确实在动」的那部分。
+ * 挑素材：每榜按「机会信号强度」排序，只送强信号的那部分。
  *
- * 487 个搜索词全塞进去既贵又吵，模型会把注意力摊薄到冷却词上。
+ * 审计结论（2026-11）：trends/aitools/github 三榜的采集端已产出近成品的机会候选
+ * （entryAngle / opportunity+ideaSparks / derivative.untapped），应按这些信号排序，
+ * 而不是按词条顺序或原始流量；models 榜的 weaknesses 是模板套话，只喂开源/价格/能力
+ * 这些硬事实。
  */
 function buildMaterial(): {
   trends: TrendRow[];
@@ -150,26 +161,30 @@ function buildMaterial(): {
   refs: { trends: Set<string>; tools: Set<string>; github: Set<string>; models: Set<string> };
 } {
   const trendsRaw = readJSON<unknown>("trends.json", {});
+  const confRank: Record<string, number> = { high: 0, medium: 1, low: 2 };
   const trends = asArray<TrendRow>(trendsRaw, "keywords")
-    .filter((t) => t.status !== "cooling" && t.slug)
+    .filter((t) => t.status !== "cooling" && t.slug && t.editorNote?.entryAngle)
+    .sort(
+      (a, b) => (confRank[a.confidence ?? "low"] ?? 2) - (confRank[b.confidence ?? "low"] ?? 2),
+    )
     .slice(0, 60);
 
   const toolsRaw = readJSON<unknown>("aitools.json", []);
   const tools = asArray<ToolRow>(toolsRaw, "items")
-    .slice()
-    .sort((a, b) => (b.trafficMetrics?.monthlyVisitsGrowth ?? 0) - (a.trafficMetrics?.monthlyVisitsGrowth ?? 0))
+    .filter((t) => t.domain)
+    .sort((a, b) => (b.opportunity?.score ?? 0) - (a.opportunity?.score ?? 0))
     .slice(0, 40);
 
   const reposRaw = readJSON<unknown>("github.json", {});
   const repos = asArray<RepoRow>(reposRaw, "repos")
-    .slice()
-    .sort((a, b) => (b.starsGrowth ?? 0) - (a.starsGrowth ?? 0))
+    .filter((r) => r.fullName)
+    .sort((a, b) => (b.productScore?.score ?? 0) - (a.productScore?.score ?? 0))
     .slice(0, 40);
 
   const modelsRaw = readJSON<unknown>("models.json", {});
   const models = asArray<ModelRow>(modelsRaw, "models")
     .filter((m) => m.slug)
-    .sort((a, b) => (b.context ?? 0) - (a.context ?? 0))
+    .sort((a, b) => (b.capability ?? 0) - (a.capability ?? 0))
     .slice(0, 25);
 
   const allTrends = asArray<TrendRow>(trendsRaw, "keywords");
@@ -198,42 +213,50 @@ function renderMaterial(m: ReturnType<typeof buildMaterial>): string {
   const trends = m.trends
     .map(
       (t) =>
-        `- ${t.slug} | ${t.normalizedName ?? t.keyword} | ${t.category ?? "-"} | ${
-          t.status ?? "-"
-        } | ${truncate(t.why, 90)}`,
+        `- ${t.slug} | ${truncate(t.editorNote?.entryAngle, 80)} | 受众 ${truncate(
+          t.editorNote?.audience,
+          30,
+        )} | ${truncate(t.editorNote?.whyAccepted, 50)}`,
     )
     .join("\n");
 
   const tools = m.tools
-    .map(
-      (t) =>
-        `- ${t.domain} | ${t.name} | 月访问 ${t.trafficMetrics?.monthlyVisits ?? "?"} 增长 ${
-          t.trafficMetrics?.monthlyVisitsGrowth ?? "?"
-        }% | ${truncate(t.description, 60)}`,
-    )
+    .map((t) => {
+      const spark = t.ideaSparks?.[0];
+      const tail = spark ? ` | 火花「${truncate(spark.title, 30)}」` : "";
+      return `- ${t.domain} | ${t.name} | 机会 ${t.opportunity?.score ?? "?"} 分 ${
+        t.opportunity?.verdict ?? ""
+      } | ${truncate(t.opportunity?.reason, 60)}${tail}`;
+    })
     .join("\n");
 
   const repos = m.repos
-    .map((r) => `- ${r.fullName} | ★${r.stars ?? "?"} 近期+${r.starsGrowth ?? "?"} | ${truncate(r.description, 60)}`)
+    .map((r) => {
+      const untapped = r.derivative?.untapped?.[0];
+      const tail = untapped ? ` | 机会 ${truncate(untapped, 60)}` : "";
+      return `- ${r.fullName} | ${r.productScore?.grade ?? "?"}级 ${
+        r.productScore?.score ?? "?"
+      } 分 | ${truncate(r.insight?.taglineZh, 40)}${tail}`;
+    })
     .join("\n");
 
   const models = m.models
     .map(
       (x) =>
-        `- ${x.slug} | ${x.provider} | 上下文 ${x.context ?? "?"} | 价格 ${
+        `- ${x.slug} | ${x.provider} | ${x.open ? "开源" : "闭源"} | 能力 ${x.capability ?? "?"} | 价格 ${
           x.price?.input ?? "?"
         }/${x.price?.output ?? "?"} 美元每百万 | ${(x.tags ?? []).join("/")}`,
     )
     .join("\n");
 
   return [
-    "## 趋势榜（搜索词，ref 用第一列）",
+    "## 趋势榜（搜索词，ref 用第一列；entryAngle 是采集端已想好的切入角度）",
     trends,
     "",
-    "## 工具榜（ref 用域名）",
+    "## 工具榜（ref 用域名；机会分与「火花」是采集端已算好的判断）",
     tools,
     "",
-    "## GitHub 榜（ref 用 owner/repo）",
+    "## GitHub 榜（ref 用 owner/repo；「机会」是采集端标的未占场景）",
     repos,
     "",
     "## 模型榜（ref 用 model slug）",
@@ -409,7 +432,13 @@ function loadExisting(): Opportunity[] {
 function renderSummary(items: Opportunity[]): string {
   if (!items.length) return "（无）";
   return items
-    .map((o) => `- ${o.slug} | ${o.title} | ${truncate(o.oneLiner, 60)}`)
+    .map((o) => {
+      const refs = (o.evidence ?? [])
+        .map((e) => e.ref)
+        .filter(Boolean)
+        .join("、");
+      return `- ${o.slug} | ${o.title} | ${truncate(o.oneLiner, 40)}${refs ? ` | 已引用：${refs}` : ""}`;
+    })
     .join("\n");
 }
 
@@ -426,7 +455,7 @@ function systemPrompt(policy: string): string {
     "- 全部中文，标题要像人说的话，不要营销腔。",
     "- 标题必须是一个完整的句子（可以带逗号），禁止用冒号加副标题的形式，也不要堆名词。",
     "- evidence 至少 3 条，ref 必须来自给定榜单且原样照抄；编造 ref 会让构建失败。",
-    "- scores 的 5 个维度各自打分，scoreBasis 要针对该机会单独写，不能套模板。",
+    "- scores 的 5 个维度各自打分，scoreBasis 每一条都必须引用素材里的具体数字（某 tool 的月访问与环比、某 repo 的星数或评分、某 trend 的热度变化、某 model 的价格），不得只写抽象定性理由。",
     "- solo.weeks ≤ 6，scores.feasible ≥ 60，scores.monetize ≥ 50。",
   ].join("\n");
 }
@@ -437,12 +466,13 @@ function userPrompt(options: {
   existing: Opportunity[];
   exclude: string[];
   reason: string;
+  rejections?: Rejection[];
   problems?: string[];
 }): string {
   const parts = [
     `## 本期批次：${options.batch}`,
     "",
-    `## 已经在线上的机会（不要重复这些方向）`,
+    `## 已经在线上的机会（不要重复方向，也不要复用它们已引用的证据 ref）`,
     renderSummary(options.existing),
   ];
 
@@ -451,6 +481,21 @@ function userPrompt(options: {
   }
   if (options.reason) {
     parts.push("", "## 上一条被拒绝的原因（这次必须避开同样的问题）", options.reason);
+  }
+  if (options.rejections?.length) {
+    parts.push(
+      "",
+      "## 历史被拒记录（这些方向已被否决，换新角度，不要重蹈）",
+      options.rejections
+        .slice(-15)
+        .map(
+          (r) =>
+            `- [${r.batch}] ${r.reason || "（无理由）"}${
+              r.exclude?.length ? `（被拒 slug: ${r.exclude.join("、")}）` : ""
+            }`,
+        )
+        .join("\n"),
+    );
   }
   if (options.problems?.length) {
     parts.push("", "## 上一次生成的错误（必须全部修掉）", options.problems.map((p) => `- ${p}`).join("\n"));
@@ -473,11 +518,11 @@ function userPrompt(options: {
         window: "3–6 个月",
         scores: { demand: 78, gap: 72, feasible: 86, timing: 78, monetize: 80 },
         scoreBasis: {
-          demand: "为什么这个需求是真的，依据哪几条证据",
-          gap: "现有产品停在哪一层，缺口在哪",
-          feasible: "一个人四周能不能跑通，需要什么",
-          timing: "为什么是现在，两年前为什么不行",
-          monetize: "谁刷卡、为什么愿意付",
+          demand: "依据：某 tool 月访问 XX 且环比 +X%、某 trend 热度近 X 周 +X%（要真数字）",
+          gap: "依据：某 repo 的 derivative 显示「X」未占场景、某 model 明确是闭源/高价",
+          feasible: "依据：某 repo 开源可复用（X 星 / MIT）、某 tool buildBlueprint 首版 ≤ X 周",
+          timing: "依据：某 trend 是新词（近期才出现）、某 tool/model 近期才发布",
+          monetize: "依据：某 tool pricing 已跑通 X 元/月、同类已有的定价参照",
         },
         solo: { budget: "首月 0 美元 · 稳定期 ≤ 60 美元/月", weeks: 4, channels: ["Google 搜索"], firstWeek: ["第一周要做的验证动作"] },
         money: { price: "12 美元/月", payer: "自己付钱的人", first10: "前 10 个付费用户具体怎么来" },
@@ -508,21 +553,32 @@ function userPrompt(options: {
 
 /* ------------------------------ 落库 ------------------------------ */
 
+/** 一条被人工拒绝的记录：周期内最强的反馈信号（人为、显式、即时）。
+ *  跨批次沉淀后喂回生成，避免下批再踩同样的坑。 */
+interface Rejection {
+  at: string;
+  batch: string;
+  reason: string;
+  exclude: string[];
+}
+
 interface StagingFile {
   updatedAt: string;
   batches: Record<string, { generatedAt: string; model: string; items: Opportunity[] }>;
+  rejections?: Rejection[];
 }
 
 function readStaging(): StagingFile {
-  if (!existsSync(STAGING)) return { updatedAt: new Date().toISOString(), batches: {} };
+  if (!existsSync(STAGING)) return { updatedAt: new Date().toISOString(), batches: {}, rejections: [] };
   try {
     const parsed = JSON.parse(readFileSync(STAGING, "utf8")) as Partial<StagingFile>;
     return {
       updatedAt: parsed.updatedAt ?? new Date().toISOString(),
       batches: parsed.batches ?? {},
+      rejections: parsed.rejections ?? [],
     };
   } catch {
-    return { updatedAt: new Date().toISOString(), batches: {} };
+    return { updatedAt: new Date().toISOString(), batches: {}, rejections: [] };
   }
 }
 
@@ -567,6 +623,7 @@ async function main(): Promise<void> {
 
   // 补位时把该批次已存在的候选也算进"别重复"名单
   const staging = readStaging();
+  const rejections = staging.rejections ?? [];
   const batchItems = staging.batches[args.batch]?.items ?? [];
   for (const o of batchItems) usedSlugs.add(o.slug);
   const excludeTitles = [...args.exclude, ...batchItems.map((o) => o.title)].filter(Boolean);
@@ -585,6 +642,7 @@ async function main(): Promise<void> {
       existing,
       exclude: [...excludeTitles, ...accepted.map((o) => o.title)],
       reason: args.reason,
+      rejections,
     });
 
     if (args.dry) {
@@ -606,6 +664,7 @@ async function main(): Promise<void> {
               existing,
               exclude: [...excludeTitles, ...accepted.map((o) => o.title)],
               reason: args.reason,
+              rejections,
               problems: lastProblems,
             });
 
@@ -632,6 +691,14 @@ async function main(): Promise<void> {
     usedSlugs.add(picked.slug);
     accepted.push(picked);
     console.log(`[opps] ✓ ${picked.slug} · ${picked.title}`);
+  }
+
+  // 补位 = 「拒绝某条后换一条」，把这次被拒的理由沉淀下来，跨批次喂回
+  if (args.reason || args.exclude.length) {
+    staging.rejections = [
+      ...(staging.rejections ?? []),
+      { at: new Date().toISOString(), batch: args.batch, reason: args.reason, exclude: args.exclude },
+    ];
   }
 
   // 落盘：同批次补位是追加，不是覆盖
