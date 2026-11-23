@@ -456,6 +456,7 @@ function systemPrompt(policy: string): string {
     "- 标题必须是一个完整的句子（可以带逗号），禁止用冒号加副标题的形式，也不要堆名词。",
     "- evidence 至少 3 条，ref 必须来自给定榜单且原样照抄；编造 ref 会让构建失败。",
     "- scores 的 5 个维度各自打分，scoreBasis 每一条都必须引用素材里的具体数字（某 tool 的月访问与环比、某 repo 的星数或评分、某 trend 的热度变化、某 model 的价格），不得只写抽象定性理由。",
+    "- 整体篇幅与结构示例一致，不要展开：scoreBasis 每条一句话、只引一个具体数字，evidence 3~4 条即可，其余字段按示例的详略程度写。",
     "- solo.weeks ≤ 6，scores.feasible ≥ 60，scores.monetize ≥ 50。",
   ].join("\n");
 }
@@ -668,7 +669,10 @@ async function main(): Promise<void> {
               problems: lastProblems,
             });
 
-      const res = await chatJSON<{ opportunity?: Opportunity }>(system, prompt, 8000, 0.7, args.model);
+      // max_tokens 给到 16000：scoreBasis 要引用具体数字后，单条完整 JSON 会逼近 8k
+      // 上限，三条证据 + 五维打分 + 路径/结果/风险全写满时 8000 会被截断。v4-pro 专为
+      // 长 JSON 输出，16000 在其能力内。
+      const res = await chatJSON<{ opportunity?: Opportunity }>(system, prompt, 16000, 0.7, args.model);
       const opp = res.opportunity;
       if (!opp) {
         lastProblems = ["返回里没有 opportunity 字段"];
