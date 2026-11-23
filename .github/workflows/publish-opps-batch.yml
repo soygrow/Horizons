@@ -1,0 +1,79 @@
+name: 机会榜发布批次
+
+# 把某个批次从候选池正式发布：写 content/opportunities.json → 同步 D1 → 提交。
+#
+# 提交带 content/**，会自动触发 deploy-site，所以不用单独 dispatch 重建。
+#
+# 前置条件：该批次候选正好 5 条（被拒的都补过位）。少于/多于 5 条都会直接失败，
+# 这是刻意的 —— 线上每次就 5 条，让流水线替人守住这条线。
+#
+# 需要的仓库 Secrets：
+#   CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID / D1_DATABASE_ID
+on:
+  workflow_dispatch:
+    inputs:
+      batch:
+        description: "要发布的批次号（YYYY-Www）"
+        required: true
+      job_id:
+        description: "后台任务 ID（仅回显）"
+        required: false
+        default: ""
+
+concurrency:
+  group: opps-staging
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 记录后台任务号
+        if: inputs.job_id != ''
+        run: echo "::notice::后台任务 job_id=${{ inputs.job_id }}"
+
+      - name: 发布批次
+        env:
+          OPP_BATCH: ${{ inputs.batch }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm exec tsx scripts/admin/publish-opps-batch.ts
+
+      - name: 提交线上文件
+        run: |
+          git config user.name "horizons-bot"
+          git config user.email "bot@horizons.tools"
+          git add content/opportunities.json content/opportunities-staging.json
+          if git diff --cached --quiet; then
+            echo "::notice::文件没有变化，跳过提交"
+            exit 0
+          fi
+          git commit -m "feat(opps): 发布批次 ${{ inputs.batch }}"
+          if ! git push; then
+            echo "::warning::push 被拒，rebase 后重试"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}"
+            git push
+          fi
+          echo "::notice::批次 ${{ inputs.batch }} 已发布，站点重建由 content/** 变更自动触发"

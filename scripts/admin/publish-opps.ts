@@ -4,13 +4,13 @@
  * `content/opportunities.json` 是人工策展文件，没有采集流程，所以本脚本
  * 既是发布入口也是唯一的同步点 —— 改完 JSON 跑一次即可。
  *
- * 名次口径：只在最新批次内排名，按 demand 分降序（与 /opportunity 页一致）。
- * 历史批次不进 D1：archive 页要的是「这一批讲了什么」，用不到名次表，
- * 切流后再由 SSR 从同一个 JSON 读，没必要在这里冗余一份。
+ * 名次口径：每个批次内各自按 demand 分降序排名（与 /opportunity 页一致）。
+ * 所有批次都写进 D1 —— 后台的「线上机会」要能按批次回查，只留最新一批就查不到历史。
+ * 前台不受影响：首页与 archive 都是构建期直接读这个 JSON，不走 D1。
  *
  * 用法：
  *   pnpm tsx scripts/admin/publish-opps.ts
- *   pnpm tsx scripts/admin/publish-opps.ts --full     # 建新版本（默认只增量替换最新批次）
+ *   pnpm tsx scripts/admin/publish-opps.ts --full     # 建新版本号
  *   pnpm tsx scripts/admin/publish-opps.ts --no-d1
  */
 import fs from "node:fs";
@@ -59,36 +59,44 @@ async function main(): Promise<void> {
   const all = file.opportunities ?? [];
   if (all.length === 0) throw new Error("opportunities.json 里没有条目，拒绝发布空榜");
 
-  // 最新批次用字典序取 —— batch 形如 2026-W44，W 后两位补零，字典序即时间序
-  const latestBatch = all.map((o) => o.batch).sort().at(-1)!;
-  const batch = all.filter((o) => o.batch === latestBatch);
+  /* 批次号形如 2026-W44，W 后两位补零，字典序即时间序 */
+  const batches = [...new Set(all.map((o) => o.batch))].sort().reverse();
 
-  const ordered = [...batch].sort((a, b) => {
-    const d = b.scores.demand - a.scores.demand;
-    if (d !== 0) return d;
-    return a.slug.localeCompare(b.slug);
-  });
+  const rows: PublishRow[] = [];
+  for (const batch of batches) {
+    const items = all
+      .filter((o) => o.batch === batch)
+      .sort((a, b) => {
+        const d = b.scores.demand - a.scores.demand;
+        if (d !== 0) return d;
+        return a.slug.localeCompare(b.slug);
+      });
 
-  const rows: PublishRow[] = ordered.map((opp, i) => {
-    const rank = i + 1;
-    const score = opportunityScore(opp.scores);
-    return {
-      key: opp.slug,
-      rank,
-      score,
-      // 机会榜是公开榜，不分层
-      tier: "core",
-      name: opp.title,
-      url: null,
-      cats: opp.audience?.length ? opp.audience : null,
-      card: { rank, batch: opp.batch, overall: score, ...opp },
-      detail: { data: opp, derived: { rank, score } },
-    };
-  });
+    items.forEach((opp, i) => {
+      /* 每个批次内从 1 重新排名：批次之间是并列关系，跨批排名没有意义 */
+      const rank = i + 1;
+      const score = opportunityScore(opp.scores);
+      rows.push({
+        key: opp.slug,
+        rank,
+        score,
+        // 机会榜是公开榜，不分层
+        tier: "core",
+        name: opp.title,
+        url: null,
+        cats: opp.audience?.length ? opp.audience : null,
+        /* batch 以循环变量为准（opp.batch 可能存在空值，卡片的批次必须是确定值） */
+        card: { ...opp, batch, rank, overall: score },
+        /* 0024：批次写成列，后台的批次下拉按索引分组，不再解析每行卡片 */
+        batch,
+        detail: { data: opp, derived: { rank, score } },
+      });
+    });
 
-  console.log(
-    `[opps] 批次 ${latestBatch}：${rows.length} 条，榜首「${rows[0]?.name}」（${rows[0]?.score}）`,
-  );
+    console.log(`[opps] 批次 ${batch}：${items.length} 条，榜首「${items[0]?.title}」`);
+  }
+
+  console.log(`[opps] 共 ${batches.length} 个批次 / ${rows.length} 条机会`);
 
   const res = await syncBoardToD1({
     board: "opps",

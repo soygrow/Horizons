@@ -1815,15 +1815,48 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
             </article>
           </div>
 
-          <div class="rounded-2xl border border-border bg-surface p-5">
-            <div class="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h2 class="text-sm font-semibold">同步到线上</h2>
-                <p class="mt-1 text-xs text-ink-muted">
-                  把仓库里的 <code class="font-mono">content/opportunities.json</code> 写进 D1。机会是人工策展的，改完文件点这里即可。
-                </p>
+          <nav class="flex items-center gap-1" aria-label="机会榜视图">
+            <button type="button" data-opps-view="listed" data-active="true" class="admin-subtab">
+              线上机会
+            </button>
+            <button type="button" data-opps-view="generate" class="admin-subtab">
+              机会生成
+            </button>
+          </nav>
+
+          <!-- 运行记录同样放在两个页签之上：生成、拒绝补位、发布都跑 Actions -->
+          <article class="rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-2.5">
+              <div class="flex items-center gap-2">
+                <h2 class="text-sm font-semibold">运行记录</h2>
+                <span class="text-[11px] text-ink-muted">最近 5 次</span>
               </div>
-              <div class="flex shrink-0 gap-2">
+              <span class="text-[11px] text-ink-muted">有任务在跑时每 12 秒自动刷新</span>
+            </div>
+            <div id="opps-jobs"></div>
+          </article>
+
+          <div id="opps-view-listed" class="overflow-hidden rounded-2xl border border-border bg-surface">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-3">
+              <div>
+                <h2 class="text-sm font-semibold">线上机会</h2>
+                <p class="mt-1 text-xs text-ink-muted">读的是当前生效版本，与前台榜单一致；点标题打开详情页</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <span id="opp-status" class="text-xs text-ink-muted"></span>
+                <select
+                  id="opp-batch"
+                  class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
+                >
+                  <option value="">全部批次</option>
+                </select>
+                <input
+                  id="opp-search"
+                  type="search"
+                  autocomplete="off"
+                  placeholder="搜索名称"
+                  class="w-36 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none placeholder:text-ink-muted focus:border-primary"
+                />
                 <button
                   id="opp-refresh"
                   type="button"
@@ -1840,18 +1873,8 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 </button>
               </div>
             </div>
-            <div id="opp-status" class="mt-3 text-xs text-ink-muted"></div>
-          </div>
-
-          <div class="overflow-hidden rounded-2xl border border-border bg-surface">
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
-              <div>
-                <h2 class="text-sm font-semibold">线上机会</h2>
-                <p class="mt-1 text-xs text-ink-muted">读的是当前生效版本，与前台榜单一致</p>
-              </div>
-            </div>
             <div class="overflow-x-auto">
-              <table class="w-full min-w-[760px] text-left text-sm">
+              <table class="w-full min-w-[860px] text-left text-sm">
                 <thead class="bg-surface-2/60 text-[11px] uppercase tracking-wide text-ink-muted">
                   <tr>
                     <th class="px-3 py-2 text-right font-medium">#</th>
@@ -1860,12 +1883,58 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                     <th class="px-3 py-2 text-right font-medium">需求分</th>
                     <th class="px-3 py-2 text-right font-medium">综合分</th>
                     <th class="px-3 py-2 font-medium">受众</th>
+                    <th class="px-3 py-2 text-right font-medium">正在做</th>
                   </tr>
                 </thead>
                 <tbody id="opp-list"></tbody>
               </table>
             </div>
             <div id="opp-pager" class="flex items-center justify-between gap-3 border-t border-border px-5 py-3 text-xs text-ink-muted"></div>
+          </div>
+
+          <div id="opps-view-generate" hidden class="space-y-4">
+            <article class="rounded-2xl border border-border bg-surface">
+              <div class="flex flex-wrap items-start justify-between gap-3 border-b border-border px-5 py-3">
+                <div class="min-w-0">
+                  <h2 class="text-sm font-semibold">机会生成</h2>
+                  <p id="opps-gen-intro" class="mt-1 max-w-2xl text-xs leading-relaxed text-ink-muted">
+                    生成 → 预览 → 逐条拒绝补位 → 发布，每批固定 5 条。批次号形如
+                    <code class="rounded bg-surface-2 px-1 py-0.5 font-mono">2026-W47</code>，默认当前 ISO 周。
+                    生成只写候选池，确认发布后前台才换榜。
+                  </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <input
+                    id="opp-gen-batch"
+                    type="text"
+                    autocomplete="off"
+                    spellcheck="false"
+                    placeholder="2026-W47"
+                    class="w-28 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 font-mono text-xs text-ink outline-none placeholder:text-ink-muted focus:border-primary"
+                  />
+                  <button
+                    id="opp-gen-reload"
+                    type="button"
+                    class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
+                  >
+                    看候选
+                  </button>
+                  <button
+                    id="opp-gen-btn"
+                    type="button"
+                    class="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    生成 5 条
+                  </button>
+                </div>
+              </div>
+              <div class="border-b border-border px-5 py-1">
+                <span id="opp-gen-status" class="text-xs text-ink-muted"></span>
+              </div>
+              <div id="opps-preview" class="space-y-3 px-5 py-4">
+                <p class="text-xs text-ink-muted">选批次后点「看候选」只读已有候选池，点「生成 5 条」才会起任务。</p>
+              </div>
+            </article>
           </div>
         </section>
 

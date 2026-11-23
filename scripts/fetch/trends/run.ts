@@ -1029,6 +1029,25 @@ async function main(): Promise<void> {
       ? `[trends] 完成：成功 ${ok}，失败 ${failed}，本轮候选 ${touched.size} 个 → content/trends-staging.json（榜单未改动，等后台审核）`
       : `[trends] 完成：成功 ${ok}，失败 ${failed}，词库 ${keywords.length} 个，跳过表 ${skips.size} 条 → content/trends.json`,
   );
+
+  /*
+   * 一个词都没采到，不能算成功。
+   *
+   * 出口被 Google 挡掉时（explore 页 429），整批词在进入解析前就全部落空，
+   * 于是 ok=0、failed=0、main 正常返回 → 进程 exit 0 → GitHub run 显示
+   * success → 后台那行是绿色的「成功」。而实际上候选池一条没变、发布按钮
+   * 一直是灰的，用户只能得出「点了更新，流程断了」的结论。
+   *
+   * 定向重采（带了 slugs）的目标词本来都有量，0 产出必然是链路问题；
+   * 默认采集只要触发了限流早退也归同一类。两种都按失败退出。
+   */
+  if (batch.length > 0 && ok === 0 && (forcedPlan || stoppedByLimit)) {
+    console.error(
+      `[trends] ${batch.length} 个词一个都没采到（限流或出口被挡），本轮无产出：` +
+        "候选池与线上榜单均未改动，不能当作成功",
+    );
+    process.exitCode = 1;
+  }
 }
 
 main().catch((e) => {

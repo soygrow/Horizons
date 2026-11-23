@@ -67,6 +67,8 @@ interface Item {
   url: string | null;
   cats: string[];
   card: Card | null;
+  /** 机会榜独有：点了「我在做」且没放弃的人数（doing + shipped） */
+  doing?: number;
 }
 
 interface ItemsRes {
@@ -732,24 +734,34 @@ const oppsDef: OppsDef = {
   prefix: "opp",
   api: "/opps",
   unit: "条机会",
-  columns: ["#", "标题", "批次", "需求分", "综合分", "受众"],
+  columns: ["#", "标题", "批次", "需求分", "综合分", "受众", "正在做"],
   row: (item) => {
     const batch = item.card?.batch ?? "—";
     const audience = item.cats.length ? item.cats.join(" / ") : "—";
     const demand = item.card?.scores as { demand?: number } | undefined;
+    /* 后台的 key 就是前台路由的 slug，直接跳详情，不必再做一个详情弹窗 */
+    const href = `/opportunity/${encodeURIComponent(item.key)}`;
+    const doing = item.doing ?? 0;
     return `<td class="px-3 py-2 text-right text-xs tabular-nums text-ink-muted">${item.rank}</td>
       <td class="max-w-[280px] px-3 py-2">
-        <div class="truncate font-medium text-ink" title="${esc(item.name)}">${esc(item.name)}</div>
+        <a href="${href}" target="_blank" rel="noopener" class="block truncate font-medium text-ink transition hover:text-primary hover:underline" title="${esc(item.name)}">${esc(item.name)}</a>
         <div class="truncate font-mono text-[11px] text-ink-muted">${esc(item.key)}</div>
       </td>
       <td class="px-3 py-2 font-mono text-xs text-ink-secondary">${esc(batch)}</td>
       <td class="px-3 py-2 text-right text-xs tabular-nums text-ink-secondary">${num(demand?.demand)}</td>
       <td class="px-3 py-2 text-right text-xs font-medium tabular-nums text-ink">${num(item.score)}</td>
-      <td class="max-w-[220px] px-3 py-2 text-xs text-ink-muted"><div class="truncate" title="${esc(audience)}">${esc(audience)}</div></td>`;
+      <td class="max-w-[200px] px-3 py-2 text-xs text-ink-muted"><div class="truncate" title="${esc(audience)}">${esc(audience)}</div></td>
+      <td class="px-3 py-2 text-right text-xs tabular-nums ${doing ? "font-medium text-ink" : "text-ink-muted"}">${doing ? fmtNum(doing) : "—"}</td>`;
   },
 };
 
+/** 筛选条件跨分页保持，翻页不该把批次选择丢掉 */
+const oppsState = { batch: "", q: "", page: 1 };
 let oppsMounted = false;
+let oppsJobsTimer = 0;
+let oppsSearchTimer = 0;
+/** 生成页签里发布完成后要刷线上列表，但那里拿不到 mount 内的 goPage，挂全局一份 */
+let oppsGoPage: (page: number) => void = () => {};
 
 function renderOppsItems(res: ItemsRes, goPage: (page: number) => void): void {
   const body = $("opp-list");
@@ -804,8 +816,12 @@ async function loadOppsOverview(): Promise<void> {
 }
 
 async function loadOppsItems(page: number, goPage: (p: number) => void): Promise<void> {
+  const params = new URLSearchParams({ page: String(page), size: "50" });
+  if (oppsState.batch) params.set("batch", oppsState.batch);
+  if (oppsState.q) params.set("q", oppsState.q);
+
   try {
-    const res = await apiGet<ItemsRes>(`/opps/items?page=${page}&size=50`);
+    const res = await apiGet<ItemsRes>(`/opps/items?${params.toString()}`);
     renderOppsItems(res, goPage);
   } catch (e) {
     const body = $("opp-list");
@@ -815,22 +831,348 @@ async function loadOppsItems(page: number, goPage: (p: number) => void): Promise
   }
 }
 
+/** 批次下拉：批次是按周累积的，只列线上真有的那些 */
+async function loadOppsBatches(): Promise<void> {
+  const sel = $("opp-batch") as HTMLSelectElement | null;
+  if (!sel) return;
+
+  try {
+    const res = await apiGet<{ batches: Array<{ batch: string; count: number }> }>("/opps/batches");
+    const keep = sel.value;
+    sel.innerHTML =
+      `<option value="">全部批次</option>` +
+      res.batches
+        .map((b) => `<option value="${esc(b.batch)}">${esc(b.batch)}（${b.count}）</option>`)
+        .join("");
+    sel.value = keep;
+  } catch {
+    /* 批次拉不到不影响主列表，保持"全部批次"即可 */
+  }
+}
+
+function renderOppsJobs(jobs: Job[]): void {
+  const box = $("opps-jobs");
+  if (!box) return;
+
+  if (!jobs.length) {
+    box.innerHTML = `<p class="px-4 py-4 text-xs text-ink-muted">还没有任务。生成批次、拒绝补位、发布会在这里显示进度。</p>`;
+    return;
+  }
+
+  const active = jobs.some((j) => !["success", "failure", "cancelled"].includes(j.status));
+  window.clearTimeout(oppsJobsTimer);
+  if (active) oppsJobsTimer = window.setTimeout(() => void loadOppsJobs(), 12_000);
+
+  box.innerHTML = jobs
+    .map((job) => {
+      const cls =
+        job.status === "success"
+          ? "bg-emerald-50 text-emerald-700"
+          : job.status === "failure"
+            ? "bg-red-50 text-red-600"
+            : "bg-amber-50 text-amber-700";
+      const link = job.run_url
+        ? `<a href="${esc(job.run_url)}" target="_blank" rel="noopener" class="text-primary hover:underline">日志</a>`
+        : "—";
+      const desc = job.error ?? job.params ?? "";
+      return `<div class="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2.5 text-xs last:border-b-0">
+          <span class="w-24 shrink-0 font-mono text-[11px] text-ink-muted">${esc(job.kind)}</span>
+          <span class="min-w-0 flex-1 truncate text-ink-secondary" title="${esc(desc)}">${esc(desc) || "—"}</span>
+          <span class="shrink-0 rounded-full px-2 py-0.5 font-semibold ${cls}">${esc(job.status)}</span>
+          <span class="w-24 shrink-0 text-right text-ink-muted">${fmtTime(job.created_at)}</span>
+          <span class="w-10 shrink-0 text-right">${link}</span>
+        </div>`;
+    })
+    .join("");
+}
+
+async function loadOppsJobs(): Promise<void> {
+  try {
+    const res = await apiGet<{ jobs: Job[] }>("/opps/jobs?limit=5");
+    renderOppsJobs(res.jobs);
+  } catch {
+    /* 运行记录是辅助信息，读不到不打扰主流程 */
+  }
+}
+
+/* ---------------- 机会生成：批次 → 预览 → 拒绝补位 → 发布 ---------------- */
+
+interface OppCard {
+  slug?: string;
+  title?: string;
+  oneLiner?: string;
+  batch?: string;
+  audience?: string[];
+  scores?: Record<string, number>;
+  evidence?: Array<{ board?: string; ref?: string; note?: string }>;
+}
+
+interface OppStaging {
+  batch: string;
+  size: number;
+  kept: number;
+  rejected: number;
+  ready: boolean;
+  items: OppCard[];
+}
+
+/** 与后端一致：批次号必须是 YYYY-Www，形如 2026-W47 */
+const OPP_BATCH_RE = /^\d{4}-W\d{2}$/;
+
+/** 当前 ISO 周，形如 2026-W47 —— 批次号输入框的默认值 */
+function isoBatch(now = new Date()): string {
+  const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  const day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const week = Math.ceil(((d.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
+  return `${d.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+}
+
+function renderOppsPreview(res: OppStaging): void {
+  const box = $("opps-preview");
+  if (!box) return;
+
+  const head = `<div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-surface px-4 py-3">
+      <div class="text-xs text-ink-muted">
+        批次 <span class="font-mono text-ink">${esc(res.batch)}</span>
+        <span class="mx-1">·</span>
+        <span class="${res.ready ? "font-medium text-emerald-600" : "font-medium text-amber-600"}">${res.kept}/${res.size} 条可发布</span>
+        ${res.rejected ? `<span class="mx-1">·</span>已拒绝 ${res.rejected} 条` : ""}
+      </div>
+      <button
+        data-publish-batch="${esc(res.batch)}"
+        type="button"
+        class="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+        ${res.ready ? "" : "disabled"}
+      >
+        发布这一批
+      </button>
+    </div>`;
+
+  if (!res.items.length) {
+    box.innerHTML =
+      head +
+      `<p class="rounded-xl border border-dashed border-border px-4 py-8 text-center text-xs text-ink-muted">
+        批次 ${esc(res.batch)} 还没有候选，点上面的「生成 5 条」开始。
+      </p>`;
+    return;
+  }
+
+  const cards = res.items
+    .map((card, i) => {
+      const scores = card.scores ?? {};
+      const chips = ["demand", "gap", "feasible", "timing", "monetize"]
+        .map(
+          (k) =>
+            `<span class="rounded-md bg-surface-2 px-1.5 py-0.5 text-[11px] text-ink-secondary">${k} <b class="text-ink">${
+              scores[k] ?? "—"
+            }</b></span>`,
+        )
+        .join("");
+      const evidence = (card.evidence ?? [])
+        .map(
+          (e) =>
+            `<span class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] text-ink-muted">${esc(
+              e.board ?? "?",
+            )}:${esc(e.ref ?? "")}</span>`,
+        )
+        .join("");
+      const audience = (card.audience ?? []).join(" / ");
+
+      return `<article class="rounded-2xl border border-border bg-surface p-4">
+          <div class="flex items-start gap-3">
+            <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-2 text-xs font-semibold text-ink-secondary">${
+              i + 1
+            }</span>
+            <div class="min-w-0 flex-1">
+              <h3 class="text-sm font-semibold leading-snug text-ink">${esc(card.title ?? "(无标题)")}</h3>
+              <p class="mt-1 text-xs leading-relaxed text-ink-secondary">${esc(card.oneLiner ?? "")}</p>
+              <div class="mt-2 flex flex-wrap items-center gap-1.5">${chips}</div>
+              ${evidence ? `<div class="mt-2 flex flex-wrap gap-1.5">${evidence}</div>` : ""}
+              ${audience ? `<p class="mt-2 text-[11px] text-ink-muted">受众：${esc(audience)}</p>` : ""}
+              <div class="mt-3 flex flex-wrap items-center gap-2">
+                <input
+                  data-reason-for="${esc(card.slug ?? "")}"
+                  placeholder="拒绝原因（可留空，会喂给模型）"
+                  class="min-w-[220px] flex-1 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none placeholder:text-ink-muted focus:border-primary"
+                />
+                <button
+                  data-reject="${esc(card.slug ?? "")}"
+                  data-batch="${esc(res.batch)}"
+                  type="button"
+                  class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-red-300 hover:text-red-600 disabled:opacity-50"
+                >
+                  拒绝并补位
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>`;
+    })
+    .join("");
+
+  box.innerHTML = head + cards;
+}
+
+async function loadOppsStaging(batch?: string): Promise<void> {
+  const box = $("opps-preview");
+  if (!box) return;
+
+  const input = $("opp-gen-batch") as HTMLInputElement | null;
+  const target = (batch ?? input?.value ?? "").trim() || isoBatch();
+  if (input && !input.value) input.value = target;
+  if (!OPP_BATCH_RE.test(target)) {
+    box.innerHTML = `<p class="text-xs text-red-600">批次号形如 2026-W47（按 ISO 周）</p>`;
+    return;
+  }
+
+  try {
+    const res = await apiGet<OppStaging>(`/opps/staging?batch=${encodeURIComponent(target)}`);
+    renderOppsPreview(res);
+  } catch (e) {
+    box.innerHTML = `<p class="text-xs text-red-600">读取候选失败：${esc(msg(e))}</p>`;
+  }
+}
+
+/** 候选还没落库时的占位，避免「生成中」被误读成「什么都没有」 */
+function renderOppsPending(batch: string, note: string): void {
+  const box = $("opps-preview");
+  if (!box) return;
+  box.innerHTML = `<p class="rounded-xl border border-dashed border-border px-4 py-8 text-center text-xs text-ink-muted">
+      批次 <span class="font-mono text-ink">${esc(batch)}</span> · ${esc(note)}
+    </p>`;
+}
+
+/**
+ * 生成/补位期间轮询候选池：模型跑一条要半分钟到一分钟，5 条约 3–6 分钟。
+ *
+ * 判定完成只认「凑满 5 条」—— 生成是一条条落库的，看到 1 条就停会让人
+ * 以为这批只出了 1 条；补位时池子里本来就有 4 条，更不能按条数提前收工。
+ */
+function pollOppsStaging(batch: string, tries = 0, refill = false): void {
+  if (tries > 30) {
+    setStatus("opp-gen", "等待超时，去「运行记录」看日志", "bad");
+    return;
+  }
+  window.setTimeout(async () => {
+    try {
+      const res = await apiGet<OppStaging>(`/opps/staging?batch=${encodeURIComponent(batch)}`);
+      if (res.ready) {
+        renderOppsPreview(res);
+        setStatus("opp-gen", `批次 ${batch} 已${refill ? "补齐" : "生成"} ${res.kept} 条，可以发布了`, "ok");
+        return;
+      }
+      if (res.items.length) renderOppsPreview(res);
+      else renderOppsPending(batch, `${refill ? "补位" : "生成"}中，还没有候选落库…`);
+      setStatus("opp-gen", `${refill ? "补位" : "生成"}中，已有 ${res.kept}/${res.size} 条`, "busy");
+      pollOppsStaging(batch, tries + 1, refill);
+    } catch {
+      pollOppsStaging(batch, tries + 1, refill);
+    }
+  }, 20_000);
+}
+
+async function rejectOpp(batch: string, slug: string, btn: HTMLElement): Promise<void> {
+  const input = document.querySelector<HTMLInputElement>(`[data-reason-for="${CSS.escape(slug)}"]`);
+  const reason = input?.value.trim() ?? "";
+
+  btn.setAttribute("disabled", "true");
+  setStatus("opp-gen", `拒绝 ${esc(slug)}，正在补位…`, "busy");
+  try {
+    const res = await apiPost<{ kept: number; missing: number }>("/opps/reject", { batch, slug, reason });
+    if (res.missing > 0) {
+      setStatus("opp-gen", `已拒绝，正在补 ${res.missing} 条（约 1–2 分钟）`, "busy");
+      /* 先按拒绝后的真实状态刷一次，让人看到 4/5，再等补位回到 5/5 */
+      await loadOppsStaging(batch);
+      pollOppsStaging(batch, 0, true);
+    } else {
+      setStatus("opp-gen", "已拒绝，本批候选仍满 5 条", "ok");
+      await loadOppsStaging(batch);
+    }
+    void loadOppsJobs();
+  } catch (e) {
+    setStatus("opp-gen", `拒绝失败：${esc(msg(e))}`, "bad");
+    btn.removeAttribute("disabled");
+  }
+}
+
+async function publishOppsBatch(batch: string, btn: HTMLElement): Promise<void> {
+  if (!window.confirm(`确认发布批次 ${batch}？发布后前台机会榜会换成这一批。`)) return;
+
+  btn.setAttribute("disabled", "true");
+  setStatus("opp-gen", "正在发布…", "busy");
+  try {
+    await apiPost("/opps/publish-batch", { batch });
+    setStatus("opp-gen", "已提交发布，Actions 跑完会提交文件并自动重建站点", "ok");
+    void loadOppsJobs();
+    /* 发布是异步的：两分钟后再刷线上列表，不然看到的还是旧批次 */
+    window.setTimeout(() => {
+      void loadOppsOverview();
+      void loadOppsBatches();
+      void loadOppsItems(1, oppsGoPage);
+    }, 120_000);
+  } catch (e) {
+    setStatus("opp-gen", `发布失败：${esc(msg(e))}`, "bad");
+    btn.removeAttribute("disabled");
+  }
+}
+
 export function mountAdminOpps(): void {
-  if (oppsMounted) {
+  const goPage = (next: number): void => {
+    oppsState.page = next;
+    void loadOppsItems(next, goPage);
+  };
+  oppsGoPage = goPage;
+
+  const reload = (): void => {
     void loadOppsOverview();
+    void loadOppsBatches();
+    void loadOppsJobs();
+    void loadOppsItems(oppsState.page, goPage);
+  };
+
+  if (oppsMounted) {
+    reload();
     return;
   }
   oppsMounted = true;
 
-  let page = 1;
-  const goPage = (next: number): void => {
-    page = next;
-    void loadOppsItems(page, goPage);
-  };
+  /* 子页签：生成流程与线上列表分开，互相不干扰 */
+  document.querySelectorAll<HTMLElement>("[data-opps-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const view = btn.dataset.oppsView ?? "listed";
+      document
+        .querySelectorAll<HTMLElement>("[data-opps-view]")
+        .forEach((b) => (b.dataset.active = String(b === btn)));
+      const listed = $("opps-view-listed");
+      const generate = $("opps-view-generate");
+      if (listed) listed.hidden = view !== "listed";
+      if (generate) generate.hidden = view !== "generate";
+      /* 切到生成页签就把当前批次（默认本 ISO 周）的候选读一遍，别让人点空页面 */
+      if (view === "generate") void loadOppsStaging();
+    });
+  });
+
+  ($("opp-batch") as HTMLSelectElement | null)?.addEventListener("change", (e) => {
+    oppsState.batch = (e.currentTarget as HTMLSelectElement).value;
+    oppsState.page = 1;
+    void loadOppsItems(1, goPage);
+  });
+
+  /* 名称搜索按输入节流：每敲一个字就发一次请求没必要 */
+  ($("opp-search") as HTMLInputElement | null)?.addEventListener("input", (e) => {
+    const value = (e.currentTarget as HTMLInputElement).value.trim();
+    window.clearTimeout(oppsSearchTimer);
+    oppsSearchTimer = window.setTimeout(() => {
+      oppsState.q = value;
+      oppsState.page = 1;
+      void loadOppsItems(1, goPage);
+    }, 300);
+  });
 
   $("opp-refresh")?.addEventListener("click", () => {
-    void loadOppsOverview();
-    void loadOppsItems(page, goPage);
+    reload();
   });
 
   $("opp-publish-btn")?.addEventListener("click", async () => {
@@ -849,6 +1191,62 @@ export function mountAdminOpps(): void {
     }
   });
 
-  void loadOppsOverview();
-  void loadOppsItems(page, goPage);
+  /* ---------------- 机会生成：批次输入 → 生成 → 预览 → 拒绝 / 发布 ---------------- */
+
+  const genBatch = $("opp-gen-batch") as HTMLInputElement | null;
+  if (genBatch && !genBatch.value) genBatch.value = isoBatch();
+
+  $("opp-gen-reload")?.addEventListener("click", () => {
+    void loadOppsStaging();
+  });
+
+  $("opp-gen-btn")?.addEventListener("click", async () => {
+    const btn = $("opp-gen-btn") as HTMLButtonElement | null;
+    const batch = (genBatch?.value ?? "").trim();
+    if (!OPP_BATCH_RE.test(batch)) {
+      setStatus("opp-gen", "批次号形如 2026-W47（按 ISO 周）", "bad");
+      return;
+    }
+
+    if (btn) btn.disabled = true;
+    setStatus("opp-gen", `已提交批次 ${esc(batch)}，模型生成 5 条约 3–6 分钟…`, "busy");
+    if (genBatch) genBatch.value = batch;
+    try {
+      await apiPost("/opps/generate", { batch });
+      void loadOppsJobs();
+      renderOppsPending(batch, "模型正在生成 5 条候选，约 3–6 分钟…");
+      /* 生成在 Actions 里跑，候选池凑满 5 条就自动渲染，不用人盯着 */
+      pollOppsStaging(batch);
+    } catch (e) {
+      setStatus("opp-gen", `生成失败：${esc(msg(e))}`, "bad");
+      void loadOppsStaging(batch);
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+
+  /*
+   * 预览区每次重渲染都是新节点，事件只能委托到容器上，
+   * 否则拒绝/发布按钮点第二次就没反应了。
+   */
+  $("opps-preview")?.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+
+    const rejectBtn = target.closest<HTMLElement>("[data-reject]");
+    if (rejectBtn) {
+      const slug = rejectBtn.dataset.reject ?? "";
+      const batch = rejectBtn.dataset.batch ?? "";
+      if (slug && batch) void rejectOpp(batch, slug, rejectBtn);
+      return;
+    }
+
+    const publishBtn = target.closest<HTMLElement>("[data-publish-batch]");
+    if (publishBtn) {
+      const batch = publishBtn.dataset.publishBatch ?? "";
+      if (batch) void publishOppsBatch(batch, publishBtn);
+    }
+  });
+
+  reload();
 }

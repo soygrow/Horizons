@@ -274,13 +274,22 @@ function parse<T>(raw: string | null): T | null {
 export async function listWorkspace<T = Record<string, unknown>>(
   db: D1Database,
   board: string,
+  /**
+   * 只读某一批（机会榜用）。
+   *
+   * 不带这个参数就是整榜，调用方拿到后自己筛 —— 机会榜以前就是这么干的，
+   * 结果每 20 秒轮询都把整个候选池（含历史批次与被拒绝行、每行几 KB 卡片）
+   * 读出来只为取 5 条。0023 加了 batch 列，这里下推到 SQL，
+   * 走 idx_items_batch (board, batch, updated_at DESC)，5 行且无需排序。
+   */
+  batch?: string,
 ): Promise<BoardWorkspace<T>> {
-  const { results } = await db
-    .prepare(
-      "SELECT item_key, status, kind, name, url, cats, judge, card, updated_at FROM board_items WHERE board=? ORDER BY updated_at DESC",
-    )
-    .bind(board)
-    .all<BoardItemRow>();
+  const sql =
+    "SELECT item_key, status, kind, name, url, cats, judge, card, updated_at FROM board_items WHERE board=?" +
+    (batch ? " AND batch=?" : "") +
+    " ORDER BY updated_at DESC";
+  const stmt = db.prepare(sql);
+  const { results } = await (batch ? stmt.bind(board, batch) : stmt.bind(board)).all<BoardItemRow>();
 
   const rows = results ?? [];
   const items: T[] = [];

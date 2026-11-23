@@ -14,8 +14,9 @@
 import { Hono } from "hono";
 import type { Env } from "../env";
 import { insertJob, listJobs } from "../lib/board-jobs";
+import { listWorkspace, setItemStatus } from "../lib/board-items";
 import { dispatchWorkflow, ghConfig, latestRun, mapStatus, missingSecrets } from "../lib/github";
-import { currentVersion, listDataDays, listReleased, resolveListedVersion } from "../lib/versions";
+import { currentVersion, listDataDays, resolveListedVersion } from "../lib/versions";
 
 const MAX_PAGE_SIZE = 100;
 /**
@@ -36,6 +37,13 @@ interface Def {
   refreshWorkflow?: string;
   /** github_jobs 里的 kind 前缀，用来只取本流水线的运行记录 */
   kindPrefix?: string;
+  /**
+   * 需要统计「正在做」人数时给出计入的状态（机会榜用）。
+   *
+   * 口径按产品定义：点过「我在做」且没放弃的都算，所以是 doing + shipped；
+   * paused 是停了一阵、dropped 是放弃，都不该出现在榜单上的热度里。
+   */
+  doingStatuses?: string[];
 }
 
 function clampInt(raw: string | undefined, fallback: number, min: number, max: number): number {
@@ -93,22 +101,85 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
     });
   });
 
-  /** 当前版本的榜单明细，分页 */
+  /**
+   * 当前版本的榜单明细，分页。
+   *
+   * 机会榜多两个筛选维度：批次（card.batch）与名称。放在服务端过滤而不是
+   * 前端全量筛，是因为批次是按周累积的 —— 一年就是 260 条，每条 card 都是
+   * 整份机会详情，全量拉下来太重。
+   */
   routes.get("/items", async (c) => {
     const version = await currentVersion(c.env.DB);
     const page = clampInt(c.req.query("page"), 1, 1, Number.MAX_SAFE_INTEGER);
     const size = clampInt(c.req.query("size"), 50, 1, MAX_PAGE_SIZE);
 
+    const filterable = Boolean(def.doingStatuses);
+    const batch = filterable ? (c.req.query("batch") ?? "").trim() : "";
+    const q = filterable ? (c.req.query("q") ?? "").trim().slice(0, 60) : "";
+
     if (!version) {
       return c.json({ version: null, page, size, total: 0, pages: 1, items: [] });
     }
 
-    const [countRow, rows] = await Promise.all([
-      c.env.DB.prepare("SELECT COUNT(*) AS n FROM board_listed WHERE version = ? AND board = ?")
-        .bind(version, def.board)
+    const where = ["version = ?", "board = ?"];
+    const binds: unknown[] = [version, def.board];
+    if (filterable && batch) {
+      /* 0024：走 batch 列，别为了筛 5 条把每行的卡片都解析一次 */
+      where.push("batch = ?");
+      binds.push(batch);
+    }
+    if (filterable && q) {
+      where.push("name LIKE ?");
+      binds.push(`%${q}%`);
+    }
+    const scope = where.join(" AND ");
+
+    const [countRow, rows, doingRows] = await Promise.all([
+      c.env.DB.prepare(`SELECT COUNT(*) AS n FROM board_listed WHERE ${scope}`)
+        .bind(...binds)
         .first<{ n: number }>(),
-      listReleased(c.env.DB, def.board, version, size, (page - 1) * size),
+      c.env.DB.prepare(
+        `SELECT item_key, rank, score, tier, name, url, cats, card
+           FROM board_listed
+          WHERE ${scope}
+                   ORDER BY rank, item_key
+                   LIMIT ? OFFSET ?`,
+      )
+        .bind(...binds, size, (page - 1) * size)
+        .all<{
+          item_key: string;
+          rank: number;
+          score: number;
+          tier: string;
+          name: string;
+          url: string | null;
+          cats: string | null;
+          card: string | null;
+        }>(),
+      def.doingStatuses?.length
+        ? c.env.DB.prepare(
+            /* 必须用子查询把范围收回到本页：doers 表只增不减，全表聚合
+               是「请求只要 50 个数字，却读了整表」——翻一页扫一遍，用户多了就是上万行。
+               子查询走 idx_listed_rank 只取本页 key，外层再按 slug 点查。 */
+            `SELECT opportunity_slug AS slug, COUNT(*) AS n
+               FROM opportunity_doers
+              WHERE status IN (${def.doingStatuses.map(() => "?").join(",")})
+                AND opportunity_slug IN (
+                  SELECT item_key FROM board_listed
+                   WHERE ${scope}
+                   /* 与主查询同序同 tie-breaker：两个分页必须选出完全相同的行，
+                      否则 doing 数字会对到相邻的条目上（机会榜各批次 rank 会重复） */
+                   ORDER BY rank, item_key LIMIT ? OFFSET ?
+                )
+              GROUP BY opportunity_slug`,
+          )
+            .bind(...def.doingStatuses, ...binds, size, (page - 1) * size)
+            .all<{ slug: string; n: number }>()
+        : Promise.resolve({ results: [] as Array<{ slug: string; n: number }> }),
     ]);
+
+    const doing = new Map<string, number>();
+    for (const r of doingRows.results ?? []) doing.set(r.slug, r.n);
 
     const total = countRow?.n ?? 0;
     return c.json({
@@ -117,7 +188,9 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
       size,
       total,
       pages: Math.max(1, Math.ceil(total / size)),
-      items: rows.map((r) => ({
+      batch: batch || null,
+      q: q || null,
+      items: (rows.results ?? []).map((r) => ({
         key: r.item_key,
         rank: r.rank,
         score: r.score,
@@ -126,7 +199,39 @@ function makeRoutes(def: Def): Hono<{ Bindings: Env }> {
         url: r.url,
         cats: parseCats(r.cats),
         card: parseJson(r.card),
+        ...(def.doingStatuses ? { doing: doing.get(r.item_key) ?? 0 } : {}),
       })),
+    });
+  });
+
+  /**
+   * 机会榜的批次清单，供筛选下拉。
+   *
+   * 读 board_listed.batch 列（0024），不碰 card：分组直接沿
+   * idx_listed_batch (version, board, batch) 有序扫，不回表也不排序。
+   * 以前每行都 json_extract 一次几 KB 的卡片 —— 机会榜 5 行无感，
+   * 但这个路由是六个榜共用的，模型榜 366 行、GitHub 榜 1500 行
+   * 一旦调它就是上万次解析。
+   */
+  routes.get("/batches", async (c) => {
+    const version = await currentVersion(c.env.DB);
+    if (!version) return c.json({ version: null, batches: [] });
+
+    const { results } = await c.env.DB.prepare(
+      `SELECT batch, COUNT(*) AS n
+         FROM board_listed
+        WHERE version = ? AND board = ? AND batch IS NOT NULL
+        GROUP BY batch
+        ORDER BY batch DESC`,
+    )
+      .bind(version, def.board)
+      .all<{ batch: string | null; n: number }>();
+
+    return c.json({
+      version,
+      batches: (results ?? [])
+        .filter((r): r is { batch: string; n: number } => Boolean(r.batch))
+        .map((r) => ({ batch: r.batch, count: r.n })),
     });
   });
 
@@ -314,5 +419,197 @@ export const models = makeRoutes({
   kindPrefix: "models",
 });
 
-/** 机会榜：人工策展，发布靠 publish-opps.yml */
-export const opps = makeRoutes({ board: "opps", workflow: "publish-opps.yml" });
+/**
+ * 机会榜：按周批次生成 + 人工预览确认，发布靠 publish-opps-batch.yml。
+ *
+ * 生成走 generate-opps.yml：只写候选池（board_items），线上文件一个字不动。
+ * 所以「生成 — 预览 — 发布」三步里，前两步出任何问题都不会影响前台。
+ */
+export const opps = makeRoutes({
+  board: "opps",
+  workflow: "publish-opps.yml",
+  kindPrefix: "opps",
+  /* 这一列读 opportunity_doers：doing 在做 + shipped 已上线，paused/dropped 不算 */
+  doingStatuses: ["doing", "shipped"],
+});
+
+/* ==================== 机会榜：批次生成 / 预览 / 拒绝补位 ==================== */
+
+const OPP_BATCH_RE = /^\d{4}-W\d{2}$/;
+/** 线上每批固定 5 条 */
+const OPP_BATCH_SIZE = 5;
+const OPP_MODEL = "deepseek-v4-pro";
+
+/**
+ * 某批次的可发布条数与已拒绝条数。
+ *
+ * 一条语句出两个数：以前是两条 COUNT，每条都得把该批次的候选读一遍
+ * （`status<>'rejected'` 是不等式，索引也帮不上），一个 /staging 请求
+ * 就扫两遍。0023 之后走 idx_items_batch，只碰这 5 行。
+ */
+async function batchCounts(
+  db: D1Database,
+  batch: string,
+): Promise<{ kept: number; rejected: number }> {
+  const row = await db
+    .prepare(
+      `SELECT SUM(CASE WHEN status <> 'rejected' THEN 1 ELSE 0 END) AS kept,
+              SUM(CASE WHEN status  = 'rejected' THEN 1 ELSE 0 END) AS rejected
+         FROM board_items
+        WHERE board = 'opps' AND batch = ?`,
+    )
+    .bind(batch)
+    .first<{ kept: number | null; rejected: number | null }>();
+  return { kept: row?.kept ?? 0, rejected: row?.rejected ?? 0 };
+}
+
+/** 该批次的候选（预览页用），已拒绝的单独返回，方便页面灰显 */
+opps.get("/staging", async (c) => {
+  const batch = (c.req.query("batch") ?? "").trim();
+  if (!OPP_BATCH_RE.test(batch)) {
+    return c.json({ error: "bad_batch", detail: "批次号形如 2026-W47" }, 400);
+  }
+
+  /* batch 下推到 SQL（0023）：以前是读整个候选池再在 JS 里 filter，
+     20 秒轮询一次就是一次全池读，历史批次与被拒绝行的卡片全白读。 */
+  const ws = await listWorkspace<Record<string, unknown> & { batch?: string }>(
+    c.env.DB,
+    "opps",
+    batch,
+  );
+  const items = ws.items;
+  const counts = await batchCounts(c.env.DB, batch);
+
+  return c.json({
+    batch,
+    size: OPP_BATCH_SIZE,
+    ...counts,
+    ready: counts.kept === OPP_BATCH_SIZE,
+    items,
+  });
+});
+
+/** 生成（或补位）：派发生成流水线，产物进候选池等预览 */
+opps.post("/generate", async (c) => {
+  const cfg = ghConfig(c.env);
+  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 400);
+
+  const body = (await c.req.json().catch(() => null)) as { batch?: string } | null;
+  const batch = (body?.batch ?? "").trim();
+  if (!OPP_BATCH_RE.test(batch)) {
+    return c.json({ error: "bad_batch", detail: "批次号形如 2026-W47" }, 400);
+  }
+
+  const counts = await batchCounts(c.env.DB, batch);
+  if (counts.kept > 0) {
+    return c.json(
+      {
+        error: "batch_exists",
+        detail: `批次 ${batch} 已有 ${counts.kept} 条候选，直接在其中拒绝/发布即可`,
+        kept: counts.kept,
+      },
+      409,
+    );
+  }
+
+  try {
+    const run = await dispatchWorkflow(cfg, "generate-opps.yml", {
+      batch,
+      fill: "false",
+      reason: "",
+      exclude: "",
+      count: String(OPP_BATCH_SIZE),
+      model: OPP_MODEL,
+    });
+    await insertJob(c.env, "opps-generate", { batch }, run, null).catch(() => {});
+    return c.json({ ok: true, batch, count: OPP_BATCH_SIZE, run: run ? { id: run.id, url: run.html_url } : null });
+  } catch (e) {
+    return c.json({ error: "dispatch_failed", detail: e instanceof Error ? e.message : String(e) }, 502);
+  }
+});
+
+/**
+ * 拒绝一条：先标记，再按缺口自动补生成。
+ *
+ * 补位与生成走同一条流水线，靠 count 控制补几条 —— 连拒 2 条就补 2 条，
+ * 保证预览区始终朝 5 条收敛。
+ */
+opps.post("/reject", async (c) => {
+  const body = (await c.req.json().catch(() => null)) as {
+    batch?: string;
+    slug?: string;
+    reason?: string;
+  } | null;
+  const batch = (body?.batch ?? "").trim();
+  const slug = (body?.slug ?? "").trim();
+  if (!OPP_BATCH_RE.test(batch) || !slug) {
+    return c.json({ error: "bad_request", detail: "需要 batch 与 slug" }, 400);
+  }
+
+  const hit = await setItemStatus(c.env.DB, "opps", slug, "rejected");
+  if (!hit) return c.json({ error: "not_found", detail: `候选池里没有 ${slug}` }, 404);
+
+  const counts = await batchCounts(c.env.DB, batch);
+  const missing = Math.max(0, OPP_BATCH_SIZE - counts.kept);
+
+  let run: { id: number; url: string } | null = null;
+  const cfg = ghConfig(c.env);
+  if (missing > 0 && cfg) {
+    try {
+      const dispatched = await dispatchWorkflow(cfg, "generate-opps.yml", {
+        batch,
+        fill: "true",
+        /* 拒绝原因回传给模型，避免补上来的还是同一个毛病 */
+        reason: (body?.reason ?? "").slice(0, 300),
+        exclude: slug,
+        count: String(missing),
+        model: OPP_MODEL,
+      });
+      await insertJob(c.env, "opps-refill", { batch, missing, reason: body?.reason ?? "" }, dispatched, null).catch(
+        () => {},
+      );
+      run = dispatched ? { id: dispatched.id, url: dispatched.html_url } : null;
+    } catch (e) {
+      return c.json(
+        { ok: true, kept: counts.kept, missing, refillError: e instanceof Error ? e.message : String(e) },
+        200,
+      );
+    }
+  }
+
+  return c.json({ ok: true, kept: counts.kept, rejected: counts.rejected, missing, run });
+});
+
+/** 发布：候选正好 5 条才允许，门槛与发布脚本一致 */
+opps.post("/publish-batch", async (c) => {
+  const cfg = ghConfig(c.env);
+  if (!cfg) return c.json({ error: "github_not_configured", missing: missingSecrets(c.env) }, 400);
+
+  const body = (await c.req.json().catch(() => null)) as { batch?: string } | null;
+  const batch = (body?.batch ?? "").trim();
+  if (!OPP_BATCH_RE.test(batch)) {
+    return c.json({ error: "bad_batch", detail: "批次号形如 2026-W47" }, 400);
+  }
+
+  const counts = await batchCounts(c.env.DB, batch);
+  if (counts.kept !== OPP_BATCH_SIZE) {
+    return c.json(
+      {
+        error: "not_ready",
+        detail: `当前 ${counts.kept} 条，需要正好 ${OPP_BATCH_SIZE} 条${
+          counts.rejected ? `（已拒绝 ${counts.rejected} 条，等补位完成）` : ""
+        }`,
+        kept: counts.kept,
+      },
+      409,
+    );
+  }
+
+  try {
+    const run = await dispatchWorkflow(cfg, "publish-opps-batch.yml", { batch });
+    await insertJob(c.env, "opps-publish-batch", { batch }, run, null).catch(() => {});
+    return c.json({ ok: true, batch, run: run ? { id: run.id, url: run.html_url } : null });
+  } catch (e) {
+    return c.json({ error: "dispatch_failed", detail: e instanceof Error ? e.message : String(e) }, 502);
+  }
+});

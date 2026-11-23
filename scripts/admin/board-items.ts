@@ -103,10 +103,11 @@ export interface BoardItemInput {
 }
 
 /**
- * D1 单条语句最多 100 个绑定参数，board_items 每行 10 个（含 kind 与 updated_at）
- * → 每批 10 行 = 100 个，正好卡在上限内。
+ * D1 单条语句最多 100 个绑定参数。
+ * 0023 起每行 11 个（多了 batch），→ 每批 9 行 = 99 个，卡在上限内。
  */
-const ROWS_PER_STATEMENT = 10;
+const PARAMS_PER_ROW = 11;
+const ROWS_PER_STATEMENT = Math.floor(99 / PARAMS_PER_ROW);
 
 function openClient(): D1Client | null {
   if (!d1Configured()) return null;
@@ -116,6 +117,17 @@ function openClient(): D1Client | null {
 function jsonOrNull(value: unknown): string | null {
   if (value === undefined || value === null) return null;
   return JSON.stringify(value);
+}
+
+/**
+ * 从卡片里取批次号（0023 的 board_items.batch）。
+ *
+ * 只有机会榜的 card 带 batch；其余榜返回 null，列的默认值就是空。
+ * 提成列是为了让后台按批次查候选时不再 json_extract 整个池子。
+ */
+function batchOf(card: unknown): string | null {
+  const raw = (card as { batch?: unknown } | null | undefined)?.batch;
+  return typeof raw === "string" && raw.length > 0 ? raw : null;
 }
 
 /**
@@ -142,7 +154,7 @@ export async function syncCandidates(
   try {
     for (let i = 0; i < items.length; i += ROWS_PER_STATEMENT) {
       const chunk = items.slice(i, i + ROWS_PER_STATEMENT);
-      const rows = chunk.map(() => "(?,?,?,?,?,?,?,?,?,?)").join(",");
+      const rows = chunk.map(() => "(?,?,?,?,?,?,?,?,?,?,?)").join(",");
       const params: unknown[] = [];
 
       for (const it of chunk) {
@@ -156,12 +168,13 @@ export async function syncCandidates(
           jsonOrNull(it.cats),
           jsonOrNull(it.judge),
           jsonOrNull(it.card),
+          batchOf(it.card),
           now,
         );
       }
 
       await client.query(
-        `INSERT INTO board_items (board, item_key, kind, status, name, url, cats, judge, card, updated_at)
+        `INSERT INTO board_items (board, item_key, kind, status, name, url, cats, judge, card, batch, updated_at)
          VALUES ${rows}
          ON CONFLICT (board, item_key) DO UPDATE SET
            kind = excluded.kind,
@@ -171,6 +184,7 @@ export async function syncCandidates(
            cats = excluded.cats,
            judge = excluded.judge,
            card = excluded.card,
+           batch = excluded.batch,
            updated_at = excluded.updated_at`,
         params,
       );

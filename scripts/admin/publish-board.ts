@@ -49,6 +49,14 @@ export interface PublishRow {
    * 其余五个榜没有这个概念，恒为空。
    */
   variantOf?: string | null;
+  /**
+   * 所属批次（只有机会榜用，形如 2026-W47）。
+   *
+   * 0024 起写成 board_listed.batch 列：后台的批次下拉原来是
+   * `json_extract(card,'$.batch') + GROUP BY`，每行都要解析几 KB 的卡片；
+   * 提成列之后分组直接沿索引扫。其余五个榜留空。
+   */
+  batch?: string | null;
 }
 
 export interface PublishInput {
@@ -100,6 +108,8 @@ const LISTED_SPEC: UpsertSpec = {
     "grade",
     /* 0022：这一行是哪天采的。提成列之后，后台按数据日分组只扫索引不回表 */
     "data_day",
+    /* 0024：批次（机会榜）。批次下拉的分组不再 json_extract(card) */
+    "batch",
   ],
   conflict: ["version", "board", "item_key"],
 };
@@ -390,9 +400,11 @@ export async function publishBoard(
       {
         sql: `INSERT INTO board_listed
                 (version, board, item_key, rank, score, tier, name, url, cats, card, variant_of,
-                 stars, forks, language, description, pushed_at, last_crawled_at, grade, data_day)
+                 stars, forks, language, description, pushed_at, last_crawled_at, grade, data_day,
+                 batch)
               SELECT ?, board, item_key, rank, score, tier, name, url, cats, card, variant_of,
-                 stars, forks, language, description, pushed_at, last_crawled_at, grade, data_day
+                 stars, forks, language, description, pushed_at, last_crawled_at, grade, data_day,
+                 batch
               FROM board_listed WHERE version = ? AND board != ?
               ON CONFLICT (version, board, item_key) DO NOTHING`,
         params: [version, currentVersion, board],
@@ -429,6 +441,7 @@ export async function publishBoard(
     r.variantOf ?? null,
     ...cardColumns(board, r.card),
     dataDayOf(r.card),
+    r.batch ?? null,
   ]);
   await client.batch(
     chunkForSpec(LISTED_SPEC, cardRows, client.statementByteLimit).map((part) => buildUpsert(LISTED_SPEC, part)),
@@ -742,6 +755,7 @@ export async function patchBoard(client: D1Client, input: PatchInput): Promise<P
       r.variantOf ?? null,
       ...cardColumns(board, r.card),
       dataDayOf(r.card),
+      r.batch ?? null,
     ]);
     await client.batch(
       chunkForSpec(LISTED_SPEC, cardRows, client.statementByteLimit).map((part) =>

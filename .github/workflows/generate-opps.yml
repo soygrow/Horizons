@@ -1,0 +1,123 @@
+name: 机会榜生成
+
+# 后台「机会生成」页签的落点。
+#
+# 只写候选池（D1 board_items + content/opportunities-staging.json），
+# **不碰** content/opportunities.json，所以线上榜单不会有任何变化。
+# 发布是另一条流水线（publish-opps-batch.yml），必须人工再点一次。
+#
+# 需要的仓库 Secrets：
+#   DEEPSEEK_API_KEY        生成正文与证据引用
+#   CLOUDFLARE_API_TOKEN    还原四个榜单基线 + 写候选池
+#   CLOUDFLARE_ACCOUNT_ID
+#   D1_DATABASE_ID
+on:
+  workflow_dispatch:
+    inputs:
+      batch:
+        description: "批次号（YYYY-Www，例：2026-W47）"
+        required: true
+      fill:
+        description: "补位模式（拒绝某条后只补 1 条）"
+        type: boolean
+        default: false
+      reason:
+        description: "拒绝原因（补位时喂给模型，留空=不传）"
+        required: false
+        default: ""
+      exclude:
+        description: "额外避开的 slug（逗号分隔，可留空）"
+        required: false
+        default: ""
+      count:
+        description: "本次生成条数（补位时=被拒条数）"
+        required: false
+        default: ""
+      model:
+        description: "模型"
+        required: false
+        default: "deepseek-v4-pro"
+      job_id:
+        description: "后台任务 ID（仅回显，便于对日志）"
+        required: false
+        default: ""
+
+# 与发布流水线共用一个 group：两边都会写 opportunities-staging.json，
+# 并行时会互相覆盖。
+concurrency:
+  group: opps-staging
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 记录后台任务号
+        if: inputs.job_id != ''
+        run: echo "::notice::后台任务 job_id=${{ inputs.job_id }}"
+
+      # 四个榜单文件都在 .gitignore 里，checkout 下来是空的。
+      # 不先还原，生成脚本会拿到「0 条素材」，模型只能凭空编。
+      - name: 还原榜单基线
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: |
+          pnpm exec tsx scripts/admin/hydrate-trends.ts
+          pnpm exec tsx scripts/admin/hydrate-tools.ts
+          pnpm exec tsx scripts/admin/hydrate-github.ts
+          pnpm exec tsx scripts/admin/hydrate-models.ts
+
+      - name: 生成机会
+        env:
+          OPPS_BATCH: ${{ inputs.batch }}
+          OPPS_FILL: ${{ inputs.fill }}
+          OPPS_REASON: ${{ inputs.reason }}
+          OPPS_EXCLUDE: ${{ inputs.exclude }}
+          OPPS_COUNT: ${{ inputs.count }}
+          OPPS_MODEL: ${{ inputs.model }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          LLM_TIMEOUT_MS: "300000"
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: pnpm exec tsx scripts/fetch/opportunity/generate.ts
+
+      - name: 提交预览留档
+        run: |
+          git config user.name "horizons-bot"
+          git config user.email "bot@horizons.tools"
+          git add content/opportunities-staging.json
+          if git diff --cached --quiet; then
+            echo "::notice::没有新的候选，未产生提交"
+            exit 0
+          fi
+          n=$(node -e "const s=require('./content/opportunities-staging.json');const b=Object.keys(s.batches).find(k=>k==='${{ inputs.batch }}');console.log(b?s.batches[b].items.length:0)")
+          git commit -m "chore(opps): 生成批次 ${{ inputs.batch }} 候选（${n} 条，待预览）"
+          if ! git push; then
+            echo "::warning::push 被拒，rebase 后重试"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}"
+            git push
+          fi
+          echo "::notice::批次 ${{ inputs.batch }} 已生成 ${n} 条候选，去后台预览"

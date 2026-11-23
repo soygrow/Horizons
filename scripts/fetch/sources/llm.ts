@@ -25,17 +25,22 @@ function retryable(e: unknown): boolean {
   return /DeepSeek 请求失败 (429|5\d\d)/.test(e.message);
 }
 
+/**
+ * model 默认 deepseek-chat（服务端别名，现在指向 flash，足够描述/分类这种活）。
+ * 机会榜要长文推理 + 长 JSON 输出，会显式传 deepseek-v4-pro。
+ */
 export async function chatJSON<T>(
   system: string,
   user: string,
   maxTokens = 4000,
   temperature = 0.4,
+  model = process.env.LLM_MODEL || "deepseek-chat",
 ): Promise<T> {
   const key = process.env.DEEPSEEK_API_KEY;
   if (!key) throw new Error("未配置 DEEPSEEK_API_KEY");
 
   const body = JSON.stringify({
-    model: "deepseek-chat",
+    model,
     messages: [
       { role: "system", content: system },
       { role: "user", content: user },
