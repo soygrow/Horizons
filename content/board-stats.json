@@ -1,20 +1,30 @@
 {
-  "generatedAt": "2026-11-22T04:46:39.258Z",
+  "generatedAt": "2026-11-24T11:58:34.422Z",
   "boards": {
     "tools": {
-      "total": 203,
-      "updatedAt": "2026-11-18T06:11:47.643Z",
+      "total": 225,
+      "updatedAt": "2026-11-24T11:58:33.147Z",
       "source": "content/tools-stats.json"
+    },
+    "opps": {
+      "total": 10,
+      "updatedAt": "2026-11-24T06:39:18",
+      "source": "content/opportunities.json"
+    },
+    "trends": {
+      "total": 487,
+      "updatedAt": "2026-11-20T07:14:19",
+      "source": "d1:board_stats"
+    },
+    "models": {
+      "total": 370,
+      "updatedAt": "2026-11-21T10:46:15",
+      "source": "d1:board_stats"
     },
     "github": {
       "total": 1505,
-      "updatedAt": "2026-11-22T04:45:46.251Z",
-      "source": "content/github.json"
-    },
-    "opps": {
-      "total": 5,
-      "updatedAt": "2026-10-30",
-      "source": "content/opportunities.json"
+      "updatedAt": "2026-11-21T10:46:15",
+      "source": "d1:board_stats"
     }
   }
 }
