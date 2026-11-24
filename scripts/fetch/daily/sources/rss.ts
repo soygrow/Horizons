@@ -43,7 +43,8 @@ export function parseFeed(xml: string): ParsedEntry[] {
     const rawLink = tag(block, ["link"]) || atomLink(block);
     const id = tag(block, ["guid", "id"]) || rawLink;
     const date = tag(block, ["pubDate", "published", "updated", "dc:date"]);
-    const summary = tag(block, ["description", "summary", "content:encoded", "content"]).slice(0, 400);
+    // content:encoded 通常更接近全文，信息密度高于 description 的手写摘要；优先取它
+    const summary = tag(block, ["content:encoded", "content", "description", "summary"]).slice(0, 400);
     if (!title || !rawLink) continue;
     out.push({ title, link: rawLink, id, publishedAt: toIso(date), summary });
   }

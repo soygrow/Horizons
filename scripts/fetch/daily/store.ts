@@ -4,7 +4,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { dailyConfig } from "./config";
-import type { Digest, RawDigest, StarState } from "./types";
+import type { Digest, RawDigest, SourceReport, StarState } from "./types";
 
 const ROOT = path.resolve(process.cwd(), "content/digest");
 export const RAW_DIR = path.join(ROOT, "raw");
@@ -120,4 +120,44 @@ export function recordStarSample(
     state[repo] = history;
   }
   return prev === null ? 0 : Math.max(0, stars - prev);
+}
+
+/* ---------- 跨天源健康索引 ---------- */
+
+/** source -> 连续失败次数，用于区分「临时抽风」还是「源已经死了」 */
+export interface SourceHealth {
+  [key: string]: { consecutiveFailures: number; lastOkAt: string | null; lastError: string | null };
+}
+
+export const SOURCE_HEALTH_PATH = path.join(STATE_DIR, "source-health.json");
+
+export function loadSourceHealth(): SourceHealth {
+  try {
+    return JSON.parse(fs.readFileSync(SOURCE_HEALTH_PATH, "utf-8")) as SourceHealth;
+  } catch {
+    return {};
+  }
+}
+
+export function saveSourceHealth(health: SourceHealth): void {
+  writeJsonAtomic(SOURCE_HEALTH_PATH, health);
+}
+
+/** 用当次采集报告更新健康状态：ok 清零、fail 累加 */
+export function recordSourceHealth(
+  reports: SourceReport[],
+  health: SourceHealth,
+  at: string,
+): SourceHealth {
+  for (const r of reports) {
+    const prev = health[r.source] ?? { consecutiveFailures: 0, lastOkAt: null, lastError: null };
+    health[r.source] = r.ok
+      ? { consecutiveFailures: 0, lastOkAt: at, lastError: null }
+      : {
+          consecutiveFailures: prev.consecutiveFailures + 1,
+          lastOkAt: prev.lastOkAt,
+          lastError: r.error ?? "未知错误",
+        };
+  }
+  return health;
 }

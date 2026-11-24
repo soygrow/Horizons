@@ -3,6 +3,7 @@
 
 import { dailyConfig } from "./config";
 import type { Allocation, Scored } from "./score";
+import type { BodyResult } from "./sources/body";
 import type { Digest, DigestItem, DigestSource, ModuleKey, RawDigest, RawItem } from "./types";
 
 const FEED_LABEL: Record<string, string> = {
@@ -104,6 +105,17 @@ function excerpt(text: string, max: number): string {
   return `${(space > max * 0.6 ? cut.slice(0, space) : cut).trim()}…`;
 }
 
+/** 从正文提炼导语：优先在句末截断，避免半截句子 */
+function leadFromBody(text: string, max: number): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max);
+  const sentence = cut.lastIndexOf(". ");
+  const space = cut.lastIndexOf(" ");
+  const at = sentence > max * 0.5 ? sentence + 1 : space > max * 0.6 ? space : max;
+  return `${clean.slice(0, at).replace(/[。.；;!！\s]+$/, "").trim()}…`;
+}
+
 function compact(n: number): string {
   if (n >= 10_000) return `${(n / 10_000).toFixed(1)} 万`;
   if (n >= 1_000) return Math.round(n).toLocaleString("en-US");
@@ -118,8 +130,8 @@ function domainOf(url: string): string {
   }
 }
 
-/** 事实摘要：只搬运 raw 里存在的数字 */
-function summarize(item: RawItem, ev: Scored["ev"]): string {
+/** 事实摘要：优先用抓到的正文导语，兜底搬运 raw 里存在的数字 */
+function summarize(item: RawItem, ev: Scored["ev"], content?: string | null): string {
   const parts: string[] = [];
   const extra = ev.items.length - 1;
 
@@ -150,7 +162,10 @@ function summarize(item: RawItem, ev: Scored["ev"]): string {
     const feed = typeof item.raw.feed === "string" ? item.raw.feed : "";
     const published = beijingTime(item.publishedAt);
     const summary = typeof item.raw.summary === "string" ? item.raw.summary : "";
-    if (summary) {
+    if (content) {
+      // 抓到正文就用原文导语，信息密度高于 feed 摘要残片
+      parts.push(`${FEED_LABEL[feed] ?? feed ?? "RSS"} ${published} 原文：${leadFromBody(content, 140)}`);
+    } else if (summary) {
       parts.push(
         `${FEED_LABEL[feed] ?? feed ?? "RSS"} ${published} 的原文摘要：${excerpt(summary, 120)}`,
       );
@@ -163,7 +178,7 @@ function summarize(item: RawItem, ev: Scored["ev"]): string {
   return parts.join("；").replace(/；$/, "") + "。";
 }
 
-function toDigestItem(s: Scored, moduleKey: ModuleKey): DigestItem {
+function toDigestItem(s: Scored, moduleKey: ModuleKey, content?: string | null): DigestItem {
   const primary = s.ev.items[0];
   const angle = angleOf(primary);
   const reason =
@@ -172,7 +187,7 @@ function toDigestItem(s: Scored, moduleKey: ModuleKey): DigestItem {
   return {
     id: s.ev.id,
     title: primary.title,
-    summary: summarize(primary, s.ev),
+    summary: summarize(primary, s.ev, content),
     why: `${reason}${tail}`,
     category: s.category,
     evidence: s.evidence,
@@ -187,6 +202,7 @@ function toDigestItem(s: Scored, moduleKey: ModuleKey): DigestItem {
       ...(primary.signals.starDelta !== undefined ? { starDelta: primary.signals.starDelta } : {}),
       ...(primary.signals.starPerDay !== undefined ? { starPerDay: primary.signals.starPerDay } : {}),
     },
+    ...(content ? { content: content.slice(0, 2000) } : {}),
     ...(s.missing ? { missing: s.missing } : {}),
   };
 }
@@ -197,10 +213,16 @@ export function composeDigest(input: {
   totalEvents: number;
   allocation: Allocation;
   generatedAt?: string;
+  /** 事件 id → 抓到的正文（可缺省，缺省时摘要退回 feed 残片） */
+  bodies?: Map<string, BodyResult>;
 }): Digest {
   const modules = input.allocation.modules.map((m) => ({
     key: m.key,
-    items: m.items.map((s) => toDigestItem(s, m.key)),
+    items: m.items.map((s) => {
+      const body = input.bodies?.get(s.ev.id);
+      const content = body?.status === "ok" && body.text ? body.text : null;
+      return toDigestItem(s, m.key, content);
+    }),
   }));
 
   const published = modules.reduce((n, m) => n + m.items.length, 0);

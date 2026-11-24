@@ -99,8 +99,13 @@ export const dailyConfig = {
     { name: "aws-ml", url: "https://aws.amazon.com/blogs/machine-learning/feed/", firstHand: true },
     { name: "nvidia-blog", url: "https://blogs.nvidia.com/feed/", firstHand: true },
 
-    // 中文源：国产模型与国内生态，英文源基本不覆盖
-    { name: "qbitai", url: "https://www.qbitai.com/feed" },
+    // 中文源：国产模型与国内生态，英文源基本不覆盖。
+    // 全是转述媒体，不设 firstHand；authority 与官方博客拉开——
+    // InfoQ 技术社区信息密度高，IT之家快讯快但转述多（降权 + 截断）。
+    { name: "qbitai", url: "https://www.qbitai.com/feed", authority: 0.85 },
+    { name: "infoq-cn", url: "https://www.infoq.cn/feed", authority: 0.9 },
+    { name: "leiphone", url: "https://www.leiphone.com/feed", authority: 0.85 },
+    { name: "ithome", url: "https://www.ithome.com/rss/", authority: 0.8, maxItems: 40 },
 
     /*
      * 社区 / 首发榜。

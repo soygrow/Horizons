@@ -30,6 +30,8 @@ export interface RawItem {
   matched: string[];
   /** 精简后的原始载荷，便于人工复核 */
   raw: Record<string, unknown>;
+  /** 命中赞助/软广标志时为 true（保守判定，只有媒体源会命中），评分时降权 */
+  promotional?: boolean;
 }
 
 export interface SourceReport {
@@ -92,6 +94,8 @@ export interface DigestItem {
   title: string;
   summary: string;
   why: string;
+  /** 抓取原文正文（去标签后的纯文本，截断存储），供摘要核实；抓取失败时为 undefined */
+  content?: string;
   category: string;
   evidence: EvidenceLevel;
   /** 内部保留，前端只映射热度档位 */

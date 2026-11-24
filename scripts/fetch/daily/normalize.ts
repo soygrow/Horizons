@@ -150,6 +150,24 @@ export function primaryCategory(text: string): string {
   return matchKeywords(text)[0] ?? "other";
 }
 
+/**
+ * PR / 软广 / 赞助内容标记。
+ *
+ * 媒体源 feed 里混着赞助公告与内容营销稿，标题往往还带 launch，会以
+ * product_launch 混进榜单。只收「非常明确的标志」，宁可漏不可错——
+ * 不放 "press release"，因为官方博客的正常发布也用这个词。
+ */
+const PR_MARKERS = [
+  "sponsored", "advertorial", "advertisement", "promoted",
+  "partner content", "presented by", "brought to you by", "paid post",
+  "in partnership with", "广告", "推广", "软文", "赞助",
+];
+
+export function isPromotional(text: string): boolean {
+  const lower = text.toLowerCase();
+  return PR_MARKERS.some((m) => lower.includes(m));
+}
+
 export function toIso(value: string | number | null | undefined): string | null {
   if (value === null || value === undefined || value === "") return null;
   const ms = typeof value === "number" ? value * 1000 : Date.parse(value);
@@ -211,6 +229,7 @@ export function makeItem(input: {
     firstHand: input.firstHand ?? false,
     matched,
     raw: input.raw ?? {},
+    promotional: isPromotional(`${title} ${input.categoryText ?? ""} ${input.url}`),
   };
 }
 

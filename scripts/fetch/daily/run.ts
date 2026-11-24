@@ -5,11 +5,14 @@ import { collectRss } from "./sources/rss";
 import { normalizeScores, windowStartIso } from "./normalize";
 import {
   loadSeenIndex,
+  loadSourceHealth,
   loadStarState,
   pruneSeenIndex,
+  recordSourceHealth,
   recordStarSample,
   saveRawDigest,
   saveSeenIndex,
+  saveSourceHealth,
   saveStarState,
 } from "./store";
 import type { RawDigest, RawItem, SourceReport } from "./types";
@@ -189,6 +192,16 @@ async function main(): Promise<void> {
     }
   }
   saveSeenIndex(pruneSeenIndex(seenIndex));
+
+  // 源健康闭环：用当次采集报告更新跨天「连续失败」计数，连续失败 ≥3 次的源喊出来
+  const health = recordSourceHealth(sources, loadSourceHealth(), nowIso);
+  saveSourceHealth(health);
+  const deadSources = Object.entries(health)
+    .filter(([, h]) => h.consecutiveFailures >= 3)
+    .map(([name]) => name);
+  if (deadSources.length > 0) {
+    console.warn(`\n⚠ ${deadSources.length} 个源已连续失败 ≥3 次，建议下架或修复：${deadSources.join("、")}`);
+  }
 
   const okSources = sources.filter((s) => s.ok).length;
   const digest: RawDigest = {

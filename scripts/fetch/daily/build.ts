@@ -4,6 +4,7 @@ import { composeDigest } from "./compose";
 import { todayInTimezone } from "./config";
 import { mergeEvents } from "./events";
 import { allocate, isBusiness, scoreEvent, type Allocation, type Scored } from "./score";
+import { fetchBodies } from "./sources/body";
 import { loadRawDigest, saveDigest } from "./store";
 import type { ModuleKey } from "./types";
 
@@ -57,7 +58,7 @@ function printDropped(scored: Scored[], allocation: Allocation, top: number): vo
   });
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const date = argValue("--date") ?? todayInTimezone();
   const dry = process.argv.includes("--dry");
 
@@ -108,7 +109,20 @@ function main(): void {
     }
   }
 
-  const digest = composeDigest({ date, raw, totalEvents: events.length, allocation });
+  // 正文抓取：只抓入选的 RSS 条目（github 用 description、HN 是讨论页不抓），
+  // 抓不到静默降级，成稿退回 feed 摘要；--dry 不联网。
+  const targets = allocation.modules.flatMap((m) =>
+    m.items
+      .filter((s) => s.ev.items[0].source === "rss")
+      .map((s) => ({ id: s.ev.id, url: s.ev.items[0].url })),
+  );
+  const bodies = dry ? undefined : await fetchBodies(targets);
+  if (bodies && targets.length > 0) {
+    const fetched = [...bodies.values()].filter((b) => b.status === "ok").length;
+    console.log(`\n正文抓取：${fetched}/${targets.length} 条成功（失败静默降级）`);
+  }
+
+  const digest = composeDigest({ date, raw, totalEvents: events.length, allocation, bodies });
 
   // 发布前闸门：不通过不拦截，但要打印出来，人工确认后才能上线
   const warnings: string[] = [];
@@ -156,4 +170,7 @@ function main(): void {
   );
 }
 
-main();
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

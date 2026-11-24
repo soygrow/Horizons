@@ -196,7 +196,9 @@ export function scoreEvent(ev: Event, rank: number): Scored {
 
   // 影响：源内归一化后的强度（0–100）+ 分类权重，上限 40，再乘源权威度
   const baseImpact = Math.min(40, Math.round((rank / 100) * 28) + (CATEGORY_WEIGHT[category] ?? 3));
-  const impact = Math.round(baseImpact * authorityOf(primary));
+  // PR / 软广降权：花钱买的位置不代表今天的重要性
+  const prFactor = primary.promotional ? 0.6 : 1;
+  const impact = Math.round(baseImpact * authorityOf(primary) * prFactor);
 
   /**
    * 新颖（0–25）：按新鲜度严格递减，不再给 15 的底分。
