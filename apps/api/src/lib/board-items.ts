@@ -33,13 +33,18 @@ export type ItemStatus =
   | "discarded";
 
 /**
- * 富化超时：超过 10 分钟还停在 enriching 就判失败。
+ * 富化超时：超过 60 分钟还停在 enriching 就判失败。
+ *
+ * 原来写的是 10 分钟，但一次富化是「并发 3、单批十几条、预算 45 分钟」——
+ * 排在后面的条目光是排队就超过 10 分钟，还在跑就被后台改写成「富化失败」，
+ * 而脚本其实正在富化它（tiden.ai 这类条目反复显示失败就是这么来的）。
+ * 阈值必须覆盖「排队 + 45 分钟预算」，否则判死的一定是假失败。
  *
  * 必须与 scripts/admin/board-items.ts 的 ENRICH_TIMEOUT_MS 保持一致 ——
  * 两边都在判（脚本跑之前、后台读之前），口径不同就会出现
  * 「后台显示失败、脚本还在跑」这种自相矛盾的状态。
  */
-export const ENRICH_TIMEOUT_MS = 10 * 60 * 1000;
+export const ENRICH_TIMEOUT_MS = 60 * 60 * 1000;
 
 /**
  * 把卡住的「富化中」标记为失败，返回改动行数。
