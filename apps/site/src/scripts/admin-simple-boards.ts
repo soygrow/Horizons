@@ -952,6 +952,7 @@ interface OppStaging {
   size: number;
   kept: number;
   rejected: number;
+  discarded: number;
   ready: boolean;
   items: OppCard[];
 }
@@ -979,22 +980,39 @@ function renderOppsPreview(res: OppStaging): void {
         <span class="mx-1">·</span>
         <span class="${res.ready ? "font-medium text-emerald-600" : "font-medium text-amber-600"}">${res.kept}/${res.size} 条可发布</span>
         ${res.rejected ? `<span class="mx-1">·</span>已拒绝 ${res.rejected} 条` : ""}
+        ${res.discarded ? `<span class="mx-1">·</span><span class="font-medium text-red-600">已废弃 ${res.discarded} 条</span>` : ""}
       </div>
-      <button
-        data-publish-batch="${esc(res.batch)}"
-        type="button"
-        class="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
-        ${res.ready ? "" : "disabled"}
-      >
-        发布这一批
-      </button>
+      <div class="flex items-center gap-2">
+        ${
+          res.kept > 0
+            ? `<button
+                data-discard-batch="${esc(res.batch)}"
+                type="button"
+                class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-red-300 hover:text-red-600"
+              >
+                废弃这一批
+              </button>`
+            : ""
+        }
+        <button
+          data-publish-batch="${esc(res.batch)}"
+          type="button"
+          class="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+          ${res.ready ? "" : "disabled"}
+        >
+          发布这一批
+        </button>
+      </div>
     </div>`;
 
   if (!res.items.length) {
+    const note = res.discarded
+      ? `批次 ${esc(res.batch)} 已废弃，这些候选不会再发布。想重出候选，点上面的「生成 5 条」。`
+      : `批次 ${esc(res.batch)} 还没有候选，点上面的「生成 5 条」开始。`;
     box.innerHTML =
       head +
       `<p class="rounded-xl border border-dashed border-border px-4 py-8 text-center text-xs text-ink-muted">
-        批次 ${esc(res.batch)} 还没有候选，点上面的「生成 5 条」开始。
+        ${note}
       </p>`;
     return;
   }
@@ -1148,6 +1166,23 @@ async function rejectOpp(batch: string, slug: string, btn: HTMLElement): Promise
   }
 }
 
+async function discardOppsBatch(batch: string, btn: HTMLElement): Promise<void> {
+  if (!window.confirm(`确认废弃批次 ${batch}？废弃后这批所有候选都不会发布，之后可重新「生成 5 条」。`)) {
+    return;
+  }
+
+  btn.setAttribute("disabled", "true");
+  setStatus("opp-gen", `正在废弃批次 ${esc(batch)}…`, "busy");
+  try {
+    await apiPost("/opps/discard", { batch });
+    setStatus("opp-gen", `已废弃批次 ${esc(batch)}，可重新「生成 5 条」`, "ok");
+    await loadOppsStaging(batch);
+  } catch (e) {
+    setStatus("opp-gen", `废弃失败：${esc(msg(e))}`, "bad");
+    btn.removeAttribute("disabled");
+  }
+}
+
 async function publishOppsBatch(batch: string, btn: HTMLElement): Promise<void> {
   if (!window.confirm(`确认发布批次 ${batch}？发布后前台机会榜会换成这一批。`)) return;
 
@@ -1291,6 +1326,13 @@ export function mountAdminOpps(): void {
       const slug = rejectBtn.dataset.reject ?? "";
       const batch = rejectBtn.dataset.batch ?? "";
       if (slug && batch) void rejectOpp(batch, slug, rejectBtn);
+      return;
+    }
+
+    const discardBtn = target.closest<HTMLElement>("[data-discard-batch]");
+    if (discardBtn) {
+      const batch = discardBtn.dataset.discardBatch ?? "";
+      if (batch) void discardOppsBatch(batch, discardBtn);
       return;
     }
 

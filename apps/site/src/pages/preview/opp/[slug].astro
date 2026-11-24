@@ -93,7 +93,7 @@ async function loadStaging(): Promise<OpportunityDetail[] | null> {
     ? await db
         .prepare(
           `SELECT card FROM board_items
-            WHERE board = 'opps' AND batch = ? AND status <> 'rejected'`,
+            WHERE board = 'opps' AND batch = ? AND status NOT IN ('rejected', 'discarded')`,
         )
         .bind(batchKey)
         .all<CardRow>()

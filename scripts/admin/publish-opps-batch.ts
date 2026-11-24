@@ -53,18 +53,21 @@ async function main(): Promise<void> {
   if (!fs.existsSync(OPPS_PATH)) throw new Error(`找不到 ${OPPS_PATH}`);
   const file = JSON.parse(fs.readFileSync(OPPS_PATH, "utf8")) as OpportunityFile;
 
-  /* 候选池是唯一来源：拒绝过的（status=rejected）不参与发布 */
-  const candidates = (await listCandidates<OpportunityRecord>("opps")).filter(
-    (c) => c.card?.batch === batch && c.status !== "rejected",
-  );
+  /* 候选池是唯一来源：拒绝过的（status=rejected）与整批废弃的（discarded）都不参与发布 */
+  const pool = await listCandidates<OpportunityRecord>("opps");
+  const inBatch = pool.filter((c) => c.card?.batch === batch);
+  const candidates = inBatch.filter((c) => c.status !== "rejected" && c.status !== "discarded");
+  const rejected = inBatch.filter((c) => c.status === "rejected").length;
+  const discarded = inBatch.filter((c) => c.status === "discarded").length;
 
   if (candidates.length !== BATCH_SIZE) {
-    const rejected = (await listCandidates<OpportunityRecord>("opps")).filter(
-      (c) => c.card?.batch === batch && c.status === "rejected",
-    ).length;
     throw new Error(
       `批次 ${batch} 当前可发布 ${candidates.length} 条，要求正好 ${BATCH_SIZE} 条` +
-        (rejected ? `（另有 ${rejected} 条已拒绝，需要先补位）` : "（候选没生成全？）"),
+        (discarded
+          ? `（该批次已废弃 ${discarded} 条，不能发布）`
+          : rejected
+            ? `（另有 ${rejected} 条已拒绝，需要先补位）`
+            : "（候选没生成全？）"),
     );
   }
 

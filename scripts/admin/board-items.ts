@@ -32,7 +32,8 @@ export type ItemStatus =
   | "publishing"
   | "publish_failed"
   | "published"
-  | "rejected";
+  | "rejected"
+  | "discarded";
 
 /**
  * 条目来源：新增 or 线上更新。

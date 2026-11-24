@@ -441,26 +441,32 @@ const OPP_BATCH_SIZE = 5;
 const OPP_MODEL = "deepseek-v4-pro";
 
 /**
- * 某批次的可发布条数与已拒绝条数。
+ * 某批次的可发布条数、已拒绝条数、已废弃条数。
  *
- * 一条语句出两个数：以前是两条 COUNT，每条都得把该批次的候选读一遍
+ * 一条语句出三个数：以前是两条 COUNT，每条都得把该批次的候选读一遍
  * （`status<>'rejected'` 是不等式，索引也帮不上），一个 /staging 请求
  * 就扫两遍。0023 之后走 idx_items_batch，只碰这 5 行。
+ * kept 只算「活着可发布」的：拒绝与整批废弃都不算。
  */
 async function batchCounts(
   db: D1Database,
   batch: string,
-): Promise<{ kept: number; rejected: number }> {
+): Promise<{ kept: number; rejected: number; discarded: number }> {
   const row = await db
     .prepare(
-      `SELECT SUM(CASE WHEN status <> 'rejected' THEN 1 ELSE 0 END) AS kept,
-              SUM(CASE WHEN status  = 'rejected' THEN 1 ELSE 0 END) AS rejected
+      `SELECT SUM(CASE WHEN status NOT IN ('rejected','discarded') THEN 1 ELSE 0 END) AS kept,
+              SUM(CASE WHEN status  = 'rejected' THEN 1 ELSE 0 END) AS rejected,
+              SUM(CASE WHEN status  = 'discarded' THEN 1 ELSE 0 END) AS discarded
          FROM board_items
         WHERE board = 'opps' AND batch = ?`,
     )
     .bind(batch)
-    .first<{ kept: number | null; rejected: number | null }>();
-  return { kept: row?.kept ?? 0, rejected: row?.rejected ?? 0 };
+    .first<{ kept: number | null; rejected: number | null; discarded: number | null }>();
+  return {
+    kept: row?.kept ?? 0,
+    rejected: row?.rejected ?? 0,
+    discarded: row?.discarded ?? 0,
+  };
 }
 
 /** 该批次的候选（预览页用），已拒绝的单独返回，方便页面灰显 */
@@ -489,6 +495,31 @@ opps.get("/staging", async (c) => {
   });
 });
 
+/**
+ * 废弃整批：把该批次所有「还活着」的候选（连同已拒绝的）标记为 discarded。
+ * discarded 不参与发布、不进预览，也不计 kept —— /generate 判断 kept>0 就拦，
+ * 所以废弃后同批次可以重新生成。
+ * 已 published 的行不动：它们是发布后的历史记录，不在候选池语义内。
+ */
+opps.post("/discard", async (c) => {
+  const body = (await c.req.json().catch(() => null)) as { batch?: string };
+  const batch = (body?.batch ?? "").trim();
+  if (!OPP_BATCH_RE.test(batch)) {
+    return c.json({ error: "bad_batch", detail: `批次号形如 2026-W47，收到「${batch}」` }, 400);
+  }
+
+  const res = await c.env.DB.prepare(
+    "UPDATE board_items SET status='discarded', updated_at=? " +
+      "WHERE board='opps' AND batch=? AND status NOT IN ('published','discarded')",
+  )
+    .bind(Date.now(), batch)
+    .run();
+  const changed = res.meta?.changes ?? 0;
+
+  const counts = await batchCounts(c.env.DB, batch);
+  return c.json({ ok: true, batch, changed, ...counts });
+});
+
 /** 生成（或补位）：派发生成流水线，产物进候选池等预览 */
 opps.post("/generate", async (c) => {
   const cfg = ghConfig(c.env);
@@ -510,6 +541,15 @@ opps.post("/generate", async (c) => {
       },
       409,
     );
+  }
+
+  /* 废弃/已拒批次重新生成：先清掉旧行，避免新旧候选混在同一批次里 */
+  if (counts.discarded > 0 || counts.rejected > 0) {
+    await c.env.DB.prepare(
+      "DELETE FROM board_items WHERE board='opps' AND batch=? AND status IN ('rejected','discarded')",
+    )
+      .bind(batch)
+      .run();
   }
 
   try {

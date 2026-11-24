@@ -29,7 +29,8 @@ export type ItemStatus =
   | "publishing"
   | "publish_failed"
   | "published"
-  | "rejected";
+  | "rejected"
+  | "discarded";
 
 /**
  * 富化超时：超过 10 分钟还停在 enriching 就判失败。
@@ -302,6 +303,8 @@ export async function listWorkspace<T = Record<string, unknown>>(
       rejected.push(row.item_key);
       continue;
     }
+    // 整批废弃的候选：既非可发布、也非「已拒绝单条」，从候选池视角直接隐藏
+    if (row.status === "discarded") continue;
     const card = parse<T>(row.card);
     if (card && typeof card === "object") {
       // status 列才是唯一真相：卡片里的 stage 是采集时的旧值，必须覆盖掉，
