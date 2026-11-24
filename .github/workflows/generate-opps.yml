@@ -46,7 +46,7 @@ on:
 # 并行时会互相覆盖。
 concurrency:
   group: opps-staging
-  cancel-in-progress: false
+  queue: max
 
 jobs:
   generate:

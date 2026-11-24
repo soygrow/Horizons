@@ -28,7 +28,7 @@ on:
 
 concurrency:
   group: audit-tools
-  cancel-in-progress: false
+  queue: max
 
 jobs:
   audit:
@@ -38,7 +38,11 @@ jobs:
       contents: write
 
     steps:
+      # fetch-depth: 0 —— 审计报告的推送被拒时要 rebase 到远端最新提交，
+      # shallow clone 缺共同祖先会直接 rebase 失败。
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v6
         with:
@@ -75,5 +79,26 @@ jobs:
             exit 0
           fi
           git commit -m "chore(tools): 重判已上榜条目（后台）"
-          git push
+
+          # 重判要探活几十条，期间别的 workflow / 人工推送都可能推进 main。
+          # 报告是从 D1 重算的派生文件，rebase 重试即可，不该在最后一步整步失败。
+          REF="${GITHUB_REF_NAME:-main}"
+          pushed=0
+          for i in 1 2 3; do
+            if git push origin "HEAD:${REF}"; then
+              pushed=1
+              break
+            fi
+            echo "::warning::push 被拒（第 ${i} 次），同步远端后重试"
+            git fetch --quiet origin "${REF}"
+            if ! GIT_EDITOR=true git rebase "origin/${REF}"; then
+              git checkout --theirs -- content/tools-audit.json content/tools-stats.json || true
+              git add content/tools-audit.json content/tools-stats.json
+              GIT_EDITOR=true git rebase --continue || git rebase --abort
+            fi
+            sleep $((i * 5))
+          done
+          if [ "$pushed" = "0" ]; then
+            echo "::warning::连续 3 次推送失败，审计报告未入仓；重判结果在 D1 里，后台仍可查看"
+          fi
           echo "::notice::重判完成，请回后台查看下榜清单再决定是否发布"

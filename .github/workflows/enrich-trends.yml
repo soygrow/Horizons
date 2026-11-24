@@ -22,7 +22,7 @@ on:
 # 排队等待远好过丢一批已经花过 LLM 费用的结果。
 concurrency:
   group: trends-staging
-  cancel-in-progress: false
+  queue: max
 
 jobs:
   enrich:

@@ -22,7 +22,7 @@ on:
 
 concurrency:
   group: opps-staging
-  cancel-in-progress: false
+  queue: max
 
 jobs:
   publish:

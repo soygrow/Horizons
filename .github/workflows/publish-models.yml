@@ -25,7 +25,7 @@ on:
 
 concurrency:
   group: publish-models
-  cancel-in-progress: false
+  queue: max
 
 jobs:
   publish:

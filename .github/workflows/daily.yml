@@ -35,7 +35,7 @@ on:
 
 concurrency:
   group: daily-digest
-  cancel-in-progress: false
+  queue: max
 
 jobs:
   run:

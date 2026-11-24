@@ -26,7 +26,7 @@ on:
 
 concurrency:
   group: fetch-github
-  cancel-in-progress: false
+  queue: max
 
 jobs:
   fetch:
@@ -37,7 +37,11 @@ jobs:
       contents: write
 
     steps:
+      # fetch-depth: 0 —— 候选池的推送被拒时要 rebase 到远端最新提交，
+      # shallow clone 缺共同祖先会直接 rebase 失败。
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v6
         with:

@@ -43,9 +43,13 @@ on:
         required: false
         default: ""
 
+# GitHub 默认同一 group 只留 1 个 pending：连点两次采集，排队中的那次会被顶成
+# cancelled（日志：Canceling since a higher priority waiting request for fetch-tools
+# exists，跑 14 秒就没了）。后台连点两次就是想抓两批，不能让第二批吃掉第一批。
+# queue: max 允许 100 个 pending 按 FIFO 依次跑，两次都能完整执行。
 concurrency:
   group: fetch-tools
-  cancel-in-progress: false
+  queue: max
 
 jobs:
   fetch:
@@ -55,7 +59,11 @@ jobs:
       contents: write
 
     steps:
+      # fetch-depth: 0 —— 推送被拒时要 rebase 到远端最新提交，
+      # shallow clone 缺共同祖先会直接 rebase 失败，重试就形同虚设。
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v6
         with:
@@ -123,7 +131,12 @@ jobs:
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: pnpm tsx scripts/admin/tool-stats.ts
 
-      # 候选池在 D1，仓库里不再有队列文件；只有真的抓到新条目才提交快照
+      # 候选池在 D1，仓库里不再有队列文件；只有真的抓到新条目才提交快照。
+      #
+      # 推送被拒是常态而非异常：抓取要跑十几分钟，这期间另一批采集 / daily /
+      # 人工推送都可能抢先推进 main。以前是裸 git push，被拒就整步红叉
+      # （2026-11-24 两次采集撞在一起就是这样：候选池明明已写进 D1，任务却显示失败）。
+      # 快照是从 D1 全量重算的派生文件，rebase 重试即可，不该让任务失败。
       - name: 提交概览快照
         if: steps.fetch.outputs.added != '0'
         run: |
@@ -135,4 +148,23 @@ jobs:
             exit 0
           fi
           git commit -m "chore(tools): 概览快照（候选池 +${{ steps.fetch.outputs.added }}）"
-          git push
+
+          REF="${GITHUB_REF_NAME:-main}"
+          for i in 1 2 3; do
+            if git push origin "HEAD:${REF}"; then
+              exit 0
+            fi
+            echo "::warning::push 被拒（第 ${i} 次），同步远端后重试"
+            git fetch --quiet origin "${REF}"
+            if ! GIT_EDITOR=true git rebase "origin/${REF}"; then
+              # 快照是脚本从 D1 全量重算的，冲突时保留本次这份
+              git checkout --theirs -- content/tools-stats.json || true
+              git add content/tools-stats.json
+              GIT_EDITOR=true git rebase --continue || git rebase --abort
+            fi
+            sleep $((i * 5))
+          done
+
+          # 连续 3 次被拒说明不是普通竞态（权限/分支保护），要人看一眼；
+          # 但快照数据在 D1 里，不影响条目，所以只告警不失败。
+          echo "::warning::连续 3 次推送失败，本次快照未入仓；D1 里的数据已写入，下次任务会重算"

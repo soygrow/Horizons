@@ -41,7 +41,7 @@ on:
 
 concurrency:
   group: publish-tools
-  cancel-in-progress: false
+  queue: max
 
 jobs:
   publish:
@@ -52,7 +52,11 @@ jobs:
       actions: write
 
     steps:
+      # fetch-depth: 0 —— 统计快照的推送被拒时要 rebase 到远端最新提交，
+      # shallow clone 缺共同祖先会直接 rebase 失败，重试就形同虚设。
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v6
         with:
@@ -101,7 +105,30 @@ jobs:
           else
             msg="${{ inputs.note }}"
             git commit -m "chore(tools): 刷新榜单统计${msg:+（${msg}）}"
-            git push
+
+            # 发布前后要跑几分钟，期间另一批采集 / 审计 / 人工推送都可能推进 main。
+            # 快照是从 D1 重算的派生文件，rebase 重试即可 —— 被拒不该让整次发布
+            # 在最后一步红叉，那时榜单其实已经写进 D1 了。
+            REF="${GITHUB_REF_NAME:-main}"
+            pushed=0
+            for i in 1 2 3; do
+              if git push origin "HEAD:${REF}"; then
+                pushed=1
+                break
+              fi
+              echo "::warning::push 被拒（第 ${i} 次），同步远端后重试"
+              git fetch --quiet origin "${REF}"
+              if ! GIT_EDITOR=true git rebase "origin/${REF}"; then
+                # 快照以本次这份为准
+                git checkout --theirs -- content/tools-stats.json content/board-stats.json || true
+                git add content/tools-stats.json content/board-stats.json
+                GIT_EDITOR=true git rebase --continue || git rebase --abort
+              fi
+              sleep $((i * 5))
+            done
+            if [ "$pushed" = "0" ]; then
+              echo "::warning::连续 3 次推送失败，统计快照未入仓；榜单数据在 D1 里，下次任务会重算"
+            fi
           fi
           # 是否要重建站点只看发布报告：git diff 只反映统计文件，与榜单是否真的变了无关
           changed=$(node -e 'const r=require("./content/tools-publish.json");const n=(r.added||0)+(r.updated||0)+(r.dropped||0);process.stdout.write(n>0?"true":"false")')
