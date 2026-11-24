@@ -29,7 +29,7 @@ const STAGING = join(ROOT, "content/opportunities-staging.json");
 const CONTENT = join(ROOT, "content/opportunities.json");
 const POLICY = join(ROOT, "docs/16-机会榜收录原则.md");
 
-const DEFAULT_MODEL = "deepseek-v4-1-flash";
+const DEFAULT_MODEL = "deepseek-flash";
 const BATCH_RE = /^\d{4}-W\d{2}$/;
 
 interface Args {
@@ -762,7 +762,7 @@ async function main(): Promise<void> {
 
       // max_tokens 给到 16000：scoreBasis 要引用具体数字后，单条完整 JSON 会逼近 8k
       // 上限，三条证据 + 五维打分 + 路径/结果/风险全写满时 8000 会被截断。
-      // v4-1-flash 的 maxOutput 达 90 万+，16000 在其能力内，且单价只有 pro 的约 1/3。
+      // deepseek-flash（V4.1-Flash-1017）的 maxOutput 达 90 万+，16000 在其能力内，且单价约为 pro 的 1/3。
       const res = await chatJSON<{ opportunity?: Opportunity }>(system, prompt, 16000, 0.7, args.model);
       const opp = res.opportunity;
       if (!opp) {

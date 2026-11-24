@@ -438,7 +438,7 @@ export const opps = makeRoutes({
 const OPP_BATCH_RE = /^\d{4}-W\d{2}$/;
 /** 线上每批固定 5 条 */
 const OPP_BATCH_SIZE = 5;
-const OPP_MODEL = "deepseek-v4-1-flash";
+const OPP_MODEL = "deepseek-flash";
 
 /**
  * 某批次的可发布条数、已拒绝条数、已废弃条数。

@@ -27,7 +27,7 @@ function retryable(e: unknown): boolean {
 
 /**
  * model 默认 deepseek-chat（服务端别名，现在指向 flash，足够描述/分类这种活）。
- * 机会榜要长文推理 + 长 JSON 输出，会显式传 deepseek-v4-1-flash。
+ * 机会榜要长文推理 + 长 JSON 输出，会显式传 deepseek-flash。
  */
 export async function chatJSON<T>(
   system: string,
