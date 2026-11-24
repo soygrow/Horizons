@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-24T10:57:20.561Z",
-  "total": 11,
-  "itemsWithIssues": 0,
+  "generatedAt": "2026-11-24T11:44:08.480Z",
+  "total": 18,
+  "itemsWithIssues": 2,
   "dimensions": [
     {
       "key": "description",
@@ -27,10 +27,10 @@
       "key": "trafficMetrics.monthlyVisits",
       "label": "月访问量",
       "missing": 2,
-      "missingRatio": 18,
+      "missingRatio": 11,
       "missingDomains": [
         "claudeduet.com",
-        "wanaka.app"
+        "altercontacts.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -39,16 +39,22 @@
     {
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
-      "missing": 3,
-      "missingRatio": 27,
+      "missing": 4,
+      "missingRatio": 22,
       "missingDomains": [
         "kixy.ai",
         "claudeduet.com",
-        "wanaka.app"
+        "bridge.co",
+        "altercontacts.com"
       ],
-      "invalid": 0,
-      "invalidRatio": 0,
-      "invalidSamples": []
+      "invalid": 1,
+      "invalidRatio": 6,
+      "invalidSamples": [
+        {
+          "domain": "cliputils.com",
+          "reason": "环比涨幅异常（13314%）"
+        }
+      ]
     },
     {
       "key": "metrics.registeredAt",
@@ -64,10 +70,10 @@
       "key": "trafficMetrics.organicSearchVisits",
       "label": "自然搜索流量",
       "missing": 2,
-      "missingRatio": 18,
+      "missingRatio": 11,
       "missingDomains": [
         "claudeduet.com",
-        "wanaka.app"
+        "altercontacts.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -77,10 +83,10 @@
       "key": "geoDistribution",
       "label": "地区分布",
       "missing": 2,
-      "missingRatio": 18,
+      "missingRatio": 11,
       "missingDomains": [
         "claudeduet.com",
-        "wanaka.app"
+        "altercontacts.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -89,19 +95,25 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 10,
-      "missingRatio": 91,
+      "missing": 16,
+      "missingRatio": 89,
       "missingDomains": [
-        "xmind.com",
-        "scroogefrog.com",
-        "teamily.com",
+        "relay.com",
         "rerun.io",
-        "maxma.com",
         "quest.app",
+        "meshapi.ai",
+        "n8nchatui.com",
+        "polylane.com",
+        "maxma.com",
         "kixy.ai",
-        "agenthunt.io",
         "claudeduet.com",
-        "wanaka.app"
+        "frevana.com",
+        "bridge.co",
+        "arcjet.com",
+        "appxiom.com",
+        "altercontacts.com",
+        "adside.ai",
+        "agenthunt.io"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -120,14 +132,13 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 5,
-      "missingRatio": 45,
+      "missing": 4,
+      "missingRatio": 22,
       "missingDomains": [
-        "scroogefrog.com",
-        "teamily.com",
-        "maxma.com",
+        "relay.com",
         "quest.app",
-        "wanaka.app"
+        "maxma.com",
+        "altercontacts.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -139,16 +150,23 @@
       "missing": 0,
       "missingRatio": 0,
       "missingDomains": [],
-      "invalid": 0,
-      "invalidRatio": 0,
-      "invalidSamples": []
+      "invalid": 1,
+      "invalidRatio": 6,
+      "invalidSamples": [
+        {
+          "domain": "relay.com",
+          "reason": "页面结构缺 H1"
+        }
+      ]
     },
     {
       "key": "screenshotDesktopUrl",
       "label": "官网截图",
-      "missing": 0,
-      "missingRatio": 0,
-      "missingDomains": [],
+      "missing": 1,
+      "missingRatio": 6,
+      "missingDomains": [
+        "arcjet.com"
+      ],
       "invalid": 0,
       "invalidRatio": 0,
       "invalidSamples": []
@@ -187,45 +205,24 @@
   "entryIssues": [],
   "items": [
     {
-      "domain": "xmind.com",
-      "name": "Xmind 2027",
+      "domain": "relay.com",
+      "name": "Relay",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 1109852,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "scroogefrog.com",
-      "name": "ScroogeFrog AI",
-      "tier": "watch",
-      "stage": "enriched",
-      "monthlyVisits": 15885,
+      "monthlyVisits": 26924,
       "gapCount": 2,
       "gaps": [
         "keywords",
         "pricing"
       ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "teamily.com",
-      "name": "Teamily AI",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 4244,
-      "gapCount": 2,
-      "gaps": [
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 0,
-      "issues": []
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "pageStructure",
+          "label": "页面结构",
+          "reason": "页面结构缺 H1"
+        }
+      ]
     },
     {
       "domain": "rerun.io",
@@ -241,11 +238,11 @@
       "issues": []
     },
     {
-      "domain": "maxma.com",
-      "name": "Maxma",
-      "tier": "core",
+      "domain": "quest.app",
+      "name": "Quest",
+      "tier": "watch",
       "stage": "enriched",
-      "monthlyVisits": 89336,
+      "monthlyVisits": 1317,
       "gapCount": 2,
       "gaps": [
         "keywords",
@@ -255,11 +252,50 @@
       "issues": []
     },
     {
-      "domain": "quest.app",
-      "name": "Quest",
+      "domain": "meshapi.ai",
+      "name": "Mesh API",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 17025,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "n8nchatui.com",
+      "name": "N8N Chat UI",
       "tier": "watch",
       "stage": "enriched",
-      "monthlyVisits": 1317,
+      "monthlyVisits": 1169,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "polylane.com",
+      "name": "Polylane Swarms",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 3006,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "maxma.com",
+      "name": "Maxma",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 89336,
       "gapCount": 2,
       "gaps": [
         "keywords",
@@ -283,34 +319,27 @@
       "issues": []
     },
     {
-      "domain": "alsona.com",
-      "name": "Alsona",
+      "domain": "cliputils.com",
+      "name": "Cliputils",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 12513,
+      "monthlyVisits": 58351,
       "gapCount": 0,
       "gaps": [],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "agenthunt.io",
-      "name": "Agent Hunt",
-      "tier": "watch",
-      "stage": "enriched",
-      "monthlyVisits": 9792,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "trafficMetrics.monthlyVisitsGrowth",
+          "label": "环比增长",
+          "reason": "环比涨幅异常（13314%）"
+        }
+      ]
     },
     {
       "domain": "claudeduet.com",
       "name": "Claude Duet",
       "tier": "watch",
-      "stage": "approved",
+      "stage": "enriched",
       "gapCount": 5,
       "gaps": [
         "trafficMetrics.monthlyVisits",
@@ -323,10 +352,64 @@
       "issues": []
     },
     {
-      "domain": "wanaka.app",
-      "name": "Wanaka Studio",
+      "domain": "frevana.com",
+      "name": "Frevana Multiplayer",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 23991,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "bridge.co",
+      "name": "Bridge",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 2146,
+      "gapCount": 2,
+      "gaps": [
+        "trafficMetrics.monthlyVisitsGrowth",
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "arcjet.com",
+      "name": "Arcjet AI security models",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 38973,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "screenshotDesktopUrl"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "appxiom.com",
+      "name": "Appxiom",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 1869,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "altercontacts.com",
+      "name": "AlterContacts",
       "tier": "watch",
-      "stage": "approved",
+      "stage": "enriched",
       "gapCount": 6,
       "gaps": [
         "trafficMetrics.monthlyVisits",
@@ -335,6 +418,43 @@
         "geoDistribution",
         "keywords",
         "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "alsona.com",
+      "name": "Alsona",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 12513,
+      "gapCount": 0,
+      "gaps": [],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "adside.ai",
+      "name": "Adside",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 22775,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "agenthunt.io",
+      "name": "Agent Hunt",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 9792,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
       ],
       "issueCount": 0,
       "issues": []
