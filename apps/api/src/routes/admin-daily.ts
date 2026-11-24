@@ -12,11 +12,13 @@ import { Hono } from "hono";
 import type { Env } from "../env";
 import {
   dispatchWorkflow,
+  failedJob,
   ghConfig,
   latestRun,
   mapStatus,
   missingSecrets,
   readRepoJson,
+  writeRepoJson,
 } from "../lib/github";
 
 export const adminDaily = new Hono<{ Bindings: Env }>();
@@ -28,8 +30,13 @@ const MODES = ["fetch", "build", "compose", "publish", "all"];
 interface DigestItem {
   id: string;
   title: string;
+  summary?: string;
+  why?: string;
   score?: number;
   category?: string;
+  evidence?: string;
+  heat?: number;
+  missing?: string;
   [k: string]: unknown;
 }
 
@@ -82,8 +89,14 @@ adminDaily.get("/issues", async (c) => {
             generatedAt: data.generatedAt ?? null,
             total: Object.values(counts).reduce((a, b) => a + b, 0),
             modules: counts,
-            // 第一个模块就是今日头条，列两条足够判断这期值不值得看
-            top: (modules[0]?.items ?? []).slice(0, 2).map((i) => i.title),
+            /*
+             * 第一个模块就是今日头条。后台要判断「这期值不值得发」，
+             * 只看标题不够——情报的价值就在那几句话里，所以带上摘要。
+             */
+            top: (modules[0]?.items ?? []).slice(0, 3).map((i) => ({
+              title: i.title,
+              summary: i.summary ?? "",
+            })),
           },
         ];
       } catch {
@@ -155,6 +168,85 @@ adminDaily.get("/draft/:date", async (c) => {
   return c.json({ date, status, draft, published });
 });
 
+/**
+ * 手改一条的「几句话」。
+ *
+ * 模板拼出来的事实句是准的，但「所以呢」经常差半句人话 —— 每天都有那么两三条
+ * 需要人来补一刀。以前只能改脚本重跑，等于整期重来；这里直接改仓库里的成稿
+ * 文件：提交后前台随部署更新，D1 里的那一期要再点一次「发布本期」才同步。
+ *
+ * 只允许改 summary / why / missing 三个纯文本字段。标题是原文标题，改了就没法
+ * 核对出处；分数、证据等级是算法结论，手改会让人分不清哪句是机器判断。
+ */
+adminDaily.post("/items", async (c) => {
+  const cfg = ghConfig(c.env);
+  if (!cfg) return c.json(notConfigured(c.env), 400);
+
+  type EditBody = {
+    date?: string;
+    id?: string;
+    summary?: string;
+    why?: string;
+    missing?: string;
+  };
+  const body = await c.req.json<EditBody>().catch(() => ({} as EditBody));
+
+  const date = String(body.date ?? "").trim();
+  const id = String(body.id ?? "").trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return c.json({ error: "bad_date", detail: "日期格式应为 YYYY-MM-DD" }, 400);
+  }
+  if (!id) return c.json({ error: "bad_id", detail: "缺少条目 id" }, 400);
+
+  const summary = body.summary === undefined ? undefined : String(body.summary).trim();
+  const why = body.why === undefined ? undefined : String(body.why).trim();
+  const missing = body.missing === undefined ? undefined : String(body.missing).trim();
+  if (summary === "" || why === "") {
+    return c.json(
+      { error: "empty_text", detail: "「发生了什么」和「所以呢」都不能空——这两句就是这条情报本身" },
+      400,
+    );
+  }
+
+  const path = `content/digest/${date}.json`;
+  const file = await readRepoJson<DigestFile>(cfg, path).catch(() => null);
+  if (!file) {
+    return c.json({ error: "not_found", detail: `仓库里没有 ${date} 的成稿文件` }, 404);
+  }
+
+  let hit = false;
+  for (const mod of file.data.modules ?? []) {
+    for (const item of mod.items) {
+      if (item.id !== id) continue;
+      if (summary !== undefined) item.summary = summary;
+      if (why !== undefined) item.why = why;
+      if (missing !== undefined) {
+        if (missing) item.missing = missing;
+        else delete item.missing;
+      }
+      hit = true;
+    }
+  }
+  if (!hit) {
+    return c.json({ error: "item_not_found", detail: `${date} 这一期里没有这条` }, 404);
+  }
+
+  const ok = await writeRepoJson(
+    cfg,
+    path,
+    file.data,
+    file.sha,
+    `chore(digest): 手改 ${date} 第 ${id} 条的几句话`,
+  );
+  if (!ok) return c.json({ error: "write_failed", detail: "写回仓库失败" }, 502);
+
+  return c.json({
+    ok: true,
+    syncedToD1: false,
+    detail: "已写回仓库，前台会在部署后更新；要让后台列表也同步，再点一次「发布本期」。",
+  });
+});
+
 /* --------------------------------- 触发 --------------------------------- */
 
 adminDaily.get("/run-status", async (c) => {
@@ -162,11 +254,16 @@ adminDaily.get("/run-status", async (c) => {
   if (!cfg) return c.json(notConfigured(c.env), 400);
 
   const run = await latestRun(cfg, WORKFLOW);
+  const status = mapStatus(run, "idle");
+  // 失败时多查一次 jobs：给出失败 job / 失败步骤，省得再去十几个步骤里翻
+  const failure = run && status === "failure" ? await failedJob(cfg, run.id) : null;
+
   return c.json({
-    status: mapStatus(run, "idle"),
+    status,
     run: run
       ? { id: run.id, url: run.html_url, status: run.status, conclusion: run.conclusion }
       : null,
+    failure,
   });
 });
 
@@ -180,7 +277,7 @@ adminDaily.post("/run", async (c) => {
 
   const mode = String(body.mode ?? "all");
   if (!MODES.includes(mode)) {
-    return c.json({ error: "bad_mode", detail: "mode 只接受 fetch / build / publish / all" }, 400);
+    return c.json({ error: "bad_mode", detail: "mode 只接受 fetch / build / compose / publish / all" }, 400);
   }
 
   // 日期为空表示「今天」，由 workflow 按 UTC+8 计算；给了就必须是完整日期

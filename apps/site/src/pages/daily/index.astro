@@ -10,6 +10,8 @@ import {
   digestCounts,
   EVIDENCE_META,
   MODULE_META,
+  briefLine,
+  briefOf,
   categoryLabel,
   formatDate,
   formatTime,
@@ -22,6 +24,8 @@ const issueNo = latest
   ? String(digests.length - digests.findIndex((d) => d.date === latest.date)).padStart(3, "0")
   : "—";
 const lead = latest?.modules.find((m) => m.key === "headline") ?? null;
+/** 头条条目提前算好「三句话」，模板里不再拼字段标签 */
+const headlineItems = (lead?.items ?? []).map((item) => ({ item, brief: briefOf(item) }));
 const others = (latest?.modules ?? []).filter((m) => m.key !== "headline");
 const archive = digests.slice(1, 9);
 
@@ -297,6 +301,9 @@ const faqs = [
                     </span>
                     <div class="min-w-0 flex-1">
                       <p class="text-[13px] font-medium leading-snug text-ink">{item.title}</p>
+                      <p class="mt-1 line-clamp-2 text-[11px] leading-[1.7] text-ink-secondary">
+                        {briefLine(item)}
+                      </p>
                       <div class="mt-1.5 flex items-center gap-2">
                         <span
                           class:list={[
@@ -312,7 +319,7 @@ const faqs = [
                             <span
                               class:list={[
                                 "h-2.5 w-1 rounded-full",
-                                k < item.level ? "bg-primary" : "bg-border",
+                                k < item.heat ? "bg-primary" : "bg-border",
                               ]}
                             />
                           ))}
@@ -326,7 +333,12 @@ const faqs = [
 
             <div class="mt-3 flex items-center justify-between rounded-lg bg-surface-2 px-3 py-2">
               <span class="text-[10px] text-ink-muted">每条都附来源与首次发现时间</span>
-              <span class="text-[10px] font-medium text-primary">查看全部</span>
+              <a
+                href={latest ? `/daily/${latest.date}` : "/daily"}
+                class="text-[10px] font-medium text-primary transition hover:underline"
+              >
+                查看全部 →
+              </a>
             </div>
           </div>
         </div>
@@ -373,7 +385,7 @@ const faqs = [
   <!-- 最新一期：头条全文 -->
   {
     latest && lead && (
-      <section id="latest" class="mx-auto max-w-4xl px-4 pb-2 pt-12 sm:px-6 sm:pt-14">
+      <section id="latest" class="mx-auto max-w-6xl px-4 pb-2 pt-12 sm:px-6 sm:pt-14">
         <div class="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
           <div>
             <p class="font-mono text-[11px] tracking-wide text-primary">
@@ -393,7 +405,7 @@ const faqs = [
         </div>
 
         <ul class="divide-y divide-border">
-          {lead.items.map((item, i) => (
+          {headlineItems.map(({ item, brief }, i) => (
             <li id={item.id} class="flex gap-3 py-5 sm:gap-4">
               <div class="w-7 shrink-0 text-center">
                 <span class="text-[11px] font-semibold text-ink-muted tabular-nums">
@@ -442,18 +454,20 @@ const faqs = [
                   )}
                 </h3>
 
-                <p class="mt-2 text-[13px] leading-relaxed text-ink-secondary">
-                  <span class="font-medium text-ink">发生了什么 · </span>
-                  {item.summary}
+                <p class="mt-2 max-w-[78ch] text-[15px] leading-[1.85] text-ink">
+                  {brief.fact}
                 </p>
-                <p class="mt-1.5 text-[13px] leading-relaxed text-ink-secondary">
-                  <span class="font-medium text-ink">为什么值得关注 · </span>
-                  {item.why}
+                <p class="mt-1.5 max-w-[78ch] text-[15px] leading-[1.85] text-ink-secondary">
+                  {brief.why}
                 </p>
 
-                {item.missing && (
-                  <p class="mt-2 rounded-md border border-amber-500/20 bg-amber-500/[0.06] px-2.5 py-1.5 text-[11px] leading-relaxed text-amber-700 dark:text-amber-400">
-                    证据缺口：{item.missing}
+                {brief.caveat && (
+                  <p class="mt-2 flex max-w-[78ch] items-start gap-1.5 text-[11px] leading-relaxed text-ink-muted">
+                    <span class="mt-[5px] h-1 w-1 shrink-0 rounded-full bg-amber-500" aria-hidden="true" />
+                    <span>
+                      <span class="text-amber-700 dark:text-amber-400">还缺：</span>
+                      {brief.caveat}
+                    </span>
                   </p>
                 )}
 
@@ -487,7 +501,7 @@ const faqs = [
   {
     latest && others.length > 0 && (
       <section class="border-t border-border/60 bg-surface/40">
-        <div class="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-14">
+        <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-14">
           <div class="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">其余模块</h2>
@@ -541,7 +555,7 @@ const faqs = [
                           {item.title}
                         </a>
                         <p class="mt-0.5 line-clamp-1 text-[11px] leading-relaxed text-ink-muted">
-                          {item.summary}
+                          {briefLine(item)}
                         </p>
                         <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-ink-muted">
                           <span>{EVIDENCE_META[item.evidence].label}</span>
@@ -811,9 +825,9 @@ const faqs = [
 
   <!-- FAQ -->
   <section class="border-t border-border/60 bg-surface/40">
-    <div class="mx-auto max-w-3xl px-4 py-14 sm:px-6 sm:py-16">
+    <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
       <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">开始之前，你可能想问</h2>
-      <div class="mt-6 space-y-3">
+      <div class="mt-6 max-w-3xl space-y-3">
         {
           faqs.map((f) => (
             <details class="group rounded-xl border border-border bg-surface">
@@ -841,7 +855,7 @@ const faqs = [
   </section>
 
   <!-- 收尾 CTA -->
-  <section class="mx-auto max-w-5xl px-4 py-14 sm:px-6 sm:py-16">
+  <section class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
     <div
       class="relative overflow-hidden rounded-3xl border border-border bg-surface p-8 text-center sm:p-12"
     >

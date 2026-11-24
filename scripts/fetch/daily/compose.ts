@@ -57,11 +57,8 @@ const WHY_BY_CATEGORY: Record<string, string> = {
   business: "钱在换方向，但截图和转述要等官方条款确认，别先改自己的报价。",
 };
 
-/** 证据状态直接写进「为什么值得关注」，避免每条都读起来一样 */
-const EVIDENCE_TAIL: Record<"verified" | "pending", string> = {
-  verified: "已有可直接核对的原始出处，可以引用。",
-  pending: "目前只有转述，引用前需二次确认。",
-};
+/** 待核实条目「还缺什么」的兜底说法（score.ts 已给 missing 时用它的） */
+const PENDING_CAVEAT = "只有转述，等一手材料或第二家独立报道";
 
 function beijingTime(iso: string | null): string {
   if (!iso) return "时间未知";
@@ -178,17 +175,23 @@ function summarize(item: RawItem, ev: Scored["ev"], content?: string | null): st
   return parts.join("；").replace(/；$/, "") + "。";
 }
 
+/**
+ * 每条只写三句话：summary = 发生了什么，why = 所以呢，missing = 还缺什么。
+ * 证据状态由页面徽章表达，不再往 why 尾巴上拼一句「……可以引用」——
+ * 每屏都是同一句模板话，读者一眼就看出是拼出来的。
+ */
 function toDigestItem(s: Scored, moduleKey: ModuleKey, content?: string | null): DigestItem {
   const primary = s.ev.items[0];
   const angle = angleOf(primary);
   const reason =
     (angle && WHY_BY_ANGLE[angle]) || WHY_BY_CATEGORY[s.category] || MODULE_WHY[moduleKey];
-  const tail = s.evidence === "rumor" ? "" : EVIDENCE_TAIL[s.evidence];
+  const missing =
+    s.missing ?? (s.evidence === "pending" ? PENDING_CAVEAT : undefined);
   return {
     id: s.ev.id,
     title: primary.title,
     summary: summarize(primary, s.ev, content),
-    why: `${reason}${tail}`,
+    why: reason,
     category: s.category,
     evidence: s.evidence,
     score: s.score,
@@ -203,7 +206,7 @@ function toDigestItem(s: Scored, moduleKey: ModuleKey, content?: string | null):
       ...(primary.signals.starPerDay !== undefined ? { starPerDay: primary.signals.starPerDay } : {}),
     },
     ...(content ? { content: content.slice(0, 2000) } : {}),
-    ...(s.missing ? { missing: s.missing } : {}),
+    ...(missing ? { missing } : {}),
   };
 }
 

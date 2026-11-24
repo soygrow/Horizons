@@ -449,11 +449,13 @@ const meta = {
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-3">
               <div>
                 <h2 class="text-sm font-semibold">线上情报</h2>
-                <p class="mt-1 text-xs text-ink-muted">读 D1 的 digest_issues；点末列「看全文」展开这一期四个模块</p>
+                <p class="mt-1 text-xs text-ink-muted">
+                  读 D1 的 digest_issues；「头条速览」= 标题 + 第一句话，点「看全文」展开这一期全部条目
+                </p>
               </div>
             </div>
             <div class="overflow-x-auto">
-              <table class="w-full min-w-[760px]">
+              <table class="w-full min-w-[880px]">
                 <thead class="bg-surface-2/60 text-[11px] uppercase tracking-wide text-ink-muted">
                   <tr>
                     <th class="px-3 py-2 text-left font-medium">期号</th>
@@ -462,7 +464,7 @@ const meta = {
                     <th class="px-3 py-2 text-center font-medium">钱</th>
                     <th class="px-3 py-2 text-center font-medium">能做</th>
                     <th class="px-3 py-2 text-center font-medium">合计</th>
-                    <th class="px-3 py-2 text-left font-medium">头条两条</th>
+                    <th class="px-3 py-2 text-left font-medium">头条速览</th>
                     <th class="px-3 py-2 text-right font-medium"></th>
                   </tr>
                 </thead>
@@ -481,9 +483,9 @@ const meta = {
                 <div class="min-w-0">
                   <h2 class="text-sm font-semibold">情报生成</h2>
                   <p id="daily-gen-intro" class="mt-1 max-w-2xl text-xs leading-relaxed text-ink-muted">
-                    采集 + 成稿 → 预览 → 发布。期号形如
+                    采集 + 成稿 → 读一遍几句话、不满意就地改 → 发布。期号形如
                     <code class="rounded bg-surface-2 px-1 py-0.5 font-mono">2026-11-24</code>，默认今天（UTC+8）。
-                    生成只写成稿文件，点「发布本期」写进 D1 后前台才出这一期。
+                    成稿只写文件，点「发布本期」写进 D1 后前台才出这一期；改过文案要再发布一次才会同步到列表。
                   </p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
@@ -523,7 +525,9 @@ const meta = {
                 <button type="button" id="daily-run-build" class="rounded-lg border border-border px-2.5 py-1 text-[11px] font-medium text-ink-muted transition hover:border-border-strong hover:text-ink">只成稿</button>
               </div>
               <div id="daily-preview" class="space-y-3 px-5 py-4">
-                <p class="text-xs text-ink-muted">填日期后点「看本期」预览这一期成稿，点「生成本期」才起采集+成稿任务。</p>
+                <p class="text-xs text-ink-muted">
+                  填日期后点「看本期」预览这一期成稿，点「生成本期」才起采集+成稿任务。每条下面的「改这几句话」可以直接改文案，保存后写回仓库。
+                </p>
               </div>
             </article>
           </div>

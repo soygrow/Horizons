@@ -146,3 +146,61 @@ export function signalText(item: DigestItem): string[] {
 export function digestCounts(d: Digest): number {
   return d.modules.reduce((n, m) => n + m.items.length, 0);
 }
+
+/* ------------------------------- 一句话/几句话 ------------------------------- */
+
+/**
+ * 成稿里的「为什么值得关注」末尾会带一句证据状态（"已有可直接核对…可以引用。"
+ * / "目前只有转述，引用前需二次确认。"）。状态已经由徽章表达，正文再重复一遍
+ * 就是凑字数，读起来像模板。这里统一剔掉，旧期数据也一起收干净。
+ */
+const EVIDENCE_TAIL_SENTENCES = [
+  "已有可直接核对的原始出处，可以引用。",
+  "目前只有转述，引用前需二次确认。",
+];
+
+function stripEvidenceTail(text: string): string {
+  let out = text.trim();
+  for (const tail of EVIDENCE_TAIL_SENTENCES) {
+    if (out.endsWith(tail)) out = out.slice(0, -tail.length).trim();
+  }
+  return out.replace(/[，、；\s]+$/, "").replace(/([。！？])$/, "$1");
+}
+
+/** 取第一句，用于卡片/列表的一行速览 */
+export function oneLine(text: string, max = 64): string {
+  const clean = stripEvidenceTail(text).replace(/\s+/g, " ");
+  const m = clean.match(/^[^。！？]*[。！？]/);
+  const first = (m ? m[0] : clean).replace(/[。！？]$/, "");
+  const clipped = first.length > max ? `${first.slice(0, max)}…` : first;
+  return /[。！？…]$/.test(clipped) ? clipped : `${clipped}。`;
+}
+
+/**
+ * 每条情报只讲三句话：
+ *   1. fact —— 发生了什么（材料能支持的事实）
+ *   2. why  —— 所以呢（对判断/成本/动作的影响）
+ *   3. caveat —— 可信到哪（缺哪块材料，null 表示有一手出处）
+ * 页面上不再贴「发生了什么 · 」「为什么值得关注 · 」这类字段标签，
+ * 直接排成段落，读起来才是话而不是表单。
+ */
+export interface DigestBrief {
+  fact: string;
+  why: string;
+  caveat: string | null;
+}
+
+export function briefOf(item: DigestItem): DigestBrief {
+  const fact = stripEvidenceTail(item.summary);
+  const why = stripEvidenceTail(item.why);
+  const caveat =
+    item.evidence === "verified"
+      ? null
+      : (item.missing ?? "只有单一来源，引用前需二次确认");
+  return { fact, why, caveat };
+}
+
+/** 列表速览：一句话讲完发生了什么 */
+export function briefLine(item: DigestItem): string {
+  return oneLine(item.summary);
+}

@@ -192,3 +192,35 @@ export async function fetchRun(cfg: GhConfig, runId: number): Promise<WorkflowRu
   if (!res.ok) return null;
   return (await res.json()) as WorkflowRun;
 }
+
+export interface RunFailure {
+  job: string;
+  step: string | null;
+  url: string;
+}
+
+interface WorkflowJob {
+  name: string;
+  status: string;
+  conclusion: string | null;
+  html_url: string;
+  steps?: Array<{ name: string; status: string; conclusion: string | null }>;
+}
+
+/**
+ * 失败时把「哪个 job、哪一步、去哪看日志」带回来。
+ *
+ * 后台原来只显示一个裸的结论字符串（而且前端只认 failed、后端给的是
+ * failure，红字都不会变），点进去还得自己在十几个步骤里翻。
+ */
+export async function failedJob(cfg: GhConfig, runId: number): Promise<RunFailure | null> {
+  const res = await ghFetch(cfg, `/repos/${cfg.repo}/actions/runs/${runId}/jobs?per_page=20`);
+  if (!res.ok) return null;
+  const body = (await res.json()) as { jobs?: WorkflowJob[] };
+  const job = (body.jobs ?? []).find(
+    (j) => j.conclusion && j.conclusion !== "success" && j.conclusion !== "cancelled",
+  );
+  if (!job) return null;
+  const step = (job.steps ?? []).find((s) => s.conclusion === "failure");
+  return { job: job.name, step: step?.name ?? null, url: job.html_url };
+}
