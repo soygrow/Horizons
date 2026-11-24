@@ -77,7 +77,7 @@ const outputs = [
 
   <!-- 数据流：lg 一行五段横铺，小屏竖排 -->
   <div
-    class="relative mt-7 grid gap-y-4 px-5 sm:px-8 lg:mt-9 lg:grid-cols-[256px_60px_96px_60px_360px] lg:items-center lg:justify-center lg:gap-y-0"
+    class="relative mt-7 grid gap-y-4 px-5 sm:px-8 lg:mt-9 lg:grid-cols-[224px_48px_88px_48px_260px_28px_132px] lg:items-center lg:justify-center lg:gap-y-0 xl:grid-cols-[250px_48px_92px_48px_292px_28px_152px]"
   >
     <!-- 技术底纹：极淡网格，向四周淡出 -->
     <div
@@ -126,21 +126,21 @@ const outputs = [
     <div class="relative hidden self-stretch lg:block">
       <span
         aria-hidden="true"
-        class="absolute inset-y-0 left-[30px] w-[2px] rounded-full bg-gradient-to-b from-transparent via-primary/55 to-transparent"
+        class="absolute inset-y-0 left-[24px] w-[2px] rounded-full bg-gradient-to-b from-transparent via-primary/55 to-transparent"
       ></span>
       <span
         aria-hidden="true"
-        class="absolute left-[30px] top-1/2 h-[2px] w-[30px] rounded-full bg-gradient-to-r from-primary/30 to-primary/70"
+        class="absolute left-[24px] top-1/2 h-[2px] w-[24px] rounded-full bg-gradient-to-r from-primary/30 to-primary/70"
       ></span>
     </div>
 
     <!-- 内核：用 Horizons 自己的标记，而不是一个 AI 字样 -->
-    <div class="relative mx-auto grid h-[96px] w-[96px] place-items-center">
+    <div class="relative mx-auto grid h-[88px] w-[88px] place-items-center xl:h-[92px] xl:w-[92px]">
       <span aria-hidden="true" class="core-glow absolute -inset-1 rounded-full"></span>
       <span aria-hidden="true" class="spin-slow absolute inset-0 rounded-full border border-dashed border-primary/30"
       ></span>
       <div
-        class="relative grid h-[72px] w-[72px] place-items-center overflow-hidden rounded-full border border-primary/20 bg-surface"
+        class="relative grid h-[66px] w-[66px] place-items-center overflow-hidden rounded-full border border-primary/20 bg-surface xl:h-[68px] xl:w-[68px]"
       >
         <span
           aria-hidden="true"
@@ -151,7 +151,7 @@ const outputs = [
           alt=""
           width="239"
           height="112"
-          class="relative h-[26px] w-auto"
+          class="relative h-[24px] w-auto xl:h-[26px]"
           loading="lazy"
         />
       </div>
@@ -162,11 +162,11 @@ const outputs = [
     </div>
 
     <!-- 内核 → 输出 -->
-    <div class="relative flex h-6 items-center justify-center lg:h-[96px] lg:w-[60px]">
+    <div class="relative flex h-6 items-center justify-center lg:h-[88px] lg:w-[48px] xl:h-[92px]">
       <span aria-hidden="true" class="absolute h-full w-px bg-gradient-to-b from-primary/60 via-primary/30 to-transparent lg:hidden"></span>
       <span aria-hidden="true" class="flow dot-down absolute h-1.5 w-1.5 rounded-full bg-primary lg:hidden"></span>
-      <span aria-hidden="true" class="absolute hidden h-[2px] w-full rounded-full bg-gradient-to-r from-primary/60 to-primary/25 lg:block"></span>
-      <span aria-hidden="true" class="flow dot-right absolute hidden h-1.5 w-1.5 rounded-full bg-primary lg:block"></span>
+      <span aria-hidden="true" class="absolute hidden h-[2px] w-full rounded-full bg-gradient-to-r from-[#e0478a]/55 to-[#e0478a]/25 lg:block"></span>
+      <span aria-hidden="true" class="flow dot-right absolute hidden h-1.5 w-1.5 rounded-full bg-[#e0478a] lg:block"></span>
     </div>
 
     <!-- 输出：一条机会的骨架 -->
@@ -230,22 +230,57 @@ const outputs = [
       </div>
 
       <!-- 来源：把输出与左侧输入对上，让人看懂这是几路信号拼出来的 -->
-      <div class="flex items-center gap-1 border-t border-border/70 px-3 py-2 pl-4">
+      <div class="flex flex-wrap items-center gap-[3px] border-t border-border/70 px-2.5 py-2 pl-3.5">
         {
-          inputs.slice(0, 4).map((it) => (
-            <span class="flex items-center gap-1 rounded-md bg-surface-2/80 px-1.5 py-[3px] text-[9.5px] text-ink-muted">
+          inputs.map((it) => (
+            <span class="flex items-center gap-1 rounded bg-surface-2/80 px-1 py-[3px] text-[9px] text-ink-muted">
               <span aria-hidden="true" class="h-1 w-1 rounded-full" style={`background:${it.color}`} />
               {it.label.replace("AI ", "").replace("榜", "")}
             </span>
           ))
         }
-        <span class="ml-auto font-mono text-[9.5px] text-ink-muted/70">5 路汇合</span>
       </div>
 
       <span
         aria-hidden="true"
         class="flow sweep pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,transparent_38%,rgba(8,102,250,0.10)_50%,transparent_62%)]"
       ></span>
+    </div>
+
+    <!-- 机会 → 动手：这一步是人做的，所以不给它加流光 -->
+    <div class="relative hidden items-center lg:flex" aria-hidden="true">
+      <span class="h-[2px] w-full rounded-full bg-gradient-to-r from-[#e0478a]/25 to-accent/45"></span>
+      <svg
+        class="-ml-1 h-2.5 w-2.5 shrink-0 text-accent/60"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg
+      >
+    </div>
+
+    <!-- 尝试：失败居多，但每试一次就更近一点 -->
+    <div
+      class="relative mx-auto w-full max-w-[260px] rounded-xl border border-dashed border-border-strong bg-surface-2/60 px-3 py-3 lg:mx-0 lg:max-w-none lg:px-2.5 xl:px-3"
+    >
+      <p class="text-[10.5px] font-semibold leading-none text-ink">动手试，才知道</p>
+
+      <div
+        class="mt-2.5 flex items-end justify-between gap-1"
+        role="img"
+        aria-label="尝试五次，四次推翻，一次成立"
+      >
+        <span class="h-[8px] w-3 rounded-[2px] bg-ink/10"></span>
+        <span class="h-[13px] w-3 rounded-[2px] bg-ink/15"></span>
+        <span class="h-[19px] w-3 rounded-[2px] bg-ink/20"></span>
+        <span class="h-[26px] w-3 rounded-[2px] bg-ink/25"></span>
+        <span class="h-[34px] w-3 rounded-[2px] bg-accent shadow-[0_0_10px_rgba(23,163,74,0.45)]"></span>
+      </div>
+
+      <p class="mt-2 text-[9.5px] leading-[1.4] text-ink-muted">4 次推翻，1 次成立</p>
+      <p class="mt-1 text-[9.5px] font-medium leading-[1.4] text-primary">试得越多，离那一个越近</p>
     </div>
   </div>
 
@@ -284,8 +319,8 @@ const outputs = [
       content: "";
       position: absolute;
       top: 50%;
-      right: -30px;
-      width: 30px;
+      right: -24px;
+      width: 24px;
       height: 1px;
       background: linear-gradient(to right, var(--dot), color-mix(in srgb, var(--dot) 55%, transparent));
       opacity: 0.7;
@@ -301,7 +336,7 @@ const outputs = [
   }
   .dot-right {
     animation: dot-right 2.8s cubic-bezier(0.42, 0, 0.58, 1) infinite;
-    box-shadow: 0 0 8px rgba(8, 102, 250, 0.6);
+    box-shadow: 0 0 8px rgba(224, 71, 138, 0.55);
   }
   .dot-down {
     animation: dot-down 2.4s ease-in-out infinite;
@@ -331,7 +366,7 @@ const outputs = [
     }
     100% {
       opacity: 0;
-      transform: translate(30px, -50%) scale(0.7);
+      transform: translate(24px, -50%) scale(0.7);
     }
   }
   @keyframes dot-right {
