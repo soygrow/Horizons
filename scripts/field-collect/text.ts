@@ -88,7 +88,7 @@ async function llmProfile(payload: {
   if (!key) return null;
 
   const body = {
-    model: "deepseek-chat",
+    model: "deepseek-flash",
     temperature: 0.2,
     response_format: { type: "json_object" },
     messages: [

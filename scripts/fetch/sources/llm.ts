@@ -26,15 +26,15 @@ function retryable(e: unknown): boolean {
 }
 
 /**
- * model 默认 deepseek-chat（服务端别名，现在指向 flash，足够描述/分类这种活）。
- * 机会榜要长文推理 + 长 JSON 输出，会显式传 deepseek-flash。
+ * model 默认 deepseek-flash（DeepSeek 官方 API 当前有效名，对应 V4.1-Flash-1017）。
+ * 描述/分类/翻译等常规任务与机会榜成稿（长 JSON 输出）都走它。
  */
 export async function chatJSON<T>(
   system: string,
   user: string,
   maxTokens = 4000,
   temperature = 0.4,
-  model = process.env.LLM_MODEL || "deepseek-chat",
+  model = process.env.LLM_MODEL || "deepseek-flash",
 ): Promise<T> {
   const key = process.env.DEEPSEEK_API_KEY;
   if (!key) throw new Error("未配置 DEEPSEEK_API_KEY");

@@ -331,7 +331,7 @@ export async function collectSite(opts: CollectSiteOptions): Promise<CollectPayl
           );
       if (profile) {
         if (profile.source === "deepseek") addCost("DeepSeek 字段抽取", PRICE.deepseek);
-        const src = profile.source === "deepseek" ? "DeepSeek（deepseek-chat）" : "关键词规则（无 LLM）";
+        const src = profile.source === "deepseek" ? "DeepSeek（deepseek-flash）" : "关键词规则（无 LLM）";
         fields.set("category", profile.category, { actualSource: src, note: profile.note });
         fields.set("features", profile.features, { actualSource: src, note: profile.note });
         fields.set("target_audience", profile.targetAudience, { actualSource: src, note: profile.note });
