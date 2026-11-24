@@ -1,17 +1,17 @@
 {
-  "generatedAt": "2026-11-24T11:58:33.147Z",
+  "generatedAt": "2026-11-24T12:43:15.298Z",
   "target": 1000,
-  "candidates": 225,
+  "candidates": 21,
   "qualified": 225,
   "listed": 225,
   "core": 185,
   "watch": 40,
   "withTraffic": 214,
   "staging": {
-    "pending": 0,
+    "pending": 17,
     "approved": 0,
-    "enriched": 0,
-    "rejected": 157
+    "enriched": 1,
+    "rejected": 200
   },
   "gap": 775
 }
