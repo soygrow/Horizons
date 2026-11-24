@@ -335,10 +335,14 @@ function renderOverview(data: Overview): void {
     return;
   }
 
-  $("gh-kpi-board").textContent = fmtNum(s.boardRows);
-  $("gh-kpi-board-sub").textContent = s.boardUpdatedAt
-    ? `快照 ${fmtTime(s.boardUpdatedAt)} · 目标 ${fmtNum(s.target)} 条`
-    : `目标 ${fmtNum(s.target)} 条 · 候选池里没有榜单快照`;
+  // 在榜条数以 D1 发布写入的 board 为准（与首页同一份数据），候选池快照只作兜底
+  const boardTotal = data.board?.total || s.boardRows;
+  $("gh-kpi-board").textContent = fmtNum(boardTotal);
+  $("gh-kpi-board-sub").textContent = data.board?.updatedAt
+    ? `正式榜 ${fmtNum(boardTotal)} 条 · ${fmtTime(data.board.updatedAt)}`
+    : s.boardUpdatedAt
+      ? `快照 ${fmtTime(s.boardUpdatedAt)} · 目标 ${fmtNum(s.target)} 条`
+      : `目标 ${fmtNum(s.target)} 条 · 候选池里没有榜单快照`;
 
   $("gh-kpi-candidates").textContent = fmtNum(s.candidates);
   $("gh-kpi-candidates-sub").textContent = s.lastRun

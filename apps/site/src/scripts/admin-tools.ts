@@ -338,15 +338,21 @@ function renderOverview(data: Overview): void {
     return;
   }
 
-  $("tool-kpi-listed").textContent = `${fmtNum(s.listed)} / ${fmtNum(s.target)}`;
+  /*
+   * 榜单条数以 D1 发布写入的 board 为准 —— 它和首页 hydrate 出来的
+   * content/aitools.json 是同一份数据，两边必然一致。
+   * stats.listed 只是统计快照，可能滞后或缺失，仅在 board 缺位时兜底。
+   */
+  const listedTotal = data.board?.total || s.listed;
+  $("tool-kpi-listed").textContent = `${fmtNum(listedTotal)} / ${fmtNum(s.target)}`;
   $("tool-kpi-listed-sub").textContent = `主榜 ${fmtNum(s.core)} · 观察区 ${fmtNum(s.watch)}`;
   $("tool-kpi-candidates").textContent = fmtNum(s.candidates);
-  $("tool-kpi-candidates-sub").textContent = `达标 ${fmtNum(s.qualified)} · 有流量 ${fmtNum(s.withTraffic)}`;
+  $("tool-kpi-candidates-sub").textContent = `在榜 ${fmtNum(s.qualified)} · 有流量 ${fmtNum(s.withTraffic)}`;
   $("tool-kpi-pending").textContent = fmtNum(s.staging.pending);
   $("tool-kpi-pending-sub").textContent = `已拒绝 ${fmtNum(s.staging.rejected)}`;
-  $("tool-kpi-gap").textContent = fmtNum(s.gap);
+  $("tool-kpi-gap").textContent = fmtNum(Math.max(0, s.target - listedTotal));
 
-  const ratio = s.candidates > 0 ? Math.round((s.qualified / s.candidates) * 100) : 0;
+  const ratio = s.target > 0 ? Math.round((listedTotal / s.target) * 100) : 0;
   $("tool-kpi-gap-sub").textContent = `达标率 ${ratio}% · 快照 ${fmtTime(s.generatedAt)}`;
 }
 

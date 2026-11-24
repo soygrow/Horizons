@@ -1,9 +1,13 @@
 /**
  * 工具榜概览快照生成器。
  *
- * 后台不能直接读 content/aitools.json（8MB，Worker 内存吃不消），
- * 所以由流水线在抓取/发布后顺手写一份轻量快照 content/tools-stats.json，
- * 后台只读这个几百字节的文件。
+ * 数据源分两块，都以 D1 为准：
+ *   - 在榜条数 / 主榜 / 观察区：读 D1 当前版本（与首页 hydrate 同一份数据，
+ *     两边数字必然一致）；
+ *   - 候选池 / 待发布队列：读 D1 工作区（board_items）。
+ *
+ * 后台概览读的是落库后的同一份快照（board_reports），content/tools-stats.json
+ * 只是给流水线与构建留的副本。
  *
  * 判定口径统一由 @horizons/shared 的 tool-tier 提供，本文件不再维护副本。
  *
@@ -15,6 +19,8 @@ import { tierOf, visitsOf } from "@horizons/shared";
 import type { AITool, ToolTier } from "@horizons/shared";
 import { saveReport } from "./reports";
 import { readWorkspace } from "./board-items";
+import { d1Configured } from "./d1-client";
+import { readListedTools } from "./hydrate-tools";
 import type { StagingItem } from "./verdict";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
@@ -33,11 +39,11 @@ export type Tier = ToolTier;
 export interface ToolStats {
   generatedAt: string;
   target: number;
-  /** content/aitools.json 全部候选 */
+  /** 候选池：工作区里尚未上线的条目（采集 / 富化成果） */
   candidates: number;
-  /** 达到收录门槛（未考虑 1000 条上限） */
+  /** 在榜且达到收录门槛的条数（= 主榜 + 观察区） */
   qualified: number;
-  /** 实际会出现在榜单上的条数（qualified 与 target 取小） */
+  /** 实际出现在榜单上的条数（qualified 与 target 取小，= 首页条数） */
   listed: number;
   core: number;
   watch: number;
@@ -70,7 +76,9 @@ export function computeToolStats(
   return {
     generatedAt: new Date().toISOString(),
     target: TARGET_LISTED,
-    candidates: tools.length,
+    // 候选池 = 工作区里尚未上线的条目（采集 / 富化成果）。
+    // 之前取 tools.length，等于「在榜条数」，采集再多也看不出来。
+    candidates: stagingItems.length,
     qualified,
     listed,
     core,
@@ -97,7 +105,20 @@ function readJson<T>(file: string, fallback: T): T {
 }
 
 export async function writeToolStats(): Promise<ToolStats> {
-  const tools = readJson<AITool[]>(TOOLS_PATH, []);
+  /*
+   * 在榜条数从 D1 当前版本读 —— 与首页 hydrate 是同一份数据，数字必然一致。
+   *
+   * 绝不能读 content/aitools.json：它不入库（只是构建缓存），CI 里根本不存在，
+   * 读出来是空数组，「榜单条数」就被写成 0。后台显示「0 / 1,000」的根源就在这里。
+   */
+  let tools: AITool[];
+  try {
+    tools = d1Configured() ? (await readListedTools()).tools : readJson<AITool[]>(TOOLS_PATH, []);
+  } catch (e) {
+    console.warn("[stats] 从 D1 读当前榜单失败，退回构建缓存文件：", e);
+    tools = readJson<AITool[]>(TOOLS_PATH, []);
+  }
+
   // 队列统计取自 D1（候选池唯一来源）；未配置 D1 时为空，不影响正式库口径
   const { items, rejected } = await readWorkspace<StagingItem>("tools");
   const stats = computeToolStats(tools, items, rejected);
@@ -114,8 +135,8 @@ export async function writeToolStats(): Promise<ToolStats> {
 /** 供流水线日志使用的一行摘要 */
 export function statsLine(stats: ToolStats): string {
   return (
-    `候选 ${stats.candidates}｜达标 ${stats.qualified}（core ${stats.core} / watch ${stats.watch}）` +
-    `｜上榜 ${stats.listed}/${stats.target}｜缺口 ${stats.gap}` +
+    `候选池 ${stats.candidates}｜在榜 ${stats.listed}/${stats.target}` +
+    `（主榜 ${stats.core} / 观察 ${stats.watch}）｜缺口 ${stats.gap}` +
     `｜队列 待确认 ${stats.staging.pending} / 已确认 ${stats.staging.approved} / 可发榜 ${stats.staging.enriched}`
   );
 }

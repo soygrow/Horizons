@@ -426,7 +426,9 @@ function renderOverview(data: Overview): void {
     return;
   }
 
-  $("trend-kpi-board").textContent = fmtNum(s.boardRows);
+  // 在榜条数以 D1 发布写入的 board 为准（与首页同一份数据），候选池快照只作兜底
+  const boardTotal = data.board?.total || s.boardRows;
+  $("trend-kpi-board").textContent = fmtNum(boardTotal);
   const limitNote = data.boardLimit ? ` · 上限 ${fmtNum(data.boardLimit)} 条` : "";
   // 基线缺失时这个数字来自正式榜统计，不是候选池的计分快照，别混着说
   const boardNote = s.baseline === false ? "正式榜统计" : "计分快照";
