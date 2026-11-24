@@ -409,10 +409,12 @@ async function main() {
   const boards = getBoards();
   const home = {
     generatedAt: GENERATED_AT,
+    // 口径 = 榜单实际条数（与各列表页「共 N 个」一致）：
+    // 不能用源文件全量，否则未上榜候选、趋势词别名会把数字撑大
     stats: {
-      tools: tools.length,
-      repos: githubRepos.length,
-      trends: trendKeywords.length,
+      tools: toolRows.length,
+      repos: repoRows.length,
+      trends: trendKeywords.filter((t) => !t.variantOf).length,
       githubUpdatedAt,
     },
     toolsHot: boards.hot.map((t, i) => toToolRow(t, i + 1)),

@@ -1,0 +1,293 @@
+---
+/**
+ * 首页「机会引擎」：解释机会怎么被算出来，不展示具体机会条目。
+ * 五路信号 → 母线 → AI 核 → 一条机会的骨架。纯 CSS 动画，无脚本、无外部依赖。
+ */
+interface Props {
+  tools: number;
+  repos: number;
+  trends: number;
+  models: number;
+}
+
+const { tools, repos, trends, models } = Astro.props;
+
+/** 输入源：前四项带真实条数（来自榜单产物），每日情报按天更新 */
+const inputs = [
+  { label: "AI 工具榜", value: String(tools), unit: "个工具", href: "/tools", dot: "bg-data-3" },
+  { label: "GitHub 榜", value: String(repos), unit: "个仓库", href: "/github", dot: "bg-data-4" },
+  { label: "趋势词榜", value: String(trends), unit: "个词", href: "/trends", dot: "bg-brand-violet" },
+  { label: "AI 模型榜", value: String(models), unit: "个模型", href: "/models", dot: "bg-data-5" },
+  { label: "每日情报", value: "每天", unit: "", href: "/daily", dot: "bg-accent" },
+];
+
+/** 输出侧只给结构：让读者知道一条机会里有什么，而不是现在就替他们决定 */
+const outputs = ["为什么现在成立", "谁已经卡在这条路上", "第一周先做什么", "什么条件下放弃"];
+---
+
+<section
+  class="relative mt-14 overflow-hidden rounded-2xl border border-border bg-surface sm:mt-16"
+  aria-labelledby="opp-engine-title"
+>
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(78%_58%_at_10%_-8%,rgba(8,102,250,0.09),transparent)]"
+  >
+  </div>
+
+  <div class="relative px-5 pt-7 sm:px-8 sm:pt-9">
+    <p class="flex items-center gap-2 text-[11px] font-medium tracking-[0.16em] text-primary uppercase">
+      <span class="h-1 w-1 rounded-full bg-primary"></span>机会引擎
+    </p>
+    <h2
+      id="opp-engine-title"
+      class="mt-3 max-w-xl text-[1.3rem] font-bold leading-[1.4] tracking-tight text-ink sm:text-[1.625rem]"
+    >
+      机会不是搜出来的，是几份数据对齐后的交点
+    </h2>
+    <p class="mt-2.5 max-w-xl text-[13px] leading-[1.8] text-ink-secondary sm:text-sm">
+      单个信号永远是噪音。工具在涨、仓库在涨、模型在降价——只有当它们指向同一处，窗口才算真的开了。
+    </p>
+  </div>
+
+  <!-- 数据流：lg 一行五段，小屏竖排；整体收窄居中，像一张示意图而不是铺满的表格 -->
+  <div
+    class="relative mt-7 grid gap-y-4 px-5 sm:px-8 lg:mt-8 lg:grid-cols-[minmax(0,1fr)_52px_80px_52px_minmax(0,262px)] lg:items-center lg:gap-y-0"
+  >
+    <!-- 技术底纹：极淡网格，向四周淡出 -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 hidden lg:block"
+      style="background-image: linear-gradient(to right, var(--c-border) 1px, transparent 1px), linear-gradient(to bottom, var(--c-border) 1px, transparent 1px); background-size: 30px 30px; opacity: 0.75; mask-image: radial-gradient(62% 74% at 50% 50%, black, transparent 80%); -webkit-mask-image: radial-gradient(62% 74% at 50% 50%, black, transparent 80%);"
+    >
+    </div>
+
+    <ul class="relative flex flex-wrap justify-center gap-2 lg:flex-col lg:flex-nowrap lg:justify-start lg:gap-1.5">
+      {
+        inputs.map((it, i) => (
+          <li
+            class="chip-read relative flex w-[calc(50%-0.25rem)] items-center justify-between gap-2 rounded-lg border border-border bg-surface px-2.5 py-2 sm:w-[calc(33.333%-0.375rem)] lg:w-full lg:py-1.5"
+            style={`--i:${i}`}
+          >
+            <a href={it.href} class="flex min-w-0 items-center gap-1.5 transition hover:text-primary">
+              <span aria-hidden="true" class={`h-1.5 w-1.5 shrink-0 rounded-full ${it.dot}`} />
+              <span class="truncate text-[11px] font-medium text-ink-secondary">{it.label}</span>
+            </a>
+            <!-- 虚线引导：宽屏下把名称与条数连起来，避免中间一片空 -->
+            <span
+              aria-hidden="true"
+              class="mx-1 hidden h-px flex-1 border-t border-dashed border-border-strong lg:block"
+            />
+            <span class="shrink-0 font-mono text-[11px] tabular-nums text-ink">
+              {it.value}
+              {it.unit && <span class="ml-0.5 hidden text-[10px] text-ink-muted sm:inline">{it.unit}</span>}
+            </span>
+            <span
+              aria-hidden="true"
+              class="flow dot-lane absolute -right-1 top-1/2 hidden h-1 w-1 rounded-full bg-primary shadow-[0_0_6px_rgba(8,102,250,0.75)] lg:block"
+              style={`animation-delay:${i * 0.36}s`}
+            />
+          </li>
+        ))
+      }
+    </ul>
+
+    <!-- 母线：横屏向右流，竖屏向下流 -->
+    <div class="relative flex h-5 items-center justify-center lg:h-[84px] lg:w-14">
+      <span aria-hidden="true" class="absolute h-full w-px bg-gradient-to-b from-transparent via-primary/30 to-primary/60 lg:hidden"></span>
+      <span aria-hidden="true" class="flow dot-down absolute h-1 w-1 rounded-full bg-primary shadow-[0_0_6px_rgba(8,102,250,0.75)] lg:hidden"></span>
+      <span aria-hidden="true" class="absolute hidden h-px w-full bg-gradient-to-r from-border via-primary/45 to-primary/75 lg:block"></span>
+      <span aria-hidden="true" class="flow dot-right absolute hidden h-1 w-1 rounded-full bg-primary shadow-[0_0_6px_rgba(8,102,250,0.75)] lg:block"></span>
+    </div>
+
+    <!-- AI 计算核 -->
+    <div class="relative mx-auto grid h-[68px] w-[68px] place-items-center lg:h-20 lg:w-20">
+      <span aria-hidden="true" class="core-glow absolute inset-0 rounded-2xl"></span>
+      <div class="relative grid h-full w-full place-items-center overflow-hidden rounded-2xl border border-primary/25 bg-surface">
+        <span aria-hidden="true" class="spin-slow absolute inset-[-34%] bg-[conic-gradient(from_0deg,transparent_0deg,rgba(8,102,250,0.22)_62deg,transparent_124deg)]"></span>
+        <span class="relative font-mono text-[10px] font-bold tracking-[0.08em] text-primary">AI</span>
+      </div>
+      <span
+        class="pointer-events-none absolute -bottom-6 left-1/2 hidden -translate-x-1/2 whitespace-nowrap text-[10px] tracking-wide text-ink-muted lg:block"
+        >交叉 · 去重 · 打分</span
+      >
+    </div>
+
+    <!-- 核 → 输出 -->
+    <div class="relative flex h-5 items-center justify-center lg:h-[84px] lg:w-14">
+      <span aria-hidden="true" class="absolute h-full w-px bg-gradient-to-b from-primary/60 via-primary/30 to-transparent lg:hidden"></span>
+      <span aria-hidden="true" class="flow dot-down absolute h-1 w-1 rounded-full bg-primary shadow-[0_0_6px_rgba(8,102,250,0.75)] lg:hidden" style="animation-delay:0.7s"></span>
+      <span aria-hidden="true" class="absolute hidden h-px w-full bg-gradient-to-r from-primary/60 via-primary/30 to-border lg:block"></span>
+      <span aria-hidden="true" class="flow dot-right absolute hidden h-1 w-1 rounded-full bg-primary shadow-[0_0_6px_rgba(8,102,250,0.75)] lg:block" style="animation-delay:0.5s"></span>
+    </div>
+
+    <!-- 输出：一条机会的骨架 -->
+    <div class="relative overflow-hidden rounded-xl border border-primary/25 bg-surface p-3.5">
+      <!-- 左侧品牌渐变边：与 logo 穹顶同源，标记这是「产物」 -->
+      <span
+        aria-hidden="true"
+        class="absolute inset-y-0 left-0 w-[3px]"
+        style="background-image: var(--brand-gradient)"
+      ></span>
+      <div class="flex items-center justify-between gap-2">
+        <span class="flex items-center gap-1.5 text-[11px] font-medium text-ink">
+          <span class="relative flex h-1.5 w-1.5">
+            <span aria-hidden="true" class="absolute inset-0 animate-ping rounded-full bg-accent/60"></span>
+            <span class="relative h-1.5 w-1.5 rounded-full bg-accent"></span>
+          </span>
+          一条机会
+        </span>
+        <span class="font-mono text-[10px] text-ink-muted">每周 5 条</span>
+      </div>
+      <ul class="mt-2.5 space-y-1.5">
+        {
+          outputs.map((o) => (
+            <li class="flex items-start gap-1.5 text-[11px] leading-[1.5] text-ink-secondary">
+              <span aria-hidden="true" class="mt-[5px] h-[3px] w-[3px] shrink-0 rounded-full bg-primary/45" />
+              {o}
+            </li>
+          ))
+        }
+      </ul>
+      <span
+        aria-hidden="true"
+        class="flow sweep absolute inset-0 bg-[linear-gradient(105deg,transparent_38%,rgba(8,102,250,0.10)_50%,transparent_62%)]"
+      ></span>
+    </div>
+  </div>
+
+  <!-- 收尾：一句话戳人 + 入口 -->
+  <div class="relative mt-7 border-t border-border bg-surface-2/60 px-5 py-5 sm:px-8 sm:py-6">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="min-w-0 max-w-xl">
+        <p class="text-[14px] font-semibold leading-[1.6] text-ink sm:text-[15px]">
+          难的不是看见，是决定做哪一个。
+        </p>
+        <p class="mt-1.5 text-[12.5px] leading-[1.75] text-ink-secondary sm:text-[13px]">
+          收藏夹不会自己长出产品。真正的分水岭，是有没有人在信号重叠的地方，先把那个能跑起来的版本做出来。
+        </p>
+      </div>
+      <a
+        href="/opportunity"
+        class="shrink-0 rounded-lg bg-primary px-4 py-2.5 text-[13px] font-medium text-white transition hover:bg-primary-hover"
+      >
+        看看这批机会 →
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .flow,
+  .chip-read,
+  .core-glow,
+  .spin-slow {
+    will-change: transform, opacity;
+  }
+
+  .dot-lane {
+    animation: lane-out 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  .dot-right {
+    animation: dot-right 2.4s ease-in-out infinite;
+  }
+  .dot-down {
+    animation: dot-down 2.4s ease-in-out infinite;
+  }
+  .chip-read {
+    animation: chip-read 3.2s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.34s);
+  }
+  .core-glow {
+    animation: core-glow 4s ease-in-out infinite;
+  }
+  .spin-slow {
+    animation: spin-slow 7s linear infinite;
+  }
+  .sweep {
+    animation: sweep 5s ease-in-out infinite;
+  }
+
+  @keyframes lane-out {
+    0% {
+      opacity: 0;
+      transform: translate(0, -50%);
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(22px, -50%);
+    }
+  }
+  @keyframes dot-right {
+    0% {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    35% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(46px);
+    }
+  }
+  @keyframes dot-down {
+    0% {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    35% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+  @keyframes chip-read {
+    0%,
+    84%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(8, 102, 250, 0);
+    }
+    90%,
+    94% {
+      box-shadow: 0 0 0 2px rgba(8, 102, 250, 0.13);
+    }
+  }
+  @keyframes core-glow {
+    0%,
+    100% {
+      box-shadow: 0 0 18px rgba(8, 102, 250, 0.1);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(8, 102, 250, 0.24);
+    }
+  }
+  @keyframes spin-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes sweep {
+    0% {
+      transform: translateX(-110%);
+    }
+    55%,
+    100% {
+      transform: translateX(110%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flow,
+    .chip-read,
+    .core-glow,
+    .spin-slow {
+      animation: none;
+    }
+  }
+</style>
