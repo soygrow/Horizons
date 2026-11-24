@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-20T03:46:02.130Z",
-  "total": 13,
-  "itemsWithIssues": 1,
+  "generatedAt": "2026-11-24T10:57:20.561Z",
+  "total": 11,
+  "itemsWithIssues": 0,
   "dimensions": [
     {
       "key": "description",
@@ -27,10 +27,10 @@
       "key": "trafficMetrics.monthlyVisits",
       "label": "月访问量",
       "missing": 2,
-      "missingRatio": 15,
+      "missingRatio": 18,
       "missingDomains": [
-        "wanaka.app",
-        "claudeduet.com"
+        "claudeduet.com",
+        "wanaka.app"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -40,20 +40,15 @@
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
       "missing": 3,
-      "missingRatio": 23,
+      "missingRatio": 27,
       "missingDomains": [
-        "wanaka.app",
         "kixy.ai",
-        "claudeduet.com"
+        "claudeduet.com",
+        "wanaka.app"
       ],
-      "invalid": 1,
-      "invalidRatio": 8,
-      "invalidSamples": [
-        {
-          "domain": "cliputils.com",
-          "reason": "环比涨幅异常（13314%）"
-        }
-      ]
+      "invalid": 0,
+      "invalidRatio": 0,
+      "invalidSamples": []
     },
     {
       "key": "metrics.registeredAt",
@@ -69,10 +64,10 @@
       "key": "trafficMetrics.organicSearchVisits",
       "label": "自然搜索流量",
       "missing": 2,
-      "missingRatio": 15,
+      "missingRatio": 18,
       "missingDomains": [
-        "wanaka.app",
-        "claudeduet.com"
+        "claudeduet.com",
+        "wanaka.app"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -82,10 +77,10 @@
       "key": "geoDistribution",
       "label": "地区分布",
       "missing": 2,
-      "missingRatio": 15,
+      "missingRatio": 18,
       "missingDomains": [
-        "wanaka.app",
-        "claudeduet.com"
+        "claudeduet.com",
+        "wanaka.app"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -94,20 +89,19 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 11,
-      "missingRatio": 85,
+      "missing": 10,
+      "missingRatio": 91,
       "missingDomains": [
         "xmind.com",
-        "wanaka.app",
-        "teamily.com",
         "scroogefrog.com",
-        "tobira.ai",
-        "kixy.ai",
-        "maxma.com",
+        "teamily.com",
         "rerun.io",
+        "maxma.com",
         "quest.app",
+        "kixy.ai",
+        "agenthunt.io",
         "claudeduet.com",
-        "agenthunt.io"
+        "wanaka.app"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -126,15 +120,14 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 6,
-      "missingRatio": 46,
+      "missing": 5,
+      "missingRatio": 45,
       "missingDomains": [
-        "wanaka.app",
-        "teamily.com",
         "scroogefrog.com",
+        "teamily.com",
         "maxma.com",
-        "rerun.io",
-        "quest.app"
+        "quest.app",
+        "wanaka.app"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -207,16 +200,13 @@
       "issues": []
     },
     {
-      "domain": "wanaka.app",
-      "name": "Wanaka Studio",
+      "domain": "scroogefrog.com",
+      "name": "ScroogeFrog AI",
       "tier": "watch",
       "stage": "enriched",
-      "gapCount": 6,
+      "monthlyVisits": 15885,
+      "gapCount": 2,
       "gaps": [
-        "trafficMetrics.monthlyVisits",
-        "trafficMetrics.monthlyVisitsGrowth",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
         "keywords",
         "pricing"
       ],
@@ -238,41 +228,13 @@
       "issues": []
     },
     {
-      "domain": "scroogefrog.com",
-      "name": "ScroogeFrog AI",
-      "tier": "watch",
-      "stage": "enriched",
-      "monthlyVisits": 15885,
-      "gapCount": 2,
-      "gaps": [
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "tobira.ai",
-      "name": "Tobira Site Agent",
+      "domain": "rerun.io",
+      "name": "Rerun",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 2949,
+      "monthlyVisits": 54018,
       "gapCount": 1,
       "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "kixy.ai",
-      "name": "Kixy",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 71843,
-      "gapCount": 2,
-      "gaps": [
-        "trafficMetrics.monthlyVisitsGrowth",
         "keywords"
       ],
       "issueCount": 0,
@@ -284,20 +246,6 @@
       "tier": "core",
       "stage": "enriched",
       "monthlyVisits": 89336,
-      "gapCount": 2,
-      "gaps": [
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "rerun.io",
-      "name": "Rerun",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 54018,
       "gapCount": 2,
       "gaps": [
         "keywords",
@@ -321,21 +269,18 @@
       "issues": []
     },
     {
-      "domain": "cliputils.com",
-      "name": "Cliputils",
+      "domain": "kixy.ai",
+      "name": "Kixy",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 58351,
-      "gapCount": 0,
-      "gaps": [],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "trafficMetrics.monthlyVisitsGrowth",
-          "label": "环比增长",
-          "reason": "环比涨幅异常（13314%）"
-        }
-      ]
+      "monthlyVisits": 71843,
+      "gapCount": 2,
+      "gaps": [
+        "trafficMetrics.monthlyVisitsGrowth",
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
     },
     {
       "domain": "alsona.com",
@@ -349,10 +294,23 @@
       "issues": []
     },
     {
+      "domain": "agenthunt.io",
+      "name": "Agent Hunt",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 9792,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
       "domain": "claudeduet.com",
       "name": "Claude Duet",
       "tier": "watch",
-      "stage": "enriched",
+      "stage": "approved",
       "gapCount": 5,
       "gaps": [
         "trafficMetrics.monthlyVisits",
@@ -365,14 +323,18 @@
       "issues": []
     },
     {
-      "domain": "agenthunt.io",
-      "name": "Agent Hunt",
+      "domain": "wanaka.app",
+      "name": "Wanaka Studio",
       "tier": "watch",
-      "stage": "enriched",
-      "monthlyVisits": 9792,
-      "gapCount": 1,
+      "stage": "approved",
+      "gapCount": 6,
       "gaps": [
-        "keywords"
+        "trafficMetrics.monthlyVisits",
+        "trafficMetrics.monthlyVisitsGrowth",
+        "trafficMetrics.organicSearchVisits",
+        "geoDistribution",
+        "keywords",
+        "pricing"
       ],
       "issueCount": 0,
       "issues": []
