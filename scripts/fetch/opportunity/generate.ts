@@ -89,6 +89,9 @@ interface TrendRow {
   status?: string;
   why?: string;
   confidence?: string;
+  updatedAt?: string;
+  firstSeenAt?: string;
+  lastSeenAt?: string;
   editorNote?: { audience?: string; entryAngle?: string; whyAccepted?: string };
 }
 interface ToolRow {
@@ -98,6 +101,8 @@ interface ToolRow {
   description?: string;
   categories?: string[];
   heatScore?: number;
+  collectedAt?: string;
+  firstSeenAt?: string;
   trafficMetrics?: { monthlyVisits?: number; monthlyVisitsGrowth?: number };
   opportunity?: { score?: number; verdict?: string; reason?: string };
   ideaSparks?: Array<{ title?: string }>;
@@ -108,8 +113,10 @@ interface RepoRow {
   stars?: number;
   starsGrowth?: number;
   language?: string;
+  lastCrawledAt?: string;
+  pushedAt?: string;
   productScore?: { score?: number; grade?: string };
-  derivative?: { untapped?: string[] };
+  derivative?: { untapped?: string[]; space?: number };
   insight?: { taglineZh?: string };
 }
 interface ModelRow {
@@ -121,6 +128,7 @@ interface ModelRow {
   capability?: number;
   tags?: string[];
   open?: boolean;
+  releasedAt?: string;
 }
 
 function readJSON<T>(file: string, fallback: T): T {
@@ -145,47 +153,108 @@ function truncate(text: string | undefined, max: number): string {
   return clean.length > max ? `${clean.slice(0, max)}…` : clean;
 }
 
+/** 距今多少天；时间戳缺失或非法返回 null（视为「不知道旧不旧」，不剔除）。 */
+function daysSince(iso?: string | null): number | null {
+  if (!iso) return null;
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return null;
+  return (Date.now() - t) / 86_400_000;
+}
+
+/** 已消费的素材沉底：未用过的在前、用过的在后，各自保持传入顺序，让「推进式覆盖」生效。 */
+function sinkConsumed<T>(rows: T[], refOf: (r: T) => string, consumed: Set<string>): T[] {
+  return [
+    ...rows.filter((r) => !consumed.has(refOf(r))),
+    ...rows.filter((r) => consumed.has(refOf(r))),
+  ];
+}
+
 /**
- * 挑素材：每榜按「机会信号强度」排序，只送强信号的那部分。
+ * 挑素材：每榜按「机会信号强度」排序，再叠加两条硬约束——
  *
- * 审计结论（2026-11）：trends/aitools/github 三榜的采集端已产出近成品的机会候选
- * （entryAngle / opportunity+ideaSparks / derivative.untapped），应按这些信号排序，
- * 而不是按词条顺序或原始流量；models 榜的 weaknesses 是模板套话，只喂开源/价格/能力
- * 这些硬事实。
+ * 1. 新鲜度门槛：每榜取一条时间戳锚点，数据久未更新的素材剔除（models 例外，发布≠失效）。
+ *    采集端若几周不刷榜，老素材会自动落选，而不是无限复用同一批僵尸信号。
+ * 2. 已消费记忆：跨批次记住哪些 ref 已被引用过，沉底后让连续批次推进式消费素材库，
+ *    而不是每批都撞同一批 top（解决「榜单不变 → 素材一样 → 机会重复」）。
  */
-function buildMaterial(): {
+function buildMaterial(consumedRefs: Record<string, string[]> = {}): {
   trends: TrendRow[];
   tools: ToolRow[];
   repos: RepoRow[];
   models: ModelRow[];
   refs: { trends: Set<string>; tools: Set<string>; github: Set<string>; models: Set<string> };
+  consumed: { trends: Set<string>; tools: Set<string>; github: Set<string>; models: Set<string> };
+  dropped: { trends: number; tools: number; github: number };
 } {
+  const FRESH_DAYS = { trends: 30, tools: 45, github: 45 } as const;
+  const CONF_RANK: Record<string, number> = { high: 3, medium: 2, low: 1 };
+  const STATUS_RANK: Record<string, number> = { breaking: 2, gaining: 1, cooling: 0 };
+  const consumed = {
+    trends: new Set(consumedRefs.trends ?? []),
+    tools: new Set(consumedRefs.tools ?? []),
+    github: new Set(consumedRefs.github ?? []),
+    models: new Set(consumedRefs.models ?? []),
+  };
+
+  // trends：breaking 优先、confidence 次之；剔除 cooling 与久未更新者
   const trendsRaw = readJSON<unknown>("trends.json", {});
-  const confRank: Record<string, number> = { high: 0, medium: 1, low: 2 };
-  const trends = asArray<TrendRow>(trendsRaw, "keywords")
-    .filter((t) => t.status !== "cooling" && t.slug && t.editorNote?.entryAngle)
-    .sort(
-      (a, b) => (confRank[a.confidence ?? "low"] ?? 2) - (confRank[b.confidence ?? "low"] ?? 2),
-    )
-    .slice(0, 60);
+  const trendsFresh = asArray<TrendRow>(trendsRaw, "keywords").filter(
+    (t) => t.status !== "cooling" && t.slug && t.editorNote?.entryAngle,
+  );
+  const trendsAct = trendsFresh.filter((t) => {
+    const age = daysSince(t.updatedAt ?? t.lastSeenAt);
+    return age === null || age <= FRESH_DAYS.trends;
+  });
+  const trendRank = (t: TrendRow) =>
+    (STATUS_RANK[t.status ?? "cooling"] ?? 0) * 10 + (CONF_RANK[t.confidence ?? "low"] ?? 1);
+  const trends = sinkConsumed(
+    trendsAct.sort((a, b) => trendRank(b) - trendRank(a)),
+    (t) => t.slug,
+    consumed.trends,
+  ).slice(0, 60);
 
+  // tools：机会分排序，剔除久未采集者
   const toolsRaw = readJSON<unknown>("aitools.json", []);
-  const tools = asArray<ToolRow>(toolsRaw, "items")
-    .filter((t) => t.domain)
-    .sort((a, b) => (b.opportunity?.score ?? 0) - (a.opportunity?.score ?? 0))
-    .slice(0, 40);
+  const toolsFresh = asArray<ToolRow>(toolsRaw, "items").filter((t) => t.domain);
+  const toolsAct = toolsFresh.filter((t) => {
+    const age = daysSince(t.collectedAt ?? t.firstSeenAt);
+    return age === null || age <= FRESH_DAYS.tools;
+  });
+  const tools = sinkConsumed(
+    toolsAct.sort((a, b) => (b.opportunity?.score ?? 0) - (a.opportunity?.score ?? 0)),
+    (t) => t.domain,
+    consumed.tools,
+  ).slice(0, 40);
 
+  // repos：按机会空间（derivative.space 1-10）排序——不是 productScore 质量分；剔除久未抓取者
   const reposRaw = readJSON<unknown>("github.json", {});
-  const repos = asArray<RepoRow>(reposRaw, "repos")
-    .filter((r) => r.fullName)
-    .sort((a, b) => (b.productScore?.score ?? 0) - (a.productScore?.score ?? 0))
-    .slice(0, 40);
+  const reposFresh = asArray<RepoRow>(reposRaw, "repos").filter(
+    (r) => r.fullName && r.derivative?.untapped?.length,
+  );
+  const reposAct = reposFresh.filter((r) => {
+    const age = daysSince(r.lastCrawledAt ?? r.pushedAt);
+    return age === null || age <= FRESH_DAYS.github;
+  });
+  const repos = sinkConsumed(
+    reposAct.sort((a, b) => (b.derivative?.space ?? 0) - (a.derivative?.space ?? 0)),
+    (r) => r.fullName,
+    consumed.github,
+  ).slice(0, 40);
 
+  // models：服务于 feasible/timing，开源可复用优先、输入价升序；不设新鲜度门槛（发布≠失效）
   const modelsRaw = readJSON<unknown>("models.json", {});
-  const models = asArray<ModelRow>(modelsRaw, "models")
-    .filter((m) => m.slug)
-    .sort((a, b) => (b.capability ?? 0) - (a.capability ?? 0))
-    .slice(0, 25);
+  const models = sinkConsumed(
+    asArray<ModelRow>(modelsRaw, "models")
+      .filter((m) => m.slug)
+      .sort(
+        (a, b) =>
+          (b.open ? 1 : 0) - (a.open ? 1 : 0) ||
+          (a.price?.input ?? Number.POSITIVE_INFINITY) -
+            (b.price?.input ?? Number.POSITIVE_INFINITY),
+      ),
+    (m) => m.slug,
+    consumed.models,
+  ).slice(0, 25);
 
   const allTrends = asArray<TrendRow>(trendsRaw, "keywords");
   const allTools = asArray<ToolRow>(toolsRaw, "items");
@@ -206,14 +275,23 @@ function buildMaterial(): {
       github: new Set(allRepos.map((r) => r.fullName).filter(Boolean)),
       models: new Set(allModels.map((m) => m.slug).filter(Boolean)),
     },
+    consumed,
+    dropped: {
+      trends: trendsFresh.length - trendsAct.length,
+      tools: toolsFresh.length - toolsAct.length,
+      github: reposFresh.length - reposAct.length,
+    },
   };
 }
 
 function renderMaterial(m: ReturnType<typeof buildMaterial>): string {
+  const used = (board: keyof typeof m.consumed, ref: string) =>
+    m.consumed[board].has(ref) ? "【已用过】" : "";
+
   const trends = m.trends
     .map(
       (t) =>
-        `- ${t.slug} | ${truncate(t.editorNote?.entryAngle, 80)} | 受众 ${truncate(
+        `- ${used("trends", t.slug)}${t.slug} | ${truncate(t.editorNote?.entryAngle, 80)} | 受众 ${truncate(
           t.editorNote?.audience,
           30,
         )} | ${truncate(t.editorNote?.whyAccepted, 50)}`,
@@ -224,7 +302,7 @@ function renderMaterial(m: ReturnType<typeof buildMaterial>): string {
     .map((t) => {
       const spark = t.ideaSparks?.[0];
       const tail = spark ? ` | 火花「${truncate(spark.title, 30)}」` : "";
-      return `- ${t.domain} | ${t.name} | 机会 ${t.opportunity?.score ?? "?"} 分 ${
+      return `- ${used("tools", t.domain)}${t.domain} | ${t.name} | 机会 ${t.opportunity?.score ?? "?"} 分 ${
         t.opportunity?.verdict ?? ""
       } | ${truncate(t.opportunity?.reason, 60)}${tail}`;
     })
@@ -234,7 +312,7 @@ function renderMaterial(m: ReturnType<typeof buildMaterial>): string {
     .map((r) => {
       const untapped = r.derivative?.untapped?.[0];
       const tail = untapped ? ` | 机会 ${truncate(untapped, 60)}` : "";
-      return `- ${r.fullName} | ${r.productScore?.grade ?? "?"}级 ${
+      return `- ${used("github", r.fullName)}${r.fullName} | ${r.productScore?.grade ?? "?"}级 ${
         r.productScore?.score ?? "?"
       } 分 | ${truncate(r.insight?.taglineZh, 40)}${tail}`;
     })
@@ -243,14 +321,14 @@ function renderMaterial(m: ReturnType<typeof buildMaterial>): string {
   const models = m.models
     .map(
       (x) =>
-        `- ${x.slug} | ${x.provider} | ${x.open ? "开源" : "闭源"} | 能力 ${x.capability ?? "?"} | 价格 ${
+        `- ${used("models", x.slug)}${x.slug} | ${x.provider} | ${x.open ? "开源" : "闭源"} | 能力 ${x.capability ?? "?"} | 价格 ${
           x.price?.input ?? "?"
         }/${x.price?.output ?? "?"} 美元每百万 | ${(x.tags ?? []).join("/")}`,
     )
     .join("\n");
 
   return [
-    "## 趋势榜（搜索词，ref 用第一列；entryAngle 是采集端已想好的切入角度）",
+    "## 趋势榜（搜索词，ref 用第一列；entryAngle 是采集端已想好的切入角度；【已用过】= 之前候选引用过，优先找没标的）",
     trends,
     "",
     "## 工具榜（ref 用域名；机会分与「火花」是采集端已算好的判断）",
@@ -567,19 +645,25 @@ interface StagingFile {
   updatedAt: string;
   batches: Record<string, { generatedAt: string; model: string; items: Opportunity[] }>;
   rejections?: Rejection[];
+  /** 跨批次已引用过的素材 ref，按 board（trends/tools/github/models）分组。
+   *  供 buildMaterial 沉底，推进式消费素材库，避免榜单不变时每批都撞同一批头部素材。 */
+  consumedRefs?: Record<string, string[]>;
 }
 
 function readStaging(): StagingFile {
-  if (!existsSync(STAGING)) return { updatedAt: new Date().toISOString(), batches: {}, rejections: [] };
+  if (!existsSync(STAGING)) {
+    return { updatedAt: new Date().toISOString(), batches: {}, rejections: [], consumedRefs: {} };
+  }
   try {
     const parsed = JSON.parse(readFileSync(STAGING, "utf8")) as Partial<StagingFile>;
     return {
       updatedAt: parsed.updatedAt ?? new Date().toISOString(),
       batches: parsed.batches ?? {},
       rejections: parsed.rejections ?? [],
+      consumedRefs: parsed.consumedRefs ?? {},
     };
   } catch {
-    return { updatedAt: new Date().toISOString(), batches: {}, rejections: [] };
+    return { updatedAt: new Date().toISOString(), batches: {}, rejections: [], consumedRefs: {} };
   }
 }
 
@@ -615,7 +699,9 @@ async function pushToD1(batch: string, items: Opportunity[]): Promise<number> {
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
-  const material = buildMaterial();
+  // 先读 staging：它携带的 consumedRefs 决定本批素材怎么沉底（推进式消费）
+  const staging = readStaging();
+  const material = buildMaterial(staging.consumedRefs ?? {});
   const policy = loadPolicy();
   const existing = loadExisting();
 
@@ -623,7 +709,6 @@ async function main(): Promise<void> {
   const accepted: Opportunity[] = [];
 
   // 补位时把该批次已存在的候选也算进"别重复"名单
-  const staging = readStaging();
   const rejections = staging.rejections ?? [];
   const batchItems = staging.batches[args.batch]?.items ?? [];
   for (const o of batchItems) usedSlugs.add(o.slug);
@@ -631,6 +716,12 @@ async function main(): Promise<void> {
 
   const system = systemPrompt(policy);
   const materialText = renderMaterial(material);
+  const { dropped } = material;
+  if (dropped.trends || dropped.tools || dropped.github) {
+    console.log(
+      `[opps] stale 剔除：trends ${dropped.trends} / tools ${dropped.tools} / github ${dropped.github}（超过新鲜度门槛的素材）`,
+    );
+  }
   console.log(
     `[opps] 批次 ${args.batch} · 生成 ${args.count} 条 · 模型 ${args.model} · 素材 trends ${material.trends.length} / tools ${material.tools.length} / github ${material.repos.length} / models ${material.models.length}`,
   );
@@ -704,6 +795,27 @@ async function main(): Promise<void> {
       { at: new Date().toISOString(), batch: args.batch, reason: args.reason, exclude: args.exclude },
     ];
   }
+
+  // 已消费记忆：把本批采纳机会引用的素材 ref 沉淀进 staging.consumedRefs，
+  // 下批 buildMaterial 会把这些 ref 沉底，推进式消费素材库，避免撞同一批头部素材
+  const consumedRefs = staging.consumedRefs ?? {};
+  const consumedAdd: Record<string, Set<string>> = {
+    trends: new Set(consumedRefs.trends ?? []),
+    tools: new Set(consumedRefs.tools ?? []),
+    github: new Set(consumedRefs.github ?? []),
+    models: new Set(consumedRefs.models ?? []),
+  };
+  for (const o of accepted) {
+    for (const e of o.evidence ?? []) {
+      if (e.board && e.ref && consumedAdd[e.board]) consumedAdd[e.board].add(e.ref);
+    }
+  }
+  staging.consumedRefs = {
+    trends: [...consumedAdd.trends],
+    tools: [...consumedAdd.tools],
+    github: [...consumedAdd.github],
+    models: [...consumedAdd.models],
+  };
 
   // 落盘：同批次补位是追加，不是覆盖
   const merged = [...batchItems.filter((o) => !accepted.some((a) => a.slug === o.slug)), ...accepted];
