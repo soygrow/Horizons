@@ -347,6 +347,35 @@ export async function markPublished(board: string, domains: readonly string[]): 
   return changed;
 }
 
+/**
+ * 释放后台派发时写下的 publishing 占位：条目退回 enriched（待发）。
+ *
+ * 发布没真正发生（重复收录 / 更新目标线上不存在 / 命中拒绝名单）时必须调用，
+ * 否则这些行会永远停在「发布中」—— 既不能重发也不会消失，只能等 60 分钟超时
+ * 被判失败。范围由调用方给定，避免误放另一个正在跑的发布任务占住的条目。
+ */
+export async function releasePublishing(board: string, itemKeys: readonly string[]): Promise<number> {
+  if (itemKeys.length === 0) return 0;
+  const client = openClient();
+  if (!client) return 0;
+  let changed = 0;
+  const now = Date.now();
+  for (let i = 0; i < itemKeys.length; i += 100) {
+    const chunk = itemKeys.slice(i, i + 100);
+    try {
+      const res = await client.query(
+        `UPDATE board_items SET status='enriched', updated_at=? ` +
+          `WHERE board=? AND status='publishing' AND item_key IN (${chunk.map(() => "?").join(",")})`,
+        [now, board, ...chunk],
+      );
+      changed += res.changes;
+    } catch (e) {
+      console.warn("[items] 释放发布占位失败：", e);
+    }
+  }
+  return changed;
+}
+
 /** 发布完成后清空该榜工作区（与原来清空 staging 文件等价），保留等确认的已发布行 */
 export async function clearCandidates(board: string): Promise<void> {
   const client = openClient();

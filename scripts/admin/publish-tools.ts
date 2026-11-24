@@ -27,6 +27,7 @@ import {
   clearCandidates,
   markPublished,
   readWorkspace,
+  releasePublishing,
   syncCandidates,
   type ItemStatus,
 } from "./board-items";
@@ -276,11 +277,17 @@ async function main(): Promise<void> {
   const notSelected: string[] = [];
   /** 标了 refresh 但线上没有同域名条目：数据不一致，不能当更新发 */
   const notListed: string[] = [];
+  /**
+   * 被后台占位成 publishing、但本次注定发不出去的行（命中拒绝名单 / 更新目标线上
+   * 不存在）。空发布时必须释放，否则后台永远显示「发布中」，只能等 60 分钟超时。
+   */
+  const stuck: string[] = [];
 
   for (const item of staging.items) {
     if (!item?.domain) continue;
     if (rejected.has(item.domain)) {
       rejectedHit.push(item.domain);
+      if (item.stage === "publishing") stuck.push(item.domain);
       continue;
     }
     if (only && !only.has(item.domain)) {
@@ -298,6 +305,7 @@ async function main(): Promise<void> {
     // 更新条目：必须本来就在线上，否则「更新」无从谈起
     if (!existing.has(item.domain) && refresh) {
       notListed.push(item.domain);
+      if (item.stage === "publishing") stuck.push(item.domain);
       continue;
     }
     // publishing 是后台派发时写入的占位状态，本质就是「已富化、正在发」，必须照发，
@@ -345,7 +353,23 @@ async function main(): Promise<void> {
   }
 
   if (accepted.length === 0 && drops.domains.size === 0) {
+    /*
+     * 空发布也必须收尾占位，否则被 /publish 标成 publishing 的行会永远停在
+     * 「发布中」（2026-11-24 两条条目就是这样卡的：点了发布 → 域名其实已在线上
+     * → 脚本判重复跳过 → 直接 return，谁都没把占位还回去）。
+     *   - 重复：域名本来就在线上，物理上就是「已发布」，标 published 让后台能收尾；
+     *   - 其余被占位却没发出的（命中拒绝名单 / 更新目标不在线上）：退回 enriched。
+     */
+    if (duplicates.length) await markPublished("tools", duplicates);
+    const released = stuck.length ? await releasePublishing("tools", stuck) : 0;
+
     console.log("[publish] 没有可发布的条目，源数据未改动");
+    if (duplicates.length) {
+      console.log(
+        `[publish] 已在线上（判重复），直接标为已发布 ${duplicates.length} 条：${duplicates.slice(0, 12).join("、")}`,
+      );
+    }
+    if (released) console.log(`[publish] 释放发布占位 ${released} 条，已退回待发`);
     console.log(
       JSON.stringify({
         added: 0,

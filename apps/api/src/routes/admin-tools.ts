@@ -37,6 +37,7 @@ import {
   listEnrichingItems,
   PUBLISH_TIMEOUT_MS,
   releasePublishing,
+  releaseStalePublishing,
   setItemsStatus,
 } from "../lib/board-items";
 import { readReport } from "../lib/reports";
@@ -1453,7 +1454,19 @@ tools.post("/publish", async (c) => {
    * 脚本读队列时认 publishing（与 enriched 同一档），所以这一步不影响实际发出什么。
    * 没有可发的就当场拒绝 —— 否则点了按钮毫无反应，看不出是状态不对还是任务没起来。
    */
-  const marked = await markPublishing(c.env.DB, "tools", domains, kind).catch(() => 0);
+  let marked = await markPublishing(c.env.DB, "tools", domains, kind).catch(() => 0);
+  if (marked === 0) {
+    /*
+     * 上一轮发布跑空时（域名其实已在线上、脚本判重复跳过），占位可能没被还回来，
+     * 条目就一直显示「发布中」，再点发布又被自己的占位挡住 —— markPublishing 不认
+     * publishing。这里先放掉 5 分钟没动静的占位再试一次；正在跑的发布刚标记过，
+     * 不会被抢走。
+     */
+    const released = await releaseStalePublishing(c.env.DB, "tools", domains, kind).catch(() => 0);
+    if (released > 0) {
+      marked = await markPublishing(c.env.DB, "tools", domains, kind).catch(() => 0);
+    }
+  }
   if (marked === 0) {
     return c.json(
       {

@@ -156,6 +156,51 @@ export async function releasePublishing(
 }
 
 /**
+ * 释放「僵尸占位」：publishing → enriched，让条目能再次被发布。
+ *
+ * 发布脚本跑空（域名已在线上被判重复）时占位没被还回来，条目会一直显示「发布中」，
+ * 再点发布又被自己的占位挡住（markPublishing 不认 publishing）。
+ * 只动超过 minAgeMs 没更新的行 —— 正在跑的发布刚标记过，不会被抢。
+ */
+export async function releaseStalePublishing(
+  db: D1Database,
+  board: string,
+  domains: readonly string[],
+  kind?: "new" | "refresh",
+  minAgeMs = 5 * 60 * 1000,
+): Promise<number> {
+  const now = Date.now();
+  const cutoff = now - minAgeMs;
+  const kindSql = kind ? " AND kind=?" : "";
+  const kindArgs: string[] = kind ? [kind] : [];
+  if (domains.length === 0) {
+    const res = await db
+      .prepare(
+        `UPDATE board_items SET status='enriched', updated_at=? ` +
+          `WHERE board=? AND status='publishing' AND updated_at < ?${kindSql}`,
+      )
+      .bind(now, board, cutoff, ...kindArgs)
+      .run();
+    return res.meta?.changes ?? 0;
+  }
+  // D1 单条语句最多 100 个绑定参数，按 90 分批（域名上限 200）
+  let changed = 0;
+  for (let i = 0; i < domains.length; i += 90) {
+    const chunk = domains.slice(i, i + 90);
+    const res = await db
+      .prepare(
+        `UPDATE board_items SET status='enriched', updated_at=? ` +
+          `WHERE board=? AND status='publishing' AND updated_at < ?${kindSql} ` +
+          `AND item_key IN (${chunk.map(() => "?").join(",")})`,
+      )
+      .bind(now, board, cutoff, ...kindArgs, ...chunk)
+      .run();
+    changed += res.meta?.changes ?? 0;
+  }
+  return changed;
+}
+
+/**
  * 「处理完成」：把已发布成功的条目从队列删掉，后台不再显示。
  *
  * 只删 published 的行 —— 前端传错域名也不会误删还在队列里的条目。
