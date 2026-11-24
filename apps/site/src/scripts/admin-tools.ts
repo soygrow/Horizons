@@ -608,6 +608,23 @@ function renderJobs(jobs: Job[]): void {
   }
 }
 
+/**
+ * 「批量处理完成」按钮：只统计「已发布成功」的条目，队列里没有就置灰。
+ *
+ * 数量取队列统计而不是当前页 —— 分页时后面几页的发榜条目也要能被一次收尾。
+ */
+function syncDoneButton(data: StagingResp): void {
+  const btn = $("tools-done-btn") as HTMLButtonElement | null;
+  if (!btn) return;
+  const n = data.published ?? 0;
+  btn.disabled = n === 0;
+  btn.textContent = n > 0 ? `批量处理完成（${n}）` : "批量处理完成";
+  btn.title =
+    n > 0
+      ? `把 ${n} 条「已发布成功」的条目批量移出后台队列，线上榜单不受影响`
+      : "没有「已发布成功」的条目需要收尾";
+}
+
 function renderStaging(data: StagingResp): void {
   state.staging = data;
 
@@ -731,6 +748,7 @@ function renderStaging(data: StagingResp): void {
 
   // 阶段是这次刷新才变的（富化中 → 成功/失败），按钮可用性得跟着重算
   syncEnrichButton(state.jobs);
+  syncDoneButton(data);
 }
 
 /** 下榜清单：存量重判的产出，没跑过就明确说「未知」而不是显示 0 */
@@ -1306,6 +1324,52 @@ function bind(): void {
     syncEnrichButton(state.jobs);
     void loadStaging();
     void loadPreview();
+  });
+
+  /*
+   * 批量处理完成：发布成功的条目会停在队列里等人工确认，逐条点太慢。
+   * 只收尾 published —— 发布中/发布失败/待富化的一条都不动。
+   * 二次确认把数量和「不影响线上」说清楚，避免手滑清空整批。
+   */
+  $("tools-done-btn").addEventListener("click", async () => {
+    const btn = $("tools-done-btn") as HTMLButtonElement;
+    const n = state.staging?.published ?? 0;
+    if (!n) {
+      window.alert("没有「发布成功」的条目需要收尾。");
+      return;
+    }
+    if (
+      !window.confirm(
+        `确认批量处理完成？\n\n将把 ${n} 条「已发布成功」的条目移出后台队列。\n\n` +
+          `· 线上榜单不受影响，只是后台不再显示\n` +
+          `· 发布中 / 发布失败 / 待富化的条目一条都不会动\n` +
+          `· 操作不可撤销\n\n确定继续？`,
+      )
+    ) {
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = "处理中…";
+    try {
+      const r = await apiPost<{ removed: number; skipped: number }>("/tools/staging/done", {
+        all: true,
+      });
+      state.selected.clear();
+      await loadStaging();
+      void loadPreview();
+      void loadOverview();
+      if (!r.removed) window.alert("没有条目被移除，刷新一下看最新状态。");
+    } catch (e) {
+      window.alert(`批量处理失败：${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      // loadStaging 会重渲染并复位按钮；请求失败时也要把文案恢复
+      if (state.staging) {
+        syncDoneButton(state.staging);
+      } else {
+        btn.disabled = false;
+        btn.textContent = "批量处理完成";
+      }
+    }
   });
 
   $("tools-approve-btn").addEventListener("click", async () => {

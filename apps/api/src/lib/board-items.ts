@@ -173,6 +173,20 @@ export async function deletePublished(
   return results.reduce((sum, r) => sum + (r.meta?.changes ?? 0), 0);
 }
 
+/**
+ * 「批量处理完成」：把该榜所有 published 的条目一次性从队列删掉。
+ *
+ * 与 deletePublished 同样的边界 —— 只认 status='published'，
+ * 发布中 / 发布失败 / 待富化的一条都碰不到，批量操作不会误伤队列。
+ */
+export async function deleteAllPublished(db: D1Database, board: string): Promise<number> {
+  const res = await db
+    .prepare("DELETE FROM board_items WHERE board=? AND status='published'")
+    .bind(board)
+    .run();
+  return res.meta?.changes ?? 0;
+}
+
 export async function markEnriching(
   db: D1Database,
   board: string,

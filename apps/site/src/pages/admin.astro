@@ -826,6 +826,16 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 >
                   发布到榜单
                 </button>
+                <!-- 收尾：发布成功后条目会停在队列里等人工确认，逐条点太慢，
+                     这里提供一次性清空的入口（只动「已发布成功」的条目） -->
+                <button
+                  id="tools-done-btn"
+                  type="button"
+                  title="把「已发布成功」的条目批量移出后台队列，线上榜单不受影响"
+                  class="rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  批量处理完成
+                </button>
               </div>
             </div>
             <div class="overflow-x-auto">

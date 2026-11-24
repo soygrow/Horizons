@@ -26,6 +26,7 @@ import {
 } from "../lib/github";
 import { readBoardStats, type BoardStats } from "../lib/board-stats";
 import {
+  deleteAllPublished,
   deletePublished,
   expireStaleEnriching,
   expireStalePublishing,
@@ -526,12 +527,23 @@ tools.get("/staging", async (c) => {
  */
 tools.post("/staging/done", async (c) => {
   let domains: string[] = [];
+  /** all=true：批量收尾该榜全部「已发布成功」的条目 */
+  let all = false;
   try {
-    const body = (await c.req.json()) as { domains?: unknown };
+    const body = (await c.req.json()) as { domains?: unknown; all?: unknown };
+    all = body?.all === true;
     domains = normalizeDomainInput(body?.domains);
   } catch {
     return c.json({ error: "bad_request", detail: "body 必须是 JSON" }, 400);
   }
+
+  // 批量入口单独走 all 标记：不能靠「domains 为空」推断，
+  // 否则前端传了一串非法域名被过滤成空数组时会变成整批删除。
+  if (all) {
+    const removed = await deleteAllPublished(c.env.DB, "tools");
+    return c.json({ removed, skipped: 0 });
+  }
+
   if (!domains.length) return c.json({ error: "bad_request", detail: "缺少 domains" }, 400);
 
   const removed = await deletePublished(c.env.DB, "tools", domains);
