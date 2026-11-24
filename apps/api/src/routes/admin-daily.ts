@@ -10,13 +10,20 @@
  */
 import { Hono } from "hono";
 import type { Env } from "../env";
-import { dispatchWorkflow, ghConfig, latestRun, mapStatus, missingSecrets } from "../lib/github";
+import {
+  dispatchWorkflow,
+  ghConfig,
+  latestRun,
+  mapStatus,
+  missingSecrets,
+  readRepoJson,
+} from "../lib/github";
 
 export const adminDaily = new Hono<{ Bindings: Env }>();
 
 const WORKFLOW = "daily.yml";
 const MAX_ISSUES = 12;
-const MODES = ["fetch", "build", "publish", "all"];
+const MODES = ["fetch", "build", "compose", "publish", "all"];
 
 interface DigestItem {
   id: string;
@@ -111,6 +118,41 @@ adminDaily.get("/issues/:date", async (c) => {
     const detail = e instanceof Error ? e.message : String(e);
     return c.json({ error: "read_failed", detail }, 502);
   }
+});
+
+/** 某期当前状态：已发布（published）/ 已成稿未发布（draft）/ 还不存在（missing） */
+adminDaily.get("/draft/:date", async (c) => {
+  const date = c.req.param("date");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return c.json({ error: "bad_date", detail: "日期格式应为 YYYY-MM-DD" }, 400);
+  }
+  const cfg = ghConfig(c.env);
+  if (!cfg) return c.json(notConfigured(c.env), 400);
+
+  // 1) 已发布？查 D1 的 digest_issues
+  let published: DigestFile | null = null;
+  try {
+    const row = await c.env.DB.prepare("SELECT payload FROM digest_issues WHERE date = ?")
+      .bind(date)
+      .first<{ payload: string }>();
+    if (row) published = JSON.parse(row.payload) as DigestFile;
+  } catch {
+    // 单期存坏不拖垮整页
+    published = null;
+  }
+
+  // 2) 已成稿未发布？读仓库里的成稿文件（build 产物会在 Actions 里提交回 main）
+  let draft: DigestFile | null = null;
+  try {
+    const file = await readRepoJson<DigestFile>(cfg, `content/digest/${date}.json`);
+    if (file) draft = file.data;
+  } catch (e) {
+    const detail = e instanceof Error ? e.message : String(e);
+    return c.json({ error: "draft_read_failed", detail }, 502);
+  }
+
+  const status = published ? "published" : draft ? "draft" : "missing";
+  return c.json({ date, status, draft, published });
 });
 
 /* --------------------------------- 触发 --------------------------------- */

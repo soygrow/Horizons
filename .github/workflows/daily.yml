@@ -9,6 +9,7 @@ name: Daily Digest
 # mode:
 #   fetch   —— 只采集，产出 content/digest/raw/<date>.json
 #   build   —— 只成稿，产出 content/digest/<date>.json
+#   compose —— 采集 + 成稿，但不写 D1（后台「生成本期」用，发布单独一步）
 #   publish —— 成稿后写 D1（同名一期重复发布会被告警挡下）
 #   all     —— 依次执行 fetch → build → publish
 #
@@ -19,9 +20,9 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "fetch=采集 build=成稿 publish=成稿+入库 all=全部"
+        description: "fetch=采集 build=成稿 compose=采集+成稿 publish=成稿+入库 all=全部"
         type: choice
-        options: [all, fetch, build, publish]
+        options: [all, fetch, build, compose, publish]
         default: all
       date:
         description: "目标日期 YYYY-MM-DD，留空=今天（UTC+8）"
@@ -72,11 +73,11 @@ jobs:
       # 一律走 pnpm exec tsx 直调，不经 pnpm run —— 脚本后的 --date 会被
       # pnpm 当成自己的参数处理掉，直调才能保证透传。
       - name: 采集
-        if: inputs.mode == 'all' || inputs.mode == 'fetch'
+        if: inputs.mode == 'all' || inputs.mode == 'fetch' || inputs.mode == 'compose'
         run: pnpm exec tsx scripts/fetch/daily/run.ts --date ${{ steps.issue.outputs.date }}
 
       - name: 成稿
-        if: inputs.mode == 'all' || inputs.mode == 'build' || inputs.mode == 'publish'
+        if: inputs.mode == 'all' || inputs.mode == 'build' || inputs.mode == 'publish' || inputs.mode == 'compose'
         run: pnpm exec tsx scripts/fetch/daily/build.ts --date=${{ steps.issue.outputs.date }}
 
       - name: 写入 D1
