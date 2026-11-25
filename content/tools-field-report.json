@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-25T03:50:06.158Z",
-  "total": 17,
-  "itemsWithIssues": 1,
+  "generatedAt": "2026-11-25T04:08:35.173Z",
+  "total": 29,
+  "itemsWithIssues": 4,
   "dimensions": [
     {
       "key": "description",
@@ -26,9 +26,10 @@
     {
       "key": "trafficMetrics.monthlyVisits",
       "label": "月访问量",
-      "missing": 1,
-      "missingRatio": 6,
+      "missing": 2,
+      "missingRatio": 7,
       "missingDomains": [
+        "wanaka.app",
         "adeindex.com"
       ],
       "invalid": 0,
@@ -38,9 +39,12 @@
     {
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
-      "missing": 1,
-      "missingRatio": 6,
+      "missing": 4,
+      "missingRatio": 14,
       "missingDomains": [
+        "watchflows.app",
+        "wanaka.app",
+        "stitch.ai",
         "adeindex.com"
       ],
       "invalid": 0,
@@ -60,9 +64,10 @@
     {
       "key": "trafficMetrics.organicSearchVisits",
       "label": "自然搜索流量",
-      "missing": 1,
-      "missingRatio": 6,
+      "missing": 2,
+      "missingRatio": 7,
       "missingDomains": [
+        "wanaka.app",
         "adeindex.com"
       ],
       "invalid": 0,
@@ -72,9 +77,10 @@
     {
       "key": "geoDistribution",
       "label": "地区分布",
-      "missing": 1,
-      "missingRatio": 6,
+      "missing": 2,
+      "missingRatio": 7,
       "missingDomains": [
+        "wanaka.app",
         "adeindex.com"
       ],
       "invalid": 0,
@@ -84,26 +90,38 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 17,
+      "missing": 29,
       "missingRatio": 100,
       "missingDomains": [
-        "saturnsql.com",
-        "rezora.com",
-        "rerun.io",
-        "relay.com",
-        "quickthoughts.ca",
-        "replit.com",
-        "polylane.com",
-        "quest.app",
-        "meshapi.ai",
-        "nexus.com",
-        "mainstreetwealth.ai",
-        "livereacting.com",
+        "watchflows.app",
+        "xmind.com",
+        "wanaka.app",
+        "tobira.ai",
+        "thunderphone.com",
+        "tecla.io",
+        "teamily.com",
+        "stitch.ai",
+        "scroogefrog.com",
+        "strawberry.com",
+        "scrawl.com",
+        "shipyard.com",
+        "adeindex.com",
+        "artfish.ai",
+        "kin.com",
         "kino.ai",
         "kiwi.com",
-        "artfish.ai",
-        "adeindex.com",
-        "kin.com"
+        "livereacting.com",
+        "mainstreetwealth.ai",
+        "meshapi.ai",
+        "nexus.com",
+        "polylane.com",
+        "quest.app",
+        "quickthoughts.ca",
+        "relay.com",
+        "replit.com",
+        "rerun.io",
+        "rezora.com",
+        "saturnsql.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -122,16 +140,22 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 7,
-      "missingRatio": 41,
+      "missing": 13,
+      "missingRatio": 45,
       "missingDomains": [
-        "rezora.com",
-        "relay.com",
-        "quickthoughts.ca",
-        "quest.app",
-        "nexus.com",
+        "wanaka.app",
+        "teamily.com",
+        "scroogefrog.com",
+        "strawberry.com",
+        "scrawl.com",
+        "shipyard.com",
+        "artfish.ai",
         "kiwi.com",
-        "artfish.ai"
+        "nexus.com",
+        "quest.app",
+        "quickthoughts.ca",
+        "relay.com",
+        "rezora.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -143,9 +167,17 @@
       "missing": 0,
       "missingRatio": 0,
       "missingDomains": [],
-      "invalid": 1,
-      "invalidRatio": 6,
+      "invalid": 3,
+      "invalidRatio": 10,
       "invalidSamples": [
+        {
+          "domain": "scrawl.com",
+          "reason": "页面结构缺 H1"
+        },
+        {
+          "domain": "shipyard.com",
+          "reason": "页面结构缺 H1"
+        },
         {
           "domain": "relay.com",
           "reason": "页面结构缺 H1"
@@ -188,19 +220,38 @@
       "missing": 0,
       "missingRatio": 0,
       "missingDomains": [],
-      "invalid": 0,
-      "invalidRatio": 0,
-      "invalidSamples": []
+      "invalid": 1,
+      "invalidRatio": 3,
+      "invalidSamples": [
+        {
+          "domain": "stitch.ai",
+          "reason": "四要素缺 1 项"
+        }
+      ]
     }
   ],
   "entryIssues": [],
   "items": [
     {
-      "domain": "saturnsql.com",
-      "name": "SaturnSQL Context",
+      "domain": "watchflows.app",
+      "name": "Watchflows",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 1768,
+      "gapCount": 2,
+      "gaps": [
+        "trafficMetrics.monthlyVisitsGrowth",
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "xmind.com",
+      "name": "Xmind 2027",
       "tier": "watch",
       "stage": "enriched",
-      "monthlyVisits": 1325,
+      "monthlyVisits": 1109852,
       "gapCount": 1,
       "gaps": [
         "keywords"
@@ -209,11 +260,67 @@
       "issues": []
     },
     {
-      "domain": "rezora.com",
-      "name": "Rezora IO",
+      "domain": "wanaka.app",
+      "name": "Wanaka Studio",
+      "tier": "watch",
+      "stage": "enriched",
+      "gapCount": 6,
+      "gaps": [
+        "trafficMetrics.monthlyVisits",
+        "trafficMetrics.monthlyVisitsGrowth",
+        "trafficMetrics.organicSearchVisits",
+        "geoDistribution",
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "tobira.ai",
+      "name": "Tobira Site Agent",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 15204,
+      "monthlyVisits": 2949,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "thunderphone.com",
+      "name": "Zeus",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 4975,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "tecla.io",
+      "name": "Tecla",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 58209,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "teamily.com",
+      "name": "Teamily AI",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 4244,
       "gapCount": 2,
       "gaps": [
         "keywords",
@@ -223,24 +330,59 @@
       "issues": []
     },
     {
-      "domain": "rerun.io",
-      "name": "Rerun",
+      "domain": "stitch.ai",
+      "name": "Stitch Loop",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 54018,
-      "gapCount": 1,
+      "monthlyVisits": 38492,
+      "gapCount": 2,
       "gaps": [
+        "trafficMetrics.monthlyVisitsGrowth",
         "keywords"
+      ],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "performanceInsight",
+          "label": "AI 判断",
+          "reason": "四要素缺 1 项"
+        }
+      ]
+    },
+    {
+      "domain": "scroogefrog.com",
+      "name": "ScroogeFrog AI",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 15885,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
       ],
       "issueCount": 0,
       "issues": []
     },
     {
-      "domain": "relay.com",
-      "name": "Relay",
+      "domain": "strawberry.com",
+      "name": "Strawberry 1.0",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 26924,
+      "monthlyVisits": 3520,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "scrawl.com",
+      "name": "Scrawl",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 4083,
       "gapCount": 2,
       "gaps": [
         "keywords",
@@ -256,51 +398,47 @@
       ]
     },
     {
-      "domain": "quickthoughts.ca",
-      "name": "Quickthoughts",
+      "domain": "shipyard.com",
+      "name": "Shipyard",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 2460,
+      "monthlyVisits": 18631,
       "gapCount": 2,
       "gaps": [
         "keywords",
         "pricing"
       ],
-      "issueCount": 0,
-      "issues": []
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "pageStructure",
+          "label": "页面结构",
+          "reason": "页面结构缺 H1"
+        }
+      ]
     },
     {
-      "domain": "replit.com",
-      "name": "Replit Missions",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 10016437,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "polylane.com",
-      "name": "Polylane Swarms",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 3006,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "quest.app",
-      "name": "Quest",
+      "domain": "adeindex.com",
+      "name": "ADE Index",
       "tier": "watch",
       "stage": "enriched",
-      "monthlyVisits": 1317,
+      "gapCount": 5,
+      "gaps": [
+        "trafficMetrics.monthlyVisits",
+        "trafficMetrics.monthlyVisitsGrowth",
+        "trafficMetrics.organicSearchVisits",
+        "geoDistribution",
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "artfish.ai",
+      "name": "AquarIum",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 4162,
       "gapCount": 2,
       "gaps": [
         "keywords",
@@ -310,51 +448,11 @@
       "issues": []
     },
     {
-      "domain": "meshapi.ai",
-      "name": "Mesh API",
+      "domain": "kin.com",
+      "name": "Kin",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 17025,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "nexus.com",
-      "name": "Nexus",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 21088,
-      "gapCount": 2,
-      "gaps": [
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "mainstreetwealth.ai",
-      "name": "AI Data Brokerage",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 2307,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "livereacting.com",
-      "name": "LiveReacting for ChatGPT",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 351714,
+      "monthlyVisits": 519648,
       "gapCount": 1,
       "gaps": [
         "keywords"
@@ -390,11 +488,50 @@
       "issues": []
     },
     {
-      "domain": "artfish.ai",
-      "name": "AquarIum",
-      "tier": "watch",
+      "domain": "livereacting.com",
+      "name": "LiveReacting for ChatGPT",
+      "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 4162,
+      "monthlyVisits": 351714,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "mainstreetwealth.ai",
+      "name": "AI Data Brokerage",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 2307,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "meshapi.ai",
+      "name": "Mesh API",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 17025,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "nexus.com",
+      "name": "Nexus",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 21088,
       "gapCount": 2,
       "gaps": [
         "keywords",
@@ -404,27 +541,112 @@
       "issues": []
     },
     {
-      "domain": "adeindex.com",
-      "name": "ADE Index",
-      "tier": "watch",
+      "domain": "polylane.com",
+      "name": "Polylane Swarms",
+      "tier": "core",
       "stage": "enriched",
-      "gapCount": 5,
+      "monthlyVisits": 3006,
+      "gapCount": 1,
       "gaps": [
-        "trafficMetrics.monthlyVisits",
-        "trafficMetrics.monthlyVisitsGrowth",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
         "keywords"
       ],
       "issueCount": 0,
       "issues": []
     },
     {
-      "domain": "kin.com",
-      "name": "Kin",
+      "domain": "quest.app",
+      "name": "Quest",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 1317,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "quickthoughts.ca",
+      "name": "Quickthoughts",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 519648,
+      "monthlyVisits": 2460,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "relay.com",
+      "name": "Relay",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 26924,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "pageStructure",
+          "label": "页面结构",
+          "reason": "页面结构缺 H1"
+        }
+      ]
+    },
+    {
+      "domain": "replit.com",
+      "name": "Replit Missions",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 10016437,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "rerun.io",
+      "name": "Rerun",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 54018,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "rezora.com",
+      "name": "Rezora IO",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 15204,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "saturnsql.com",
+      "name": "SaturnSQL Context",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 1325,
       "gapCount": 1,
       "gaps": [
         "keywords"
