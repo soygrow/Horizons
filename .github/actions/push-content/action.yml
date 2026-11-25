@@ -1,0 +1,65 @@
+name: push-content
+description: >
+  提交产物并推送到远端分支。被抢先时先 fetch 再变基重试，冲突只允许出现在
+  给定产物路径上（取本次生成的那份），不覆盖别人的手改。
+
+inputs:
+  paths:
+    description: 要提交的路径，空格分隔（如 "content/digest" 或 "a.json b.json"）
+    required: true
+  message:
+    description: 提交信息
+    required: true
+  branch:
+    description: 目标分支，留空用当前分支（GITHUB_REF_NAME），再空则 main
+    required: false
+    default: ""
+  attempts:
+    description: 最多尝试次数
+    required: false
+    default: "6"
+  soft-fail:
+    description: "true 时连续失败只告警不红叉（派生数据已入库的场景）"
+    required: false
+    default: "false"
+  bot-name:
+    description: 提交身份
+    required: false
+    default: horizons-bot
+  bot-email:
+    description: 提交邮箱
+    required: false
+    default: bot@horizons.tools
+
+outputs:
+  changed:
+    description: 是否产生了提交（"true" / "false"）
+    value: ${{ steps.push.outputs.changed }}
+
+runs:
+  using: composite
+  steps:
+    - id: push
+      shell: bash
+      run: bash "$GITHUB_ACTION_PATH/push.sh"
+      env:
+        PUSH_PATHS: ${{ inputs.paths }}
+        PUSH_MESSAGE: ${{ inputs.message }}
+        PUSH_BRANCH: ${{ inputs.branch }}
+        PUSH_ATTEMPTS: ${{ inputs.attempts }}
+        PUSH_SOFT_FAIL: ${{ inputs.soft-fail }}
+        BOT_NAME: ${{ inputs.bot-name }}
+        BOT_EMAIL: ${{ inputs.bot-email }}
+
+    # 连续被拒时产物不能跟着 runner 一起销毁：留一份 patch，
+    # 事后 git am 就能补进仓库，不用把整期重新生成一遍。
+    # 有的 workflow 只声明了 contents: write，上传会因缺 actions: write 被拒；
+    # 这里不该把「原本为什么失败」淹掉，所以掉链子也不许再报错。
+    - if: failure()
+      continue-on-error: true
+      uses: actions/upload-artifact@v4
+      with:
+        name: push-content-${{ github.run_id }}
+        path: ${{ runner.temp }}/push-content.patch
+        if-no-files-found: ignore
+        retention-days: 7

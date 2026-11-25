@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: write
-
+      actions: write
     steps:
       - uses: actions/checkout@v5
         with:
@@ -60,19 +60,10 @@ jobs:
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: pnpm exec tsx scripts/admin/revert-trends.ts --slugs="$SLUGS" --job-id="$JOB_ID"
 
+      # 同 group 已串行，但人工推送或其它 workflow 仍可能抢先；
+      # 推送重试统一交给 push-content（原来只重试一次）。
       - name: 提交候选池
-        run: |
-          git config user.name "horizons-bot"
-          git config user.email "bot@horizons.tools"
-          git add content/trends-staging.json
-          if git diff --cached --quiet; then
-            echo "::notice::候选池没有变化，未产生提交"
-            exit 0
-          fi
-          git commit -m "fix(trends): 回滚候选词内容到上一版"
-          # 同 group 已串行，但人工推送或其它 workflow 仍可能抢先；被拒就 rebase 重试一次
-          if ! git push; then
-            echo "::warning::push 被拒，rebase 后重试"
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}"
-            git push
-          fi
+        uses: ./.github/actions/push-content
+        with:
+          paths: content/trends-staging.json
+          message: "fix(trends): 回滚候选词内容到上一版"

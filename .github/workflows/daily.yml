@@ -51,6 +51,7 @@ jobs:
     timeout-minutes: 60
     permissions:
       contents: write
+      actions: write
     env:
       # 定时触发时 inputs 为空，原来所有 if: inputs.mode == 'xxx' 全部为假，
       # 结果是「任务成功、什么都没做」。这里统一兜底成 all。
@@ -111,32 +112,12 @@ jobs:
           pnpm exec tsx scripts/admin/publish-digest.ts $FLAGS
 
       # 采集与成稿的产物必须提交，否则 /daily/[date] 读不到这一期。
-      # 用 git -c 传身份，不动仓库级 git config。
-      # 推送被拒（其它 workflow 或人工抢先推了 main）就 rebase 重试：
-      # 产物是按日期重新生成的派生文件，以本次结果为准。
+      # 推送被拒的处理（每轮先 fetch 再变基、冲突以本次产物为准、带抖动退避）
+      # 统一在 .github/actions/push-content 里，别再往这里抄一份 —— 之前那段
+      # 不 fetch 就 rebase origin/main，变基目标永远是旧引用，重试三轮等于原地
+      # 打转，产物留在 runner 上被判失败。
       - name: 提交产物
-        run: |
-          git add content/digest
-          if git diff --staged --quiet; then
-            echo "没有产物变更"
-            exit 0
-          fi
-          git -c user.name="github-actions[bot]" \
-              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-              commit -m "chore(digest): ${{ steps.issue.outputs.date }} 情报"
-
-          for i in 1 2 3; do
-            if git push origin HEAD:"${GITHUB_REF_NAME:-main}"; then
-              echo "推送成功"
-              exit 0
-            fi
-            echo "::warning::push 被拒（第 ${i} 次），rebase 后重试"
-            if ! git rebase "origin/${GITHUB_REF_NAME:-main}"; then
-              git checkout --theirs content/digest >/dev/null 2>&1 || true
-              GIT_EDITOR=true git rebase --continue || git rebase --abort
-            fi
-            sleep 3
-          done
-
-          echo "::error::连续三次推送被拒，产物留在 runner 上未入库"
-          exit 1
+        uses: ./.github/actions/push-content
+        with:
+          paths: content/digest
+          message: "chore(digest): ${{ steps.issue.outputs.date }} 情报"

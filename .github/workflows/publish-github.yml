@@ -157,38 +157,17 @@ jobs:
         run: rm -f .gh-entered.txt
 
       # 只提交候选池与统计快照：榜单本体在库里，仓库里不该有它
+      - name: 重建统计快照
+        run: pnpm exec tsx scripts/admin/board-stats.ts
+
+      # 发布要跑几分钟，这期间人工推送或其它 workflow 都可能推进 main；
+      # 裸 push 被拒会让整步红叉（数据其实已经发布成功，白报一次错）。
+      # 推送重试统一交给 push-content，缺文件（候选池被手工清理过）也不会 fatal。
       - name: 提交候选池与统计
-        id: commit
-        run: |
-          git config user.name "horizons-bot"
-          git config user.email "bot@horizons.tools"
-          pnpm exec tsx scripts/admin/board-stats.ts
-          git add content/board-stats.json
-          # 候选池正常都在；万一被手工清理过，缺文件会让 git add 直接 fatal
-          if [ -f content/github-staging.json ]; then git add content/github-staging.json; fi
-          if git diff --cached --quiet; then
-            echo "::notice::候选池与统计没有变化，未产生提交"
-            exit 0
-          fi
-          git commit -m "chore(github): 发布后同步候选池与统计"
-          # 发布要跑几分钟，这期间人工推送或其它 workflow 都可能推进 main；
-          # 裸 push 被拒会让整步红叉（数据其实已经发布成功，白报一次错）
-          for i in 1 2 3; do
-            if git push origin "HEAD:${GITHUB_REF_NAME:-main}"; then
-              exit 0
-            fi
-            echo "::warning::push 被拒（第 ${i} 次），rebase 后重试"
-            git fetch --quiet origin "${GITHUB_REF_NAME:-main}"
-            if ! git rebase "origin/${GITHUB_REF_NAME:-main}"; then
-              # 只会是候选池/统计文件冲突：本次发布产出的版本为准
-              git checkout --theirs -- content/github-staging.json content/board-stats.json 2>/dev/null || true
-              git add content/github-staging.json content/board-stats.json 2>/dev/null || true
-              GIT_EDITOR=true git rebase --continue
-            fi
-            sleep 5
-          done
-          echo "::error::统计与候选池推送失败，远程 main 持续被改动"
-          exit 1
+        uses: ./.github/actions/push-content
+        with:
+          paths: content/board-stats.json content/github-staging.json
+          message: "chore(github): 发布后同步候选池与统计"
 
       # 把这一版导出成 R2 快照：之后构建读对象存储（0 rows read），不再分页扫 D1。
       # 失败即中断，宁可这次不部署，也不让构建读到落后于库的快照。

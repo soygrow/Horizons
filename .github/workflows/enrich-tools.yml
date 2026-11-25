@@ -68,7 +68,7 @@ jobs:
     timeout-minutes: 60
     permissions:
       contents: write
-
+      actions: write
     steps:
       # fetch-depth: 0 —— 推被拒时要 rebase 到远端最新提交，shallow clone 缺共同
       # 祖先会直接 rebase 失败，那样「重试」形同虚设。
@@ -129,42 +129,15 @@ jobs:
       #
       # 富化本身的结果早已写进 D1（真源），仓库里这份 tools-field-report.json
       # 只是后台看板用的派生快照，所以重试即可、不必让 job 失败。
+      # 重试逻辑统一在 .github/actions/push-content（每轮先 fetch 再变基，
+      # 冲突取本次重算的这份），soft-fail 保持只告警。
       - name: 提交富化结果
         id: commit
-        run: |
-          git config user.name "horizons-bot"
-          git config user.email "bot@horizons.tools"
-          git add content/tools-field-report.json
-          if git diff --cached --quiet; then
-            echo "::notice::本次没有产生变化"
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          git commit -m "chore(tools): 富化已确认候选（后台）"
-
-          REF="${GITHUB_REF_NAME:-main}"
-          for i in 1 2 3; do
-            if git push origin "HEAD:${REF}"; then
-              echo "changed=true" >> "$GITHUB_OUTPUT"
-              echo "::notice::富化完成，请到后台查看字段完整度后再选择发榜"
-              exit 0
-            fi
-            echo "::warning::push 被拒（第 ${i} 次），同步远端后重试"
-            git fetch --quiet origin "${REF}"
-            if ! GIT_EDITOR=true git rebase "origin/${REF}"; then
-              # 报告是脚本从 D1 全量重算的派生文件，冲突时保留本次这份
-              # （rebase 过程中 --theirs 指的是被重放的本地提交）
-              git checkout --theirs -- content/tools-field-report.json || true
-              git add content/tools-field-report.json
-              GIT_EDITOR=true git rebase --continue || git rebase --abort
-            fi
-            sleep $((i * 5))
-          done
-
-          # 连续 3 次被拒说明不是普通竞态（权限/token/保护分支），要人看一眼；
-          # 但富化数据在 D1 里，不影响条目，所以只报 warning 让后续步骤照常走。
-          echo "::warning::连续 3 次推送失败，本次报告未入仓；D1 里的富化结果已写入，下次任务会重新生成这份报告"
-          echo "changed=false" >> "$GITHUB_OUTPUT"
+        uses: ./.github/actions/push-content
+        with:
+          paths: content/tools-field-report.json
+          message: "chore(tools): 富化已确认候选（后台）"
+          soft-fail: "true"
 
       # 预览页是构建期从 D1 导出工作区条目生成的（/preview/{domain}），
       # 不重建的话富化完点「工具名」看到的还是上一版数据。

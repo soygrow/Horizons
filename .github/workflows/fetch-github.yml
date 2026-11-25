@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 180
     permissions:
       contents: write
-
+      actions: write
     steps:
       # fetch-depth: 0 —— 候选池的推送被拒时要 rebase 到远端最新提交，
       # shallow clone 缺共同祖先会直接 rebase 失败。
@@ -107,37 +107,20 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: 提交候选池
+      - name: 统计候选
+        id: cand
         run: |
-          git config user.name "horizons-bot"
-          git config user.email "bot@horizons.tools"
-          git add content/github-staging.json
-          if git diff --cached --quiet; then
-            echo "::notice::候选池没有变化，未产生提交"
-            exit 0
-          fi
           n=$(node -e "const s=require('./content/github-staging.json');console.log(s.candidates.length)")
           t=$(node -e "const s=require('./content/github-staging.json');console.log(s.lastRun?.qualified ?? s.target)")
-          git commit -m "chore(github): 采集待发布候选 ${n} 个（合格池 ${t} 条）"
+          echo "n=$n" >> "$GITHUB_OUTPUT"
+          echo "t=$t" >> "$GITHUB_OUTPUT"
 
-          # 采集要跑几十秒到几十分钟，这期间人工推送或别的 workflow 都可能
-          # 推进 main。以前是裸 git push，被拒就整步红叉 —— 候选池明明采到了
-          # 却提交不上去（日志里是 "! [rejected] main -> main"）。
-          # 被拒就 rebase 重试；冲突只可能是候选池本身，以本次采集为准。
-          for i in 1 2 3; do
-            if git push origin "HEAD:${GITHUB_REF_NAME:-main}"; then
-              echo "::notice::候选池已更新：${n} 个待审核候选"
-              exit 0
-            fi
-            echo "::warning::push 被拒（第 ${i} 次），rebase 后重试"
-            git fetch --quiet origin "${GITHUB_REF_NAME:-main}"
-            if ! git rebase "origin/${GITHUB_REF_NAME:-main}"; then
-              # rebase 里 --theirs 是本次重放的提交，也就是这次采集的结果
-              git checkout --theirs -- content/github-staging.json
-              git add content/github-staging.json
-              GIT_EDITOR=true git rebase --continue
-            fi
-            sleep 5
-          done
-          echo "::error::候选池推送失败，远程 main 持续被改动"
-          exit 1
+      # 采集要跑几十秒到几十分钟，这期间人工推送或别的 workflow 都可能
+      # 推进 main。以前是裸 git push，被拒就整步红叉 —— 候选池明明采到了
+      # 却提交不上去（日志里是 "! [rejected] main -> main"）。
+      # 推送重试统一交给 push-content：每轮先 fetch 再变基，冲突取本次采集结果。
+      - name: 提交候选池
+        uses: ./.github/actions/push-content
+        with:
+          paths: content/github-staging.json
+          message: "chore(github): 采集待发布候选 ${{ steps.cand.outputs.n }} 个（合格池 ${{ steps.cand.outputs.t }} 条）"

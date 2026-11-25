@@ -57,7 +57,7 @@ jobs:
     timeout-minutes: 45
     permissions:
       contents: write
-
+      actions: write
     steps:
       # fetch-depth: 0 —— 推送被拒时要 rebase 到远端最新提交，
       # shallow clone 缺共同祖先会直接 rebase 失败，重试就形同虚设。
@@ -136,35 +136,12 @@ jobs:
       # 推送被拒是常态而非异常：抓取要跑十几分钟，这期间另一批采集 / daily /
       # 人工推送都可能抢先推进 main。以前是裸 git push，被拒就整步红叉
       # （2026-11-24 两次采集撞在一起就是这样：候选池明明已写进 D1，任务却显示失败）。
-      # 快照是从 D1 全量重算的派生文件，rebase 重试即可，不该让任务失败。
+      # 快照是从 D1 全量重算的派生文件，重试即可、不该让任务失败 —— 重试逻辑
+      # 统一在 .github/actions/push-content，soft-fail 保持只告警不红叉。
       - name: 提交概览快照
         if: steps.fetch.outputs.added != '0'
-        run: |
-          git config user.name "horizons-bot"
-          git config user.email "bot@horizons.tools"
-          git add content/tools-stats.json
-          if git diff --cached --quiet; then
-            echo "::notice::概览快照无变化，未产生提交"
-            exit 0
-          fi
-          git commit -m "chore(tools): 概览快照（候选池 +${{ steps.fetch.outputs.added }}）"
-
-          REF="${GITHUB_REF_NAME:-main}"
-          for i in 1 2 3; do
-            if git push origin "HEAD:${REF}"; then
-              exit 0
-            fi
-            echo "::warning::push 被拒（第 ${i} 次），同步远端后重试"
-            git fetch --quiet origin "${REF}"
-            if ! GIT_EDITOR=true git rebase "origin/${REF}"; then
-              # 快照是脚本从 D1 全量重算的，冲突时保留本次这份
-              git checkout --theirs -- content/tools-stats.json || true
-              git add content/tools-stats.json
-              GIT_EDITOR=true git rebase --continue || git rebase --abort
-            fi
-            sleep $((i * 5))
-          done
-
-          # 连续 3 次被拒说明不是普通竞态（权限/分支保护），要人看一眼；
-          # 但快照数据在 D1 里，不影响条目，所以只告警不失败。
-          echo "::warning::连续 3 次推送失败，本次快照未入仓；D1 里的数据已写入，下次任务会重算"
+        uses: ./.github/actions/push-content
+        with:
+          paths: content/tools-stats.json
+          message: "chore(tools): 概览快照（候选池 +${{ steps.fetch.outputs.added }}）"
+          soft-fail: "true"

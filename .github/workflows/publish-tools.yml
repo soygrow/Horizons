@@ -84,53 +84,34 @@ jobs:
           if [ "${{ inputs.patch }}" = "0" ]; then ARGS="$ARGS --full"; fi
           pnpm tsx scripts/admin/publish-tools.ts $ARGS
 
-      - name: 提交统计快照
-        id: commit
+      - name: 重建统计快照
         env:
           # tool-stats 会把统计快照写进 D1，后台概览读库
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: |
-          git config user.name "horizons-bot"
-          git config user.email "bot@horizons.tools"
           # 榜单文件已变，统计快照必须跟着重建，否则后台概览会停在旧数字
           pnpm exec tsx scripts/admin/tool-stats.ts
           pnpm exec tsx scripts/admin/board-stats.ts
-          # 榜单数据不再入库（唯一真源是 D1），这里只提交统计快照。
-          # 候选池也早已迁到 D1，仓库里没有 tools-staging.json。
-          git add content/tools-stats.json content/board-stats.json
-          if git diff --cached --quiet; then
-            echo "::notice::统计快照无变化"
-          else
-            msg="${{ inputs.note }}"
-            git commit -m "chore(tools): 刷新榜单统计${msg:+（${msg}）}"
 
-            # 发布前后要跑几分钟，期间另一批采集 / 审计 / 人工推送都可能推进 main。
-            # 快照是从 D1 重算的派生文件，rebase 重试即可 —— 被拒不该让整次发布
-            # 在最后一步红叉，那时榜单其实已经写进 D1 了。
-            REF="${GITHUB_REF_NAME:-main}"
-            pushed=0
-            for i in 1 2 3; do
-              if git push origin "HEAD:${REF}"; then
-                pushed=1
-                break
-              fi
-              echo "::warning::push 被拒（第 ${i} 次），同步远端后重试"
-              git fetch --quiet origin "${REF}"
-              if ! GIT_EDITOR=true git rebase "origin/${REF}"; then
-                # 快照以本次这份为准
-                git checkout --theirs -- content/tools-stats.json content/board-stats.json || true
-                git add content/tools-stats.json content/board-stats.json
-                GIT_EDITOR=true git rebase --continue || git rebase --abort
-              fi
-              sleep $((i * 5))
-            done
-            if [ "$pushed" = "0" ]; then
-              echo "::warning::连续 3 次推送失败，统计快照未入仓；榜单数据在 D1 里，下次任务会重算"
-            fi
-          fi
-          # 是否要重建站点只看发布报告：git diff 只反映统计文件，与榜单是否真的变了无关
+      # 榜单数据不再入库（唯一真源是 D1），这里只提交统计快照。
+      # 候选池也早已迁到 D1，仓库里没有 tools-staging.json。
+      #
+      # 发布前后要跑几分钟，期间另一批采集 / 审计 / 人工推送都可能推进 main。
+      # 快照是从 D1 重算的派生文件，推送重试统一交给 push-content ——
+      # 被拒不该让整次发布在最后一步红叉，那时榜单其实已经写进 D1 了。
+      - name: 提交统计快照
+        uses: ./.github/actions/push-content
+        with:
+          paths: content/tools-stats.json content/board-stats.json
+          message: "chore(tools): 刷新榜单统计${{ inputs.note && format('（{0}）', inputs.note) || '' }}"
+          soft-fail: "true"
+
+      # 是否要重建站点只看发布报告：git diff 只反映统计文件，与榜单是否真的变了无关
+      - name: 读取发布报告
+        id: commit
+        run: |
           changed=$(node -e 'const r=require("./content/tools-publish.json");const n=(r.added||0)+(r.updated||0)+(r.dropped||0);process.stdout.write(n>0?"true":"false")')
           echo "榜单变更：${changed}（详见 content/tools-publish.json）"
           echo "changed=${changed}" >> "$GITHUB_OUTPUT"

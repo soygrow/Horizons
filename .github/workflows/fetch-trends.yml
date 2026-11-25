@@ -48,7 +48,7 @@ jobs:
     timeout-minutes: 240
     permissions:
       contents: write
-
+      actions: write
     steps:
       - uses: actions/checkout@v5
         with:
@@ -117,21 +117,16 @@ jobs:
               ${{ inputs.patient && '--patient' || '' }}
           fi
 
-      - name: 提交候选池
+      - name: 统计候选数
+        id: cand
         run: |
-          git config user.name "horizons-bot"
-          git config user.email "bot@horizons.tools"
-          git add content/trends-staging.json content/trends-skipped.json
-          if git diff --cached --quiet; then
-            echo "::notice::本轮没有产出候选词，未产生提交"
-            exit 0
-          fi
-          n=$(node -e "const s=require('./content/trends-staging.json');console.log(s.items.length)")
-          git commit -m "chore(trends): 采集候选词 ${n} 个（待审核）"
-          # 同 group 已串行，但人工推送或其它 workflow 仍可能抢先；被拒就 rebase 重试一次
-          if ! git push; then
-            echo "::warning::push 被拒，rebase 后重试"
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}"
-            git push
-          fi
-          echo "::notice::候选池已更新，共 ${n} 个待审核词"
+          n=$(node -e "const s=require('./content/trends-staging.json');console.log(s.items.length)" 2>/dev/null || echo 0)
+          echo "n=$n" >> "$GITHUB_OUTPUT"
+
+      # 同 group 已串行，但人工推送或其它 workflow 仍可能抢先；
+      # 推送重试统一交给 push-content（原来只重试一次，第二次被拒就红叉）。
+      - name: 提交候选池
+        uses: ./.github/actions/push-content
+        with:
+          paths: content/trends-staging.json content/trends-skipped.json
+          message: "chore(trends): 采集候选词 ${{ steps.cand.outputs.n }} 个（待审核）"

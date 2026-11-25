@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 40
     permissions:
       contents: write
-
+      actions: write
     steps:
       - uses: actions/checkout@v5
         with:
@@ -63,20 +63,16 @@ jobs:
           if [ -n "$SLUGS" ]; then args+=("--slugs=$SLUGS"); fi
           pnpm exec tsx scripts/admin/enrich-trends.ts "${args[@]}" --job-id="$JOB_ID"
 
-      - name: 提交候选池
+      - name: 统计已富化数
+        id: enrich
         run: |
-          git config user.name "horizons-bot"
-          git config user.email "bot@horizons.tools"
-          git add content/trends-staging.json
-          if git diff --cached --quiet; then
-            echo "::notice::候选池没有变化，未产生提交"
-            exit 0
-          fi
-          ready=$(node -e "const d=require('./content/trends-staging.json');console.log(d.items.filter(t=>!t.enrichStatus).length)")
-          git commit -m "feat(trends): 富化候选词（已富化 ${ready} 个）"
-          # 同 group 已串行，但人工推送或其它 workflow 仍可能抢先；被拒就 rebase 重试一次
-          if ! git push; then
-            echo "::warning::push 被拒，rebase 后重试"
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}"
-            git push
-          fi
+          ready=$(node -e "const d=require('./content/trends-staging.json');console.log(d.items.filter(t=>!t.enrichStatus).length)" 2>/dev/null || echo 0)
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
+
+      # 同 group 已串行，但人工推送或其它 workflow 仍可能抢先；
+      # 推送重试统一交给 push-content（原来只重试一次）。
+      - name: 提交候选池
+        uses: ./.github/actions/push-content
+        with:
+          paths: content/trends-staging.json
+          message: "feat(trends): 富化候选词（已富化 ${{ steps.enrich.outputs.ready }} 个）"

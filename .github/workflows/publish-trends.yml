@@ -89,34 +89,28 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: 提交候选池快照
-        id: commit
-        run: |
-          git config user.name "horizons-bot"
-          git config user.email "bot@horizons.tools"
-          # 榜单本身已不入库（唯一真源是 D1 的当前版本快照，含 variant_of 别名），
-          # 这里只提交候选池。content/trends.json 在 .gitignore 里，不能 add。
-          #
-          # 不再跑 board-stats.ts：在榜条数由 syncBoardToD1 直接写 D1 的 board_stats，
-          # 而 CI 里没有 trends.json，跑一次只会把快照里的 trends 键删掉、再提交一次噪音。
-          git add content/trends-staging.json
-          if git diff --cached --quiet; then
-            echo "::notice::没有可发布的变更，未产生提交"
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          msg="${{ inputs.note }}"
-          board=$(node -e 'const s=process.env.SUM;console.log(JSON.parse(s).boardAfter)' 2>/dev/null || echo "?")
-          git commit -m "feat(trends): 发布候选词到榜单（${board} 条在榜）${msg:+（${msg}）}"
-          # 同 group 已串行，但人工推送或其它 workflow 仍可能抢先；被拒就 rebase 重试一次
-          if ! git push; then
-            echo "::warning::push 被拒，rebase 后重试"
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}"
-            git push
-          fi
-          echo "changed=true" >> "$GITHUB_OUTPUT"
+      - name: 统计在榜条数
+        id: board
         env:
           SUM: ${{ steps.merge.outputs.summary }}
+        run: |
+          n=$(node -e 'const s=process.env.SUM;console.log(JSON.parse(s).boardAfter)' 2>/dev/null || echo "?")
+          echo "n=$n" >> "$GITHUB_OUTPUT"
+
+      # 榜单本身已不入库（唯一真源是 D1 的当前版本快照，含 variant_of 别名），
+      # 这里只提交候选池。content/trends.json 在 .gitignore 里，不能 add。
+      #
+      # 不再跑 board-stats.ts：在榜条数由 syncBoardToD1 直接写 D1 的 board_stats，
+      # 而 CI 里没有 trends.json，跑一次只会把快照里的 trends 键删掉、再提交一次噪音。
+      #
+      # 同 group 已串行，但人工推送或其它 workflow 仍可能抢先；
+      # 推送重试统一交给 push-content（原来只重试一次），changed 由 action 输出。
+      - name: 提交候选池快照
+        id: commit
+        uses: ./.github/actions/push-content
+        with:
+          paths: content/trends-staging.json
+          message: "feat(trends): 发布候选词到榜单（${{ steps.board.outputs.n }} 条在榜）${{ inputs.note && format('（{0}）', inputs.note) || '' }}"
 
       # 导出 R2 快照：构建读对象存储，不再从 D1 全量还原
       - name: 导出榜单快照

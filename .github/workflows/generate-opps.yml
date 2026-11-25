@@ -54,7 +54,7 @@ jobs:
     timeout-minutes: 60
     permissions:
       contents: write
-
+      actions: write
     steps:
       - uses: actions/checkout@v5
         with:
@@ -104,20 +104,15 @@ jobs:
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: pnpm exec tsx scripts/fetch/opportunity/generate.ts
 
-      - name: 提交预览留档
+      - name: 统计本批候选数
+        id: cand
         run: |
-          git config user.name "horizons-bot"
-          git config user.email "bot@horizons.tools"
-          git add content/opportunities-staging.json
-          if git diff --cached --quiet; then
-            echo "::notice::没有新的候选，未产生提交"
-            exit 0
-          fi
-          n=$(node -e "const s=require('./content/opportunities-staging.json');const b=Object.keys(s.batches).find(k=>k==='${{ inputs.batch }}');console.log(b?s.batches[b].items.length:0)")
-          git commit -m "chore(opps): 生成批次 ${{ inputs.batch }} 候选（${n} 条，待预览）"
-          if ! git push; then
-            echo "::warning::push 被拒，rebase 后重试"
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}"
-            git push
-          fi
-          echo "::notice::批次 ${{ inputs.batch }} 已生成 ${n} 条候选，去后台预览"
+          n=$(node -e "const s=require('./content/opportunities-staging.json');const b=Object.keys(s.batches).find(k=>k==='${{ inputs.batch }}');console.log(b?s.batches[b].items.length:0)" 2>/dev/null || echo 0)
+          echo "n=$n" >> "$GITHUB_OUTPUT"
+
+      # 推送重试统一交给 push-content（原来只重试一次，第二次被拒就红叉）
+      - name: 提交预览留档
+        uses: ./.github/actions/push-content
+        with:
+          paths: content/opportunities-staging.json
+          message: "chore(opps): 生成批次 ${{ inputs.batch }} 候选（${{ steps.cand.outputs.n }} 条，待预览）"
