@@ -1,7 +1,8 @@
 ---
 /**
  * 每日情报首页：最新一期直接铺开（头条全文 + 其余模块），说明与往期下移。
- * 数据来自 content/digest/<date>.json，由 scripts/fetch/daily 每日生成。
+ * 数据来自 content/digest/<date>.json —— 唯一真源是 D1 的 digest_issues，
+ * 每次 `pnpm data` 先由 scripts/admin/hydrate-digest.ts 还原成文件。
  */
 import Base from "../../layouts/Base.astro";
 import {

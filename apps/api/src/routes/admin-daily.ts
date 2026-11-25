@@ -5,8 +5,10 @@
  * 几十条，而且这类缺失不报错，只体现为当天头条质量变差。所以三个环节
  * 全部交给 GitHub Actions，这里只负责触发与核对。
  *
- * 往期列表与全文读 D1 的 digest_issues（发布时整期 JSON 存一份）；
- * 站点构建仍读 content/digest/<date>.json，两边不互相影响。
+ * 情报的全部数据都在 D1 的 digest_issues 里（一期一整份 payload），这里不再读仓库：
+ * 往期列表、单期全文、草稿状态、手改都只跟库打交道。站点构建前由
+ * scripts/admin/hydrate-digest.ts 把库里的期还原成 content/digest/<date>.json，
+ * 那是构建缓存，仓库不再跟踪。
  */
 import { Hono } from "hono";
 import type { Env } from "../env";
@@ -18,9 +20,8 @@ import {
   listWorkflowRuns,
   mapStatus,
   missingSecrets,
-  readRepoJson,
-  writeRepoJson,
 } from "../lib/github";
+import { currentVersion } from "../lib/versions";
 
 export const adminDaily = new Hono<{ Bindings: Env }>();
 
@@ -134,55 +135,65 @@ adminDaily.get("/issues/:date", async (c) => {
   }
 });
 
-/** 某期当前状态：已发布（published）/ 已成稿未发布（draft）/ 还不存在（missing） */
+/**
+ * 某期当前状态：已发布（published）/ 已成稿未发布（draft）/ 还不存在（missing）。
+ *
+ * 三种状态都只看库：
+ *   - `digest_issues` 有 payload = 这一期成稿了（compose 阶段就会写进去）；
+ *   - 当前生效版本的 `board_listed` 里有 `date:` 开头的行 = 这一期已进榜（publish）。
+ *
+ * 以前 draft 是去 GitHub 读 `content/digest/<date>.json`，而那个文件从这一版起
+ * 不再入库 —— 真源只有 D1，读仓库只会读到上一版残留。
+ */
 adminDaily.get("/draft/:date", async (c) => {
   const date = c.req.param("date");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return c.json({ error: "bad_date", detail: "日期格式应为 YYYY-MM-DD" }, 400);
   }
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json(notConfigured(c.env), 400);
 
-  // 1) 已发布？查 D1 的 digest_issues
-  let published: DigestFile | null = null;
+  let payload: DigestFile | null = null;
   try {
     const row = await c.env.DB.prepare("SELECT payload FROM digest_issues WHERE date = ?")
       .bind(date)
       .first<{ payload: string }>();
-    if (row) published = JSON.parse(row.payload) as DigestFile;
+    if (row) payload = JSON.parse(row.payload) as DigestFile;
   } catch {
     // 单期存坏不拖垮整页
-    published = null;
+    payload = null;
   }
 
-  // 2) 已成稿未发布？读仓库里的成稿文件（build 产物会在 Actions 里提交回 main）
-  let draft: DigestFile | null = null;
-  try {
-    const file = await readRepoJson<DigestFile>(cfg, `content/digest/${date}.json`);
-    if (file) draft = file.data;
-  } catch (e) {
-    const detail = e instanceof Error ? e.message : String(e);
-    return c.json({ error: "draft_read_failed", detail }, 502);
+  let listed = false;
+  if (payload) {
+    const version = await currentVersion(c.env.DB);
+    if (version) {
+      const hit = await c.env.DB.prepare(
+        `SELECT 1 AS ok FROM board_listed
+          WHERE version = ? AND board = 'digest' AND item_key LIKE ?
+          LIMIT 1`,
+      )
+        .bind(version, `${date}:%`)
+        .first<{ ok: number }>();
+      listed = Boolean(hit);
+    }
   }
 
-  const status = published ? "published" : draft ? "draft" : "missing";
-  return c.json({ date, status, draft, published });
+  const status = listed ? "published" : payload ? "draft" : "missing";
+  return c.json({ date, status, draft: payload, published: listed ? payload : null });
 });
 
 /**
  * 手改一条的「几句话」。
  *
  * 模板拼出来的事实句是准的，但「所以呢」经常差半句人话 —— 每天都有那么两三条
- * 需要人来补一刀。以前只能改脚本重跑，等于整期重来；这里直接改仓库里的成稿
- * 文件：提交后前台随部署更新，D1 里的那一期要再点一次「发布本期」才同步。
+ * 需要人来补一刀。以前只能改脚本重跑，等于整期重来。
+ *
+ * 现在直接改 D1 里的 `digest_issues.payload`：这一期的主副本只有这一份，
+ * 改完顺手派一次站点部署（静态页要重新构建才看得到），不用再点「发布本期」。
  *
  * 只允许改 summary / why / missing 三个纯文本字段。标题是原文标题，改了就没法
  * 核对出处；分数、证据等级是算法结论，手改会让人分不清哪句是机器判断。
  */
 adminDaily.post("/items", async (c) => {
-  const cfg = ghConfig(c.env);
-  if (!cfg) return c.json(notConfigured(c.env), 400);
-
   type EditBody = {
     date?: string;
     id?: string;
@@ -209,14 +220,23 @@ adminDaily.post("/items", async (c) => {
     );
   }
 
-  const path = `content/digest/${date}.json`;
-  const file = await readRepoJson<DigestFile>(cfg, path).catch(() => null);
-  if (!file) {
-    return c.json({ error: "not_found", detail: `仓库里没有 ${date} 的成稿文件` }, 404);
+  const row = await c.env.DB.prepare("SELECT payload FROM digest_issues WHERE date = ?")
+    .bind(date)
+    .first<{ payload: string }>()
+    .catch(() => null);
+  if (!row) {
+    return c.json({ error: "not_found", detail: `库里没有 ${date} 这一期，先点「生成本期」` }, 404);
+  }
+
+  let digest: DigestFile;
+  try {
+    digest = JSON.parse(row.payload) as DigestFile;
+  } catch {
+    return c.json({ error: "read_failed", detail: `${date} 这一期的 payload 不是合法 JSON` }, 502);
   }
 
   let hit = false;
-  for (const mod of file.data.modules ?? []) {
+  for (const mod of digest.modules ?? []) {
     for (const item of mod.items) {
       if (item.id !== id) continue;
       if (summary !== undefined) item.summary = summary;
@@ -232,19 +252,40 @@ adminDaily.post("/items", async (c) => {
     return c.json({ error: "item_not_found", detail: `${date} 这一期里没有这条` }, 404);
   }
 
-  const ok = await writeRepoJson(
-    cfg,
-    path,
-    file.data,
-    file.sha,
-    `chore(digest): 手改 ${date} 第 ${id} 条的几句话`,
-  );
-  if (!ok) return c.json({ error: "write_failed", detail: "写回仓库失败" }, 502);
+  try {
+    await c.env.DB.prepare("UPDATE digest_issues SET payload = ?, updated_at = ? WHERE date = ?")
+      .bind(JSON.stringify(digest), Date.now(), date)
+      .run();
+  } catch (e) {
+    const detail = e instanceof Error ? e.message : String(e);
+    return c.json({ error: "write_failed", detail }, 502);
+  }
+
+  /*
+   * 静态站不改文件不会自己更新：库里改了、仓库里没有提交，就必须显式派一次构建。
+   * 派发要等 ~11 秒才拿到 run id，这里不阻塞响应 —— 手改后立刻返回更顺手，
+   * 部署失败也会在「运行记录」里看到。
+   */
+  const cfg = ghConfig(c.env);
+  if (cfg) {
+    try {
+      c.executionCtx.waitUntil(
+        dispatchWorkflow(cfg, "deploy-site.yml", { reason: `手改 ${date} 第 ${id} 条` }).catch(
+          () => undefined,
+        ),
+      );
+    } catch {
+      // 非 Workers 运行时（本地 node 预览）没有 executionCtx，忽略即可
+    }
+  }
 
   return c.json({
     ok: true,
-    syncedToD1: false,
-    detail: "已写回仓库，前台会在部署后更新；要让后台列表也同步，再点一次「发布本期」。",
+    syncedToD1: true,
+    deployed: Boolean(cfg),
+    detail: cfg
+      ? "已写入 D1，并已请求重新部署站点（约 20 分钟生效）。"
+      : "已写入 D1；未配置 GitHub Token，需手动触发一次部署才能在前台看到。",
   });
 });
 

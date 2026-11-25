@@ -71,6 +71,13 @@ content/trends.json
 content/models.json
 content/github.json
 
+# 每日情报：唯一真源是 D1 的 digest_issues（一期一整份 payload）。
+# 每次 `pnpm data` 由 scripts/admin/hydrate-digest.ts 还原成 <date>.json，
+# 站点照旧按文件静态生成，但仓库不再跟踪这些期 —— 否则「库里发了、仓库没推」
+# 就会让线上少一期，而两边都觉得自己是对的。
+# 注意 raw/（采集原文）与 state/（去重状态）仍然入库：它们不是页面数据。
+content/digest/*.json
+
 # Astro 静态站（apps/site）构建产物与类型缓存
 apps/site/dist/
 apps/site/.astro/

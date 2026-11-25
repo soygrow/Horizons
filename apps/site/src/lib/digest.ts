@@ -1,4 +1,10 @@
-/** 每日情报：构建期读取 content/digest/*.json（由 scripts/fetch/daily 生成） */
+/**
+ * 每日情报：构建期读取 content/digest/*.json。
+ *
+ * 这些文件不是手写、也不入库 —— 唯一真源是 D1 的 digest_issues，
+ * 每次 `pnpm data` 先跑 scripts/admin/hydrate-digest.ts 把它们物化出来，
+ * 之后照旧静态生成（/daily 与 /daily/[date] 都是纯静态路径）。
+ */
 
 import { formatDate as formatYMD } from "./format";
 

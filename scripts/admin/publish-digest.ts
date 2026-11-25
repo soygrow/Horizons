@@ -15,7 +15,7 @@
  *   pnpm tsx scripts/admin/publish-digest.ts
  *   pnpm tsx scripts/admin/publish-digest.ts --date 2026-11-03
  *   pnpm tsx scripts/admin/publish-digest.ts --full              # 建新版本（默认只增量替换本期）
- *   pnpm tsx scripts/admin/publish-digest.ts --no-d1
+ *   pnpm tsx scripts/admin/publish-digest.ts --issues-only       # 只落 digest_issues，不建名次
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -100,27 +100,38 @@ async function main(): Promise<void> {
       `榜首「${rows[0]?.name}」`,
   );
 
-  const res = await syncBoardToD1({
-    board: "digest",
-    rows,
-    actor: process.env.GITHUB_ACTOR ?? "manual",
-    /*
-     * 默认增量：只有最新一期进名次表（历史期由 /daily/[date] 从文件读），
-     * 所以在当前版本上原地替换本期即可，不必为每天建一个新版本 ——
-     * 一次完整发布要连其余五个榜一起重写，约 2.3 万行写入，日更吃不消。
-     *
-     * 加 --full 才建版本，此时期号即版本号：同一天重跑会被当前生效版本挡下。
-     * 必须补成完整 ISO（`2026-11-03T00:00:00`）—— 版本号是全局的，其余榜都是 19 位，
-     * 只用 `2026-11-03` 会让「按 version 排序」的地方把这一期排到当天任何发布之前。
-     */
-    patch: !process.argv.includes("--full"),
-    version: `${date}T00:00:00`,
-  });
+  /*
+   * --issues-only：只把整期 JSON 落进 digest_issues，不建名次。
+   * 后台「生成本期」（compose）用 —— 那一阶段还没决定发不发榜，但页面要能预览，
+   * 而预览页已经是构建期从 digest_issues 还原的，所以必须先把这期存进库。
+   */
+  const issuesOnly = process.argv.includes("--issues-only");
 
-  // 后台看往期列表/全文读这张表，不再走 GitHub Contents API
+  if (issuesOnly) {
+    console.log(`[digest] ${date}：只写 digest_issues（不建名次）`);
+  } else {
+    const res = await syncBoardToD1({
+      board: "digest",
+      rows,
+      actor: process.env.GITHUB_ACTOR ?? "manual",
+      /*
+       * 默认增量：只有最新一期进名次表（历史期由构建期从 digest_issues 还原），
+       * 所以在当前版本上原地替换本期即可，不必为每天建一个新版本 ——
+       * 一次完整发布要连其余五个榜一起重写，约 2.3 万行写入，日更吃不消。
+       *
+       * 加 --full 才建版本，此时期号即版本号：同一天重跑会被当前生效版本挡下。
+       * 必须补成完整 ISO（`2026-11-03T00:00:00`）—— 版本号是全局的，其余榜都是 19 位，
+       * 只用 `2026-11-03` 会让「按 version 排序」的地方把这一期排到当天任何发布之前。
+       */
+      patch: !process.argv.includes("--full"),
+      version: `${date}T00:00:00`,
+    });
+
+    if (!res.ok && res.error !== "missing-credentials") process.exitCode = 1;
+  }
+
+  // 后台看往期列表/全文读这张表，站点构建也从这里还原期文件 —— 情报的唯一真源
   await saveDigestIssue(digest as unknown as DigestIssueLike);
-
-  if (!res.ok && res.error !== "missing-credentials") process.exitCode = 1;
 }
 
 main().catch((e) => {

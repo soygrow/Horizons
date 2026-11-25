@@ -16,6 +16,10 @@ on:
       - "!content/*-staging.json"
       - "!content/*-stats.json"
       - "!content/*-skipped.json"
+      # 每日情报的采集原文与去重状态也不影响页面：页面数据在 D1 的 digest_issues，
+      # 由 hydrate-digest 还原。不排除的话每采一期都要空跑一次整站构建。
+      - "!content/digest/raw/**"
+      - "!content/digest/state/**"
       - "apps/site/**"
       - "packages/shared/**"
       - "scripts/build/**"

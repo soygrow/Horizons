@@ -1,12 +1,14 @@
 /**
- * 每日情报落库 —— 后台看往期用。
+ * 每日情报落库 —— 情报的唯一真源。
  *
- * 站点构建仍读 content/digest/<date>.json（静态路径 /daily/[date]），
- * 这里把整期 JSON 另存一份进 digest_issues：
- *   - 后台列往期、看全文不再打 GitHub Contents API；
- *   - 单期 15KB 左右，一条语句就能写完，不需要像位次快照那样分片。
+ * 整期 JSON 原样存进 `digest_issues.payload`：
+ *   - 站点构建前由 `scripts/admin/hydrate-digest.ts` 还原成
+ *     `content/digest/<date>.json`（静态路径 /daily/[date] 照旧按文件生成）；
+ *   - 后台列往期、看全文、判断草稿/已发布、手改几句话都只读这张表；
+ *   - 单期 8KB 左右，一条语句就能写完，不需要像位次快照那样分片。
  *
- * 写入失败只告警：情报已经生成了文件和榜单行，不能因为后台副本失败而回滚。
+ * 写入失败只告警：文件已经在 runner 上生成，不能因为后台副本失败而回滚，
+ * 但「库里有几期，站点就有几期」靠的就是这里写成功 —— 所以失败不能静默。
  */
 import { createD1Client, d1Configured } from "./d1-client";
 

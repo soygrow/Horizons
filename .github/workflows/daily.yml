@@ -12,12 +12,16 @@ name: Daily Digest
 #
 # mode:
 #   fetch   —— 只采集，产出 content/digest/raw/<date>.json
-#   build   —— 只成稿，产出 content/digest/<date>.json
-#   compose —— 采集 + 成稿，但不写 D1（后台「生成本期」用，发布单独一步）
-#   publish —— 成稿后写 D1（同名一期重复发布会被告警挡下）
+#   build   —— 只成稿，产出 content/digest/<date>.json（仅当次 runner 内有效）
+#   compose —— 采集 + 成稿 + 落 digest_issues（不进名次，后台「生成本期」用）
+#   publish —— 成稿后写 D1（名次 + 期文件；同名一期重复发布会被告警挡下）
 #   all     —— 依次执行 fetch → build → publish
 #
-# 需要的仓库 Secrets（仅 publish 需要）：
+# 情报的唯一真源是 D1 的 digest_issues：期文件不入库，构建前由
+# scripts/admin/hydrate-digest.ts 还原。仓库只留 raw/（采集原文）与
+# state/（去重状态），它们不是页面数据。
+#
+# 需要的仓库 Secrets（compose / publish 需要）：
 #   CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID / D1_DATABASE_ID
 
 on:
@@ -100,7 +104,7 @@ jobs:
         run: pnpm exec tsx scripts/fetch/daily/build.ts --date=${{ steps.issue.outputs.date }}
 
       - name: 写入 D1
-        if: env.MODE == 'all' || env.MODE == 'publish'
+        if: env.MODE == 'all' || env.MODE == 'publish' || env.MODE == 'compose'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -109,15 +113,35 @@ jobs:
         run: |
           FLAGS="--date ${{ steps.issue.outputs.date }}"
           if [ "$FULL" = "true" ]; then FLAGS="$FLAGS --full"; fi
+          # 后台「生成本期」（compose）还没决定发不发榜，但页面要能预览，
+          # 而预览页就是构建期从 digest_issues 还原出来的 —— 所以先落库、不建名次。
+          if [ "$MODE" = "compose" ]; then FLAGS="$FLAGS --issues-only"; fi
           pnpm exec tsx scripts/admin/publish-digest.ts $FLAGS
 
-      # 采集与成稿的产物必须提交，否则 /daily/[date] 读不到这一期。
+      # 期文件不再提交：情报的唯一真源是 D1 的 digest_issues，构建前由
+      # scripts/admin/hydrate-digest.ts 还原成 content/digest/<date>.json。
+      # raw/（采集原文）与 state/（去重状态）不是页面数据，仍留档以便复盘。
+      #
       # 推送被拒的处理（每轮先 fetch 再变基、冲突以本次产物为准、带抖动退避）
-      # 统一在 .github/actions/push-content 里，别再往这里抄一份 —— 之前那段
-      # 不 fetch 就 rebase origin/main，变基目标永远是旧引用，重试三轮等于原地
-      # 打转，产物留在 runner 上被判失败。
-      - name: 提交产物
+      # 统一在 .github/actions/push-content 里，别再往这里抄一份。
+      - name: 提交采集原文
         uses: ./.github/actions/push-content
         with:
-          paths: content/digest
-          message: "chore(digest): ${{ steps.issue.outputs.date }} 情报"
+          paths: content/digest/raw content/digest/state
+          message: "chore(digest): ${{ steps.issue.outputs.date }} 采集原文"
+
+      # 期文件不进仓库，这条链路也不再产生 content/** 提交，push 型 workflow 收不到
+      # 触发信号 —— 部署必须显式 dispatch，否则页面永远停在上一次。
+      - name: 触发站点构建
+        if: env.MODE == 'all' || env.MODE == 'publish' || env.MODE == 'compose'
+        env:
+          BOT_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${BOT_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/deploy-site.yml/dispatches" \
+            -d '{"ref":"main"}' | head -c 400
+          echo
+          echo "::notice::已请求 Deploy Site（若未开始，请检查 ADMIN_BOT_TOKEN 权限）"

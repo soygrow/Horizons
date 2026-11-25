@@ -46,7 +46,8 @@
     "board:stats": "tsx scripts/admin/board-stats.ts",
     "board:stats:d1": "tsx scripts/admin/board-stats.ts --d1",
     "hydrate:models": "tsx scripts/admin/hydrate-models.ts",
-    "hydrate:github": "tsx scripts/admin/hydrate-github.ts",
+      "hydrate:github": "tsx scripts/admin/hydrate-github.ts",
+      "hydrate:digest": "tsx scripts/admin/hydrate-digest.ts",
     "backfill:boards": "tsx scripts/admin/backfill-board-columns.ts"
   },
   "devDependencies": {
