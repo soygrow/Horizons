@@ -784,13 +784,12 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
               <div class="flex flex-wrap items-center gap-2">
                 <select id="tools-staging-tier" class="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
                   <option value="all">全部</option>
-                  <option value="qualified">达标（主榜/观察）</option>
-                  <option value="unqualified">不达标</option>
-                  <option value="approved">已确认待富化（含富化中/失败）</option>
-                  <option value="enriched">已富化可发榜（含发布失败待重发）</option>
-                  <option value="enrich_failed">仅富化失败</option>
-                  <option value="published">仅发布成功（待处理完成）</option>
-                  <option value="rejected">已拒绝</option>
+                  <option value="pending">待确认</option>
+                  <option value="approved">待富化（含富化中）</option>
+                  <option value="enrich_failed">富化失败</option>
+                  <option value="enriched">待发布（含发布中）</option>
+                  <option value="publish_failed">发布失败</option>
+                  <option value="published">发布完成</option>
                 </select>
                 <input
                   id="tools-staging-search"

@@ -116,20 +116,22 @@ interface StagingResp {
 }
 
 /**
- * 待发布筛选下拉的档位。
+ * 待发布筛选下拉的档位 = 队列的 6 个状态，一个条目不落两档。
  *
- * 只列当前队列里真的有货的档位（计数由后端按同一口径算）—— 队列里没有富化失败
- * 时还挂着「仅富化失败」，点开就是一张空表，只能让人以为后台坏了。
+ * 「富化中」「发布中」折进前一档：它们是同一件事的两个时刻，单列只会让人
+ * 在两处找同一条目。达标/不达标是判定维度、已拒绝是拒绝名单，都不是队列状态，不放进这里。
+ *
+ * 只列当前队列里真的有货的档位（计数由后端按同一口径算）—— 没有发布失败时
+ * 还挂着「发布失败」，点开就是一张空表，只能让人以为后台坏了。
  */
 const TIER_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "all", label: "全部" },
-  { value: "qualified", label: "达标（主榜/观察）" },
-  { value: "unqualified", label: "不达标" },
-  { value: "approved", label: "已确认待富化（含富化中/失败）" },
-  { value: "enriched", label: "已富化可发榜（含发布失败待重发）" },
-  { value: "enrich_failed", label: "仅富化失败" },
-  { value: "published", label: "仅发布成功（待处理完成）" },
-  { value: "rejected", label: "已拒绝" },
+  { value: "pending", label: "待确认" },
+  { value: "approved", label: "待富化（含富化中）" },
+  { value: "enrich_failed", label: "富化失败" },
+  { value: "enriched", label: "待发布（含发布中）" },
+  { value: "publish_failed", label: "发布失败" },
+  { value: "published", label: "发布完成" },
 ];
 
 interface AuditDropped {
@@ -200,6 +202,8 @@ const state = {
   q: "",
   tier: "all",
   staging: null as StagingResp | null,
+  /** 最近一次发布预览：勾选一变就要据此重算按钮数字，不能等接口回来 */
+  preview: null as PreviewResp | null,
   stats: null as ToolStats | null,
   detailDomain: "",
   detailRejected: false,
@@ -796,6 +800,8 @@ function renderStaging(data: StagingResp): void {
   // 阶段是这次刷新才变的（富化中 → 成功/失败），按钮可用性得跟着重算
   syncEnrichButton(state.jobs);
   syncDoneButton(data);
+  // 翻页/换筛选会把不在本页的勾选清掉，按钮上的数字要跟着回落
+  syncPublishButton(state.preview);
 }
 
 /** 下榜清单：存量重判的产出，没跑过就明确说「未知」而不是显示 0 */
@@ -838,33 +844,62 @@ function renderAudit(audit: PreviewResp["audit"]): void {
   }<p class="mt-1 text-[11px] text-ink-muted">${mode}</p>`;
 }
 
-function renderPreview(data: PreviewResp): void {
-  const btn = $("tools-publish-btn");
+/**
+ * 勾选里真正能发出去的条数。
+ *
+ * 只有「待发布」（enriched）和「发布失败」（publish_failed）会进榜 ——
+ * 与后端 markPublishing 的 where 条件同一口径。勾了待确认/待富化的条目也算勾选，
+ * 但它们一条都发不出去，不能算进按钮上的数字。
+ */
+function publishableSelected(): number {
+  const rows = state.staging?.items ?? [];
+  return rows.filter(
+    (r) => state.selected.has(r.domain) && (r.stage === "enriched" || r.stage === "publish_failed"),
+  ).length;
+}
+
+/**
+ * 「发布到榜单」按钮：数字必须是这一下真会发出去的条数。
+ *
+ * 以前直接写预览接口的 pending（队列里全部已富化条数），勾了 3 个照样显示 32，
+ * 跟复选框完全对不上。现在：勾了就按勾选算，没勾才显示「全部 N」。
+ */
+function syncPublishButton(data: PreviewResp | null): void {
+  if (!data) return;
+  const btn = $("tools-publish-btn") as HTMLButtonElement;
   const text = $("tools-publish-preview");
 
-  renderAudit(data.audit);
-
-  const picked = state.selected.size;
+  const pickedAll = state.selected.size;
+  const picked = publishableSelected();
 
   if (!data.pending) {
     text.textContent = data.approved
       ? `已确认 ${data.approved} 个还没富化，先点「开始富化」。`
       : "没有已富化的条目：候选 → 确认收录 → 富化 → 才能发榜。";
-    btn.setAttribute("disabled", "true");
+    btn.disabled = true;
     btn.textContent = "发布到榜单";
     return;
   }
 
-  btn.removeAttribute("disabled");
-  // 数量直接写在按钮上：不用展开下方的检查区就知道现在能发几条
-  btn.textContent = `发布到榜单（${data.pending}）`;
+  if (pickedAll && !picked) {
+    // 勾了却一条都发不出去：按钮必须点不动，否则点了没反应更迷惑
+    text.textContent = `勾选的 ${pickedAll} 个都还没到「待发布」：要先富化，富化失败的先重新富化。`;
+    btn.disabled = true;
+    btn.textContent = "发布到榜单";
+    return;
+  }
+
+  const n = pickedAll ? picked : data.pending;
+  btn.disabled = false;
+  // 没勾时标明「全部」：否则光看数字分不清是勾选数还是队列总数，正是矛盾感的来源
+  btn.textContent = pickedAll ? `发布到榜单（${n}）` : `发布到榜单（全部 ${n}）`;
 
   const e = data.estimate;
   const retry = data.publishFailed ?? 0;
   const parts = [
-    picked
-      ? `已选 ${picked} 个，将只发布其中已富化的条目`
-      : `将发布全部 ${data.pending} 个已富化条目${retry ? `（含 ${retry} 个上次失败的重发）` : ""}`,
+    pickedAll
+      ? `已选 ${pickedAll} 个，其中 ${picked} 个可发榜，其余状态会被跳过`
+      : `将发布全部 ${data.pending} 个待发布条目${retry ? `（含 ${retry} 个上次失败的重发）` : ""}`,
   ];
   if (e) {
     if (e.dropCount) parts.push(`同时下榜 ${e.dropCount} 条`);
@@ -874,6 +909,12 @@ function renderPreview(data: PreviewResp): void {
   }
   const tail = data.audit ? "，发布后自动触发站点构建。" : "。下榜清单还没算，建议先点「重判存量」。";
   text.textContent = parts.join("，") + tail;
+}
+
+function renderPreview(data: PreviewResp): void {
+  state.preview = data;
+  renderAudit(data.audit);
+  syncPublishButton(data);
 }
 
 /** 字段体检面板：空置（补采可修）与异常（必须人工核对）分开看 */
@@ -1135,7 +1176,10 @@ async function enrichDomains(domains: string[]): Promise<void> {
  */
 async function publishDomains(domains: string[]): Promise<boolean> {
   const total = (state.staging?.enriched ?? 0) + (state.staging?.publishFailed ?? 0);
-  const scope = domains.length ? `选中的 ${domains.length} 个` : `全部 ${total} 个可发榜条目`;
+  const sendable = domains.length ? publishableSelected() : total;
+  const scope = domains.length
+    ? `勾选的 ${domains.length} 个中的 ${sendable} 个可发榜条目`
+    : `全部 ${total} 个可发榜条目`;
 
   if (
     !window.confirm(
@@ -1245,9 +1289,8 @@ function bind(): void {
     btn.textContent = "提交中…";
     try {
       if (!(await publishDomains(picked))) {
-        // 用户在半路取消：按钮要立刻恢复，不然看起来像已经在发布了
-        btn.disabled = false;
-        btn.textContent = "发布到榜单";
+        // 用户在半路取消：按钮要立刻恢复（含数字），不然看起来像已经在发布了
+        syncPublishButton(state.preview);
         return;
       }
       btn.textContent = "已提交";
@@ -1255,8 +1298,7 @@ function bind(): void {
         void loadPreview();
       }, 4000);
     } catch (e) {
-      btn.disabled = false;
-      btn.textContent = "发布到榜单";
+      syncPublishButton(state.preview);
       window.alert(`发布失败：${e instanceof Error ? e.message : String(e)}`);
     }
   });
@@ -1351,8 +1393,9 @@ function bind(): void {
     if (!input?.dataset.toolSelect) return;
     if (input.checked) state.selected.add(input.dataset.toolSelect);
     else state.selected.delete(input.dataset.toolSelect);
-    // 勾选直接决定「这批能不能富化」，按钮要立刻跟着变
+    // 勾选直接决定「这批能不能富化/能发几条」，按钮要立刻跟着变，不等接口
     syncEnrichButton(state.jobs);
+    syncPublishButton(state.preview);
     void loadPreview();
   });
 
@@ -1369,6 +1412,7 @@ function bind(): void {
       }
     }
     syncEnrichButton(state.jobs);
+    syncPublishButton(state.preview);
     void loadStaging();
     void loadPreview();
   });

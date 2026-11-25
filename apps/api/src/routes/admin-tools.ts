@@ -466,18 +466,18 @@ tools.get("/staging", async (c) => {
    * 每个档位的判定口径：筛选与「下拉里的计数」共用同一份。
    *
    * 分开写迟早会漂 —— 下拉显示 3 条、点进去 0 条，用户只会以为坏了。
+   *
+   * 档位就是队列的 6 个状态，一个 stage 只落一档：
+   * 待确认 / 待富化（含富化中）/ 富化失败 / 待发布（含发布中）/ 发布失败 / 发布完成。
+   * 「进行中」（enriching、publishing）不单列 —— 它们和上一档是同一件事的两个时刻，
+   * 分开筛只会让人在两处找同一条目。
    */
   const matchTier = (r: StagingCandidate, tier: string): boolean => {
-    if (tier === "qualified") return r.tier === "core" || r.tier === "watch";
-    if (tier === "unqualified") return r.tier === "reject";
-    if (tier === "rejected") return r.rejected;
-    // 「待发布」= 还没进发布队列的：待富化 / 富化中 / 富化失败，都能在这里找回
-    if (tier === "approved") {
-      return r.stage === "approved" || r.stage === "enriching" || r.stage === "enrich_failed";
-    }
-    // 「可发榜」含发布失败的（点一下就能重发），发布中/已发榜单独筛
-    if (tier === "enriched") return r.stage === "enriched" || r.stage === "publish_failed";
+    if (tier === "pending") return r.stage === "candidate";
+    if (tier === "approved") return r.stage === "approved" || r.stage === "enriching";
     if (tier === "enrich_failed") return r.stage === "enrich_failed";
+    if (tier === "enriched") return r.stage === "enriched" || r.stage === "publishing";
+    if (tier === "publish_failed") return r.stage === "publish_failed";
     if (tier === "published") return r.stage === "published";
     return true;
   };
@@ -494,13 +494,12 @@ tools.get("/staging", async (c) => {
    */
   const tierCounts: Record<string, number> = { all: scoped.length };
   for (const tier of [
-    "qualified",
-    "unqualified",
+    "pending",
     "approved",
-    "enriched",
     "enrich_failed",
+    "enriched",
+    "publish_failed",
     "published",
-    "rejected",
   ]) {
     tierCounts[tier] = scoped.filter((r) => matchTier(r, tier)).length;
   }
