@@ -432,51 +432,80 @@ tools.get("/staging", async (c) => {
   const kindOf = (t: Record<string, unknown>): "new" | "refresh" =>
     t.kind === "refresh" ? "refresh" : "new";
 
-  const filtered = all
-    .map((t) => {
-      const verdict = t.verdict as { tier?: string; reason?: string } | undefined;
-      return {
-        domain: t.domain,
-        name: (t.name as string) ?? t.domain,
-        url: (t.url as string) ?? null,
-        description: (t.description as string) ?? null,
-        phUpvotes: (t.phUpvotes as number) ?? 0,
-        monthlyVisits: t.trafficMetrics?.monthlyVisits ?? t.metrics?.monthlyVisits ?? null,
-        /*
-         * 「更新待审核」要比对「9 月 → 10 月」这种月份变化，没有这个字段前端只能显示
-         * 破折号（旧值 2026-09 → — 看起来像新月没数据）。与线上榜单列同源取 snapshotMonth。
-         */
-        snapshotMonth:
-          (t.trafficMetrics as { snapshotMonth?: string } | undefined)?.snapshotMonth ?? null,
-        heatScore: (t.heatScore as number) ?? 0,
-        categories: ((t.categories as string[]) ?? []).slice(0, 3),
-        firstSeenAt: (t.firstSeenAt as string) ?? null,
-        // 采集时的判定结果优先，缺失才回退本地兜底判定
-        tier: verdict?.tier ?? tierOf(t),
-        reason: verdict?.reason ?? null,
-        stage: stageOf(t),
-        kind: kindOf(t),
-        // 一律按当前卡片实时算：存值只反映上次富化那一刻，采集入库的条目根本没有
-        fieldGaps: fieldGapsOf(t),
-        rejected: rejectedSet.has(String(t.domain).toLowerCase()),
-      };
-    })
-    .filter((r) => {
-      if (source !== "all" && r.kind !== source) return false;
-      if (q && !r.domain.toLowerCase().includes(q) && !r.name.toLowerCase().includes(q)) return false;
-      if (tierFilter === "qualified") return r.tier === "core" || r.tier === "watch";
-      if (tierFilter === "unqualified") return r.tier === "reject";
-      if (tierFilter === "rejected") return r.rejected;
-      // 「待发布」= 还没进发布队列的：待富化 / 富化中 / 富化失败，都能在这里找回
-      if (tierFilter === "approved") {
-        return r.stage === "approved" || r.stage === "enriching" || r.stage === "enrich_failed";
-      }
-      // 「可发榜」含发布失败的（点一下就能重发），发布中/已发榜单独筛
-      if (tierFilter === "enriched") return r.stage === "enriched" || r.stage === "publish_failed";
-      if (tierFilter === "enrich_failed") return r.stage === "enrich_failed";
-      if (tierFilter === "published") return r.stage === "published";
-      return true;
-    });
+  const mapped = all.map((t) => {
+    const verdict = t.verdict as { tier?: string; reason?: string } | undefined;
+    return {
+      domain: t.domain,
+      name: (t.name as string) ?? t.domain,
+      url: (t.url as string) ?? null,
+      description: (t.description as string) ?? null,
+      phUpvotes: (t.phUpvotes as number) ?? 0,
+      monthlyVisits: t.trafficMetrics?.monthlyVisits ?? t.metrics?.monthlyVisits ?? null,
+      /*
+       * 「更新待审核」要比对「9 月 → 10 月」这种月份变化，没有这个字段前端只能显示
+       * 破折号（旧值 2026-09 → — 看起来像新月没数据）。与线上榜单列同源取 snapshotMonth。
+       */
+      snapshotMonth:
+        (t.trafficMetrics as { snapshotMonth?: string } | undefined)?.snapshotMonth ?? null,
+      heatScore: (t.heatScore as number) ?? 0,
+      categories: ((t.categories as string[]) ?? []).slice(0, 3),
+      firstSeenAt: (t.firstSeenAt as string) ?? null,
+      // 采集时的判定结果优先，缺失才回退本地兜底判定
+      tier: verdict?.tier ?? tierOf(t),
+      reason: verdict?.reason ?? null,
+      stage: stageOf(t),
+      kind: kindOf(t),
+      // 一律按当前卡片实时算：存值只反映上次富化那一刻，采集入库的条目根本没有
+      fieldGaps: fieldGapsOf(t),
+      rejected: rejectedSet.has(String(t.domain).toLowerCase()),
+    };
+  });
+  type StagingCandidate = (typeof mapped)[number];
+
+  /**
+   * 每个档位的判定口径：筛选与「下拉里的计数」共用同一份。
+   *
+   * 分开写迟早会漂 —— 下拉显示 3 条、点进去 0 条，用户只会以为坏了。
+   */
+  const matchTier = (r: StagingCandidate, tier: string): boolean => {
+    if (tier === "qualified") return r.tier === "core" || r.tier === "watch";
+    if (tier === "unqualified") return r.tier === "reject";
+    if (tier === "rejected") return r.rejected;
+    // 「待发布」= 还没进发布队列的：待富化 / 富化中 / 富化失败，都能在这里找回
+    if (tier === "approved") {
+      return r.stage === "approved" || r.stage === "enriching" || r.stage === "enrich_failed";
+    }
+    // 「可发榜」含发布失败的（点一下就能重发），发布中/已发榜单独筛
+    if (tier === "enriched") return r.stage === "enriched" || r.stage === "publish_failed";
+    if (tier === "enrich_failed") return r.stage === "enrich_failed";
+    if (tier === "published") return r.stage === "published";
+    return true;
+  };
+
+  // 搜索/来源先收窄：下拉计数跟着搜索走，否则会出现「全部 43」但列表 3 条
+  const scoped = mapped.filter((r) => {
+    if (source !== "all" && r.kind !== source) return false;
+    return !(q && !r.domain.toLowerCase().includes(q) && !r.name.toLowerCase().includes(q));
+  });
+
+  /**
+   * 各档位条数：前端据此只列出「当前真的有条目」的选项 ——
+   * 队列里没有富化失败时还挂着「仅富化失败」，点开就是一张空表。
+   */
+  const tierCounts: Record<string, number> = { all: scoped.length };
+  for (const tier of [
+    "qualified",
+    "unqualified",
+    "approved",
+    "enriched",
+    "enrich_failed",
+    "published",
+    "rejected",
+  ]) {
+    tierCounts[tier] = scoped.filter((r) => matchTier(r, tier)).length;
+  }
+
+  const filtered = scoped.filter((r) => matchTier(r, tierFilter));
 
   // 已发榜的排在最后：它们等人工点「处理完成」，不该盖住还在等发布的条目
   const rows = [...filtered].sort(
@@ -490,6 +519,8 @@ tools.get("/staging", async (c) => {
     lastRun: null,
     lastEnrich: null,
     total: rows.length,
+    // 各筛选档的条数（已按搜索/来源收窄）：前端下拉只列有货的档位
+    counts: tierCounts,
     // pending = 还没确认收录的（含判定为 reject 的）
     pending: all.filter((t) => stageOf(t) === "candidate").length,
     approved: all.filter((t) => stageOf(t) === "approved").length,

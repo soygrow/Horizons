@@ -108,10 +108,29 @@ interface StagingResp {
   /** 已发榜（等人工点「处理完成」） */
   published?: number;
   rejected: number;
+  /** 各筛选档的条数（已按搜索/来源收窄）：下拉只列有货的档位 */
+  counts?: Record<string, number>;
   page: number;
   pageSize: number;
   items: StagingRow[];
 }
+
+/**
+ * 待发布筛选下拉的档位。
+ *
+ * 只列当前队列里真的有货的档位（计数由后端按同一口径算）—— 队列里没有富化失败
+ * 时还挂着「仅富化失败」，点开就是一张空表，只能让人以为后台坏了。
+ */
+const TIER_OPTIONS: Array<{ value: string; label: string }> = [
+  { value: "all", label: "全部" },
+  { value: "qualified", label: "达标（主榜/观察）" },
+  { value: "unqualified", label: "不达标" },
+  { value: "approved", label: "已确认待富化（含富化中/失败）" },
+  { value: "enriched", label: "已富化可发榜（含发布失败待重发）" },
+  { value: "enrich_failed", label: "仅富化失败" },
+  { value: "published", label: "仅发布成功（待处理完成）" },
+  { value: "rejected", label: "已拒绝" },
+];
 
 interface AuditDropped {
   domain: string;
@@ -625,8 +644,36 @@ function syncDoneButton(data: StagingResp): void {
       : "没有「已发布成功」的条目需要收尾";
 }
 
+/**
+ * 按当前队列重算下拉档位：没货的档位不显示，有货的带上条数。
+ *
+ * 当前选中的档位即使变成 0 也留着 —— 否则用户正看着「仅富化失败」时
+ * 下拉会自己跳回「全部」，列表跟着变，像被后台抢了操作。
+ */
+let tierOptionsSig = "";
+
+function syncTierOptions(data: StagingResp): void {
+  const sel = $("tools-staging-tier") as HTMLSelectElement | null;
+  if (!sel || !data.counts) return;
+  const counts = data.counts;
+  const options = TIER_OPTIONS.filter(
+    (o) => o.value === "all" || (counts[o.value] ?? 0) > 0 || o.value === state.tier,
+  );
+  // 12 秒一轮询，档位没变就别重建 DOM：下拉正展开时重建会把用户踢出选择状态
+  const sig = options.map((o) => `${o.value}:${counts[o.value] ?? 0}`).join("|");
+  if (sig !== tierOptionsSig) {
+    tierOptionsSig = sig;
+    sel.innerHTML = options
+      .map((o) => `<option value="${o.value}">${o.label}（${counts[o.value] ?? 0}）</option>`)
+      .join("");
+  }
+  sel.value = options.some((o) => o.value === state.tier) ? state.tier : "all";
+  state.tier = sel.value;
+}
+
 function renderStaging(data: StagingResp): void {
   state.staging = data;
+  syncTierOptions(data);
 
   const meta = $("tools-staging-meta");
   if (!data.pending) {
