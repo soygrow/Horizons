@@ -57,9 +57,21 @@ interface DraftRes {
   published: DigestFile | null;
 }
 
-interface RunStatusRes {
+/** 一次 GitHub Actions 运行（情报没有本地任务表，一次运行就是一个 run） */
+interface DailyJob {
+  id: number;
   status: string;
-  run: { id: number; url: string; status: string; conclusion: string | null } | null;
+  /** fetch / build / compose / publish / all / schedule */
+  mode: string;
+  /** dispatch 时带的期号，定时触发为空 */
+  date: string;
+  event: string;
+  createdAt: string;
+  url: string;
+}
+
+interface JobsRes {
+  jobs: DailyJob[];
   failure?: { job: string; step: string | null; url: string } | null;
 }
 
@@ -67,17 +79,19 @@ interface RunStatusRes {
 
 const MODULE_ORDER = ["headline", "tools", "money", "action"] as const;
 const MODULE_LABEL: Record<string, string> = { headline: "头条", tools: "能用", money: "钱", action: "能做" };
-// 后端 mapStatus 给的是 failure，历史代码只认 failed，红字永远不会亮
-const STATUS_LABEL: Record<string, string> = {
-  idle: "未运行",
-  queued: "排队中",
-  running: "运行中",
-  success: "已完成",
-  failure: "失败",
-  failed: "失败",
-  cancelled: "已取消",
+
+/** 触发方式的说法，和「情报生成」里按钮的文字保持一致 */
+const MODE_LABEL: Record<string, string> = {
+  fetch: "只采集",
+  build: "只成稿",
+  compose: "生成本期",
+  publish: "发布本期",
+  all: "全流程",
+  schedule: "定时",
 };
-const isFailed = (s: string | null | undefined): boolean => s === "failure" || s === "failed";
+
+const JOB_ROWS_VISIBLE = 4;
+const isLiveJob = (s: string): boolean => s === "queued" || s === "running";
 
 let mounted = false;
 let pollTimer: number | null = null;
@@ -372,46 +386,97 @@ function bindDigestEditing(): void {
   });
 }
 
-/* -------------------------------- 状态 --------------------------------- */
+/* ------------------------------- 运行记录 ------------------------------- */
 
-async function refreshStatus(): Promise<void> {
+/** 状态徽章跟其它榜同一套配色，别在这里另起一套 */
+function jobBadge(status: string): { label: string; cls: string } {
+  switch (status) {
+    case "success":
+      return { label: "成功", cls: "bg-accent-soft text-accent" };
+    case "running":
+      return { label: "运行中", cls: "bg-primary-soft text-primary" };
+    case "failure":
+      return { label: "失败", cls: "bg-danger-soft text-danger" };
+    case "cancelled":
+      return { label: "已取消", cls: "bg-surface-2 text-ink-muted" };
+    default:
+      return { label: "排队中", cls: "bg-surface-2 text-ink-muted" };
+  }
+}
+
+/** 触发方式：定时 / 只采集 / 生成本期 … */
+function jobModeLabel(job: DailyJob): string {
+  return MODE_LABEL[job.mode] ?? job.mode ?? "—";
+}
+
+/** 第二列：这跑的是哪一期 —— 定时触发按当天算，手点的有期号就写期号 */
+function jobDetail(job: DailyJob): string {
+  if (job.date) return `期号 ${job.date}`;
+  return job.mode === "schedule" ? "当期（按当天 UTC+8）" : "当期（按今天 UTC+8）";
+}
+
+function syncJobsMeta(jobs: DailyJob[]): void {
+  const el = $("daily-jobs-meta");
+  if (!el) return;
+  const active = jobs.filter((j) => isLiveJob(j.status)).length;
+  el.textContent = active ? `最近 ${JOB_ROWS_VISIBLE} 次 · 运行中 ${active}` : `最近 ${JOB_ROWS_VISIBLE} 次`;
+}
+
+function renderJobs(jobs: DailyJob[]): void {
+  const box = $("daily-jobs");
+  if (!box) return;
+
+  syncJobsMeta(jobs);
+  if (!jobs.length) {
+    box.innerHTML = `<p class="px-4 py-4 text-xs text-ink-muted">还没有运行记录。点「生成本期」或等每天 07:30 的定时任务。</p>`;
+    pollJobs(false);
+    return;
+  }
+
+  // 轮询看全量：被截断的行数不影响「还有任务在跑」的判断
+  pollJobs(jobs.some((j) => isLiveJob(j.status)));
+
+  box.innerHTML = jobs
+    .slice(0, JOB_ROWS_VISIBLE)
+    .map((job) => {
+      const badge = jobBadge(job.status);
+      return `<div class="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2.5 text-xs last:border-b-0">
+          <span class="w-16 shrink-0 text-ink-muted">${esc(jobModeLabel(job))}</span>
+          <span class="min-w-0 flex-1 truncate text-ink-secondary">${esc(jobDetail(job))}</span>
+          <span class="shrink-0 rounded-full px-2 py-0.5 font-semibold ${badge.cls}">${badge.label}</span>
+          <span class="w-24 shrink-0 text-right text-ink-muted">${esc(fmtTime(job.createdAt))}</span>
+          <span class="w-10 shrink-0 text-right"><a href="${esc(job.url)}" target="_blank" rel="noopener" class="text-primary hover:underline">日志</a></span>
+        </div>`;
+    })
+    .join("");
+}
+
+async function loadJobs(): Promise<void> {
+  const box = $("daily-jobs");
   try {
-    const res = await apiGet<RunStatusRes>("/daily/run-status");
-    const label = STATUS_LABEL[res?.status] ?? res?.status ?? "未知";
-    const failed = isFailed(res?.status);
-    const url = res?.failure?.url ?? res?.run?.url;
-    const link = url
-      ? ` · <a class="underline" href="${esc(url)}" target="_blank" rel="noreferrer">查看日志</a>`
-      : "";
-    // 失败时把失败 job 与步骤名直接写出来，不然只有「失败」两个字，等于没说
-    const where = failed && res?.failure
-      ? `（${esc(res.failure.job)}${res.failure.step ? ` · 卡在「${esc(res.failure.step)}」` : ""}）`
-      : "";
-    const tone = failed ? "bad" : res?.status === "success" ? "ok" : res?.status === "idle" ? "idle" : "busy";
-    const el = $("daily-status");
-    if (el) {
-      el.innerHTML = `最近一次：${esc(label)}${where}${link}`;
-      el.className = tone === "bad" ? "text-xs text-red-600" : tone === "ok" ? "text-xs text-emerald-600" : tone === "busy" ? "text-xs text-amber-600" : "text-xs text-ink-muted";
-    }
-    if (failed) {
+    const res = await apiGet<JobsRes>(`/daily/jobs?limit=${JOB_ROWS_VISIBLE}`);
+    renderJobs(res?.jobs ?? []);
+
+    // 最新一条失败：把失败 job / 步骤名写进生成面板的提示行，省得点进日志翻十几个步骤
+    const failure = res?.failure;
+    if (failure) {
       setStatus(
         "daily-gen-status",
-        `最近一次运行失败${res?.failure?.step ? `，卡在「${res.failure.step}」` : ""}；改完再点「生成本期」重跑。`,
+        `最近一次运行失败（${failure.job}${failure.step ? ` · 卡在「${failure.step}」` : ""}）；改完再点「生成本期」重跑。`,
         "bad",
       );
     }
   } catch (e) {
-    setStatus("daily-status", `状态读取失败：${msg(e)}`, "bad");
+    if (box) {
+      box.innerHTML = `<p class="px-4 py-4 text-xs text-red-600">运行记录读取失败：${esc(msg(e))}</p>`;
+    }
   }
 }
 
-function pollStatus(times = 8): void {
+function pollJobs(active: boolean): void {
   if (pollTimer !== null) window.clearTimeout(pollTimer);
-  if (times <= 0) return;
-  pollTimer = window.setTimeout(async () => {
-    await refreshStatus();
-    pollStatus(times - 1);
-  }, 5000);
+  if (!active) return;
+  pollTimer = window.setTimeout(() => void loadJobs(), 12_000);
 }
 
 /* -------------------------------- 触发 --------------------------------- */
@@ -433,8 +498,9 @@ async function run(mode: "fetch" | "build" | "compose" | "publish" | "all", labe
   try {
     await apiPost("/daily/run", { mode, date });
     setStatus("daily-gen-status", `${label}已提交，等待启动…`, "busy");
-    pollStatus(8);
-    window.setTimeout(() => void refreshStatus(), 5000);
+    // 先按「有任务在跑」把轮询打开：刚 dispatch 完列表里可能还是上一条的终态
+    pollJobs(true);
+    window.setTimeout(() => void loadJobs(), 5000);
     window.setTimeout(() => void loadDraft(date), 30_000);
     window.setTimeout(() => void loadIssues(), 90_000);
   } catch (e) {
@@ -453,7 +519,7 @@ async function run(mode: "fetch" | "build" | "compose" | "publish" | "all", labe
 export function mountAdminDaily(): void {
   if (mounted) {
     void loadIssues();
-    void refreshStatus();
+    void loadJobs();
     return;
   }
   mounted = true;
@@ -488,7 +554,7 @@ export function mountAdminDaily(): void {
   $("daily-gen-reload")?.addEventListener("click", () => void loadDraft(getGenDate()));
   $("daily-refresh")?.addEventListener("click", () => {
     void loadIssues();
-    void refreshStatus();
+    void loadJobs();
   });
 
   // 线上情报里点「看全文」
@@ -497,7 +563,7 @@ export function mountAdminDaily(): void {
     if (btn?.dataset.issueDate) void loadIssueDetail(btn.dataset.issueDate);
   });
 
-  void refreshStatus();
+  void loadJobs();
   void loadIssues();
   void loadDraft(getGenDate());
 }
@@ -505,5 +571,5 @@ export function mountAdminDaily(): void {
 export function refreshAdminDaily(): void {
   if (!mounted) return;
   void loadIssues();
-  void refreshStatus();
+  void loadJobs();
 }

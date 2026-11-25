@@ -120,16 +120,37 @@ export interface WorkflowRun {
   status: string;
   conclusion: string | null;
   html_url: string;
+  created_at?: string;
+  /** workflow_dispatch / schedule / push … */
+  event?: string;
+  /** 只有 workflow_dispatch 的 run 才带，值是 dispatch 时传的那几个 input */
+  inputs?: Record<string, string> | null;
+  display_title?: string;
+}
+
+/**
+ * 最近若干次运行。
+ *
+ * 后台的「运行记录」要的是列表而不是「最近一条」：一次失败之后，
+ * 得能往上翻两行看是「这次改坏了」还是「上一版也一样」。
+ */
+export async function listWorkflowRuns(
+  cfg: GhConfig,
+  workflow: string,
+  limit = 5,
+): Promise<WorkflowRun[]> {
+  const res = await ghFetch(
+    cfg,
+    `/repos/${cfg.repo}/actions/workflows/${workflow}/runs?branch=main&per_page=${limit}`,
+  );
+  if (!res.ok) return [];
+  const body = (await res.json()) as { workflow_runs?: WorkflowRun[] };
+  return body.workflow_runs ?? [];
 }
 
 export async function latestRun(cfg: GhConfig, workflow: string): Promise<WorkflowRun | null> {
-  const res = await ghFetch(
-    cfg,
-    `/repos/${cfg.repo}/actions/workflows/${workflow}/runs?branch=main&per_page=1`,
-  );
-  if (!res.ok) return null;
-  const body = (await res.json()) as { workflow_runs?: WorkflowRun[] };
-  return body.workflow_runs?.[0] ?? null;
+  const runs = await listWorkflowRuns(cfg, workflow, 1);
+  return runs[0] ?? null;
 }
 
 /** dispatch 不返回 run id，只能对比触发前后的「最新 run」 */

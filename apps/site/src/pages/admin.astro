@@ -427,20 +427,27 @@ const meta = {
             </button>
           </nav>
 
-          <!-- 运行状态放在两个页签之上：采集、成稿、发布都跑同一个 daily.yml -->
+          <!-- 运行记录放在两个页签之上：采集、成稿、发布都跑同一个 daily.yml，
+               只挂在内层视图里的话，切到另一个页签提交完就什么都看不见了。 -->
           <article class="rounded-2xl border border-border bg-surface">
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-2.5">
               <div class="flex items-center gap-2">
-                <h2 class="text-sm font-semibold">运行状态</h2>
-                <span id="daily-status" class="text-xs text-ink-muted">读取中…</span>
+                <h2 class="text-sm font-semibold">运行记录</h2>
+                <span id="daily-jobs-meta" class="text-[11px] text-ink-muted">最近 4 次</span>
               </div>
-              <button
-                id="daily-refresh"
-                type="button"
-                class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
-              >
-                刷新
-              </button>
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] text-ink-muted">有任务在跑时每 12 秒自动刷新</span>
+                <button
+                  id="daily-refresh"
+                  type="button"
+                  class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
+                >
+                  刷新
+                </button>
+              </div>
+            </div>
+            <div id="daily-jobs">
+              <p class="px-4 py-4 text-xs text-ink-muted">读取中…</p>
             </div>
           </article>
 

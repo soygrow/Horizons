@@ -15,6 +15,7 @@ import {
   failedJob,
   ghConfig,
   latestRun,
+  listWorkflowRuns,
   mapStatus,
   missingSecrets,
   readRepoJson,
@@ -265,6 +266,45 @@ adminDaily.get("/run-status", async (c) => {
       : null,
     failure,
   });
+});
+
+/**
+ * 最近几次运行，给后台的「运行记录」用。
+ *
+ * 和别的榜不一样，情报没有本地任务表 —— 一次运行就是 GitHub 上的一个 run，
+ * 所以直接列 workflow runs，字段也从 run 上就地取：触发方式（定时 / 手点）、
+ * 手点的 mode 和期号（dispatch inputs）、开始时间、日志地址。
+ *
+ * 最新一条失败时附带失败 job 与步骤名：列表只写「失败」两个字，
+ * 还是得点进日志翻十几个步骤才知道卡在哪。
+ */
+adminDaily.get("/jobs", async (c) => {
+  const cfg = ghConfig(c.env);
+  if (!cfg) return c.json(notConfigured(c.env), 400);
+
+  const raw = Number(c.req.query("limit") ?? 4);
+  const limit = Number.isFinite(raw) ? Math.min(Math.max(Math.trunc(raw), 1), 10) : 4;
+
+  const runs = await listWorkflowRuns(cfg, WORKFLOW, limit);
+  if (!runs.length) return c.json({ jobs: [], failure: null });
+
+  const jobs = runs.map((run) => {
+    const inputs = run.inputs ?? {};
+    const scheduled = run.event === "schedule";
+    return {
+      id: run.id,
+      status: mapStatus(run, "queued"),
+      // 定时触发没有 inputs，别让它显示成「全流程」，那会让人以为是手点的
+      mode: scheduled ? "schedule" : String(inputs.mode ?? "all"),
+      date: String(inputs.date ?? "").trim(),
+      event: run.event ?? "",
+      createdAt: run.created_at ?? "",
+      url: run.html_url,
+    };
+  });
+
+  const failure = jobs[0]?.status === "failure" ? await failedJob(cfg, jobs[0].id) : null;
+  return c.json({ jobs, failure });
 });
 
 adminDaily.post("/run", async (c) => {
