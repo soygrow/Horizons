@@ -1906,5 +1906,433 @@
   "https://github.com/gokayfem/ComfyUI-fal-API": {
     "firstSeenAt": "2026-11-11T01:10:21.507Z",
     "date": "2026-11-11"
+  },
+  "https://michaelharley.net/posts/2026/11/01/llm-agents-work-for-their-parent-companies-not-for-you": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://bloomberg.com/news/articles/2026-11-24/anthropic-breaks-below-83-ipo-price-in-premarket-trading": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://infoq.cn/minibook/APpalUCSDcvjS75zsdgi": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://infoq.cn/article/YAc2TqCHc09kAFF1A7BS": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://infoq.cn/article/cgiP7vstrXKH94L1zj76": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://ithome.com/1/032/097.htm": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://ithome.com/1/032/090.htm": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://ithome.com/1/032/089.htm": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://latent.space/p/ainews-gemini-4-neon-marks-gdm-s-full-return-as-a-frontier-lab": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://ithome.com/1/032/058.htm": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://ithome.com/1/032/014.htm": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://ithome.com/1/031/989.htm": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://ithome.com/1/031/983.htm": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://ithome.com/1/031/978.htm": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://ithome.com/1/031/977.htm": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://ithome.com/1/031/970.htm": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://ithome.com/1/031/965.htm": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/industrynews/L9rc3Khgc8pFgYtD.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/chips/yHCLu9wEjr4z9AgA.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://simonwillison.net/2026/Nov/24/llm-inflection-points": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://techcrunch.com/2026/11/24/even-the-best-ai-agents-struggle-with-everyday-life": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://techcrunch.com/2026/11/24/walmart-teams-up-with-meta-to-bring-black-friday-deals-to-ai-agent-muse": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://techcrunch.com/2026/11/24/maple-raises-5-3m-to-build-ai-products-that-protect-your-data-even-from-itself": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://bbc.co.uk/sounds/play/live:bbc_world_service_south_asia?at_medium=RSS&at_campaign=rss": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://the-decoder.com/anthropic-turns-claude-artifacts-into-standalone-desktop-apps-for-macos-and-windows": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://arstechnica.com/ai/2026/11/whats-going-on-with-the-riemann-hypothesis": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://infoq.cn/article/qEXNRNufkiFkiUEU9aae": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://the-decoder.com/anthropic-tops-700-million-monthly-mcp-sdk-downloads-and-expands-the-protocol-for-more-autonomous-ai-agents": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://techcrunch.com/2026/11/24/anthropic-shares-fall-below-ipo-price-a-worrying-sign-for-ai-startups": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://bbc.co.uk/news/articles/c6894evgpel5o?at_medium=RSS&at_campaign=rss": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://techcrunch.com/2026/11/24/uk-warns-ai-driven-cyberattacks-are-exposing-years-of-weak-security": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://the-decoder.com/novartis-ceo-says-ai-will-shave-four-years-off-drug-development-not-cure-all-disease": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://the-decoder.com/openai-o1-co-creator-noam-brown-urges-promising-students-to-drop-out-as-ai-enters-a-very-steep-rate-of-progress": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://arstechnica.com/ai/2026/11/tidal-will-ban-fully-ai-generated-music-on-december-9": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://techcrunch.com/2026/11/24/meta-brings-its-muse-ai-assistant-directly-into-instagram-dms": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://simonwillison.net/2026/Nov/24/astra-historical-mystery": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://techcrunch.com/2026/11/24/tidal-to-ban-and-remove-millions-of-ai-generated-tracks-as-ai-slop-inundates-music-streaming": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://variety.com/2026/music/news/tidal-bans-ai-generated-music-1236956924": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://techcrunch.com/2026/11/24/why-a-crusoe-investor-is-betting-on-solar-and-batteries-to-power-future-ai-data-centers": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://techcrunch.com/2026/11/24/pinterest-will-now-let-parents-limit-the-ai-generated-content-their-teens-see": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://blog.google/products-and-platforms/products/gemini/gemini-golden-state": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://technologyreview.com/2026/11/24/1148091/raising-the-stakes-for-enterprise-networks-with-ai-modernization": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://the-decoder.com/anthropic-researcher-stands-by-his-ai-assisted-riemann-proof-but-owns-up-to-stupid-things-in-the-rollout": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://infoq.cn/article/iRm9lBSQj0OCvDdgLQrO": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://the-decoder.com/dozens-of-insiders-say-openai-and-anthropics-unreleased-models-have-outgrown-their-safety-measures": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://infoq.cn/article/sFmubmDWkulIOTBLX0Dr": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://infoq.cn/video/Q0rXqh3OmSAhcePiDjh2": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://infoq.cn/video/UU3P37LW5IE6Xg4O0cSN": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://the-decoder.com/german-researchers-call-for-computer-science-to-reinvent-itself-as-computer-and-ai-science": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://arstechnica.com/security/2026/11/amazon-says-hackers-ai-agents-found-and-exploited-0-day-with-little-human-input": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://the-decoder.com/anthropics-claude-ship-lets-ai-agents-review-fix-and-approve-pull-requests-on-their-own": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://infoq.cn/article/vaEUVvWD9AIaFXZhzSMH": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://bbc.co.uk/news/articles/c9gkld2l38y6o?at_medium=RSS&at_campaign=rss": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/industrynews/b7Pw487MPHsDMSyR.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/industrynews/uFuwhvMHGUY0Qeu0.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/industrynews/ubwFeDsrkrcQf1BB.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/industrynews/HXbRi8ascVBkUsJP.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/industrynews/vo7BI6hIy3wL6Mi4.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/medigital/P6Ota0mqLwk8wsN2.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://aws.amazon.com/blogs/machine-learning/introducing-the-amazon-bedrock-trusted-access-api-with-anthropics-enterprise-frontier-safeguards-and-enterprise-data-controls": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://latent.space/p/ainews-jensen-is-back-and-openai-shows-its-pretraining-curve-joined-by-microsoft": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/industrynews/X2LHtIreyiO6depw.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/industrynews/lVVGnHDROrkdwJLp.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/industrynews/SWU1FnevSoIn4MNM.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/industrynews/ICe6gznRO80vcMxl.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://leiphone.com/category/zaobao/Ao31dQuXPBTU7qpK.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://openai.com/business/customer-stories/clay-plugins-openai": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://simonwillison.net/2026/Nov/23/glm-54": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://news.ycombinator.com/item?id=50630809": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://novaramedia.com/2026/11/24/anthropic-staff-openly-talk-about-taking-over-the-world-claims-top-mit-physicist": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://openai.com/index/gpt-6-models-demonstrate-intrinsic-protein-design-capabilities": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://davidtemkin.github.io/declarelang": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/openai/math/tree/main/preprints/VP-and-VNP-are-different-November-23-2026": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://anthropic.com/research/working-with-ai": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/koala73/worldmonitor": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://philippdubach.com/posts/cheaper-ai-tokens-wont-pay-for-capex": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://msn.com/en-us/money/top-stocks/anthropic-stock-sinks-below-ipo-price-why-that-s-happened-so-fast/ar-AA2i7rqa": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://comentr.com/technology/01M88DWQ0R4NCMYR17AFEWRG1F": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://tech.yahoo.com/ai/claude/articles/scoop-anthropic-openai-employees-fear-104505580.html": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://forbes.com/sites/siladityaray/2026/11/24/anthropic-ceo-dario-amodei-sold-280-million-in-shares-as-part-of-record-ipo": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://protocolis.co/paper": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://nomagicpill.substack.com/p/quit-internet-videos-before-ai-perfects": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://marginalia.nu/log/a_141_marginalia_update": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://noahbuilt.it/writing/qwen-on-5600-lambdas": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://governor.ny.gov/news/consumers-begin-their-holiday-shopping-season-governor-hochul-signs-five-year-ban-ai-chatbot": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://news.ycombinator.com/item?id=50633601": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/receptron/mulmoterminal": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/Dicklesworthstone/ultimate_bug_scanner": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/Dicklesworthstone/ntm": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/bethington/ghidra-mcp": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/off-grid-ai/OGAM": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/nuphos/nuphos": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/mdiri-ai/SoduWork": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/highflame-ai/zeroid": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/wici-ai/inferssd": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/agentes-chat/agentes-chat": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/hashgraph-online/awesome-codex-plugins": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/alibaba/loongsuite-pilot": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://proofatlas.ai/open-problems": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/erkamyaman/rust-anything": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/Folkbench/folkbench": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://wsj.com/livecoverage/stock-market-today-dow-sp-500-nasdaq-11-24-2026": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/BaaRai/ARTEX": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://reuters.com/business/anthropic-breaks-below-83-ipo-price-debut-rally-unravels-2026-11-24": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/kajisho5/ffmpeg-skill": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/lemomo-ai/lemo-opuscar": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
+  },
+  "https://github.com/MiniMax-AI/MiniMax-H3-Image": {
+    "firstSeenAt": "2026-11-25T05:34:19.980Z",
+    "date": "2026-11-25"
   }
 }
