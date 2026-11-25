@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-11-24T15:36:24.685Z",
+  "generatedAt": "2026-11-25T00:52:30.500Z",
   "boards": {
     "tools": {
       "total": 225,
-      "updatedAt": "2026-11-24T15:36:23.577Z",
+      "updatedAt": "2026-11-25T00:52:29.614Z",
       "source": "content/tools-stats.json"
     },
     "opps": {
