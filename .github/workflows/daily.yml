@@ -13,16 +13,25 @@ name: Daily Digest
 # mode:
 #   fetch   —— 只采集，产出 content/digest/raw/<date>.json
 #   build   —— 只成稿，产出 content/digest/<date>.json（仅当次 runner 内有效）
-#   compose —— 采集 + 成稿 + 落 digest_issues（不进名次，后台「生成本期」用）
-#   publish —— 成稿后写 D1（名次 + 期文件；同名一期重复发布会被告警挡下）
-#   all     —— 依次执行 fetch → build → publish
+#   compose —— 采集 + 成稿 + 落库（生成一期草稿，后台「生成」用）
+#   publish —— 只把库里这一期发到榜单（不重新采集/成稿，预览期改过的文案原样进榜）
+#   all     —— 依次执行 fetch → build → 落库 → 发榜（定时任务走这条）
+#
+# 后台的流程是「生成 → 预览 → 发布」三步：
+#   1. compose 把整期写进 digest_issues，站点构建后 /daily/<date> 就能看到；
+#   2. 预览期可以在后台改几句话，改的也是库里这份 payload；
+#   3. publish 只建名次（--from-d1），改过的文案不会被重新成稿冲掉。
 #
 # 情报的唯一真源是 D1 的 digest_issues：期文件不入库，构建前由
 # scripts/admin/hydrate-digest.ts 还原。仓库只留 raw/（采集原文）与
 # state/（去重状态），它们不是页面数据。
 #
-# 需要的仓库 Secrets（compose / publish 需要）：
+# 需要的仓库 Secrets（compose / publish / all 需要）：
 #   CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID / D1_DATABASE_ID
+
+# 运行记录的标题：REST 的「列 runs」不返回 inputs，后台只能从这里认期号和模式。
+# 定时触发没有 inputs，显示成「今天」，后端按 run 开始时刻的 UTC+8 日期补算。
+run-name: 情报 ${{ inputs.mode || 'all' }} ${{ inputs.date || '今天' }}
 
 on:
   schedule:
@@ -31,7 +40,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "fetch=采集 build=成稿 compose=采集+成稿 publish=成稿+入库 all=全部"
+        description: "fetch=只采集 build=只成稿 compose=生成草稿 publish=发布本期 all=全流程"
         type: choice
         options: [all, fetch, build, compose, publish]
         default: all
@@ -100,22 +109,35 @@ jobs:
         run: pnpm exec tsx scripts/fetch/daily/run.ts --date=${{ steps.issue.outputs.date }}
 
       - name: 成稿
-        if: env.MODE == 'all' || env.MODE == 'build' || env.MODE == 'publish' || env.MODE == 'compose'
+        if: env.MODE == 'all' || env.MODE == 'build' || env.MODE == 'compose'
         run: pnpm exec tsx scripts/fetch/daily/build.ts --date=${{ steps.issue.outputs.date }}
 
-      - name: 写入 D1
-        if: env.MODE == 'all' || env.MODE == 'publish' || env.MODE == 'compose'
+      # 落库：整期 JSON 进 digest_issues，成为这一期的主副本（页面预览读它）。
+      # publish 不走这一步 —— 那一期的 payload 已经在库里，重新落库只会把
+      # updated_at 刷掉，也把「生成」和「发布」两个动作混成一次。
+      - name: 落库
+        if: env.MODE == 'all' || env.MODE == 'compose'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: |
-          FLAGS="--date ${{ steps.issue.outputs.date }}"
+          pnpm exec tsx scripts/admin/publish-digest.ts \
+            --date ${{ steps.issue.outputs.date }} --issues-only
+
+      # 发榜：只认库里已有的这一期。预览期在后台改过的 summary / why 就在
+      # payload 里，所以这里绝不能重新成稿，否则改完发布等于白改。
+      - name: 发榜
+        if: env.MODE == 'all' || env.MODE == 'publish'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          FLAGS="--date ${{ steps.issue.outputs.date }} --from-d1"
           if [ "$FULL" = "true" ]; then FLAGS="$FLAGS --full"; fi
-          # 后台「生成本期」（compose）还没决定发不发榜，但页面要能预览，
-          # 而预览页就是构建期从 digest_issues 还原出来的 —— 所以先落库、不建名次。
-          if [ "$MODE" = "compose" ]; then FLAGS="$FLAGS --issues-only"; fi
           pnpm exec tsx scripts/admin/publish-digest.ts $FLAGS
 
       # 期文件不再提交：情报的唯一真源是 D1 的 digest_issues，构建前由
@@ -125,6 +147,7 @@ jobs:
       # 推送被拒的处理（每轮先 fetch 再变基、冲突以本次产物为准、带抖动退避）
       # 统一在 .github/actions/push-content 里，别再往这里抄一份。
       - name: 提交采集原文
+        if: env.MODE == 'all' || env.MODE == 'fetch' || env.MODE == 'compose'
         uses: ./.github/actions/push-content
         with:
           paths: content/digest/raw content/digest/state

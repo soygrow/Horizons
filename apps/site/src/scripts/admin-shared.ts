@@ -297,12 +297,12 @@ export async function apiGet<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
-export async function apiPost<T>(path: string, body: unknown): Promise<T> {
+async function apiSend<T>(method: "POST" | "DELETE", path: string, body?: unknown): Promise<T> {
   const res = await fetch(`/api/admin${path}`, {
-    method: "POST",
+    method,
     credentials: "same-origin",
     headers: CSRF_HEADERS,
-    body: JSON.stringify(body),
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (res.status === 401) {
     location.reload();
@@ -318,4 +318,13 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
     throw new Error(detail.detail ?? detail.message ?? detail.error ?? `request_failed_${res.status}`);
   }
   return (await res.json()) as T;
+}
+
+export async function apiPost<T>(path: string, body: unknown): Promise<T> {
+  return apiSend<T>("POST", path, body);
+}
+
+/** 删除类动作（如废弃一期草稿）：没有 body，但要带 CSRF 头 */
+export async function apiDelete<T>(path: string): Promise<T> {
+  return apiSend<T>("DELETE", path);
 }

@@ -2,10 +2,11 @@
  * 后台「每日情报」页签。
  * 参照机会榜拆成两个子页签：
  *   - 线上情报：读 D1 的 digest_issues，点「看全文」展开这一期四个模块。
- *   - 情报生成：采集+成稿（compose）→ 看本期（读仓库成稿文件）→ 发布（publish）。
- * 采集/成稿/发布都在 GitHub Actions（daily.yml）跑，这里只触发与核对。
+ *   - 情报生成：生成（compose，采集+成稿+落库）→ 预览（读库里这份 payload，
+ *     可以就地改几句话）→ 发布（publish，只建名次，不重新成稿）。
+ * 三个动作都在 GitHub Actions（daily.yml）跑，这里只触发与核对。
  */
-import { $, apiGet, apiPost, esc, fmtTime } from "./admin-shared";
+import { $, apiDelete, apiGet, apiPost, esc, fmtTime } from "./admin-shared";
 
 /* --------------------------------- 类型 --------------------------------- */
 
@@ -63,10 +64,14 @@ interface DailyJob {
   status: string;
   /** fetch / build / compose / publish / all / schedule */
   mode: string;
-  /** dispatch 时带的期号，定时触发为空 */
+  /** 这次跑的是哪一期（YYYY-MM-DD）；定时触发由后端按 run 开始时刻补算 */
   date: string;
   event: string;
   createdAt: string;
+  /** 真正开始跑的时间（排队不算），「运行时间」从这一刻起算 */
+  startedAt: string;
+  /** 结束时间；运行中的 run 这里是最后一次状态变更时间 */
+  updatedAt: string;
   url: string;
 }
 
@@ -84,8 +89,8 @@ const MODULE_LABEL: Record<string, string> = { headline: "头条", tools: "能�
 const MODE_LABEL: Record<string, string> = {
   fetch: "只采集",
   build: "只成稿",
-  compose: "生成本期",
-  publish: "发布本期",
+  compose: "生成",
+  publish: "发布",
   all: "全流程",
   schedule: "定时",
 };
@@ -250,18 +255,25 @@ async function loadIssueDetail(date: string): Promise<void> {
 async function loadDraft(date: string): Promise<void> {
   const box = $("daily-preview");
   const publishBtn = $("daily-run-publish") as HTMLButtonElement | null;
+  const discardBtn = $("daily-discard") as HTMLButtonElement | null;
   if (!box) return;
+
+  // 只有「已落库、未发榜」的草稿才有这两个动作：已发布的不让再发，废弃也不许
+  const actions = (publish: boolean, discard: boolean): void => {
+    if (publishBtn) publishBtn.disabled = !publish;
+    if (discardBtn) discardBtn.hidden = !discard;
+  };
 
   const d = date.trim();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) {
-    box.innerHTML = `<p class="text-xs text-ink-muted">期号须是 YYYY-MM-DD（留空=今天，先点「看本期」或直接「生成本期」）。</p>`;
+    box.innerHTML = `<p class="text-xs text-ink-muted">期号须是 YYYY-MM-DD（留空=今天，先点「看本期」或直接「生成」）。</p>`;
     setStatus("daily-gen-status", "等待输入期号", "idle");
-    if (publishBtn) publishBtn.disabled = true;
+    actions(false, false);
     return;
   }
 
   box.innerHTML = `<p class="text-xs text-ink-muted">读取中…</p>`;
-  if (publishBtn) publishBtn.disabled = true;
+  actions(false, false);
   try {
     const res = await apiGet<DraftRes>(`/daily/draft/${d}`);
     const digest = res.published ?? res.draft;
@@ -270,15 +282,46 @@ async function loadDraft(date: string): Promise<void> {
       setStatus("daily-gen-status", "这一期已发布，前台已可见。", "ok");
     } else if (res.status === "draft" && digest) {
       box.innerHTML = renderDigestBody(digest, "已成稿·未发布", "text-amber-600", "preview");
-      setStatus("daily-gen-status", "已成稿、还没发布；点「发布本期」写进 D1。", "busy");
-      if (publishBtn) publishBtn.disabled = false;
+      setStatus(
+        "daily-gen-status",
+        "已成稿、还没发榜；改完文案再点「发布本期」，发布不会再重新成稿。",
+        "busy",
+      );
+      actions(true, true);
     } else {
-      box.innerHTML = `<p class="text-xs text-ink-muted">这一期还没有成稿文件；点「生成本期」起采集+成稿任务。</p>`;
+      box.innerHTML = `<p class="text-xs text-ink-muted">这一期还没生成；点「生成」起采集+成稿任务。</p>`;
       setStatus("daily-gen-status", "还没成稿。", "idle");
     }
   } catch (e) {
     box.innerHTML = `<p class="text-xs text-red-600">读取失败：${esc(msg(e))}</p>`;
     setStatus("daily-gen-status", `预览失败：${msg(e)}`, "bad");
+  }
+}
+
+/** 废弃一期草稿：库里删掉这份 payload，重新部署后预览页消失 */
+async function discardIssue(): Promise<void> {
+  const date = getGenDate();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    setStatus("daily-gen-status", "先填期号再废弃", "bad");
+    return;
+  }
+  if (!window.confirm(`废弃 ${date} 这一期？库里的这份草稿会删除，重新构建后预览页也不再出现。`)) {
+    return;
+  }
+
+  const btn = $("daily-discard") as HTMLButtonElement | null;
+  if (btn) btn.disabled = true;
+  setStatus("daily-gen-status", "正在废弃…", "busy");
+  try {
+    const res = await apiDelete<{ ok: boolean; detail?: string }>(`/daily/issues/${date}`);
+    setStatus("daily-gen-status", res?.detail ?? "已废弃", "ok");
+    await loadDraft(date);
+    void loadIssues();
+    void loadJobs();
+  } catch (e) {
+    setStatus("daily-gen-status", `废弃失败：${msg(e)}`, "bad");
+  } finally {
+    if (btn) btn.disabled = false;
   }
 }
 
@@ -404,15 +447,38 @@ function jobBadge(status: string): { label: string; cls: string } {
   }
 }
 
-/** 触发方式：定时 / 只采集 / 生成本期 … */
+/** 触发方式：定时 / 只采集 / 生成 … */
 function jobModeLabel(job: DailyJob): string {
   return MODE_LABEL[job.mode] ?? job.mode ?? "—";
 }
 
-/** 第二列：这跑的是哪一期 —— 定时触发按当天算，手点的有期号就写期号 */
-function jobDetail(job: DailyJob): string {
-  if (job.date) return `期号 ${job.date}`;
-  return job.mode === "schedule" ? "当期（按当天 UTC+8）" : "当期（按今天 UTC+8）";
+function fmtDuration(secs: number): string {
+  if (!Number.isFinite(secs) || secs < 0) return "—";
+  if (secs < 60) return `${Math.max(1, Math.round(secs))} 秒`;
+  const total = Math.round(secs / 60);
+  const m = total % 60;
+  const h = Math.floor(total / 60);
+  if (h > 0) return m ? `${h} 时 ${m} 分` : `${h} 时`;
+  return `${total} 分`;
+}
+
+/**
+ * 运行时间：从真正开跑算起（排队时间不算）。
+ * 运行中的 run 没有结束时间，就用「现在」，随轮询往前走。
+ */
+function jobElapsed(job: DailyJob): string {
+  const start = Date.parse(job.startedAt || job.createdAt || "");
+  if (!Number.isFinite(start)) return "—";
+  const live = isLiveJob(job.status);
+  const end = live ? Date.now() : Date.parse(job.updatedAt || "");
+  const secs = ((Number.isFinite(end) ? end : Date.now()) - start) / 1000;
+  return `${live ? "已 " : ""}${fmtDuration(secs)}`;
+}
+
+/** 这一期是什么时候跑的 */
+function jobTiming(job: DailyJob): string {
+  const start = job.startedAt || job.createdAt;
+  return start ? `${fmtTime(start)} 起 · 用时 ${jobElapsed(job)}` : "—";
 }
 
 function syncJobsMeta(jobs: DailyJob[]): void {
@@ -428,7 +494,7 @@ function renderJobs(jobs: DailyJob[]): void {
 
   syncJobsMeta(jobs);
   if (!jobs.length) {
-    box.innerHTML = `<p class="px-4 py-4 text-xs text-ink-muted">还没有运行记录。点「生成本期」或等每天 07:30 的定时任务。</p>`;
+    box.innerHTML = `<p class="px-4 py-4 text-xs text-ink-muted">还没有运行记录。点「生成」或等每天 07:30 的定时任务。</p>`;
     pollJobs(false);
     return;
   }
@@ -440,11 +506,12 @@ function renderJobs(jobs: DailyJob[]): void {
     .slice(0, JOB_ROWS_VISIBLE)
     .map((job) => {
       const badge = jobBadge(job.status);
-      return `<div class="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2.5 text-xs last:border-b-0">
-          <span class="w-16 shrink-0 text-ink-muted">${esc(jobModeLabel(job))}</span>
-          <span class="min-w-0 flex-1 truncate text-ink-secondary">${esc(jobDetail(job))}</span>
+      // 三列固定宽度对齐：模式 | 期号 | 运行时间，剩下的给状态和日志
+      return `<div class="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border px-4 py-2.5 text-xs last:border-b-0">
+          <span class="w-14 shrink-0 text-ink-muted">${esc(jobModeLabel(job))}</span>
+          <span class="w-28 shrink-0 whitespace-nowrap"><span class="text-ink-muted">期号 </span><span class="font-mono text-ink">${esc(job.date || "—")}</span></span>
+          <span class="min-w-0 flex-1 truncate text-ink-secondary">${esc(jobTiming(job))}</span>
           <span class="shrink-0 rounded-full px-2 py-0.5 font-semibold ${badge.cls}">${badge.label}</span>
-          <span class="w-24 shrink-0 text-right text-ink-muted">${esc(fmtTime(job.createdAt))}</span>
           <span class="w-10 shrink-0 text-right"><a href="${esc(job.url)}" target="_blank" rel="noopener" class="text-primary hover:underline">日志</a></span>
         </div>`;
     })
@@ -462,7 +529,7 @@ async function loadJobs(): Promise<void> {
     if (failure) {
       setStatus(
         "daily-gen-status",
-        `最近一次运行失败（${failure.job}${failure.step ? ` · 卡在「${failure.step}」` : ""}）；改完再点「生成本期」重跑。`,
+        `最近一次运行失败（${failure.job}${failure.step ? ` · 卡在「${failure.step}」` : ""}）；改完再点「生成」重跑。`,
         "bad",
       );
     }
@@ -488,7 +555,13 @@ async function run(mode: "fetch" | "build" | "compose" | "publish" | "all", labe
     return;
   }
 
-  const ids = ["daily-run-fetch", "daily-run-build", "daily-run-compose", "daily-run-publish"] as const;
+  const ids = [
+    "daily-run-fetch",
+    "daily-run-build",
+    "daily-run-compose",
+    "daily-run-publish",
+    "daily-discard",
+  ] as const;
   for (const id of ids) {
     const btn = $(id) as HTMLButtonElement | null;
     if (btn) btn.disabled = true;
@@ -546,11 +619,12 @@ export function mountAdminDaily(): void {
   const bind = (id: string, mode: "fetch" | "build" | "compose" | "publish" | "all", label: string): void => {
     $(id)?.addEventListener("click", () => void run(mode, label));
   };
-  bind("daily-run-compose", "compose", "生成本期");
+  bind("daily-run-compose", "compose", "生成");
   bind("daily-run-publish", "publish", "发布本期");
   bind("daily-run-fetch", "fetch", "只采集");
   bind("daily-run-build", "build", "只成稿");
 
+  $("daily-discard")?.addEventListener("click", () => void discardIssue());
   $("daily-gen-reload")?.addEventListener("click", () => void loadDraft(getGenDate()));
   $("daily-refresh")?.addEventListener("click", () => {
     void loadIssues();

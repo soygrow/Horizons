@@ -1,25 +1,28 @@
 /**
- * 每日情报 → D1。
+ * 每日情报 → D1（落库 / 发榜）。
  *
- * 数据源 `content/digest/<date>.json`，由 `scripts/fetch/daily/build.ts` 生成，
- * 生成完调一次本脚本即可。
+ * 整期 JSON 的唯一副本在 `digest_issues.payload`，本脚本有两个入口：
+ *   - 默认：读 `content/digest/<date>.json`（`build.ts` 的产物），落库 + 发榜；
+ *   - `--from-d1`：只读库里的 payload，**不看成稿文件** —— 后台「发布本期」走这条，
+ *     因为预览期手改的文案已经写进库了，重新成稿会把改动冲掉。
  *
- * 与其它榜不同，情报是**按日分文件**的：
+ * 与其它榜不同，情报是**按日分**的：
  *   - 名次在单期内连续编号（模块顺序 → 模块内顺序）
  *   - item_key 必须带日期前缀，否则不同日期的同一条事件会互相覆盖
  *     （同一个 GitHub 项目可能连着三天上榜，id 是一样的）
  *
- * 只发最新一期：历史期由 /daily/[date] 从文件读，不需要进 D1 的名次表。
+ * 只发最新一期：历史期的页面由构建期从 `digest_issues` 还原，不进名次表。
  *
  * 用法：
- *   pnpm tsx scripts/admin/publish-digest.ts
  *   pnpm tsx scripts/admin/publish-digest.ts --date 2026-11-03
- *   pnpm tsx scripts/admin/publish-digest.ts --full              # 建新版本（默认只增量替换本期）
- *   pnpm tsx scripts/admin/publish-digest.ts --issues-only       # 只落 digest_issues，不建名次
+ *   pnpm tsx scripts/admin/publish-digest.ts --date 2026-11-03 --issues-only   # 只落库，不发榜
+ *   pnpm tsx scripts/admin/publish-digest.ts --date 2026-11-03 --from-d1       # 只发榜，源是库
+ *   pnpm tsx scripts/admin/publish-digest.ts --date 2026-11-03 --full          # 建新版本
  */
 import fs from "node:fs";
 import path from "node:path";
 import { syncBoardToD1 } from "./board-sync";
+import { createD1Client, d1Configured } from "./d1-client";
 import { saveDigestIssue, type DigestIssueLike } from "./digest-issues";
 import type { PublishRow } from "./publish-board";
 
@@ -61,12 +64,37 @@ function latestDate(): string {
   return files.at(-1)!.replace(/\.json$/, "");
 }
 
-async function main(): Promise<void> {
-  const date = parseDate() ?? latestDate();
-  const file = path.join(DIGEST_DIR, `${date}.json`);
-  if (!fs.existsSync(file)) throw new Error(`找不到 ${file}`);
+/** 从库里读回这一期 —— 发榜只认这一份，不再重新成稿 */
+async function readFromD1(date: string): Promise<DigestFile> {
+  if (!d1Configured()) {
+    throw new Error("--from-d1 需要 D1 凭据（CLOUDFLARE_API_TOKEN 或 wrangler 登录态）");
+  }
+  const res = await createD1Client().query<{ payload: string }>(
+    "SELECT payload FROM digest_issues WHERE date = ?",
+    [date],
+  );
+  const row = res.results[0];
+  if (!row) throw new Error(`库里没有 ${date} 这一期，先点「生成」`);
+  return JSON.parse(row.payload) as DigestFile;
+}
 
-  const digest = JSON.parse(fs.readFileSync(file, "utf-8")) as DigestFile;
+async function main(): Promise<void> {
+  const fromD1 = process.argv.includes("--from-d1");
+  const issuesOnly = process.argv.includes("--issues-only");
+  if (fromD1 && issuesOnly) throw new Error("--from-d1 与 --issues-only 不能同时用");
+
+  const date = parseDate() ?? (fromD1 ? "" : latestDate());
+  if (!date) throw new Error("--from-d1 必须配 --date <YYYY-MM-DD>");
+
+  let digest: DigestFile;
+  if (fromD1) {
+    digest = await readFromD1(date);
+    console.log(`[digest] ${date}：源是 digest_issues（不重新成稿）`);
+  } else {
+    const file = path.join(DIGEST_DIR, `${date}.json`);
+    if (!fs.existsSync(file)) throw new Error(`找不到 ${file}`);
+    digest = JSON.parse(fs.readFileSync(file, "utf-8")) as DigestFile;
+  }
   const modules = digest.modules ?? [];
   if (modules.length === 0) throw new Error(`${date} 没有模块，拒绝发布空榜`);
 
@@ -102,11 +130,9 @@ async function main(): Promise<void> {
 
   /*
    * --issues-only：只把整期 JSON 落进 digest_issues，不建名次。
-   * 后台「生成本期」（compose）用 —— 那一阶段还没决定发不发榜，但页面要能预览，
+   * 后台「生成」（compose）用 —— 那一阶段还没决定发不发榜，但页面要能预览，
    * 而预览页已经是构建期从 digest_issues 还原的，所以必须先把这期存进库。
    */
-  const issuesOnly = process.argv.includes("--issues-only");
-
   if (issuesOnly) {
     console.log(`[digest] ${date}：只写 digest_issues（不建名次）`);
   } else {
@@ -130,8 +156,13 @@ async function main(): Promise<void> {
     if (!res.ok && res.error !== "missing-credentials") process.exitCode = 1;
   }
 
-  // 后台看往期列表/全文读这张表，站点构建也从这里还原期文件 —— 情报的唯一真源
-  await saveDigestIssue(digest as unknown as DigestIssueLike);
+  /*
+   * 落库只在「源是文件」时做：--from-d1 的 payload 本来就是从库里读出来的，
+   * 再写一遍只会把 updated_at 刷成现在，掩盖这一期真正成稿 / 改稿的时间。
+   */
+  if (!fromD1) {
+    await saveDigestIssue(digest as unknown as DigestIssueLike);
+  }
 }
 
 main().catch((e) => {

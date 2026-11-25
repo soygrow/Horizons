@@ -20,6 +20,7 @@ import {
   listWorkflowRuns,
   mapStatus,
   missingSecrets,
+  type WorkflowRun,
 } from "../lib/github";
 import { currentVersion } from "../lib/versions";
 
@@ -57,6 +58,39 @@ interface DigestFile {
 
 function notConfigured(env: Env) {
   return { error: "github_not_configured", missing: missingSecrets(env) };
+}
+
+/* ------------------------------ 运行的期号 ------------------------------ */
+
+/**
+ * daily.yml 里写了 `run-name: 情报 <mode> <date>`，会落到 run 的 display_title。
+ *
+ * 为什么不用 inputs：REST 的「列 runs」接口不返回 inputs（那是 webhook 事件里的字段），
+ * 之前 code 里读 `run.inputs` 永远拿到空对象 —— 于是运行记录里每一行都是
+ * 「全流程 · 当期（按今天 UTC+8）」，既看不出跑的是哪一期，也看不出这次到底
+ * 是生成还是发布。run-name 是官方给「让人在列表里认得出这次跑的是什么」的入口。
+ */
+const RUN_TITLE_RE = /^情报\s+([a-z]+)(?:\s+(\d{4}-\d{2}-\d{2}))?/;
+
+/**
+ * 定时任务没有期号 input：期号就是 run 开始时刻的 UTC+8 日历日。
+ * cron 是 23:30 UTC = 次日 07:30（UTC+8），换算后正好是「今天这一期」。
+ */
+function issueDateOf(run: WorkflowRun): string {
+  const t = Date.parse(run.run_started_at ?? run.created_at ?? "");
+  if (!Number.isFinite(t)) return "";
+  return new Date(t + 8 * 3600_000).toISOString().slice(0, 10);
+}
+
+function describeRun(run: WorkflowRun): { mode: string; date: string } {
+  const inputs = run.inputs ?? {};
+  const parsed = RUN_TITLE_RE.exec(String(run.display_title ?? ""));
+  // 定时触发要单独标出来，别显示成「全流程」让人以为是手点的
+  const mode =
+    run.event === "schedule" ? "schedule" : String(inputs.mode ?? parsed?.[1] ?? "all");
+  const raw = String(inputs.date ?? parsed?.[2] ?? "").trim();
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : issueDateOf(run);
+  return { mode, date };
 }
 
 /* --------------------------------- 期次 --------------------------------- */
@@ -133,6 +167,68 @@ adminDaily.get("/issues/:date", async (c) => {
     const detail = e instanceof Error ? e.message : String(e);
     return c.json({ error: "read_failed", detail }, 502);
   }
+});
+
+/**
+ * 废弃一期 —— 只对「成稿了但还没发」的草稿有效。
+ *
+ * 采错日期、头条明显不行、同一期连生成两版，都需要一个「丢掉」的出口；
+ * 没有出口就只能留着占列表，或者在库里手删。
+ *
+ * 发布过的一律不删：`board_listed` 里留着那一期的名次行，payload 删了会变成
+ * 「榜单里有、页面上没有」，比多留一期难查得多。要下架得先撤榜，不在这一步。
+ */
+adminDaily.delete("/issues/:date", async (c) => {
+  const date = c.req.param("date");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return c.json({ error: "bad_date", detail: "日期格式应为 YYYY-MM-DD" }, 400);
+  }
+
+  // 任意版本里出现过这一期的名次行，就算「发布过」
+  const listed = await c.env.DB.prepare(
+    "SELECT 1 AS ok FROM board_listed WHERE board = 'digest' AND item_key LIKE ? LIMIT 1",
+  )
+    .bind(`${date}:%`)
+    .first<{ ok: number }>()
+    .catch(() => null);
+
+  if (listed) {
+    return c.json(
+      { error: "already_published", detail: `${date} 已经发布过，不能直接废弃` },
+      409,
+    );
+  }
+
+  try {
+    const res = await c.env.DB.prepare("DELETE FROM digest_issues WHERE date = ?").bind(date).run();
+    const changed = (res.meta as { changes?: number } | undefined)?.changes ?? 0;
+    if (!changed) {
+      return c.json({ error: "not_found", detail: `库里没有 ${date} 这一期` }, 404);
+    }
+  } catch (e) {
+    const detail = e instanceof Error ? e.message : String(e);
+    return c.json({ error: "delete_failed", detail }, 502);
+  }
+
+  // 预览页是构建期从库里还原的，删完要重新部署才会消失
+  const cfg = ghConfig(c.env);
+  if (cfg) {
+    try {
+      c.executionCtx.waitUntil(
+        dispatchWorkflow(cfg, "deploy-site.yml", { reason: `废弃 ${date}` }).catch(() => undefined),
+      );
+    } catch {
+      // 本地 node 预览没有 executionCtx
+    }
+  }
+
+  return c.json({
+    ok: true,
+    date,
+    detail: cfg
+      ? `已废弃 ${date}，站点重新构建后这一期就不在了。`
+      : `已废弃 ${date}；未配置 GitHub Token，需手动触发一次部署。`,
+  });
 });
 
 /**
@@ -225,7 +321,7 @@ adminDaily.post("/items", async (c) => {
     .first<{ payload: string }>()
     .catch(() => null);
   if (!row) {
-    return c.json({ error: "not_found", detail: `库里没有 ${date} 这一期，先点「生成本期」` }, 404);
+    return c.json({ error: "not_found", detail: `库里没有 ${date} 这一期，先点「生成」` }, 404);
   }
 
   let digest: DigestFile;
@@ -313,8 +409,11 @@ adminDaily.get("/run-status", async (c) => {
  * 最近几次运行，给后台的「运行记录」用。
  *
  * 和别的榜不一样，情报没有本地任务表 —— 一次运行就是 GitHub 上的一个 run，
- * 所以直接列 workflow runs，字段也从 run 上就地取：触发方式（定时 / 手点）、
- * 手点的 mode 和期号（dispatch inputs）、开始时间、日志地址。
+ * 所以直接列 workflow runs：
+ *   - 期号（这次采的是哪一天的情报）与模式（生成 / 发布 / 定时）由 run-name 还原，
+ *     定时触发按 run 开始时刻的 UTC+8 日期补算；
+ *   - 运行时间给两端（startedAt / updatedAt），耗时由前端算 —— 运行中的耗时要
+ *     跟着时钟走，后端算死了会停在「0 秒」。
  *
  * 最新一条失败时附带失败 job 与步骤名：列表只写「失败」两个字，
  * 还是得点进日志翻十几个步骤才知道卡在哪。
@@ -330,16 +429,16 @@ adminDaily.get("/jobs", async (c) => {
   if (!runs.length) return c.json({ jobs: [], failure: null });
 
   const jobs = runs.map((run) => {
-    const inputs = run.inputs ?? {};
-    const scheduled = run.event === "schedule";
+    const { mode, date } = describeRun(run);
     return {
       id: run.id,
       status: mapStatus(run, "queued"),
-      // 定时触发没有 inputs，别让它显示成「全流程」，那会让人以为是手点的
-      mode: scheduled ? "schedule" : String(inputs.mode ?? "all"),
-      date: String(inputs.date ?? "").trim(),
+      mode,
+      date,
       event: run.event ?? "",
       createdAt: run.created_at ?? "",
+      startedAt: run.run_started_at ?? run.created_at ?? "",
+      updatedAt: run.updated_at ?? "",
       url: run.html_url,
     };
   });

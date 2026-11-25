@@ -121,10 +121,20 @@ export interface WorkflowRun {
   conclusion: string | null;
   html_url: string;
   created_at?: string;
+  /** 真正开始跑的时间（排队时间不算），算耗时用这个 */
+  run_started_at?: string;
+  updated_at?: string;
   /** workflow_dispatch / schedule / push … */
   event?: string;
-  /** 只有 workflow_dispatch 的 run 才带，值是 dispatch 时传的那几个 input */
+  /**
+   * dispatch 时传的那几个 input。
+   *
+   * 注意：REST 的「列 runs」接口**不返回** inputs（只有 webhook 事件里才有），
+   * 所以后台不能指望这个字段 —— 期号和模式主要靠 workflow 里写的 `run-name`
+   * （落到 display_title 上），这里命中就当额外确认。
+   */
   inputs?: Record<string, string> | null;
+  /** workflow 里 `run-name:` 渲染出来的标题 */
   display_title?: string;
 }
 
