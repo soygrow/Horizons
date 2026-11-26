@@ -1,17 +1,17 @@
 {
   "hackernews": {
     "consecutiveFailures": 0,
-    "lastOkAt": "2026-11-25T05:34:19.980Z",
+    "lastOkAt": "2026-11-26T05:16:04.951Z",
     "lastError": null
   },
   "github": {
     "consecutiveFailures": 0,
-    "lastOkAt": "2026-11-25T05:34:19.980Z",
+    "lastOkAt": "2026-11-26T05:16:04.951Z",
     "lastError": null
   },
   "rss": {
     "consecutiveFailures": 0,
-    "lastOkAt": "2026-11-25T05:34:19.980Z",
+    "lastOkAt": "2026-11-26T05:16:04.951Z",
     "lastError": null
   }
 }
