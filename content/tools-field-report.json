@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-26T10:51:20.288Z",
-  "total": 49,
-  "itemsWithIssues": 16,
+  "generatedAt": "2026-11-26T11:58:55.376Z",
+  "total": 53,
+  "itemsWithIssues": 11,
   "dimensions": [
     {
       "key": "description",
@@ -9,29 +9,9 @@
       "missing": 0,
       "missingRatio": 0,
       "missingDomains": [],
-      "invalid": 11,
-      "invalidRatio": 22,
+      "invalid": 6,
+      "invalidRatio": 11,
       "invalidSamples": [
-        {
-          "domain": "artfish.ai",
-          "reason": "简介过短（12 字）"
-        },
-        {
-          "domain": "codeyam.com",
-          "reason": "简介过短（15 字）"
-        },
-        {
-          "domain": "ekline.io",
-          "reason": "简介过短（19 字）"
-        },
-        {
-          "domain": "frevana.com",
-          "reason": "简介过短（16 字）"
-        },
-        {
-          "domain": "mainstreetwealth.ai",
-          "reason": "简介过短（17 字）"
-        },
         {
           "domain": "quest.app",
           "reason": "简介过短（18 字）"
@@ -71,29 +51,21 @@
     {
       "key": "trafficMetrics.monthlyVisits",
       "label": "月访问量",
-      "missing": 1,
-      "missingRatio": 2,
-      "missingDomains": [
-        "joonoo.art"
-      ],
-      "invalid": 1,
-      "invalidRatio": 2,
-      "invalidSamples": [
-        {
-          "domain": "hai.com",
-          "reason": "月访问量为 0 或负数"
-        }
-      ]
+      "missing": 0,
+      "missingRatio": 0,
+      "missingDomains": [],
+      "invalid": 0,
+      "invalidRatio": 0,
+      "invalidSamples": []
     },
     {
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
-      "missing": 5,
-      "missingRatio": 10,
+      "missing": 4,
+      "missingRatio": 8,
       "missingDomains": [
-        "joonoo.art",
-        "stitch.ai",
         "clive.com",
+        "stitch.ai",
         "vanira.io",
         "watchflows.app"
       ],
@@ -104,21 +76,9 @@
     {
       "key": "metrics.registeredAt",
       "label": "域名注册时间",
-      "missing": 30,
-      "missingRatio": 61,
+      "missing": 18,
+      "missingRatio": 34,
       "missingDomains": [
-        "adside.ai",
-        "alsona.com",
-        "apache.org",
-        "appxiom.com",
-        "artfish.ai",
-        "codeyam.com",
-        "ekline.io",
-        "frevana.com",
-        "intrascope.app",
-        "joonoo.art",
-        "mainstreetwealth.ai",
-        "maxma.com",
         "meshapi.ai",
         "polylane.com",
         "quest.app",
@@ -134,9 +94,9 @@
         "tecla.io",
         "thunderphone.com",
         "tobira.ai",
-        "xmind.com",
         "tripmojo.ai",
-        "watchflows.app"
+        "watchflows.app",
+        "xmind.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -145,22 +105,9 @@
     {
       "key": "trafficMetrics.organicSearchVisits",
       "label": "自然搜索流量",
-      "missing": 31,
-      "missingRatio": 63,
+      "missing": 18,
+      "missingRatio": 34,
       "missingDomains": [
-        "hai.com",
-        "adside.ai",
-        "alsona.com",
-        "apache.org",
-        "appxiom.com",
-        "artfish.ai",
-        "codeyam.com",
-        "ekline.io",
-        "frevana.com",
-        "intrascope.app",
-        "joonoo.art",
-        "mainstreetwealth.ai",
-        "maxma.com",
         "meshapi.ai",
         "polylane.com",
         "quest.app",
@@ -176,9 +123,9 @@
         "tecla.io",
         "thunderphone.com",
         "tobira.ai",
-        "xmind.com",
         "tripmojo.ai",
-        "watchflows.app"
+        "watchflows.app",
+        "xmind.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -187,22 +134,10 @@
     {
       "key": "geoDistribution",
       "label": "地区分布",
-      "missing": 33,
-      "missingRatio": 67,
+      "missing": 20,
+      "missingRatio": 38,
       "missingDomains": [
-        "hai.com",
-        "adside.ai",
-        "alsona.com",
-        "apache.org",
-        "appxiom.com",
-        "artfish.ai",
-        "codeyam.com",
-        "ekline.io",
-        "frevana.com",
-        "intrascope.app",
-        "joonoo.art",
-        "mainstreetwealth.ai",
-        "maxma.com",
+        "clive.com",
         "meshapi.ai",
         "polylane.com",
         "quest.app",
@@ -218,11 +153,10 @@
         "tecla.io",
         "thunderphone.com",
         "tobira.ai",
-        "xmind.com",
-        "clive.com",
         "tripmojo.ai",
         "vanira.io",
-        "watchflows.app"
+        "watchflows.app",
+        "xmind.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -231,35 +165,46 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 49,
+      "missing": 53,
       "missingRatio": 100,
       "missingDomains": [
-        "replit.com",
-        "poh.org",
-        "myclaw.ai",
-        "livereacting.com",
-        "kino.ai",
-        "heroui.com",
-        "hai.com",
+        "upcoach.com",
+        "translucent.ai",
+        "reduck.ai",
+        "maxma.com",
+        "mainstreetwealth.ai",
+        "levo.ai",
+        "intrascope.app",
+        "frevana.com",
+        "flourish.com",
+        "datashake.com",
+        "codeyam.com",
+        "artfish.ai",
+        "appxiom.com",
+        "apache.org",
+        "alsona.com",
+        "antipode.com",
+        "adside.ai",
+        "arcjet.com",
+        "astor.app",
+        "ballet.com",
+        "claudeship.com",
+        "clive.com",
+        "fieldwork.com",
         "finseo.ai",
         "flockbay.com",
-        "adside.ai",
-        "alsona.com",
-        "apache.org",
-        "appxiom.com",
-        "artfish.ai",
-        "codeyam.com",
-        "ekline.io",
-        "frevana.com",
-        "intrascope.app",
-        "joonoo.art",
-        "mainstreetwealth.ai",
-        "maxma.com",
+        "fluent.ai",
+        "heroui.com",
+        "kino.ai",
+        "livereacting.com",
         "meshapi.ai",
+        "myclaw.ai",
+        "poh.org",
         "polylane.com",
         "quest.app",
         "quickthoughts.ca",
         "relay.com",
+        "replit.com",
         "rerun.io",
         "roomai.com",
         "saturnsql.com",
@@ -272,17 +217,7 @@
         "thunderphone.com",
         "tobira.ai",
         "tracex.co",
-        "xmind.com",
-        "fluent.ai",
-        "fieldwork.com",
-        "clive.com",
-        "claudeship.com",
-        "arcjet.com",
-        "astor.app",
-        "ballet.com",
-        "tripmojo.ai",
-        "vanira.io",
-        "watchflows.app"
+        "tripmojo.ai"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -291,21 +226,9 @@
     {
       "key": "observations.competitors",
       "label": "竞品",
-      "missing": 30,
-      "missingRatio": 61,
+      "missing": 18,
+      "missingRatio": 34,
       "missingDomains": [
-        "adside.ai",
-        "alsona.com",
-        "apache.org",
-        "appxiom.com",
-        "artfish.ai",
-        "codeyam.com",
-        "ekline.io",
-        "frevana.com",
-        "intrascope.app",
-        "joonoo.art",
-        "mainstreetwealth.ai",
-        "maxma.com",
         "meshapi.ai",
         "polylane.com",
         "quest.app",
@@ -321,9 +244,9 @@
         "tecla.io",
         "thunderphone.com",
         "tobira.ai",
-        "xmind.com",
         "tripmojo.ai",
-        "watchflows.app"
+        "watchflows.app",
+        "xmind.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -332,24 +255,21 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 36,
-      "missingRatio": 73,
+      "missing": 30,
+      "missingRatio": 57,
       "missingDomains": [
-        "poh.org",
-        "hai.com",
-        "adside.ai",
-        "alsona.com",
-        "apache.org",
-        "appxiom.com",
-        "artfish.ai",
-        "codeyam.com",
-        "ekline.io",
-        "frevana.com",
-        "intrascope.app",
-        "joonoo.art",
-        "mainstreetwealth.ai",
         "maxma.com",
+        "levo.ai",
+        "flourish.com",
+        "datashake.com",
+        "codeyam.com",
+        "artfish.ai",
+        "apache.org",
+        "clive.com",
+        "fieldwork.com",
+        "fluent.ai",
         "meshapi.ai",
+        "poh.org",
         "polylane.com",
         "quest.app",
         "quickthoughts.ca",
@@ -364,13 +284,10 @@
         "tecla.io",
         "thunderphone.com",
         "tobira.ai",
-        "xmind.com",
-        "fluent.ai",
-        "fieldwork.com",
-        "clive.com",
         "tripmojo.ai",
         "vanira.io",
-        "watchflows.app"
+        "watchflows.app",
+        "xmind.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -379,21 +296,9 @@
     {
       "key": "pageStructure",
       "label": "页面结构",
-      "missing": 30,
-      "missingRatio": 61,
+      "missing": 18,
+      "missingRatio": 34,
       "missingDomains": [
-        "adside.ai",
-        "alsona.com",
-        "apache.org",
-        "appxiom.com",
-        "artfish.ai",
-        "codeyam.com",
-        "ekline.io",
-        "frevana.com",
-        "intrascope.app",
-        "joonoo.art",
-        "mainstreetwealth.ai",
-        "maxma.com",
         "meshapi.ai",
         "polylane.com",
         "quest.app",
@@ -409,23 +314,23 @@
         "tecla.io",
         "thunderphone.com",
         "tobira.ai",
-        "xmind.com",
         "tripmojo.ai",
-        "watchflows.app"
+        "watchflows.app",
+        "xmind.com"
       ],
       "invalid": 3,
       "invalidRatio": 6,
       "invalidSamples": [
         {
-          "domain": "hai.com",
-          "reason": "页面结构缺 H1"
-        },
-        {
-          "domain": "fluent.ai",
+          "domain": "flourish.com",
           "reason": "页面结构缺 H1"
         },
         {
           "domain": "clive.com",
+          "reason": "页面结构缺 H1"
+        },
+        {
+          "domain": "fluent.ai",
           "reason": "页面结构缺 H1"
         }
       ]
@@ -433,21 +338,9 @@
     {
       "key": "screenshotDesktopUrl",
       "label": "官网截图",
-      "missing": 30,
-      "missingRatio": 61,
+      "missing": 18,
+      "missingRatio": 34,
       "missingDomains": [
-        "adside.ai",
-        "alsona.com",
-        "apache.org",
-        "appxiom.com",
-        "artfish.ai",
-        "codeyam.com",
-        "ekline.io",
-        "frevana.com",
-        "intrascope.app",
-        "joonoo.art",
-        "mainstreetwealth.ai",
-        "maxma.com",
         "meshapi.ai",
         "polylane.com",
         "quest.app",
@@ -463,9 +356,9 @@
         "tecla.io",
         "thunderphone.com",
         "tobira.ai",
-        "xmind.com",
         "tripmojo.ai",
-        "watchflows.app"
+        "watchflows.app",
+        "xmind.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -474,21 +367,9 @@
     {
       "key": "siteAudit",
       "label": "站点体检",
-      "missing": 30,
-      "missingRatio": 61,
+      "missing": 18,
+      "missingRatio": 34,
       "missingDomains": [
-        "adside.ai",
-        "alsona.com",
-        "apache.org",
-        "appxiom.com",
-        "artfish.ai",
-        "codeyam.com",
-        "ekline.io",
-        "frevana.com",
-        "intrascope.app",
-        "joonoo.art",
-        "mainstreetwealth.ai",
-        "maxma.com",
         "meshapi.ai",
         "polylane.com",
         "quest.app",
@@ -504,9 +385,9 @@
         "tecla.io",
         "thunderphone.com",
         "tobira.ai",
-        "xmind.com",
         "tripmojo.ai",
-        "watchflows.app"
+        "watchflows.app",
+        "xmind.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -515,21 +396,9 @@
     {
       "key": "aiInsight",
       "label": "AI 叙事",
-      "missing": 30,
-      "missingRatio": 61,
+      "missing": 18,
+      "missingRatio": 34,
       "missingDomains": [
-        "adside.ai",
-        "alsona.com",
-        "apache.org",
-        "appxiom.com",
-        "artfish.ai",
-        "codeyam.com",
-        "ekline.io",
-        "frevana.com",
-        "intrascope.app",
-        "joonoo.art",
-        "mainstreetwealth.ai",
-        "maxma.com",
         "meshapi.ai",
         "polylane.com",
         "quest.app",
@@ -545,9 +414,9 @@
         "tecla.io",
         "thunderphone.com",
         "tobira.ai",
-        "xmind.com",
         "tripmojo.ai",
-        "watchflows.app"
+        "watchflows.app",
+        "xmind.com"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -556,21 +425,9 @@
     {
       "key": "performanceInsight",
       "label": "AI 判断",
-      "missing": 30,
-      "missingRatio": 61,
+      "missing": 18,
+      "missingRatio": 34,
       "missingDomains": [
-        "adside.ai",
-        "alsona.com",
-        "apache.org",
-        "appxiom.com",
-        "artfish.ai",
-        "codeyam.com",
-        "ekline.io",
-        "frevana.com",
-        "intrascope.app",
-        "joonoo.art",
-        "mainstreetwealth.ai",
-        "maxma.com",
         "meshapi.ai",
         "polylane.com",
         "quest.app",
@@ -586,19 +443,19 @@
         "tecla.io",
         "thunderphone.com",
         "tobira.ai",
-        "xmind.com",
         "tripmojo.ai",
-        "watchflows.app"
+        "watchflows.app",
+        "xmind.com"
       ],
       "invalid": 2,
       "invalidRatio": 4,
       "invalidSamples": [
         {
-          "domain": "kino.ai",
+          "domain": "claudeship.com",
           "reason": "四要素缺 1 项"
         },
         {
-          "domain": "claudeship.com",
+          "domain": "kino.ai",
           "reason": "四要素缺 1 项"
         }
       ]
@@ -607,11 +464,11 @@
   "entryIssues": [],
   "items": [
     {
-      "domain": "replit.com",
-      "name": "Replit Missions",
+      "domain": "upcoach.com",
+      "name": "upcoach",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 10016437,
+      "monthlyVisits": 40571,
       "gapCount": 1,
       "gaps": [
         "keywords"
@@ -620,11 +477,37 @@
       "issues": []
     },
     {
-      "domain": "poh.org",
-      "name": "Poh",
+      "domain": "translucent.ai",
+      "name": "Translucent AI",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 7848,
+      "monthlyVisits": 10078,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "reduck.ai",
+      "name": "Reduck",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 13151,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "maxma.com",
+      "name": "Maxma",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 89336,
       "gapCount": 2,
       "gaps": [
         "keywords",
@@ -634,11 +517,11 @@
       "issues": []
     },
     {
-      "domain": "myclaw.ai",
-      "name": "MyClaw 3.0",
+      "domain": "mainstreetwealth.ai",
+      "name": "AI Data Brokerage",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 990387,
+      "monthlyVisits": 2307,
       "gapCount": 1,
       "gaps": [
         "keywords"
@@ -647,11 +530,25 @@
       "issues": []
     },
     {
-      "domain": "livereacting.com",
-      "name": "LiveReacting for ChatGPT",
+      "domain": "levo.ai",
+      "name": "Levo",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 351714,
+      "monthlyVisits": 15720,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "intrascope.app",
+      "name": "Intrascope 2.0",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 2128,
       "gapCount": 1,
       "gaps": [
         "keywords"
@@ -660,11 +557,191 @@
       "issues": []
     },
     {
-      "domain": "kino.ai",
-      "name": "Kino",
+      "domain": "frevana.com",
+      "name": "Frevana Multiplayer",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 20207,
+      "monthlyVisits": 23991,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "flourish.com",
+      "name": "Flourish",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 135510,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "pageStructure",
+          "label": "页面结构",
+          "reason": "页面结构缺 H1"
+        }
+      ]
+    },
+    {
+      "domain": "datashake.com",
+      "name": "Datashake MCP",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 3748,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "codeyam.com",
+      "name": "Codeyam",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 1385,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "artfish.ai",
+      "name": "AquarIum",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 4162,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "appxiom.com",
+      "name": "Appxiom",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 1869,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "apache.org",
+      "name": "Apache",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 3211620,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "alsona.com",
+      "name": "Alsona",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 12513,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "antipode.com",
+      "name": "Antipode",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 18950,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "adside.ai",
+      "name": "Adside",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 22775,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "arcjet.com",
+      "name": "Arcjet AI security models",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 38973,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "astor.app",
+      "name": "Astor",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 11043,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "ballet.com",
+      "name": "Ballet",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 7014,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "claudeship.com",
+      "name": "Claude Ship",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 1233,
       "gapCount": 1,
       "gaps": [
         "keywords"
@@ -679,44 +756,40 @@
       ]
     },
     {
-      "domain": "heroui.com",
-      "name": "HeroUI Pro 1.0",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 295638,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "hai.com",
-      "name": "Hai",
+      "domain": "clive.com",
+      "name": "Clive",
       "tier": "watch",
       "stage": "enriched",
-      "monthlyVisits": 0,
+      "monthlyVisits": 3581,
       "gapCount": 4,
       "gaps": [
-        "trafficMetrics.organicSearchVisits",
+        "trafficMetrics.monthlyVisitsGrowth",
         "geoDistribution",
         "keywords",
         "pricing"
       ],
-      "issueCount": 2,
+      "issueCount": 1,
       "issues": [
-        {
-          "key": "trafficMetrics.monthlyVisits",
-          "label": "月访问量",
-          "reason": "月访问量为 0 或负数"
-        },
         {
           "key": "pageStructure",
           "label": "页面结构",
           "reason": "页面结构缺 H1"
         }
       ]
+    },
+    {
+      "domain": "fieldwork.com",
+      "name": "Fieldwork Code",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 559486,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
     },
     {
       "domain": "finseo.ai",
@@ -745,308 +818,66 @@
       "issues": []
     },
     {
-      "domain": "adside.ai",
-      "name": "Adside",
-      "tier": "core",
-      "stage": "approved",
-      "monthlyVisits": 22775,
-      "gapCount": 11,
-      "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "alsona.com",
-      "name": "Alsona",
-      "tier": "core",
-      "stage": "approved",
-      "monthlyVisits": 12513,
-      "gapCount": 11,
-      "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "apache.org",
-      "name": "Apache",
-      "tier": "core",
-      "stage": "approved",
-      "monthlyVisits": 3211620,
-      "gapCount": 11,
-      "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "appxiom.com",
-      "name": "Appxiom",
-      "tier": "core",
-      "stage": "approved",
-      "monthlyVisits": 1869,
-      "gapCount": 11,
-      "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "artfish.ai",
-      "name": "AquarIum",
+      "domain": "fluent.ai",
+      "name": "Fluent 2",
       "tier": "watch",
-      "stage": "approved",
-      "monthlyVisits": 4162,
-      "gapCount": 11,
+      "stage": "enriched",
+      "monthlyVisits": 6098,
+      "gapCount": 2,
       "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
         "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
+        "pricing"
       ],
       "issueCount": 1,
       "issues": [
         {
-          "key": "description",
-          "label": "简介",
-          "reason": "简介过短（12 字）"
+          "key": "pageStructure",
+          "label": "页面结构",
+          "reason": "页面结构缺 H1"
         }
       ]
     },
     {
-      "domain": "codeyam.com",
-      "name": "Codeyam",
-      "tier": "watch",
-      "stage": "approved",
-      "monthlyVisits": 1385,
-      "gapCount": 11,
-      "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "description",
-          "label": "简介",
-          "reason": "简介过短（15 字）"
-        }
-      ]
-    },
-    {
-      "domain": "ekline.io",
-      "name": "EkLine",
+      "domain": "heroui.com",
+      "name": "HeroUI Pro 1.0",
       "tier": "core",
-      "stage": "approved",
-      "monthlyVisits": 4806,
-      "gapCount": 11,
+      "stage": "enriched",
+      "monthlyVisits": 295638,
+      "gapCount": 1,
       "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "description",
-          "label": "简介",
-          "reason": "简介过短（19 字）"
-        }
-      ]
-    },
-    {
-      "domain": "frevana.com",
-      "name": "Frevana Multiplayer",
-      "tier": "core",
-      "stage": "approved",
-      "monthlyVisits": 23991,
-      "gapCount": 11,
-      "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "description",
-          "label": "简介",
-          "reason": "简介过短（16 字）"
-        }
-      ]
-    },
-    {
-      "domain": "intrascope.app",
-      "name": "Intrascope 2.0",
-      "tier": "watch",
-      "stage": "approved",
-      "monthlyVisits": 2128,
-      "gapCount": 11,
-      "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
+        "keywords"
       ],
       "issueCount": 0,
       "issues": []
     },
     {
-      "domain": "joonoo.art",
-      "name": "Joonoo",
-      "tier": "watch",
-      "stage": "approved",
-      "gapCount": 13,
-      "gaps": [
-        "trafficMetrics.monthlyVisits",
-        "trafficMetrics.monthlyVisitsGrowth",
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "mainstreetwealth.ai",
-      "name": "AI Data Brokerage",
+      "domain": "kino.ai",
+      "name": "Kino",
       "tier": "core",
-      "stage": "approved",
-      "monthlyVisits": 2307,
-      "gapCount": 11,
+      "stage": "enriched",
+      "monthlyVisits": 20207,
+      "gapCount": 1,
       "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
+        "keywords"
       ],
       "issueCount": 1,
       "issues": [
         {
-          "key": "description",
-          "label": "简介",
-          "reason": "简介过短（17 字）"
+          "key": "performanceInsight",
+          "label": "AI 判断",
+          "reason": "四要素缺 1 项"
         }
       ]
     },
     {
-      "domain": "maxma.com",
-      "name": "Maxma",
+      "domain": "livereacting.com",
+      "name": "LiveReacting for ChatGPT",
       "tier": "core",
-      "stage": "approved",
-      "monthlyVisits": 89336,
-      "gapCount": 11,
+      "stage": "enriched",
+      "monthlyVisits": 351714,
+      "gapCount": 1,
       "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
+        "keywords"
       ],
       "issueCount": 0,
       "issues": []
@@ -1070,6 +901,33 @@
         "siteAudit",
         "aiInsight",
         "performanceInsight"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "myclaw.ai",
+      "name": "MyClaw 3.0",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 990387,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "poh.org",
+      "name": "Poh",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 7848,
+      "gapCount": 2,
+      "gaps": [
+        "keywords",
+        "pricing"
       ],
       "issueCount": 0,
       "issues": []
@@ -1168,6 +1026,19 @@
         "siteAudit",
         "aiInsight",
         "performanceInsight"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "replit.com",
+      "name": "Replit Missions",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 10016437,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
       ],
       "issueCount": 0,
       "issues": []
@@ -1454,149 +1325,6 @@
       "issues": []
     },
     {
-      "domain": "xmind.com",
-      "name": "Xmind 2027",
-      "tier": "watch",
-      "stage": "approved",
-      "monthlyVisits": 1109852,
-      "gapCount": 11,
-      "gaps": [
-        "metrics.registeredAt",
-        "trafficMetrics.organicSearchVisits",
-        "geoDistribution",
-        "keywords",
-        "observations.competitors",
-        "pricing",
-        "pageStructure",
-        "screenshotDesktopUrl",
-        "siteAudit",
-        "aiInsight",
-        "performanceInsight"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "description",
-          "label": "简介",
-          "reason": "简介过短（14 字）"
-        }
-      ]
-    },
-    {
-      "domain": "fluent.ai",
-      "name": "Fluent 2",
-      "tier": "watch",
-      "stage": "enriched",
-      "monthlyVisits": 6098,
-      "gapCount": 2,
-      "gaps": [
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "pageStructure",
-          "label": "页面结构",
-          "reason": "页面结构缺 H1"
-        }
-      ]
-    },
-    {
-      "domain": "fieldwork.com",
-      "name": "Fieldwork Code",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 559486,
-      "gapCount": 2,
-      "gaps": [
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "clive.com",
-      "name": "Clive",
-      "tier": "watch",
-      "stage": "enriched",
-      "monthlyVisits": 3581,
-      "gapCount": 4,
-      "gaps": [
-        "trafficMetrics.monthlyVisitsGrowth",
-        "geoDistribution",
-        "keywords",
-        "pricing"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "pageStructure",
-          "label": "页面结构",
-          "reason": "页面结构缺 H1"
-        }
-      ]
-    },
-    {
-      "domain": "claudeship.com",
-      "name": "Claude Ship",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 1233,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 1,
-      "issues": [
-        {
-          "key": "performanceInsight",
-          "label": "AI 判断",
-          "reason": "四要素缺 1 项"
-        }
-      ]
-    },
-    {
-      "domain": "arcjet.com",
-      "name": "Arcjet AI security models",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 38973,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "astor.app",
-      "name": "Astor",
-      "tier": "core",
-      "stage": "enriched",
-      "monthlyVisits": 11043,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
-      "domain": "ballet.com",
-      "name": "Ballet",
-      "tier": "watch",
-      "stage": "enriched",
-      "monthlyVisits": 7014,
-      "gapCount": 1,
-      "gaps": [
-        "keywords"
-      ],
-      "issueCount": 0,
-      "issues": []
-    },
-    {
       "domain": "tripmojo.ai",
       "name": "Tripmojo",
       "tier": "core",
@@ -1658,6 +1386,35 @@
       ],
       "issueCount": 0,
       "issues": []
+    },
+    {
+      "domain": "xmind.com",
+      "name": "Xmind 2027",
+      "tier": "watch",
+      "stage": "approved",
+      "monthlyVisits": 1109852,
+      "gapCount": 11,
+      "gaps": [
+        "metrics.registeredAt",
+        "trafficMetrics.organicSearchVisits",
+        "geoDistribution",
+        "keywords",
+        "observations.competitors",
+        "pricing",
+        "pageStructure",
+        "screenshotDesktopUrl",
+        "siteAudit",
+        "aiInsight",
+        "performanceInsight"
+      ],
+      "issueCount": 1,
+      "issues": [
+        {
+          "key": "description",
+          "label": "简介",
+          "reason": "简介过短（14 字）"
+        }
+      ]
     }
   ]
 }
