@@ -39,6 +39,7 @@ import {
   releasePublishing,
   releaseStalePublishing,
   setItemsStatus,
+  settleEnriching,
 } from "../lib/board-items";
 import { readReport } from "../lib/reports";
 
@@ -195,6 +196,37 @@ async function settlePublishJob(env: Env, job: JobRow, prevStatus: string): Prom
   if (n > 0) console.log(`[publish] 任务${job.status}，${n} 条退回「发布失败」可重发`);
 }
 
+/**
+ * 富化任务失败/取消时，把被它占住的条目落成「富化失败」。
+ *
+ * 脚本正常跑完会自己写（成功 → enriched、失败 → enrich_failed、没跑到的 → approved），
+ * 但子进程崩溃、任务被 cancel、Actions 超时硬杀时收尾根本不执行，这批条目就一直挂着
+ * 「富化中」：后台复选框禁用、富化也选不中，跟运行记录里「失败 N 条」的数量对不上，
+ * 只能等 60 分钟超时 —— 而超时兜底靠 updated_at，任何一次写库都会把计时往后推，
+ * 实际常常等不到（11-26 tiden.ai 卡了两小时就是这么来的）。
+ *
+ * 这里按任务参数里记的名单把失败落定，与运行记录对齐，且能重新勾选重试。
+ * 只处理失败/取消：成功说明脚本跑到了收尾，孤儿已被脚本自己退回待富化；
+ * 此时再动名单反倒会把「刚提交、正在排队」的下一批占位抢掉。
+ */
+async function settleEnrichJob(env: Env, job: JobRow, prevStatus: string): Promise<void> {
+  if (job.kind !== "enrich") return;
+  if (job.status === prevStatus) return;
+  if (job.status !== "failure" && job.status !== "cancelled") return;
+
+  let domains: string[] = [];
+  try {
+    const p = JSON.parse(job.params) as { domains?: unknown };
+    if (Array.isArray(p.domains)) {
+      domains = p.domains.filter((d): d is string => typeof d === "string" && d.length > 0);
+    }
+  } catch {
+    // 老任务没有 params：名单未知就不猜，留给脚本收尾与超时兜底
+  }
+  const n = await settleEnriching(env.DB, "tools", domains).catch(() => 0);
+  if (n > 0) console.log(`[enrich] 任务${job.status}，${n} 条又挂在「富化中」，已判「富化失败」可重试`);
+}
+
 async function listJobs(env: Env, limit: number): Promise<JobRow[]> {
   const { results } = await env.DB.prepare(
     "SELECT * FROM tool_jobs ORDER BY created_at DESC LIMIT ?",
@@ -254,6 +286,9 @@ tools.get("/jobs", async (c) => {
       refreshed.set(r.id, next);
       // 发布任务刚判死：顺手把条目从「发布中」退回，前端下一次刷新就能重发
       settled.push(settlePublishJob(c.env, next, r.status));
+      // 富化任务终结（成功/失败/取消）：把还挂在「富化中」的条目落定，
+      // 否则它们既不能重选也不会自己消失，运行记录与队列数字永远对不上
+      settled.push(settleEnrichJob(c.env, next, r.status));
     }),
   );
   await Promise.all(settled);
@@ -333,7 +368,10 @@ tools.get("/jobs/:id", async (c) => {
   const row = results?.[0];
   if (!row) return c.json({ error: "not_found" }, 404);
   const job = await refreshJob(c.env, ghConfig(c.env), row);
-  await settlePublishJob(c.env, job, row.status);
+  await Promise.all([
+    settlePublishJob(c.env, job, row.status),
+    settleEnrichJob(c.env, job, row.status),
+  ]);
   return c.json({ job });
 });
 

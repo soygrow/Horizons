@@ -161,6 +161,34 @@ export async function releasePublishing(
 }
 
 /**
+ * 富化任务失败时，把还挂在「富化中」的条目判成「富化失败」。
+ *
+ * 正常情况脚本自己会写（成功 → enriched、失败 → enrich_failed、没跑到的 → approved），
+ * 但子进程崩溃、任务被 cancel、Actions 超时硬杀时收尾压根没执行，这批条目就一直是
+ * enriching：后台显示「富化中」、复选框禁用、富化也选不中，跟运行记录里「失败 N 条」
+ * 的数字对不上，只能等 expireStaleEnriching —— 而那个兜底靠 updated_at，任何一次
+ * 写库都会把计时往后推，实际等于永久卡死（11-26 tiden.ai 卡了两小时就是这么来的）。
+ *
+ * 判「富化失败」而不是退回待富化：这批确实跑了没跑成，运营该看到失败并决定重试。
+ * domains 为空时不动：说明派发时没记名单（按「全部已确认」派的），脚本 targets 本就
+ * 覆盖全部，没有孤儿可收，乱改反而会打断排队中的下一批。
+ */
+export async function settleEnriching(
+  db: D1Database,
+  board: string,
+  domains: readonly string[],
+): Promise<number> {
+  if (domains.length === 0) return 0;
+  const now = Date.now();
+  const stmt = db.prepare(
+    "UPDATE board_items SET status='enrich_failed', updated_at=? " +
+      "WHERE board=? AND item_key=? AND status='enriching'",
+  );
+  const results = await db.batch(domains.map((d) => stmt.bind(now, board, d)));
+  return results.reduce((sum, r) => sum + (r.meta?.changes ?? 0), 0);
+}
+
+/**
  * 释放「僵尸占位」：publishing → enriched，让条目能再次被发布。
  *
  * 发布脚本跑空（域名已在线上被判重复）时占位没被还回来，条目会一直显示「发布中」，

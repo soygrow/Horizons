@@ -37,6 +37,28 @@ const REPORT_PATH = path.join(ROOT, "content/tools-field-report.json");
 const PER_SITE_TIMEOUT_MS = 12 * 60_000;
 
 /**
+ * 本轮已占住「富化中」、还没落定终态的域名。
+ *
+ * 收尾正常时它们会被写成 enriched / enrich_failed / approved；一旦中途抛异常，
+ * 收尾压根不执行，这批条目就会永久挂着「富化中」。文件末尾的 catch 靠这份名单兜底。
+ */
+const inFlight: string[] = [];
+
+/** 收尾与异常兜底共用：stage 决定落库状态，卡片内容原样 */
+function toRows(items: StagingItem[]) {
+  return items.map((i) => ({
+    itemKey: i.domain.toLowerCase(),
+    name: i.name,
+    url: i.url ?? `https://${i.domain}`,
+    status: (i.stage ?? "candidate") as ItemStatus,
+    // 不传就会被打回 new：线上更新条目必须保住 refresh 来源
+    kind: i.kind === "refresh" ? ("refresh" as const) : ("new" as const),
+    judge: i.verdict,
+    card: i,
+  }));
+}
+
+/**
  * 同一时刻并发跑几个站。
  *
  * 单站实测 3~4 分钟（后台一次提交 30 条，跑满 60 分钟只到第 17 条就被 Actions 掐掉），
@@ -283,6 +305,17 @@ async function main(): Promise<void> {
   await expireStaleEnriching("tools", (m) => console.log(m));
 
   const staging = await readWorkspace<StagingItem>("tools");
+  /**
+   * 开始时就已经占着「富化中」的条目（后台派发时标的，或上一批崩溃留下的）。
+   *
+   * 本轮结束时它们必须有归宿：名单外 / 没轮到的条目绝不能原样写回 enriching ——
+   * 那样它既不能被重新选中（复选框禁用），也不会自己消失，只能等 60 分钟超时；
+   * 而超时兜底靠 updated_at，任何一次写库都会把计时往后推，实际就是永久卡死
+   * （11-26 tiden.ai 卡了两小时、运行记录说「失败 5 条」队列只有 4 条，就是这个）。
+   */
+  const startedEnriching = new Set(
+    staging.items.filter((i) => i.stage === "enriching").map((i) => i.domain),
+  );
   const targets = staging.items.filter((i) => {
     if (!i?.domain) return false;
     if (kind && (i.kind ?? "new") !== kind) return false;
@@ -316,6 +349,9 @@ async function main(): Promise<void> {
     console.log(JSON.stringify({ processed: picked.length, dry: true }));
     return;
   }
+
+  // 从这里起开始动库：中途抛异常时 catch 要把这批「富化中」落定，见文件末尾
+  inFlight.push(...picked.map((t) => t.domain));
 
   let ok = 0;
   const failed: string[] = [];
@@ -382,25 +418,16 @@ async function main(): Promise<void> {
     if (failedSet.has(i.domain)) return { ...i, stage: "enrich_failed" };
     // 没开跑的不算失败：留着 enriching 会被判超时，退回 approved 才能被再次选中
     if (skippedSet.has(i.domain)) return { ...i, stage: "approved" };
+    // 开始时就在「富化中」、本轮却没轮到它（--domains 没点到 / --limit 截断 / 来源不匹配）：
+    // 退回待富化让它能被重新选中，绝不原样写回一条永不释放的假「富化中」
+    if (startedEnriching.has(i.domain)) return { ...i, stage: "approved" };
     return i;
   });
 
   const report = buildFieldReport(items);
   writeJson(REPORT_PATH, report);
   /* 后台只读 D1：富化后的状态与体检报告都要落库 */
-  await syncCandidates(
-    "tools",
-    items.map((i) => ({
-      itemKey: i.domain.toLowerCase(),
-      name: i.name,
-      url: i.url ?? `https://${i.domain}`,
-      status: (i.stage ?? "candidate") as ItemStatus,
-      // 不传就会被打回 new：线上更新条目必须保住 refresh 来源
-      kind: i.kind === "refresh" ? ("refresh" as const) : ("new" as const),
-      judge: i.verdict,
-      card: i,
-    })),
-  );
+  await syncCandidates("tools", toRows(items));
   await saveReport("tools-field", report, "enrich-staging");
 
   console.log(
@@ -455,7 +482,31 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((e: unknown) => {
+main().catch(async (e: unknown) => {
   console.error("[enrich-staging] 失败：", e);
+  /*
+   * 收尾没机会执行（异常直接从中间冒出来）：这批还挂在「富化中」的条目必须落定。
+   * 不落定的话后台永远显示「富化中」—— 复选框禁用、也选不中富化，运行记录写着
+   * 「失败 N 条」而队列里只有 N-1 条失败，数字永远对不上。
+   * 判「富化失败」而不是退回待富化：这轮确实跑了又没跑成，运营该看到它并决定重试。
+   */
+  if (inFlight.length) {
+    try {
+      const latest = await readWorkspace<StagingItem>("tools");
+      const mine = new Set(inFlight);
+      const stuck = latest.items.filter((i) => mine.has(i.domain) && i.stage === "enriching");
+      if (stuck.length) {
+        const items = latest.items.map((i) =>
+          mine.has(i.domain) && i.stage === "enriching" ? { ...i, stage: "enrich_failed" } : i,
+        );
+        await syncCandidates("tools", toRows(items));
+        console.error(
+          `[enrich-staging] 已把 ${stuck.length} 条未完成的条目落成「富化失败」，可在后台重试`,
+        );
+      }
+    } catch (e2) {
+      console.error("[enrich-staging] 兜底落库也失败了，条目会停在「富化中」：", e2);
+    }
+  }
   process.exitCode = 1;
 });
