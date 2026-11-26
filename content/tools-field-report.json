@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-25T07:34:41.135Z",
-  "total": 1,
+  "generatedAt": "2026-11-26T10:11:36.922Z",
+  "total": 4,
   "itemsWithIssues": 0,
   "dimensions": [
     {
@@ -36,9 +36,11 @@
     {
       "key": "trafficMetrics.monthlyVisitsGrowth",
       "label": "环比增长",
-      "missing": 0,
-      "missingRatio": 0,
-      "missingDomains": [],
+      "missing": 1,
+      "missingRatio": 25,
+      "missingDomains": [
+        "vanira.io"
+      ],
       "invalid": 0,
       "invalidRatio": 0,
       "invalidSamples": []
@@ -66,9 +68,11 @@
     {
       "key": "geoDistribution",
       "label": "地区分布",
-      "missing": 0,
-      "missingRatio": 0,
-      "missingDomains": [],
+      "missing": 1,
+      "missingRatio": 25,
+      "missingDomains": [
+        "vanira.io"
+      ],
       "invalid": 0,
       "invalidRatio": 0,
       "invalidSamples": []
@@ -76,10 +80,13 @@
     {
       "key": "keywords",
       "label": "关键词",
-      "missing": 1,
+      "missing": 4,
       "missingRatio": 100,
       "missingDomains": [
-        "maxma.com"
+        "vanira.io",
+        "poh.org",
+        "roomai.com",
+        "tracex.co"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -98,10 +105,11 @@
     {
       "key": "pricing",
       "label": "定价",
-      "missing": 1,
-      "missingRatio": 100,
+      "missing": 2,
+      "missingRatio": 50,
       "missingDomains": [
-        "maxma.com"
+        "vanira.io",
+        "poh.org"
       ],
       "invalid": 0,
       "invalidRatio": 0,
@@ -161,15 +169,57 @@
   "entryIssues": [],
   "items": [
     {
-      "domain": "maxma.com",
-      "name": "Maxma",
+      "domain": "vanira.io",
+      "name": "Vanira",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 5038,
+      "gapCount": 4,
+      "gaps": [
+        "trafficMetrics.monthlyVisitsGrowth",
+        "geoDistribution",
+        "keywords",
+        "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "poh.org",
+      "name": "Poh",
       "tier": "core",
       "stage": "enriched",
-      "monthlyVisits": 89336,
+      "monthlyVisits": 7848,
       "gapCount": 2,
       "gaps": [
         "keywords",
         "pricing"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "roomai.com",
+      "name": "Room AI",
+      "tier": "core",
+      "stage": "enriched",
+      "monthlyVisits": 26156,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
+      ],
+      "issueCount": 0,
+      "issues": []
+    },
+    {
+      "domain": "tracex.co",
+      "name": "TraceX",
+      "tier": "watch",
+      "stage": "enriched",
+      "monthlyVisits": 4568,
+      "gapCount": 1,
+      "gaps": [
+        "keywords"
       ],
       "issueCount": 0,
       "issues": []
