@@ -755,17 +755,31 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                   <option value="newest">最新发布（票数低，多半无法入榜）</option>
                 </select>
               </label>
-              <label class="block text-xs font-medium text-ink-secondary">
-                Topic（PH slug）
+              <!-- Topic 是可检索的 combobox：手敲 slug 太容易撞上「PH 没有这个 topic、
+                   静默返回空」的坑（agent 就是这么翻 0 页的）。候选来自
+                   public/data/ph-topics.json（全站 429 个，前端本地过滤），
+                   选中后 input 里仍只放 slug，采集端不需要额外适配。 -->
+              <div class="relative block text-xs font-medium text-ink-secondary">
+                <label for="tools-fetch-topic">Topic（PH，可检索）</label>
                 <input
                   id="tools-fetch-topic"
                   type="text"
                   value="artificial-intelligence"
-                  title="Product Hunt 的 topic slug，如 artificial-intelligence、developer-tools、productivity；写错会自动回退默认 topic"
+                  role="combobox"
+                  aria-expanded="false"
+                  aria-controls="tools-fetch-topic-menu"
+                  aria-autocomplete="list"
+                  autocomplete="off"
+                  title="输入关键词检索 Product Hunt 的 topic，点选后按 slug 抓取；手填不存在的 slug 会自动回退默认 topic"
                   spellcheck="false"
-                  class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
+                  class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs font-normal text-ink outline-none focus:border-primary"
                 />
-              </label>
+                <ul
+                  id="tools-fetch-topic-menu"
+                  role="listbox"
+                  class="absolute left-0 right-0 top-full z-30 mt-1 hidden max-h-56 overflow-auto rounded-lg border border-border bg-surface py-1 shadow-lg"
+                ></ul>
+              </div>
               <label class="flex items-start gap-2 pt-5 text-xs text-ink-secondary">
                 <input id="tools-fetch-enrich" type="checkbox" checked class="mt-0.5 h-3.5 w-3.5 accent-[var(--c-primary)]" />
                 <span>补 Similarweb 流量<br /><span class="text-[11px] text-ink-muted">不补就进不了主榜</span></span>

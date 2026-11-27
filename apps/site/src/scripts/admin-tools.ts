@@ -307,6 +307,135 @@ function parseDomainsInput(): string[] {
   return out;
 }
 
+/* ---------------------- Topic 检索（PH 的 slug 下拉） ---------------------- */
+
+interface PhTopic {
+  slug: string;
+  name: string;
+  followers: number;
+  posts: number;
+}
+
+/** PH 全站 400 多个 topic，一次拉完本地过滤：约 30KB，浏览器缓存住，不碰 token 也不吃配额 */
+let phTopics: PhTopic[] | null = null;
+let phTopicsLoading: Promise<PhTopic[]> | null = null;
+
+function loadPhTopics(): Promise<PhTopic[]> {
+  if (phTopics) return Promise.resolve(phTopics);
+  if (!phTopicsLoading) {
+    phTopicsLoading = fetch("/ph-topics.json")
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then((d: { topics?: PhTopic[] }) => (phTopics = d.topics ?? []))
+      .catch(() => {
+        // 清单拿不到不能把输入框卡死：清掉缓存下次聚焦再试，手填 slug 照旧可用
+        phTopicsLoading = null;
+        return [] as PhTopic[];
+      });
+  }
+  return phTopicsLoading;
+}
+
+/**
+ * 本地检索。
+ *
+ * 不用 PH 自己的 topics(query:)：它是纯子串匹配且不排序 —— 搜 ai 会返回
+ * Fundraising（fundr**ai**sing）、Pitch Dubai（dub**ai**），搜 agent 直接 0 条。
+ * 放本地才能做「前缀优先 + 热度排序」，也才不会把不存在的词伪装成查询失败。
+ */
+function searchPhTopics(all: PhTopic[], q: string): PhTopic[] {
+  const k = q.trim().toLowerCase();
+  if (!k) return all.slice(0, 12);
+  const scored = all
+    .filter((t) => t.slug.includes(k) || t.name.toLowerCase().includes(k))
+    .map((t) => ({
+      t,
+      prefix: t.slug.startsWith(k) || t.name.toLowerCase().startsWith(k) ? 1 : 0,
+    }));
+  scored.sort((a, b) => b.prefix - a.prefix || b.t.followers - a.t.followers);
+  return scored.slice(0, 40).map((s) => s.t);
+}
+
+/** Topic 输入框的检索下拉：聚焦列出热门，输入即过滤，↑↓ + 回车选中，Esc 收起 */
+function mountTopicPicker(): void {
+  const input = $<HTMLInputElement>("tools-fetch-topic");
+  const menu = $<HTMLUListElement>("tools-fetch-topic-menu");
+  if (!input || !menu) return;
+
+  let rows: PhTopic[] = [];
+  let active = -1;
+
+  const close = (): void => {
+    menu.classList.add("hidden");
+    input.setAttribute("aria-expanded", "false");
+    active = -1;
+  };
+
+  const paint = async (): Promise<void> => {
+    if (input.disabled) return close();
+    const all = await loadPhTopics();
+    const typed = input.value.trim();
+    rows = searchPhTopics(all, typed);
+    active = -1;
+
+    const items = rows.map(
+      (t, i) =>
+        `<li role="option" data-i="${i}" class="flex cursor-pointer items-baseline justify-between gap-2 px-2.5 py-1.5 text-xs hover:bg-surface-2">` +
+        `<span class="truncate"><span class="font-mono">${esc(t.slug)}</span>` +
+        `<span class="ml-1.5 font-normal text-ink-muted">${esc(t.name)}</span></span>` +
+        `<span class="shrink-0 font-normal text-[11px] text-ink-muted">${fmtNum(t.followers)} 粉 · ${fmtNum(t.posts)} 帖</span></li>`,
+    );
+    if (!items.length) {
+      items.push(
+        `<li class="px-2.5 py-1.5 text-[11px] font-normal text-ink-muted">没有匹配的 topic</li>`,
+      );
+    }
+    // 手填 / 拼错的 slug：先把「会静默回退」说出来，别等跑完对着「翻 0 页」猜是不是被封
+    if (typed && !all.some((t) => t.slug === typed)) {
+      items.push(
+        `<li class="border-t border-border px-2.5 py-1.5 text-[11px] font-normal text-warning">` +
+          `「${esc(typed)}」不是 PH 的 topic，抓取时会回退 artificial-intelligence</li>`,
+      );
+    }
+    menu.innerHTML = items.join("");
+    menu.classList.remove("hidden");
+    input.setAttribute("aria-expanded", "true");
+  };
+
+  input.addEventListener("focus", () => void paint());
+  input.addEventListener("input", debounce(() => void paint(), 120));
+  input.addEventListener("blur", () => window.setTimeout(close, 120));
+
+  input.addEventListener("keydown", (e) => {
+    if (menu.classList.contains("hidden")) return;
+    const lis = [...menu.querySelectorAll<HTMLLIElement>("li[data-i]")];
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      if (!lis.length) return;
+      e.preventDefault();
+      active = (active + (e.key === "ArrowDown" ? 1 : -1) + lis.length) % lis.length;
+      lis.forEach((li, i) => li.classList.toggle("bg-surface-2", i === active));
+      lis[active]?.scrollIntoView({ block: "nearest" });
+      return;
+    }
+    if (e.key === "Enter" && active >= 0 && rows[active]) {
+      e.preventDefault();
+      input.value = rows[active].slug;
+      close();
+      return;
+    }
+    if (e.key === "Escape") close();
+  });
+
+  // 用 mousedown 而不是 click：blur 先触发会把菜单收掉，点击就永远落空
+  menu.addEventListener("mousedown", (e) => {
+    const li = (e.target as HTMLElement).closest<HTMLLIElement>("li[data-i]");
+    if (!li) return;
+    e.preventDefault();
+    const picked = rows[Number(li.dataset.i)];
+    if (picked) input.value = picked.slug;
+    close();
+  });
+}
+
 /** 抓取表单底部的预估文案：候选池变化 + Apify 流量成本 */
 function updateFetchEstimate(): void {
   const domains = parseDomainsInput();
@@ -1228,6 +1357,7 @@ function bind(): void {
   // input 而不是 change：粘贴一长串域名时要立刻反映条数，等失焦才更新会让人以为没生效
   $("tools-fetch-domains").addEventListener("input", updateFetchEstimate);
   updateFetchEstimate();
+  mountTopicPicker();
 
   $("tools-fetch-btn").addEventListener("click", async () => {
     const btn = $("tools-fetch-btn") as HTMLButtonElement;
