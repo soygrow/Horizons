@@ -58,6 +58,14 @@ const DEPLOY_WORKFLOW = "deploy-site.yml";
 const MAX_COUNT = 200;
 /** 抓取时间窗上限（天），与 fetch-staging.ts 的 MAX_DAYS 保持一致；3650 ≈ 不限 */
 const MAX_DAYS = 3650;
+/**
+ * 富化单批上限。
+ *
+ * 与 enrich-tools.yml 的 limit 上限、前端 MAX_ENRICH_BATCH 三处必须一致，
+ * 否则会出现「前端说提交 40 条、后端只放行 20 条、剩下 20 条静默消失」。
+ * 依据：45 分钟预算 × 并发 4 ÷ 单条 3.5 分钟 ≈ 50 条，取 40。
+ */
+const MAX_ENRICH_BATCH = 40;
 const MAX_PAGE_SIZE = 100;
 /** 指定网站单次上限，与 scripts/admin/fetch-staging.ts 的 MAX_MANUAL 保持一致 */
 const MAX_MANUAL_DOMAINS = 50;
@@ -66,11 +74,13 @@ const MAX_MANUAL_DOMAINS = 50;
  *
  * Actions 单 job 60 分钟硬上限，实测重采一条 3~4 分钟（以前按 60~90 秒估，
  * 30 条永远跑不完：跑满 60 分钟只到第 17 条就被 kill）。
- * enrich-staging 现在默认并发 3 跑站内管线（见 ENRICH_CONCURRENCY），
- * 单批 15 条约 15~18 分钟，60 分钟窗口留足余量（30 条压线，一旦某个站卡到
- * 单站超时就会挤掉收尾时间）；后台按这个数把一次选择拆成多批串行排队。
+ * enrich-staging 现在默认并发 4 跑站内管线（见 ENRICH_CONCURRENCY）。
+ *
+ * 2026-11-27 从 15 提到 24：并发 3→4 之后，24 条约 6 + 24/4×3.5 ≈ 27 分钟，
+ * 仍在 45 分钟预算内。refresh 单条比新条目重（force 强刷 + 截图 + 三段 LLM），
+ * 所以没有跟着 MAX_ENRICH_BATCH 一起放到 40 —— 那个数是按单条 3.5 分钟算的。
  */
-const MAX_REFRESH_DOMAINS = 15;
+const MAX_REFRESH_DOMAINS = 24;
 
 /**
  * 清洗后台「指定网站」输入。
@@ -730,7 +740,14 @@ tools.post("/enrich", async (c) => {
     .filter((d): d is string => typeof d === "string" && d.length > 0)
     .map((d) => d.toLowerCase())
     .slice(0, 50);
-  const limit = Math.max(1, Math.min(Number(body.limit ?? 10) || 10, 20));
+  /*
+   * 单批上限 40（2026-11-27 从 20 上调）。
+   *
+   * 真实约束是 Actions 的 60 分钟 job 上限，不是条数本身：
+   * 45 分钟预算 × 并发 4 ÷ 3.5 分钟/条 ≈ 50 条，取 40 留余量。
+   * 再多就该调 ENRICH_BUDGET_MINUTES 和 timeout-minutes，而不是继续加条数。
+   */
+  const limit = Math.max(1, Math.min(Number(body.limit ?? 20) || 20, MAX_ENRICH_BATCH));
   const freeOnly = body.freeOnly === true;
   const note = typeof body.note === "string" ? body.note.slice(0, 120) : "";
 

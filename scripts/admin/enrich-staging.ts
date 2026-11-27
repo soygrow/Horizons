@@ -65,10 +65,15 @@ function toRows(items: StagingItem[]) {
  * 而这 3~4 分钟几乎全在等外部接口：Playwright 开页截图、两次 vortex run-sync、
  * SERP、三段 DeepSeek。本地 CPU 基本闲着，串行跑纯属把等待时间叠加。
  *
- * 默认 3 是保守值：Apify 账号要同时容纳 3 个 actor run，机器要同时跑 3 个 Chromium。
- * 想再快可用 ENRICH_CONCURRENCY 调高（4~5），但要盯日志里的内存与 429。
+ * 现在默认 4（2026-11-27 从 3 上调）：仓库转 public 后 Actions 不计费，
+ * 「省机时」不再是目标，批次吞吐才是。4 个 Chromium 在 7GB runner 上约 2GB，
+ * Apify 并发 4 个 run-sync 也在额度内。
+ *
+ * 再往上（5~8）脚本允许，但要盯两点：429 与 runner 内存；
+ * 60 分钟 job 超时是硬顶，并发越高撞顶越快 —— 预算到点会停止开新站，
+ * 所以调高并发不会导致「被 kill 丢收尾」，只会让单个站排得更接近上限。
  */
-const DEFAULT_CONCURRENCY = 3;
+const DEFAULT_CONCURRENCY = 4;
 
 /**
  * 本进程的时间预算（分钟），可用 ENRICH_BUDGET_MINUTES 覆盖。

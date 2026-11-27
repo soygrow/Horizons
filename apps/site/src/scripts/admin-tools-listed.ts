@@ -73,15 +73,15 @@ interface PendingResp {
 }
 
 /**
- * 与 API 的 MAX_REFRESH_DOMAINS 保持一致。
+ * 与 API 的 MAX_REFRESH_DOMAINS 保持一致（24）。
  *
- * Actions 单 job 60 分钟，enrich-staging 并发 3 跑站内管线，单批 15 条约 15~18 分钟；
- * 超过 15 条必须拆批（多批由 workflow 的 concurrency 串行排队）。
+ * Actions 单 job 60 分钟，enrich-staging 并发 4 跑站内管线，单批 24 条约 27 分钟；
+ * 超过 24 条必须拆批（多批由 workflow 的 concurrency 串行排队）。
  *
- * 拆批是前端的责任：API 遇到超过 30 条会直接 400（以前是静默 slice 掉尾巴，
+ * 拆批是前端的责任：API 遇到超过上限会直接 400（以前是静默 slice 掉尾巴，
  * 勾 50 条只有 30 条真跑），所以这里的循环必须真的把每一批都发出去。
  */
-const BATCH = 15;
+const BATCH = 24;
 
 /** 单条耗时（并发跑之后的折算值）：实测单站 3~4 分钟 ÷ 并发 3 ≈ 70 秒 */
 const SECONDS_PER_ITEM = 70;

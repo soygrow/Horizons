@@ -1282,6 +1282,15 @@ function closeDetail(): void {
 
 /* -------------------------------- 事件绑定 -------------------------------- */
 
+/**
+ * 富化单批上限，必须与后端 MAX_ENRICH_BATCH（admin-tools.ts）、
+ * workflow 的 limit 上限（enrich-tools.yml）三处一致。
+ *
+ * 不截断的话会出现「报价按 40 条算、实际只跑 20 条，剩下 20 条被标成富化中
+ * 然后超时失败」。依据：45 分钟预算 × 并发 4 ÷ 单条 3.5 分钟 ≈ 50 条，取 40。
+ */
+const MAX_ENRICH_BATCH = 40;
+
 async function rejectDomains(domains: string[], reject: boolean): Promise<void> {
   await apiPost("/tools/staging/reject", { domains, reject });
 }
@@ -1295,7 +1304,7 @@ async function approveDomains(domains: string[], approve: boolean): Promise<void
 async function enrichDomains(domains: string[]): Promise<void> {
   await apiPost("/tools/enrich", {
     domains,
-    limit: Math.max(1, Math.min(domains.length || 10, 20)),
+    limit: Math.max(1, Math.min(domains.length || 10, MAX_ENRICH_BATCH)),
     note: `后台富化 ${domains.length || "全部已确认"} 个`,
   });
 }
@@ -1668,9 +1677,7 @@ function bind(): void {
     });
     // 只有「待富化 / 富化失败」会被真正送去跑（后端 markEnriching 也限这两种状态），
     // 勾了已富化的条目不能算进费用，否则估算和实际执行对不上
-    // 单批上限跟后端一致（接口最多 20 条）：多的不截断的话，
-    // 报价按 30 条算、实际只跑 20 条，剩下的还会被标成富化中然后超时失败
-    const MAX_ENRICH_BATCH = 20;
+    // 单批上限用模块级 MAX_ENRICH_BATCH（40），与后端和 workflow 同口径
     const picked = (domains.length
       ? rows.filter((r) => state.selected.has(r.domain) && canEnrich(r))
       : rows.filter(canEnrich)
@@ -1703,7 +1710,9 @@ function bind(): void {
       (domains.length > MAX_ENRICH_BATCH
         ? `注意：单批最多 ${MAX_ENRICH_BATCH} 条，本次只处理前 ${MAX_ENRICH_BATCH} 条，其余的跑完再提交。\n\n`
         : "") +
-      `将对 ${est.count} 个条目做富化（单条 2–5 分钟）。\n\n` +
+      `将对 ${est.count} 个条目做富化（单条 2–5 分钟，并发 4 跑）。\n` +
+      // 单批已经放到 40 条，跑满要接近 45 分钟，先把耗时说清楚，免得以为卡住了
+      `· 预计本批耗时约 ${Math.ceil(est.count / 4) * 4 + 6} 分钟（含环境准备）\n\n` +
       `· 单条约 $${est.perSite.toFixed(4)}：aitdk 数据 $0.002 + Google 搜索 3 条 $0.0075 + AI 抽取 $0.001\n` +
       `· 流量快照复用准入阶段的采集缓存，不再重复收费\n` +
       (est.fallback
