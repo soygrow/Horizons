@@ -46,6 +46,7 @@ import { probeAll, fetchSiteMeta } from "./probe";
 import { looksLikeAiProduct } from "../fetch/ai-relevance";
 import { translateInPlace } from "../fetch/translate";
 import { d1Configured } from "./d1-client";
+import { readListedTools } from "./hydrate-tools";
 import { listCandidates, syncCandidates, type ItemStatus } from "./board-items";
 import {
   judge,
@@ -86,6 +87,34 @@ const MAX_COUNT = 200;
 const MAX_MANUAL = 50;
 /** 指定网站的元信息抓取并发：同一个域名的首页，一次 6 个足够，再高容易被 WAF 拦 */
 const META_CONCURRENCY = 6;
+
+/* ------------------------------- 在榜基线 ------------------------------- */
+
+/**
+ * 「已在榜」的条目，用于跳过重复抓取。
+ *
+ * 不能只信 content/aitools.json：这个文件从第二期起就不入库（.gitignore），
+ * 榜单唯一真源是 D1。CI 里 checkout 出来根本没有它，`loadExisting()` 恒为 []，
+ * 于是「已在榜跳过」完全失效 —— 抓回来的都是线上已有的工具，白花探活与
+ * Apify 的钱，发布时再统一被判「重复」。11-27 那次 53 条里 40 条重复、
+ * 255 条只增 13 条，就是这么来的。
+ */
+async function loadListedForDedupe(): Promise<AITool[]> {
+  const local = loadExisting();
+  if (!d1Configured()) return local;
+  try {
+    const { version, tools } = await readListedTools();
+    console.log(`[staging] 在榜基线：D1 版本 ${version} 共 ${tools.length} 条（用于跳过重复）`);
+    return tools;
+  } catch (e) {
+    // 读库失败不该让采集整体失败，但必须喊出来：回退到本地文件后重复会明显变多
+    console.warn(
+      `[staging] 读 D1 榜单失败（${e instanceof Error ? e.message : e}），` +
+        `回退本地 ${local.length} 条 —— 本地文件可能过期，本次重复条目会偏多`,
+    );
+    return local;
+  }
+}
 
 /* ------------------------------- 参数解析 ------------------------------- */
 
@@ -457,7 +486,7 @@ async function main(): Promise<void> {
 
   if (!dryRun) assertD1();
 
-  const existing = loadExisting();
+  const existing = await loadListedForDedupe();
   // 候选池只从 D1 读：已拒绝的域名也算「见过」，否则后台点过拒绝的下次还会被抓回来
   const pool = await listCandidates<StagingItem>("tools");
 

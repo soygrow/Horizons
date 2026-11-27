@@ -12,7 +12,9 @@
  *   --probe（HTTP 探活）             $0，约 5 分钟
  *
  * 输出 content/tools-audit.json 供后台预览展示。
- * 默认**不改动** aitools.json；只有加 --apply-drops 才会真的把下榜条目移除。
+ *
+ * 基线读 D1 当前版本（content/aitools.json 不入库，CI 里恒为空）；
+ * 下榜本身由 publish-tools.ts --drops 落到 D1，本脚本默认不动榜单。
  *
  * 用法：
  *   pnpm tsx scripts/admin/audit-existing.ts --dry
@@ -29,6 +31,8 @@ import { probeAll } from "./probe";
 import { judge, visitsOf, type VerdictTier } from "./verdict";
 import { saveReport } from "./reports";
 import { statsLine, writeToolStats } from "./tool-stats";
+import { d1Configured } from "./d1-client";
+import { readListedTools } from "./hydrate-tools";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const TOOLS_PATH = path.join(ROOT, "content/aitools.json");
@@ -118,16 +122,26 @@ async function main(): Promise<void> {
   const doProbe = has("probe");
   const applyDrops = has("apply-drops");
 
-  const tools = readJson<AITool[]>(TOOLS_PATH, []);
+  /*
+   * 榜单唯一真源是 D1：content/aitools.json 从第二期起不入库（.gitignore），
+   * CI 里读出来永远是空 —— 重判于是静默空转，报告里「下榜 0」看着像天下太平。
+   * 与 tool-stats.ts 用同一套读法；本地没有 D1 通道时才回退文件。
+   */
+  const local = readJson<AITool[]>(TOOLS_PATH, []);
+  const tools = d1Configured() ? (await readListedTools()).tools : local;
   if (tools.length === 0) {
-    console.log("[audit] content/aitools.json 为空，无需重判");
+    console.log(
+      d1Configured()
+        ? "[audit] D1 当前版本没有条目，无需重判"
+        : "[audit] 没有 D1 通道且 content/aitools.json 为空，无需重判（先跑 hydrate-tools.ts）",
+    );
     console.log(JSON.stringify({ total: 0, dropped: 0 }));
     return;
   }
 
   const before = tally(tools);
   console.log(
-    `[audit] 文件 ${tools.length} 条，在榜 ${before.qualified}（core ${before.core} / watch ${before.watch}）` +
+    `[audit] 榜单 ${tools.length} 条，在榜 ${before.qualified}（core ${before.core} / watch ${before.watch}）` +
       `｜流量刷新 ${doTraffic ? "开" : "关"}｜探活 ${doProbe ? "开" : "关"}${dryRun ? "｜dry-run" : ""}`,
   );
 
@@ -208,15 +222,25 @@ async function main(): Promise<void> {
   }
 
   if (applyDrops && dropped.length) {
-    const dropSet = new Set(dropped.map((d) => d.domain));
-    writeJson(
-      TOOLS_PATH,
-      tools.filter((t) => !dropSet.has(t.domain)),
-    );
-    console.log(`[audit] 已从 content/aitools.json 移除 ${dropSet.size} 条下榜条目`);
-    console.log(`[audit] ${statsLine(await writeToolStats())}`);
+    /*
+     * 有 D1 时不写文件：下榜要改的是 D1 版本（由 publish-tools.ts --drops 负责），
+     * 这里再写一份 content/aitools.json 只会制造第二个「真相」。
+     */
+    if (d1Configured()) {
+      console.log(
+        `[audit] 有 D1 通道：下榜清单已就绪，请用 publish-tools.ts --drops 真正下榜（本脚本不改库）`,
+      );
+    } else {
+      const dropSet = new Set(dropped.map((d) => d.domain));
+      writeJson(
+        TOOLS_PATH,
+        tools.filter((t) => !dropSet.has(t.domain)),
+      );
+      console.log(`[audit] 已从 content/aitools.json 移除 ${dropSet.size} 条下榜条目`);
+      console.log(`[audit] ${statsLine(await writeToolStats())}`);
+    }
   } else if (dropped.length) {
-    console.log("[audit] 未加 --apply-drops，aitools.json 未改动（仅生成下榜清单）");
+    console.log("[audit] 未加 --apply-drops，榜单未改动（仅生成下榜清单）");
   }
 
   writeJson(AUDIT_PATH, report);
