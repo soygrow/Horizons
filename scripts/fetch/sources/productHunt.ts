@@ -305,6 +305,41 @@ interface PostPage {
   edges?: Array<{ node: PostNode }>;
 }
 
+const PH_GRAPHQL = "https://api.producthunt.com/v2/api/graphql";
+
+/**
+ * 确认 PH 上真有这个 topic slug。
+ *
+ * PH 对不存在的 slug 不报错，而是老老实实返回 200 + 空 posts —— 后台只看到
+ * 「翻 0 页扫 0 条，产出 0」，很容易被当成封 IP 或没数据。11-27 实测：topic=agent
+ * 在 PH 上压根不存在（`topic(slug:"agent")` 返回 null），换成 artificial-intelligence
+ * 立刻出 5 条。所以抓之前先探一次，别让用户对着 0 条猜。
+ */
+async function topicExists(token: string, topic: string): Promise<boolean> {
+  const res = await fetch(PH_GRAPHQL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "User-Agent": config.userAgent,
+    },
+    body: JSON.stringify({
+      query: "query($slug: String!) { topic(slug: $slug) { slug } }",
+      variables: { slug: topic },
+    }),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = (await res.json()) as {
+    data?: { topic?: { slug?: string } | null };
+    errors?: Array<{ message?: string }>;
+  };
+  if (data.errors?.length) throw new Error(data.errors[0]?.message ?? "GraphQL 错误");
+  return Boolean(data.data?.topic?.slug);
+}
+
+/** PH 上真实存在的 topic 示例，回退时打出来省得人再猜一次 */
+const TOPIC_HINTS = "artificial-intelligence / developer-tools / productivity / tech";
+
 /**
  * 抓 Product Hunt 新工具。
  *
@@ -339,6 +374,28 @@ export async function fetchProductHuntTools(
     return [];
   }
 
+  /*
+   * topic 校验：PH 只认自己的 slug，写错一个字母就是「200 + 空数组」的静默 0 条。
+   * 不存在就回退默认 topic 并喊一声，比让人对着「翻 0 页」怀疑 IP 被封强得多。
+   */
+  let effectiveTopic = topic;
+  if (topic) {
+    try {
+      if (!(await topicExists(token, topic))) {
+        effectiveTopic = config.productHunt?.topicSlugs?.[0] ?? "artificial-intelligence";
+        console.warn(
+          `[fetch] PH 没有 "${topic}" 这个 topic（PH 只认自己的 slug，常见的有 ${TOPIC_HINTS}），` +
+            `已回退 "${effectiveTopic}"`,
+        );
+      }
+    } catch (e) {
+      // 探路请求自己失败（网络/限流）：别为一次校验把整轮采集拦死
+      console.warn(
+        `[fetch] PH topic 校验失败（${e instanceof Error ? e.message : e}），按 "${topic}" 继续`,
+      );
+    }
+  }
+
   const postedAfter =
     postedAfterDays > 0
       ? `, postedAfter: "${new Date(Date.now() - postedAfterDays * 86_400_000).toISOString()}"`
@@ -346,7 +403,7 @@ export async function fetchProductHuntTools(
 
   const query = `
     query($first: Int!, $after: String) {
-      posts(first: $first, after: $after, order: ${order}, topic: "${topic}"${postedAfter}) {
+      posts(first: $first, after: $after, order: ${order}, topic: "${effectiveTopic}"${postedAfter}) {
         pageInfo { endCursor hasNextPage }
         edges {
           node {
@@ -382,7 +439,7 @@ export async function fetchProductHuntTools(
   let browserFailStreak = 0;
 
   while (items.length < limit && scanned < scanCap) {
-    const res = await fetch("https://api.producthunt.com/v2/api/graphql", {
+    const res = await fetch(PH_GRAPHQL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -396,10 +453,26 @@ export async function fetchProductHuntTools(
     });
     if (!res.ok) throw new Error(`Product Hunt 请求失败：${res.status}`);
 
-    const data = (await res.json()) as { data?: { posts?: PostPage } };
+    const data = (await res.json()) as {
+      data?: { posts?: PostPage };
+      errors?: Array<{ message?: string }>;
+    };
+    // token 失效 / 字段改名时 PH 同样回 200，只把原因塞在 errors 里 ——
+    // 不抛出来就又是一次「产出 0」的神秘空跑
+    if (data.errors?.length) {
+      throw new Error(`Product Hunt 返回错误：${data.errors[0]?.message ?? "未知错误"}`);
+    }
     const posts = data?.data?.posts;
     const pageNodes = posts?.edges?.map((e) => e.node) ?? [];
-    if (pageNodes.length === 0) break;
+    if (pageNodes.length === 0) {
+      if (pages === 0) {
+        console.warn(
+          `[fetch] PH 第一页就是空的：topic=${effectiveTopic || "不限"}、近 ${postedAfterDays} 天、` +
+            `排序 ${order} 下没有帖子（与 IP 无关，换 topic 或放宽时间窗试试）`,
+        );
+      }
+      break;
+    }
 
     pages++;
     scanned += pageNodes.length;
@@ -510,7 +583,7 @@ export async function fetchProductHuntTools(
   }
 
   console.log(
-    `[fetch] PH(${order}, topic=${topic}, 近 ${postedAfterDays} 天) 翻 ${pages} 页扫 ${scanned} 条，产出 ${items.length}/${limit}` +
+    `[fetch] PH(${order}, topic=${effectiveTopic}, 近 ${postedAfterDays} 天) 翻 ${pages} 页扫 ${scanned} 条，产出 ${items.length}/${limit}` +
       `｜name已存在 ${skippedName}｜未解析出域名 ${skippedNoDomain}｜黑名单 ${skippedBlocked}｜域名已收录 ${skippedSeen}` +
       `｜推断命中 ${viaGuess}`,
   );

@@ -12,6 +12,10 @@
  *   pnpm tsx scripts/admin/fetch-staging.ts --count 20 --dry
  *   pnpm tsx scripts/admin/fetch-staging.ts --domains "picvo.ai,gamma.app" --enrich
  *
+ * `--topic` 必须是 Product Hunt 真实存在的 slug（artificial-intelligence、
+ * developer-tools、productivity…）：PH 对不存在的 slug 返回 200 + 空数组，
+ * 写成 agent 会静默产出 0 条。传错时脚本会回退默认 topic 并在日志里说明。
+ *
  * `--domains` 是「指定网站」模式：不跑 Product Hunt/HN/Futurepedia，
  * 直接把给定域名做成候选条目，后面的富化/判定/翻译/落库完全同一套逻辑。
  */
