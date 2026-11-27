@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-11-26T09:51:03.267Z",
+  "generatedAt": "2026-11-27T08:16:36.757Z",
   "boards": {
     "tools": {
-      "total": 255,
-      "updatedAt": "2026-11-26T09:51:02.272Z",
+      "total": 268,
+      "updatedAt": "2026-11-27T08:16:35.711Z",
       "source": "content/tools-stats.json"
     },
     "opps": {
@@ -27,8 +27,8 @@
       "source": "d1:board_stats"
     },
     "digest": {
-      "total": 17,
-      "updatedAt": "2026-11-26T05:16:21",
+      "total": 16,
+      "updatedAt": "2026-11-27T05:14:56",
       "source": "d1:board_stats"
     }
   }
