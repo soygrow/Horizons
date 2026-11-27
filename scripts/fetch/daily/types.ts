@@ -106,14 +106,29 @@ export interface DigestItem {
   sources: DigestSource[];
   /** 供页面展示的关键量：points / stars / starPerDay 等，来自原始材料 */
   signals: Record<string, number>;
-  /** 缺什么证据（pending 时必填） */
+  /** 缺什么证据（仅 pending 会有，而 pending 已不再发布，字段只为兼容旧 payload 保留） */
   missing?: string;
+}
+
+/**
+ * 一期的话头：页面第一屏就是它，条目列表围绕它展开。
+ *
+ * 以前页面一上来就是十几条标题，「今天发生了什么」要靠读者自己拼；
+ * 现在先给一段总结（lead），再给三条要点（points），细节往下放。
+ */
+export interface DailySummary {
+  /** 2–3 句中文总结，讲清这一期的方向与量级 */
+  lead: string;
+  /** 3 条中文要点，各一句，指向下面的具体条目 */
+  points: string[];
 }
 
 export interface Digest {
   date: string;
   generatedAt: string;
   stats: { candidates: number; merged: number; verified: number; published: number };
+  /** 一期总结；早期 payload 没有这个字段，页面会现算一份 */
+  brief?: DailySummary;
   modules: Array<{ key: ModuleKey; items: DigestItem[] }>;
   sourceHealth: SourceReport[];
 }

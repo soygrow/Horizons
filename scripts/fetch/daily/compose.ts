@@ -1,10 +1,21 @@
 // 成稿：模板生成中文正文，不调用任何付费模型。
 // 硬规则：只写材料能支持的事实；数字一律来自 raw，不估算、不润色、不补全。
+//
+// 只发已核验的条目（见 score.ts 的 allocate）：缺一手材料的内容不进成稿，
+// 页面上也就不会出现「待核实」这种让读者起疑的标签。
 
 import { dailyConfig } from "./config";
 import type { Allocation, Scored } from "./score";
 import type { BodyResult } from "./sources/body";
-import type { Digest, DigestItem, DigestSource, ModuleKey, RawDigest, RawItem } from "./types";
+import type {
+  Digest,
+  DailySummary,
+  DigestItem,
+  DigestSource,
+  ModuleKey,
+  RawDigest,
+  RawItem,
+} from "./types";
 
 const FEED_LABEL: Record<string, string> = {
   theverge: "The Verge",
@@ -57,8 +68,16 @@ const WHY_BY_CATEGORY: Record<string, string> = {
   business: "钱在换方向，但截图和转述要等官方条款确认，别先改自己的报价。",
 };
 
-/** 待核实条目「还缺什么」的兜底说法（score.ts 已给 missing 时用它的） */
-const PENDING_CAVEAT = "只有转述，等一手材料或第二家独立报道";
+/** 页面上的中文类别名（与站点 CATEGORY_LABEL 同口径，写死在脚本里以免跨包依赖） */
+const CATEGORY_ZH: Record<string, string> = {
+  model_release: "模型发布",
+  product_launch: "产品发布",
+  open_source: "开源项目",
+  ai_agent: "智能体",
+  ai_coding: "AI 编程",
+  business: "商业化",
+  other: "其他",
+};
 
 function beijingTime(iso: string | null): string {
   if (!iso) return "时间未知";
@@ -176,17 +195,15 @@ function summarize(item: RawItem, ev: Scored["ev"], content?: string | null): st
 }
 
 /**
- * 每条只写三句话：summary = 发生了什么，why = 所以呢，missing = 还缺什么。
- * 证据状态由页面徽章表达，不再往 why 尾巴上拼一句「……可以引用」——
- * 每屏都是同一句模板话，读者一眼就看出是拼出来的。
+ * 每条只写两句话：summary = 发生了什么，why = 所以呢。
+ * 只发已核验的条目，所以不再产出「还缺什么」；证据状态也不再挂在页面上
+ * —— 全部都有一手出处，逐条标「已核验」等于给每行都盖同一个章。
  */
 function toDigestItem(s: Scored, moduleKey: ModuleKey, content?: string | null): DigestItem {
   const primary = s.ev.items[0];
   const angle = angleOf(primary);
   const reason =
     (angle && WHY_BY_ANGLE[angle]) || WHY_BY_CATEGORY[s.category] || MODULE_WHY[moduleKey];
-  const missing =
-    s.missing ?? (s.evidence === "pending" ? PENDING_CAVEAT : undefined);
   return {
     id: s.ev.id,
     title: primary.title,
@@ -206,8 +223,78 @@ function toDigestItem(s: Scored, moduleKey: ModuleKey, content?: string | null):
       ...(primary.signals.starPerDay !== undefined ? { starPerDay: primary.signals.starPerDay } : {}),
     },
     ...(content ? { content: content.slice(0, 2000) } : {}),
-    ...(missing ? { missing } : {}),
   };
+}
+
+/** 取第一句，用于总结里的一句话要点 */
+function firstSentence(text: string, max = 80): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  const m = clean.match(/^[^。！？]*[。！？]/);
+  const first = (m ? m[0] : clean).replace(/[。！？]$/, "").trim();
+  return first.length > max ? `${first.slice(0, max)}…` : first;
+}
+
+/**
+ * HN 条目的摘要是「外链指向 X 的原文，讨论发生在 Hacker News 评论区」——
+ * 一句结构说明，放进总结等于什么都没说。这类条目只当补充，不当要点。
+ */
+function substantive(item: DigestItem): boolean {
+  return !item.summary.startsWith("外链指向");
+}
+
+/**
+ * 一期总结：页面第一屏就是这三两句话。
+ *
+ * 只做归纳，不引入新材料：条数、类别分布、模块构成都直接来自本期条目，
+ * 换成生成模型反而容易在总结里补出原文没有的判断。
+ */
+function composeBrief(modules: Array<{ key: ModuleKey; items: DigestItem[] }>): DailySummary {
+  const all = modules.flatMap((m) => m.items);
+  const countOf = (key: ModuleKey): number =>
+    modules.find((m) => m.key === key)?.items.length ?? 0;
+  const zh = (key: string) => CATEGORY_ZH[key] ?? "其他";
+
+  const tally = new Map<string, number>();
+  for (const item of all) tally.set(item.category, (tally.get(item.category) ?? 0) + 1);
+  const topCats = [...tally.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([key, n]) => `${zh(key)} ${n} 条`);
+
+  // 第一句要指出「今天最值得看的一件事」，只报数量等于没说重点
+  const first = countOf("headline") > 0
+    ? modules.find((m) => m.key === "headline")?.items[0]
+    : all[0];
+  const opener = first
+    ? `今天最值得先看的是 ${first.sources[0]?.label ?? "一条官方消息"}的 ${zh(first.category)}消息`
+    : "";
+
+  const tools = countOf("tools");
+  const money = countOf("money");
+  const action = countOf("action");
+  const parts: string[] = [];
+  if (topCats.length > 0) parts.push(`${topCats.join("、")}，是变动最集中的方向`);
+  if (tools > 0) parts.push(`${tools} 个能直接上手的项目`);
+  if (money > 0) parts.push(`${money} 条成本或定价变化`);
+  if (action > 0) parts.push(`${action} 个当天就能验证的动作`);
+
+  const lead =
+    (opener ? `${opener}。` : "") +
+    `整期 ${all.length} 条：${parts.join("；")}。每条都有一手出处，点开链接就能核对。`;
+
+  const order: ModuleKey[] = ["headline", "tools", "money", "action"];
+  const points = order
+    .flatMap((key) => modules.find((m) => m.key === key)?.items ?? [])
+    .filter(substantive)
+    .slice(0, 3)
+    .map((item) => {
+      const where = item.sources[0]?.label
+        ? `${zh(item.category)} · ${item.sources[0].label}`
+        : zh(item.category);
+      return `${where}：${firstSentence(item.why)}`;
+    });
+
+  return { lead, points };
 }
 
 export function composeDigest(input: {
@@ -243,6 +330,7 @@ export function composeDigest(input: {
       verified,
       published,
     },
+    brief: composeBrief(modules),
     modules,
     sourceHealth: input.raw.sources,
   };

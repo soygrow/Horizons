@@ -1,21 +1,30 @@
 ---
 /**
- * 每日情报首页：最新一期直接铺开（头条全文 + 其余模块），说明与往期下移。
+ * 每日情报首页：总结打头，详细内容跟在后面，其他信息与说明下移。
+ *
  * 数据来自 content/digest/<date>.json —— 唯一真源是 D1 的 digest_issues，
  * 每次 `pnpm data` 先由 scripts/admin/hydrate-digest.ts 还原成文件。
+ *
+ * 阅读顺序 = 页面顺序：
+ *   1. 本期总结 —— 这一期最重要的话，中文，一屏读完
+ *   2. 详细内容 —— 头条全文 + 其余模块条目
+ *   3. 其他信息 —— 构成、来源健康度、往期
+ *
+ * 只发已核验的条目（过滤在 lib/digest.ts 的 publishedDigest），
+ * 所以页面不再出现「待核实」徽章与「还缺什么」。
  */
 import Base from "../../layouts/Base.astro";
 import {
   digests,
   latestDigest,
   digestCounts,
-  EVIDENCE_META,
   MODULE_META,
-  briefLine,
   briefOf,
   categoryLabel,
   formatDate,
   formatTime,
+  signalText,
+  type ModuleKey,
 } from "../../lib/digest";
 
 const latest = latestDigest;
@@ -24,21 +33,18 @@ const latestCount = latest ? digestCounts(latest) : 0;
 const issueNo = latest
   ? String(digests.length - digests.findIndex((d) => d.date === latest.date)).padStart(3, "0")
   : "—";
-const lead = latest?.modules.find((m) => m.key === "headline") ?? null;
-/** 头条条目提前算好「三句话」，模板里不再拼字段标签 */
-const headlineItems = (lead?.items ?? []).map((item) => ({ item, brief: briefOf(item) }));
+
+const brief = latest?.brief ?? null;
+const headline = latest?.modules.find((m) => m.key === "headline") ?? null;
+const headlineItems = (headline?.items ?? []).map((item) => ({ item, brief: briefOf(item) }));
 const others = (latest?.modules ?? []).filter((m) => m.key !== "headline");
 const archive = digests.slice(1, 9);
 
 const title = "每日情报 · Horizons";
 const description = latest
-  ? `${formatDate(latest.date)} 的 AI 情报：${latestCount} 条，覆盖今日头条、能直接用的工具、成本与定价、今天就能做，每条附原始链接与证据等级。`
-  : "每天 7:30 更新一份 AI 情报：新模型、能直接用的开源项目、价格与成本变化，以及今天就能动手的机会。10–15 条精编，每条都带原始链接与证据等级。";
+  ? `${formatDate(latest.date)} 的 AI 情报：${latestCount} 条，每一条都有一手出处。先读一段中文总结，再看详情。`
+  : "每天 7:30 更新一份 AI 情报：新模型、能直接用的开源项目、价格与成本变化，以及今天就能动手的机会。先给总结，再给细节，每条都带原始链接。";
 
-/**
- * 本期构成：画成一条比例条，比四个大数字好读。
- * 也避免「111 条候选 / 111 个事件」这种两个数一样的尴尬——那天本来就没有合并。
- */
 const MODULE_TONE = ["bg-primary", "bg-sky-500", "bg-violet-500", "bg-emerald-500"];
 const composition = latest
   ? latest.modules.map((m, i) => ({
@@ -48,96 +54,32 @@ const composition = latest
     }))
   : [];
 
-const icons: Record<string, string> = {
-  bolt: "M13 2.5 4.8 13.4h5.4l-.9 8.1 8.9-11.2h-5.3z",
-  cube: "M12 3.2 20 7.6v8.8L12 20.8 4 16.4V7.6zM4 7.6 12 12l8-4.4M12 12v8.8",
-  terminal: "M8.5 8.5 5 12l3.5 3.5M15.5 8.5 19 12l-3.5 3.5M13.5 6l-3 12",
-  trend: "M4 16.5 9.5 11l3.5 3.5L20 7.5M20 7.5h-4.5M20 7.5V12",
-  target:
-    "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM12 13.6a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2z",
-  eye: "M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z",
-};
+/** 首屏摘要卡里的四个小数字；某类内容那天没有就是 0 */
+const countOf = (key: ModuleKey): number =>
+  latest?.modules.find((m) => m.key === key)?.items.length ?? 0;
 
 const modules = [
-  {
-    no: "01",
-    icon: "bolt",
-    name: "今日头条",
-    volume: "3–5 条",
-    desc: "今天真正变了的事：模型发布、产品更新、政策与事故。讲清发生了什么、影响谁、证据够不够。",
-    audience: "只想要一手资讯的人",
-  },
-  {
-    no: "02",
-    icon: "cube",
-    name: "能直接用的",
-    volume: "2–5 条",
-    desc: "开源项目、可自部署的工具、免费额度。标注许可证、上手成本和最近一次提交。",
-    audience: "想低成本做出东西的人",
-  },
-  {
-    no: "03",
-    icon: "trend",
-    name: "成本与定价",
-    volume: "1–3 条",
-    desc: "API 降价、定价调整、融资收购、公开的商业化案例。关注成本结构与收入来源，不追估值故事。",
-    audience: "关注 AI 产品商业化的人",
-  },
-  {
-    no: "04",
-    icon: "target",
-    name: "今天就能做",
-    volume: "1–2 条",
-    desc: "把资讯变成动作：试什么、拿什么验证、大概花多久。只写能测的下一步。",
-    audience: "想立刻动手试的人",
-  },
+  { no: "01", name: "今日头条", volume: "3–5 条", desc: "今天真正变了的事：模型发布、产品更新、政策与事故。讲清发生了什么、影响谁。", audience: "只想要一手资讯的人" },
+  { no: "02", name: "能直接用的", volume: "2–5 条", desc: "开源项目、可自部署的工具、免费额度。标注许可证、上手成本和最近一次提交。", audience: "想低成本做出东西的人" },
+  { no: "03", name: "成本与定价", volume: "1–3 条", desc: "API 降价、定价调整、融资收购、公开的商业化案例。看成本结构与收入来源，不追估值故事。", audience: "关注 AI 产品商业化的人" },
+  { no: "04", name: "今天就能做", volume: "1–2 条", desc: "把资讯变成动作：试什么、拿什么验证、大概花多久。只写能测的下一步。", audience: "想立刻动手试的人" },
 ];
 
-const audiences = [
-  {
-    role: "想做产品的人",
-    gain: "看到还没被占住的位置",
-    detail: "哪些方向刚有工具可用了、哪类需求已被验证但没做好，都能在条目里找到线索。",
-    mods: ["能直接用的", "成本与定价"],
-  },
-  {
-    role: "关注 AI 产品商业化的人",
-    gain: "知道成本线在哪、收入结构如何",
-    detail: "模型降价、免费额度、公开的收费案例。算得清成本结构，才有定价依据。",
-    mods: ["成本与定价", "今天就能做"],
-  },
-  {
-    role: "AI 从业者 / 开发者",
-    gain: "判断能力边界，不追话术",
-    detail: "新能力配的是官方基准还是第三方复现，写进条目里。避免把演示当成可交付。",
-    mods: ["今日头条"],
-  },
-  {
-    role: "只要一手资讯的人",
-    gain: "3 分钟扫完，10 分钟读完",
-    detail: "固定模块、固定顺序。不重要的不进榜，重要的不会被埋掉。",
-    mods: ["今日头条"],
-  },
-];
+/**
+ * 只发已核验：一句口径胜过两级分级表。
+ * 原来这里列的是「已核验 / 待核实」两种证据状态，现在缺材料的不发，
+ * 分级表也就没有意义了。
+ */
+const rule = {
+  title: "只发能核对的",
+  desc: "官方公告、原始仓库、官方文档、可复现数据 —— 四条里至少踩中一条才进榜。只有媒体转述、拿不出一手材料的内容直接不发。每一条上页面的内容都能点回原文。",
+  points: [
+    "每条都能点回原始出处，链接失效即视为不可引用",
+    "参数、金额、用户数这类数字，没有来源就不写",
+    "传闻、泄露、预告一律不收录",
+  ],
+};
 
-const evidence = [
-  {
-    label: "已核验",
-    desc: "官方公告、原始仓库、官方文档或可复现数据。关键事实能一一对应。",
-    rule: "可直接引用",
-    cls: "border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-    dot: "bg-emerald-500",
-  },
-  {
-    label: "待核实",
-    desc: "目前只有媒体转述，缺一手材料。会写明缺的是哪一块，也标清引用前要确认什么。",
-    rule: "标明缺口",
-    cls: "border-amber-500/25 bg-amber-500/10 text-amber-600 dark:text-amber-400",
-    dot: "bg-amber-500",
-  },
-];
-
-/** 四类来源，覆盖十余个公开站点；具体站点写在第二行，避免"只有五个源"的观感 */
 const sources = [
   { name: "官方公告", detail: "OpenAI · DeepMind · Hugging Face" },
   { name: "代码仓库", detail: "GitHub 活跃榜与新增榜" },
@@ -145,75 +87,28 @@ const sources = [
   { name: "科技媒体", detail: "The Verge · Ars Technica · BBC · MIT 科技评论" },
 ];
 
-
-
-const steps = [
-  {
-    time: "05:00",
-    name: "采集",
-    desc: "只走公开接口与 RSS，不碰需要登录的页面，不绕验证。",
-  },
-  {
-    time: "05:30",
-    name: "去重合并",
-    desc: "同一条内容只留一份；同一件事的多篇报道合并成一个事件，原始链接全部保留。",
-  },
-  {
-    time: "06:00",
-    name: "核验打分",
-    desc: "先定证据等级，再算重要性（影响 / 新颖 / 相关 / 证据）与热度（HN 分数、Star 增量、独立来源数）。",
-  },
-  {
-    time: "07:30",
-    name: "中文成稿",
-    desc: "按 4 个模块固定顺序出 10–15 条，附来源与首次发现时间。",
-  },
-];
-
 const faqs = [
-  {
-    q: "以后会收费吗？",
-    a: "现在免费开放，不登录也能看完整一期。转订阅后，每日正文会进入付费范围，但每条原始链接始终公开可点——你随时能自己核对，不会出现付了钱还看不到出处的情况。",
-  },
-  {
-    q: "会不会出现 AI 编造的内容？",
-    a: "摘要只使用输入材料能支持的事实，参数、金额、用户数这类数字没有来源就不写。缺一手材料的标「待核实」；传闻、泄露、预告一律不收录。",
-  },
-  {
-    q: "和 AI 工具榜、GitHub 榜、趋势词榜是什么关系？",
-    a: "榜单回答「现在什么在涨」，情报回答「今天发生了什么」。情报里提到的项目和工具，会链接回对应榜单条目。",
-  },
-  {
-    q: "每天要看多久？",
-    a: "从头条扫到「今天就能做」，大约 3 分钟；连原始链接一起读，通常 10 分钟以内。",
-  },
-  {
-    q: "能只订阅某一个模块吗？",
-    a: "内测期先按整份更新。按模块订阅（例如只看商业信号）会在采集流程稳定后再开放。",
-  },
+  { q: "以后会收费吗？", a: "现在免费开放，不登录也能看完整一期。转订阅后每日正文会进入付费范围，但每条原始链接始终公开可点 —— 你随时能自己核对。" },
+  { q: "会不会出现 AI 编造的内容？", a: "摘要只使用输入材料能支持的事实，参数、金额、用户数这类数字没有来源就不写。拿不出一手材料的条目直接不发，所以看到的每一条都能点回原文。" },
+  { q: "和 AI 工具榜、GitHub 榜是什么关系？", a: "榜单回答「现在什么在涨」，情报回答「今天发生了什么」。情报里提到的项目和工具会链接回对应榜单条目。" },
+  { q: "每天要看多久？", a: "先读总结约 30 秒；从头条扫到「今天就能做」约 3 分钟；连原始链接一起读，通常 10 分钟以内。" },
 ];
 ---
 
 <Base title={title} description={description}>
   <!-- Hero -->
   <section class="relative overflow-hidden border-b border-border/60">
-    <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_58%_at_30%_-10%,rgba(8,102,250,0.14),transparent),radial-gradient(50%_50%_at_92%_8%,rgba(112,63,244,0.10),transparent)]"
-    >
-    </div>
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_58%_at_30%_-10%,rgba(8,102,250,0.14),transparent),radial-gradient(50%_50%_at_92%_8%,rgba(112,63,244,0.10),transparent)]"></div>
     <div
       aria-hidden="true"
       class="pointer-events-none absolute inset-0"
       style="background-image: linear-gradient(to right, rgba(12,31,80,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(12,31,80,0.05) 1px, transparent 1px); background-size: 72px 72px; mask-image: radial-gradient(60% 55% at 30% 10%, black, transparent 78%); -webkit-mask-image: radial-gradient(60% 55% at 30% 10%, black, transparent 78%);"
-    >
-    </div>
+    ></div>
 
-    <div class="relative mx-auto max-w-6xl px-4 pb-14 pt-12 sm:px-6 sm:pb-20 sm:pt-16">
-      <div class="grid items-center gap-12 lg:grid-cols-[1.04fr_0.96fr] lg:gap-10">
+    <div class="relative mx-auto max-w-6xl px-4 pb-12 pt-12 sm:px-6 sm:pb-16 sm:pt-16">
+      <div class="grid items-center gap-10 lg:grid-cols-[1.06fr_0.94fr] lg:gap-12">
         <div>
-          <span
-            class="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-medium text-ink-secondary"
-          >
+          <span class="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-medium text-ink-secondary">
             <span class="relative flex h-1.5 w-1.5">
               <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60"></span>
               <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary"></span>
@@ -221,9 +116,7 @@ const faqs = [
             每天 07:30 更新 · 当前免费
           </span>
 
-          <h1
-            class="mt-5 text-[1.7rem] font-bold leading-[1.22] tracking-tight text-ink sm:text-[2.6rem]"
-          >
+          <h1 class="mt-5 text-[1.7rem] font-bold leading-[1.22] tracking-tight text-ink sm:text-[2.6rem]">
             每天 7:30，<br />
             <span
               class="bg-clip-text text-transparent"
@@ -233,7 +126,7 @@ const faqs = [
           </h1>
 
           <p class="mt-5 max-w-xl text-sm leading-[1.85] text-ink-secondary sm:text-[15px]">
-            从官方公告、代码仓库、社区讨论和科技媒体里，筛出 10–15 条真正值得知道的事：新模型、能直接用的开源项目、价格与成本变化，以及今天就能动手的机会。每条都带原始链接和证据等级。
+            先给一段中文总结，说清今天最值得看的是什么；再按「头条 / 能直接用的 / 成本与定价 / 今天就能做」展开细节。每条都有一手出处，拿不出材料的不发。
           </p>
 
           <div class="mt-7 flex flex-wrap items-center gap-3">
@@ -242,19 +135,12 @@ const faqs = [
                 href={`/daily/${latest.date}`}
                 class="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-white transition hover:bg-primary-hover"
               >
-                看最新一期（{formatDate(latest.date)} · {latestCount} 条）→
+                读最新一期（{formatDate(latest.date)} · {latestCount} 条）→
               </a>
             ) : (
-              <span class="rounded-xl border border-dashed border-border-strong px-5 py-2.5 text-sm font-medium text-ink-muted">
-                第一期即将上线
-              </span>
+              <span class="rounded-xl border border-dashed border-border-strong px-5 py-2.5 text-sm font-medium text-ink-muted">第一期即将上线</span>
             )}
-            <a
-              href="#modules"
-              class="rounded-xl border border-border px-5 py-2.5 text-sm font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
-            >
-              每天推什么
-            </a>
+            <a href="#modules" class="rounded-xl border border-border px-5 py-2.5 text-sm font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink">每天推什么</a>
           </div>
 
           <p class="mt-5 text-[11px] leading-relaxed text-ink-muted">
@@ -264,15 +150,16 @@ const faqs = [
           </p>
         </div>
 
-        <!-- 首屏：日报卡片示意 -->
+        <!--
+          首屏右卡：以前把 5 条头条的标题+两行摘要全塞进来，左列 300 多高、
+          右列 600 多高，一进页面右边就拖出一条长尾巴。现在只放这一期的总结，
+          高度与左列持平，具体条目往下走。
+        -->
         <div class="relative">
-          <div
-            aria-hidden="true"
-            class="pointer-events-none absolute -inset-6 rounded-[2rem] bg-[radial-gradient(60%_60%_at_60%_20%,rgba(8,102,250,0.13),transparent_70%)] blur-xl"
-          >
-          </div>
-          <div
-            class="relative rounded-2xl border border-border bg-surface p-4 shadow-[0_18px_50px_-22px_rgba(12,31,80,0.35)] sm:p-5"
+          <div class="pointer-events-none absolute -inset-6 rounded-[2rem] bg-[radial-gradient(60%_60%_at_60%_20%,rgba(8,102,250,0.13),transparent_70%)] blur-xl" aria-hidden="true"></div>
+          <a
+            href={latest ? `/daily/${latest.date}` : "/daily"}
+            class="group relative block rounded-2xl border border-border bg-surface p-5 shadow-[0_18px_50px_-22px_rgba(12,31,80,0.35)] transition hover:border-border-strong sm:p-6"
           >
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-2">
@@ -285,210 +172,125 @@ const faqs = [
             </div>
 
             <div class="mt-3 flex items-center justify-between border-b border-border pb-3">
-              <span class="text-[11px] text-ink-muted tabular-nums">
-                {latest ? formatDate(latest.date) : "—"}
-              </span>
-              <span class="text-[11px] text-ink-muted tabular-nums">
-                {lead ? `${lead.items.length} 条头条 / 共 ${latestCount} 条` : "—"}
-              </span>
+              <span class="text-[11px] text-ink-muted tabular-nums">{latest ? formatDate(latest.date) : "—"}</span>
+              <span class="text-[11px] text-ink-muted tabular-nums">{latest ? `${latestCount} 条 · 全部可核对` : "—"}</span>
             </div>
 
-            <ul class="mt-1">
-              {
-                (lead?.items ?? []).map((item, i) => (
-                  <li class="flex items-start gap-3 border-b border-border py-3 last:border-b-0">
-                    <span class="mt-0.5 w-4 shrink-0 text-[11px] font-semibold text-ink-muted tabular-nums">
-                      {i + 1}
-                    </span>
-                    <div class="min-w-0 flex-1">
-                      <p class="text-[13px] font-medium leading-snug text-ink">{item.title}</p>
-                      <p class="mt-1 line-clamp-2 text-[11px] leading-[1.7] text-ink-secondary">
-                        {briefLine(item)}
-                      </p>
-                      <div class="mt-1.5 flex items-center gap-2">
-                        <span
-                          class:list={[
-                            "rounded border px-1 py-px text-[10px] font-medium",
-                            EVIDENCE_META[item.evidence].cls,
-                          ]}
-                        >
-                          {EVIDENCE_META[item.evidence].label}
-                        </span>
-                        <span class="text-[10px] text-ink-muted">{categoryLabel(item.category)}</span>
-                        <span class="inline-flex items-center gap-[3px]" aria-hidden="true">
-                          {Array.from({ length: 5 }, (_, k) => (
-                            <span
-                              class:list={[
-                                "h-2.5 w-1 rounded-full",
-                                k < item.heat ? "bg-primary" : "bg-border",
-                              ]}
-                            />
-                          ))}
-                        </span>
-                      </div>
-                    </div>
-                  </li>
-                ))
-              }
-            </ul>
+            {brief ? (
+              <p class="mt-3 line-clamp-5 text-[13px] leading-[1.9] text-ink sm:text-sm" title={brief.lead}>{brief.lead}</p>
+            ) : (
+              <p class="mt-3 text-[13px] leading-[1.9] text-ink-secondary">第一期还在生成，稍后这里会是一段今天的中文总结。</p>
+            )}
 
-            <div class="mt-3 flex items-center justify-between rounded-lg bg-surface-2 px-3 py-2">
-              <span class="text-[10px] text-ink-muted">每条都附来源与首次发现时间</span>
-              <a
-                href={latest ? `/daily/${latest.date}` : "/daily"}
-                class="text-[10px] font-medium text-primary transition hover:underline"
-              >
-                查看全部 →
-              </a>
-            </div>
-          </div>
+            <dl class="mt-4 grid grid-cols-4 gap-1 rounded-lg bg-surface-2 px-2 py-2.5 text-center">
+              {[
+                { key: "headline" as ModuleKey, name: "头条" },
+                { key: "tools" as ModuleKey, name: "能用" },
+                { key: "money" as ModuleKey, name: "成本" },
+                { key: "action" as ModuleKey, name: "可做" },
+              ].map((m) => (
+                <div>
+                  <dd class="text-sm font-semibold text-ink tabular-nums">{countOf(m.key)}</dd>
+                  <dt class="mt-0.5 text-[10px] text-ink-muted">{m.name}</dt>
+                </div>
+              ))}
+            </dl>
+
+            <p class="mt-3 flex items-center justify-end gap-1 text-[11px] font-medium text-primary">
+              看这一段在讲什么
+              <span class="transition group-hover:translate-x-0.5" aria-hidden="true">→</span>
+            </p>
+          </a>
         </div>
       </div>
-
-      <!-- 本期构成：一条比例条代替四个大数字 -->
-      {
-        latest && composition.length > 0 && (
-          <div class="mt-12 rounded-2xl border border-border bg-surface p-5 sm:mt-14">
-            <div class="flex flex-wrap items-baseline justify-between gap-2">
-              <p class="text-sm font-semibold text-ink">
-                本期 {latestCount} 条
-              </p>
-              <p class="text-[11px] text-ink-muted tabular-nums">
-                {formatDate(latest.date)} · 从 {latest.stats.candidates} 条里选出
-              </p>
-            </div>
-
-            <div class="mt-3 flex h-2 gap-px overflow-hidden rounded-full bg-surface-2">
-              {composition.map((c) => (
-                <span
-                  class={c.tone}
-                  style={`width: ${(c.n / Math.max(1, latestCount)) * 100}%`}
-                  title={`${c.name} ${c.n} 条`}
-                />
-              ))}
-            </div>
-
-            <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-1.5">
-              {composition.map((c) => (
-                <li class="flex items-center gap-1.5 text-[11px] text-ink-secondary">
-                  <span class:list={["h-1.5 w-1.5 rounded-full", c.tone]} />
-                  {c.name}
-                  <span class="text-ink-muted tabular-nums">{c.n}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )
-      }
     </div>
   </section>
 
-  <!-- 最新一期：头条全文 -->
+  <!-- 1. 本期总结：整页的信息中心 -->
   {
-    latest && lead && (
-      <section id="latest" class="mx-auto max-w-6xl px-4 pb-2 pt-12 sm:px-6 sm:pt-14">
+    latest && brief && (
+      <section id="brief" class="mx-auto max-w-6xl px-4 pt-12 sm:px-6 sm:pt-16">
+        <div class="rounded-3xl border border-border bg-surface p-6 sm:p-8">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 class="text-[11px] font-semibold tracking-wide text-primary">本期总结</h2>
+            <span class="text-[11px] text-ink-muted tabular-nums">
+              {formatDate(latest.date)} · 第 {issueNo} 期 · {latestCount} 条
+            </span>
+          </div>
+
+          <p class="mt-4 max-w-[72ch] text-[17px] leading-[1.95] text-ink sm:text-lg sm:leading-[2]">{brief.lead}</p>
+
+          {brief.points.length > 0 && (
+            <ol class="mt-6 grid gap-2.5 border-t border-border pt-5 sm:grid-cols-3 sm:gap-4">
+              {brief.points.map((point, i) => (
+                <li class="flex gap-2.5 text-[12.5px] leading-[1.8] text-ink-secondary">
+                  <span class="mt-0.5 shrink-0 font-mono text-[11px] text-ink-muted tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span class="min-w-0">{point}</span>
+                </li>
+              ))}
+            </ol>
+          )}
+
+          <div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+            <p class="text-[11px] text-ink-muted">总结只做归纳，不引入新材料；往下每一条都能点回原文核对。</p>
+            <a href={`/daily/${latest.date}`} class="text-[11px] font-medium text-primary transition hover:underline">
+              在单独页面读这一期 →
+            </a>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 2. 详细内容：头条 -->
+  {
+    latest && headline && (
+      <section id="latest" class="mx-auto max-w-6xl px-4 pt-12 sm:px-6 sm:pt-14">
         <div class="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
           <div>
-            <p class="font-mono text-[11px] tracking-wide text-primary">
-              第 {issueNo} 期 · {formatDate(latest.date)}
-            </p>
-            <h2 class="mt-1.5 text-xl font-bold tracking-tight text-ink sm:text-2xl">今日头条</h2>
+            <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">详细内容 · 今日头条</h2>
             <p class="mt-1 text-[11px] text-ink-muted">
               生成于 {formatTime(latest.generatedAt)} · 只从新闻类来源里挑，Star 数不决定头条
             </p>
           </div>
-          <a
-            href={`/daily/${latest.date}`}
-            class="text-[11px] text-ink-secondary transition hover:text-ink"
-          >
-            完整一期（含全部模块）→
-          </a>
+          <a href={`/daily/${latest.date}`} class="text-[11px] text-ink-secondary transition hover:text-ink">完整一期（含全部模块）→</a>
         </div>
 
         <ul class="divide-y divide-border">
-          {headlineItems.map(({ item, brief }, i) => (
+          {headlineItems.map(({ item, brief: line }, i) => (
             <li id={item.id} class="flex gap-3 py-5 sm:gap-4">
               <div class="w-7 shrink-0 text-center">
-                <span class="text-[11px] font-semibold text-ink-muted tabular-nums">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
+                <span class="text-[11px] font-semibold text-ink-muted tabular-nums">{String(i + 1).padStart(2, "0")}</span>
                 <div class="mt-1.5 flex flex-col items-center gap-[3px]" aria-hidden="true">
                   {Array.from({ length: 5 }, (_, k) => (
-                    <span
-                      class:list={[
-                        "h-[3px] w-3.5 rounded-full",
-                        k < item.heat ? "bg-primary" : "bg-ink-muted/20",
-                      ]}
-                    />
+                    <span class:list={["h-[3px] w-3.5 rounded-full", k < item.heat ? "bg-primary" : "bg-ink-muted/20"]} />
                   ))}
                 </div>
               </div>
 
               <div class="min-w-0 flex-1">
-                <div class="flex flex-wrap items-center gap-1.5">
-                  <span
-                    class:list={[
-                      "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium",
-                      EVIDENCE_META[item.evidence].cls,
-                    ]}
-                  >
-                    <span class:list={["h-1 w-1 rounded-full", EVIDENCE_META[item.evidence].dot]} />
-                    {EVIDENCE_META[item.evidence].label}
-                  </span>
-                  <span class="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] text-ink-secondary">
-                    {categoryLabel(item.category)}
-                  </span>
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-ink-muted">
+                  <span class="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 text-ink-secondary">{categoryLabel(item.category)}</span>
+                  {signalText(item).map((s) => <span class="tabular-nums">{s}</span>)}
                 </div>
 
-                <h3 class="mt-2 text-[15px] font-semibold leading-snug text-ink">
+                <p class="mt-2 max-w-[78ch] text-[15px] leading-[1.85] text-ink">{line.fact}</p>
+                <p class="mt-1.5 max-w-[78ch] text-[15px] leading-[1.85] text-ink-secondary">{line.why}</p>
+
+                <div class="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-ink-muted">
+                  <span class="shrink-0">原文</span>
                   {item.sources[0] ? (
                     <a
                       href={item.sources[0].url}
                       target="_blank"
                       rel="noopener noreferrer nofollow"
-                      class="underline decoration-border decoration-1 underline-offset-[3px] transition hover:decoration-primary"
-                    >
-                      {item.title}
-                    </a>
+                      class="min-w-0 truncate text-ink-secondary underline decoration-border underline-offset-2 transition hover:text-primary"
+                    >{item.title}</a>
                   ) : (
-                    item.title
+                    <span class="min-w-0 truncate text-ink-secondary">{item.title}</span>
                   )}
-                </h3>
-
-                <p class="mt-2 max-w-[78ch] text-[15px] leading-[1.85] text-ink">
-                  {brief.fact}
-                </p>
-                <p class="mt-1.5 max-w-[78ch] text-[15px] leading-[1.85] text-ink-secondary">
-                  {brief.why}
-                </p>
-
-                {brief.caveat && (
-                  <p class="mt-2 flex max-w-[78ch] items-start gap-1.5 text-[11px] leading-relaxed text-ink-muted">
-                    <span class="mt-[5px] h-1 w-1 shrink-0 rounded-full bg-amber-500" aria-hidden="true" />
-                    <span>
-                      <span class="text-amber-700 dark:text-amber-400">还缺：</span>
-                      {brief.caveat}
-                    </span>
-                  </p>
-                )}
-
-                <div class="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-ink-muted">
-                  <span>来源</span>
-                  {item.sources.map((s, k) => (
-                    <>
-                      {k > 0 && <span class="text-border-strong">/</span>}
-                      <a
-                        href={s.url}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        class="text-ink-secondary underline decoration-border underline-offset-2 transition hover:text-primary"
-                      >
-                        {s.label}
-                      </a>
-                    </>
-                  ))}
-                  <span class="text-border-strong">·</span>
-                  <span class="tabular-nums">首次发现 {formatTime(item.firstSeenAt)}</span>
                 </div>
               </div>
             </li>
@@ -498,330 +300,197 @@ const faqs = [
     )
   }
 
-  <!-- 最新一期：其余模块 -->
+  <!-- 2. 详细内容：其余模块（首页一行一条，细节在单独页面） -->
   {
     latest && others.length > 0 && (
-      <section class="border-t border-border/60 bg-surface/40">
-        <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-14">
-          <div class="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">其余模块</h2>
-              <p class="mt-1.5 text-sm text-ink-secondary">
-                同一天里能直接用的东西、钱在往哪流，以及半小时内可验证的动作。
-              </p>
-            </div>
-            <a
-              href={`/daily/${latest.date}`}
-              class="rounded-lg border border-border bg-surface px-3 py-1.5 text-[11px] text-ink-secondary transition hover:border-border-strong hover:text-ink"
-            >
-              看全部 {latestCount} 条 →
-            </a>
+      <section class="mx-auto max-w-6xl px-4 pt-12 sm:px-6 sm:pt-14">
+        <div class="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
+          <div>
+            <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">详细内容 · 其余模块</h2>
+            <p class="mt-1.5 text-sm text-ink-secondary">同一天里能直接用的东西、钱在往哪流，以及半小时内可验证的动作。</p>
           </div>
+          <a
+            href={`/daily/${latest.date}`}
+            class="rounded-lg border border-border bg-surface px-3 py-1.5 text-[11px] text-ink-secondary transition hover:border-border-strong hover:text-ink"
+          >看全部 {latestCount} 条 →</a>
+        </div>
 
-          <div class="mt-6 grid gap-4 md:grid-cols-2">
-            {others.map((mod) => (
-              <article
-                class:list={[
-                  "rounded-2xl bg-surface p-4",
-                  mod.key === "rumor"
-                    ? "border border-dashed border-border-strong"
-                    : "border border-border",
-                ]}
-              >
-                <div class="flex items-center justify-between gap-2 border-b border-border pb-2.5">
-                  <div class="flex items-baseline gap-2">
-                    <span class="font-mono text-[11px] text-ink-muted/70">
-                      {MODULE_META[mod.key].no}
-                    </span>
-                    <h3 class="text-sm font-semibold text-ink">{MODULE_META[mod.key].name}</h3>
-                  </div>
-                  <span class="text-[11px] text-ink-muted tabular-nums">{mod.items.length} 条</span>
+        <div class="mt-6 grid gap-4 md:grid-cols-2">
+          {others.map((mod) => (
+            <article class="rounded-2xl border border-border bg-surface p-4">
+              <div class="flex items-center justify-between gap-2 border-b border-border pb-2.5">
+                <div class="flex items-baseline gap-2">
+                  <span class="font-mono text-[11px] text-ink-muted/70">{MODULE_META[mod.key].no}</span>
+                  <h3 class="text-sm font-semibold text-ink">{MODULE_META[mod.key].name}</h3>
                 </div>
+                <span class="text-[11px] text-ink-muted tabular-nums">{mod.items.length} 条</span>
+              </div>
 
-                <ul class="mt-1">
-                  {mod.items.map((item) => (
-                    <li class="flex items-start gap-2.5 border-b border-border/70 py-2.5 last:border-b-0">
-                      <span
-                        class:list={[
-                          "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full",
-                          EVIDENCE_META[item.evidence].dot,
-                        ]}
-                        title={EVIDENCE_META[item.evidence].label}
-                      />
-                      <div class="min-w-0 flex-1">
-                        <a
-                          href={`/daily/${latest.date}#${item.id}`}
-                          class="line-clamp-2 text-[13px] font-medium leading-snug text-ink transition hover:text-primary"
-                        >
-                          {item.title}
-                        </a>
-                        <p class="mt-0.5 line-clamp-1 text-[11px] leading-relaxed text-ink-muted">
-                          {briefLine(item)}
-                        </p>
-                        <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-ink-muted">
-                          <span>{EVIDENCE_META[item.evidence].label}</span>
-                          <span>{categoryLabel(item.category)}</span>
-                          <span class="tabular-nums">热度 {item.heat}/5</span>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-
-                <p class="mt-2 text-[11px] leading-relaxed text-ink-muted">
-                  {MODULE_META[mod.key].desc}
-                </p>
-              </article>
-            ))}
-          </div>
+              <ul class="mt-1">
+                {mod.items.map((item) => (
+                  <li class="border-b border-border/70 py-2.5 last:border-b-0">
+                    <a
+                      href={`/daily/${latest.date}#${item.id}`}
+                      class="line-clamp-2 text-[13px] font-medium leading-snug text-ink transition hover:text-primary"
+                    >{item.summary}</a>
+                    <p class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-ink-muted">
+                      <span>{categoryLabel(item.category)}</span>
+                      <span class="text-border-strong">·</span>
+                      <span>{item.sources[0]?.label ?? "原文"}</span>
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
         </div>
       </section>
     )
   }
 
-  <!-- 给谁看 -->
-  <section class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
-    <div class="max-w-2xl">
-      <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">写给四种人，各拿各的</h2>
-      <p class="mt-2 text-sm leading-relaxed text-ink-secondary">
-        同一份日报，不同的人看不同的模块。下面写清楚你能拿到什么，避免订阅后才发现不对口。
-      </p>
-    </div>
+  <!-- 3. 其他信息 -->
+  <section class="mt-14 border-t border-border/60 bg-surface/40">
+    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-14">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">其他信息</h2>
+          <p class="mt-1.5 text-sm text-ink-secondary">这一期是怎么拼出来的、数据从哪来、以及前面几期。</p>
+        </div>
+        {latest && <span class="text-[11px] text-ink-muted tabular-nums">第 {issueNo} 期 · {formatDate(latest.date)}</span>}
+      </div>
 
-    <div class="mt-7 grid gap-4 md:grid-cols-2">
-      {
-        audiences.map((a, i) => (
-          <article class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-5 transition hover:border-border-strong">
-            <div class="flex items-start justify-between gap-3">
-              <div class="min-w-0">
-                <p class="text-[11px] text-ink-muted">{a.role}</p>
-                <h3 class="mt-1 text-base font-semibold leading-snug text-ink">{a.gain}</h3>
+      <div class="mt-6 grid gap-4 lg:grid-cols-[1.12fr_0.88fr]">
+        <div class="rounded-2xl border border-border bg-surface p-5">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="text-sm font-semibold text-ink">本期构成</h3>
+            <span class="text-[11px] text-ink-muted tabular-nums">
+              {latest ? `从 ${latest.stats.candidates} 条候选里选出 ${latestCount} 条` : "—"}
+            </span>
+          </div>
+
+          {composition.length > 0 && (
+            <>
+              <div class="mt-3 flex h-2 gap-px overflow-hidden rounded-full bg-surface-2">
+                {composition.map((c) => (
+                  <span class={c.tone} style={`width: ${(c.n / Math.max(1, latestCount)) * 100}%`} title={`${c.name} ${c.n} 条`} />
+                ))}
               </div>
-              <span class="shrink-0 font-mono text-[11px] text-ink-muted/60">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-            </div>
-            <p class="mt-3 text-sm leading-relaxed text-ink-secondary">{a.detail}</p>
-            <div class="mt-4 flex flex-wrap items-center gap-1.5">
-              <span class="text-[10px] text-ink-muted">主要看</span>
-              {a.mods.map((m) => (
-                <span class="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] text-ink-secondary">
-                  {m}
-                </span>
-              ))}
-            </div>
-          </article>
-        ))
-      }
-    </div>
-  </section>
+              <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-1.5">
+                {composition.map((c) => (
+                  <li class="flex items-center gap-1.5 text-[11px] text-ink-secondary">
+                    <span class:list={["h-1.5 w-1.5 rounded-full", c.tone]} />
+                    {c.name}
+                    <span class="text-ink-muted tabular-nums">{c.n}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
 
-  <!-- 固定模块 -->
-  <section id="modules" class="border-y border-border/60 bg-surface/40">
-    <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
-      <div class="flex flex-wrap items-end justify-between gap-4">
-        <div class="max-w-2xl">
-          <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">每天固定四个模块</h2>
-          <p class="mt-2 text-sm leading-relaxed text-ink-secondary">
-            顺序永远不变，看到第几块就知道能看到什么。四块对应四个动作：知道、拿来用、算账、动手。
+          <p class="mt-4 border-t border-border pt-3 text-[11px] leading-relaxed text-ink-muted">
+            删掉的每一条都记了原因：与主题无关、缺一手材料、当天已出现过、分数不够，或模块配额已满。漏报了可以回溯。
           </p>
-        </div>
-        <span
-          class="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] text-ink-muted tabular-nums"
-        >
-          单期 10–15 条
-        </span>
-      </div>
 
-      <ul class="mt-7 grid gap-4 sm:grid-cols-2">
-        {
-          modules.map((m) => (
-            <li class="flex flex-col rounded-2xl border border-border bg-surface p-5">
-              <div class="flex items-center gap-3">
-                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-soft text-primary">
-                  <svg
-                    class="h-[18px] w-[18px]"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.6"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d={icons[m.icon]} />
-                  </svg>
-                </span>
-                <div class="min-w-0">
-                  <div class="flex items-center gap-2">
-                    <span class="font-mono text-[10px] text-ink-muted/70">{m.no}</span>
-                    <h3 class="text-sm font-semibold text-ink">{m.name}</h3>
-                  </div>
-                  <p class="text-[11px] text-ink-muted tabular-nums">{m.volume}</p>
-                </div>
-              </div>
-              <p class="mt-3 flex-1 text-sm leading-relaxed text-ink-secondary">{m.desc}</p>
-              <p class="mt-4 border-t border-border pt-3 text-[11px] text-ink-muted">
-                给：{m.audience}
-              </p>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
-
-
-  <!-- 证据分级 -->
-  <section class="border-y border-border/60 bg-surface/40">
-    <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
-      <div class="max-w-2xl">
-        <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">只发两种证据状态</h2>
-        <p class="mt-2 text-sm leading-relaxed text-ink-secondary">
-          传闻、泄露、预告一律不收录——宁可不发，也不拿「据说」凑一条。同一篇报道被十家转载，也只算一个来源。
-        </p>
-      </div>
-
-      <div class="mt-7 grid gap-4 md:grid-cols-2">
-        {
-          evidence.map((e) => (
-            <article class="rounded-2xl border border-border bg-surface p-5">
-              <div class="flex items-center justify-between gap-2">
-                <span
+          {latest && latest.sourceHealth.length > 0 && (
+            <ul class="mt-4 flex flex-wrap gap-1.5">
+              {latest.sourceHealth.map((s) => (
+                <li
                   class:list={[
-                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium",
-                    e.cls,
+                    "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11px]",
+                    s.ok ? "border-border bg-surface-2 text-ink-secondary" : "border-red-500/25 bg-red-500/10 text-red-600 dark:text-red-400",
                   ]}
+                  title={s.error ?? s.note ?? ""}
                 >
-                  <span class:list={["h-1.5 w-1.5 rounded-full", e.dot]} />
-                  {e.label}
-                </span>
-                <span class="text-[10px] text-ink-muted">{e.rule}</span>
-              </div>
-              <p class="mt-3 text-sm leading-relaxed text-ink-secondary">{e.desc}</p>
-            </article>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- 来源与流程 -->
-  <section class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
-    <div class="max-w-2xl">
-      <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">数据是公开的，判断不是</h2>
-      <p class="mt-2 text-sm leading-relaxed text-ink-secondary">
-        同一条新闻，你和我们看到的完全一样。区别是有没有人替你读完一百多条，核对出处，再按“今天能不能动手”排好顺序。
-      </p>
-    </div>
-
-    <div class="mt-7 grid gap-4 lg:grid-cols-[0.86fr_1.14fr]">
-      <div class="rounded-2xl border border-border bg-surface p-5">
-        <div class="flex items-center justify-between gap-2">
-          <h3 class="text-sm font-semibold text-ink">四类来源</h3>
-          <span class="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[10px] text-ink-muted">
-            来源可核对
-          </span>
+                  <span class:list={["h-1.5 w-1.5 rounded-full", s.ok ? "bg-emerald-500" : "bg-red-500"]} />
+                  {s.source}
+                  <span class="text-ink-muted tabular-nums">{s.items} 条</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-        <ul class="mt-4 space-y-2">
-          {
-            sources.map((s, i) => (
+
+        <div class="rounded-2xl border border-border bg-surface p-5">
+          <h3 class="text-sm font-semibold text-ink">四类来源 · 每天 07:30</h3>
+          <ul class="mt-3 space-y-2">
+            {sources.map((s, i) => (
               <li class="flex items-start gap-2.5 rounded-lg bg-surface-2 px-3 py-2">
-                <span class="mt-0.5 font-mono text-[10px] text-ink-muted/70">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
+                <span class="mt-0.5 font-mono text-[10px] text-ink-muted/70">{String(i + 1).padStart(2, "0")}</span>
                 <span class="min-w-0">
                   <span class="block text-[13px] text-ink-secondary">{s.name}</span>
                   <span class="mt-0.5 block text-[10px] leading-relaxed text-ink-muted">{s.detail}</span>
                 </span>
               </li>
-            ))
-          }
-        </ul>
-        <p class="mt-4 text-[11px] leading-relaxed text-ink-muted">
-          公开可访问不等于可以无限抓取：所有来源按各自接口的速率限制运行，不绕验证、不碰需登录的内容。
-        </p>
+            ))}
+          </ul>
+          <p class="mt-3 text-[11px] leading-relaxed text-ink-muted">
+            按各接口的速率限制运行，不绕验证、不碰需登录的内容；源失败会在上面标红，不会让整期缺内容。
+          </p>
+        </div>
       </div>
 
-      <ol class="relative space-y-3">
-        {
-          steps.map((s) => (
-            <li class="flex gap-3 rounded-2xl border border-border bg-surface p-4">
-              <div class="w-12 shrink-0">
-                <span class="text-[11px] font-semibold text-primary tabular-nums">{s.time}</span>
-              </div>
-              <div class="min-w-0">
-                <h3 class="text-sm font-semibold text-ink">{s.name}</h3>
-                <p class="mt-1 text-[13px] leading-relaxed text-ink-secondary">{s.desc}</p>
-              </div>
-            </li>
-          ))
-        }
-      </ol>
+      {archive.length > 0 && (
+        <div class="mt-4 rounded-2xl border border-border bg-surface p-5">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="text-sm font-semibold text-ink">往期</h3>
+            <span class="text-[11px] text-ink-muted tabular-nums">共 {digests.length} 期</span>
+          </div>
+          <ul class="mt-3 grid gap-1.5 sm:grid-cols-2 lg:grid-cols-4">
+            {archive.map((d) => (
+              <li>
+                <a
+                  href={`/daily/${d.date}`}
+                  class="flex items-center justify-between gap-2 rounded-lg bg-surface-2 px-3 py-2 text-[12px] text-ink-secondary transition hover:text-ink"
+                >
+                  <span class="tabular-nums">{formatDate(d.date)}</span>
+                  <span class="text-[10px] text-ink-muted tabular-nums">{digestCounts(d)} 条</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
+  </section>
 
-    <!-- 付费边界：把「买什么、不卖什么」写在前头，避免订阅后被质疑 -->
-    <div class="mt-4 rounded-2xl border border-border bg-surface p-5">
-      <div class="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 class="text-sm font-semibold text-ink">订阅买到的是什么</h3>
-        <span class="text-[11px] text-ink-muted">当前免费开放，转为订阅后这一页会同步更新</span>
-      </div>
-
-      <div class="mt-4 grid gap-3 sm:grid-cols-2">
-        <div class="rounded-xl border border-primary/20 bg-primary/[0.04] p-4">
-          <p class="text-[11px] font-semibold text-primary">你付的钱买到</p>
-          <ul class="mt-2.5 space-y-2">
-            {[
-              "一百多条里的取舍：只留 10–15 条，不拿低价值内容凑数",
-              "证据分级：缺哪一块写清楚，不用「据说」蒙过去",
-              "判断而不只是复述：写清为什么值得关注、什么情况下它不成立",
-              "可追溯：原始链接与首次发现时间都在，你能自己复核，不必信我",
-            ].map((t) => (
-              <li class="flex gap-2 text-[12px] leading-relaxed text-ink-secondary">
-                <span class="mt-[3px] shrink-0 text-primary" aria-hidden="true">✓</span>
-                <span>{t}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div class="rounded-xl border border-dashed border-border-strong p-4">
-          <p class="text-[11px] font-semibold text-ink-muted">不卖给你</p>
-          <ul class="mt-2.5 space-y-2">
-            {[
-              "信息本身：公开来源随时免费可看，这里只卖整理与判断",
-              "确定性和预测：没人能保证明天出什么，也不会假装能",
-              "结论式荐股、荐项目：只给判断依据，不替你下单",
-            ].map((t) => (
-              <li class="flex gap-2 text-[12px] leading-relaxed text-ink-secondary">
-                <span class="mt-[3px] shrink-0 text-ink-muted" aria-hidden="true">—</span>
-                <span>{t}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <p class="mt-4 border-t border-border pt-3 text-[11px] leading-relaxed text-ink-muted">
-        数据源不花钱，花的是时间：每天的采集、去重、核对与人工复盘。订阅费覆盖这部分工作与站点维护，不用于购买数据。
+  <!-- 每天推什么 -->
+  <section id="modules" class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+    <div class="max-w-2xl">
+      <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">四个模块，固定顺序</h2>
+      <p class="mt-2 text-sm leading-relaxed text-ink-secondary">
+        每一期都是这四块，顺序不变：先看变了什么，再看能用什么、钱往哪流，最后是今天能动手的下一步。
       </p>
     </div>
 
-    <!-- 漏斗：数字来自最新一期 -->
-    {
-      latest && (
-        <div class="mt-4 rounded-2xl border border-border bg-surface p-5">
-          <div class="flex flex-wrap items-baseline justify-between gap-2">
-            <h3 class="text-sm font-semibold text-ink">第 {issueNo} 期的筛选量级</h3>
-            <span class="text-[11px] text-ink-muted tabular-nums">{formatDate(latest.date)}</span>
+    <div class="mt-7 grid gap-4 sm:grid-cols-2">
+      {modules.map((m) => (
+        <article class="rounded-2xl border border-border bg-surface p-5">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="text-sm font-semibold text-ink">{m.name}</h3>
+            <span class="font-mono text-[11px] text-ink-muted/70">{m.no}</span>
           </div>
-          <p class="mt-3 text-[13px] leading-relaxed text-ink-secondary">
-            本期从 <span class="font-semibold text-ink tabular-nums">{latest.stats.candidates}</span> 条候选里选出{" "}
-            <span class="font-semibold text-ink tabular-nums">{latestCount}</span> 条。删掉的每一条都记了原因——分数不足、当天已出现过、或未获证实——漏报了可以回溯。
-          </p>
-        </div>
-      )
-    }
+          <p class="mt-1 text-[10px] text-ink-muted">{m.volume} · 给{m.audience}</p>
+          <p class="mt-2.5 text-[13px] leading-relaxed text-ink-secondary">{m.desc}</p>
+        </article>
+      ))}
+    </div>
+
+    {/* 只发能核对的：这里原来是一张两级证据分级表 */}
+    <div class="mt-4 rounded-2xl border border-primary/20 bg-primary/[0.04] p-5">
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 class="text-sm font-semibold text-ink">{rule.title}</h3>
+        <span class="rounded-full border border-primary/25 bg-surface px-2 py-0.5 text-[10px] font-medium text-primary">全部有一手出处</span>
+      </div>
+      <p class="mt-3 max-w-3xl text-[13px] leading-[1.85] text-ink-secondary">{rule.desc}</p>
+      <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-1.5">
+        {rule.points.map((p) => (
+          <li class="flex items-start gap-1.5 text-[11px] text-ink-secondary">
+            <span class="mt-[3px] shrink-0 text-primary" aria-hidden="true">✓</span>
+            <span>{p}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   </section>
 
   <!-- FAQ -->
@@ -829,67 +498,39 @@ const faqs = [
     <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
       <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">开始之前，你可能想问</h2>
       <div class="mt-6 max-w-3xl space-y-3">
-        {
-          faqs.map((f) => (
-            <details class="group rounded-xl border border-border bg-surface">
-              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-sm font-medium text-ink">
-                {f.q}
-                <svg
-                  class="h-4 w-4 shrink-0 text-ink-muted transition group-open:rotate-180"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </summary>
-              <p class="px-5 pb-4 text-sm leading-relaxed text-ink-secondary">{f.a}</p>
-            </details>
-          ))
-        }
+        {faqs.map((f) => (
+          <details class="group rounded-xl border border-border bg-surface">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-sm font-medium text-ink">
+              {f.q}
+              <svg class="h-4 w-4 shrink-0 text-ink-muted transition group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <p class="px-5 pb-4 text-sm leading-relaxed text-ink-secondary">{f.a}</p>
+          </details>
+        ))}
       </div>
     </div>
   </section>
 
   <!-- 收尾 CTA -->
   <section class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
-    <div
-      class="relative overflow-hidden rounded-3xl border border-border bg-surface p-8 text-center sm:p-12"
-    >
-      <div
-        aria-hidden="true"
-        class="pointer-events-none absolute inset-x-0 -top-24 h-48 bg-[radial-gradient(50%_100%_at_50%_100%,rgba(8,102,250,0.16),transparent)]"
-      >
-      </div>
-      <div class="relative">
-        <p class="text-[11px] font-medium tracking-wide text-primary">每天 07:30 · 北京时间</p>
-        <h2 class="mx-auto mt-3 max-w-xl text-xl font-bold tracking-tight text-ink sm:text-2xl">
-          明天早上，先用 3 分钟看清 AI 圈发生了什么
-        </h2>
-        <p class="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-ink-secondary">
-          网页每天自动更新，当前免费、不用登录。X 与邮件推送在内测中，稳定后开放。
-        </p>
-        <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
+    <div class="rounded-3xl border border-border bg-surface px-6 py-10 text-center sm:px-10">
+      <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">先把今天这一段话读完</h2>
+      <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-ink-secondary">
+        总结讲清今天最重要的变化，细节留给需要的人。每天 07:30 更新，免费，不登录也能看完整一期。
+      </p>
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        {latest && (
           <a
-            href={latest ? `/daily/${latest.date}` : "/tools"}
+            href={`/daily/${latest.date}`}
             class="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-white transition hover:bg-primary-hover"
-          >
-            {latest ? `读第 ${issueNo} 期` : "先逛 AI 工具榜"}
-          </a>
-          <a
-            href="#modules"
-            class="rounded-xl border border-border px-5 py-2.5 text-sm font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
-          >
-            每天推什么
-          </a>
-        </div>
-        <p class="mt-5 text-[11px] text-ink-muted">
-          情报内容与三个榜单共用同一套可追溯口径，不夸大、不搬运传闻。
-        </p>
+          >读最新一期（{formatDate(latest.date)}）→</a>
+        )}
+        <a
+          href="/tools"
+          class="rounded-xl border border-border px-5 py-2.5 text-sm font-medium text-ink-secondary transition hover:border-border-strong hover:text-ink"
+        >看看 AI 工具榜</a>
       </div>
     </div>
   </section>

@@ -289,14 +289,17 @@ export interface Allocation {
 
 /**
  * 模块分配：每个事件只进一个模块，不重复出现。
- * 传闻、单一转述一律不发布——这里卖的是能用的确定信息，不是「大概」。
+ *
+ * 只发已核验（有一手材料）的：传闻与「只有转述、缺一手材料」的条目一律不发布。
+ * 原先还留了一档 pending 并在页面上标「待核实」，读者看到的第一反应是
+ * 「你自己都没核实，为什么发给我」—— 既然拿不出可核对的出处，就不该占版面。
  */
 export function allocate(scored: Scored[]): Allocation {
   const sorted = [...scored].sort((a, b) => b.score - a.score);
   const eligible = sorted.filter(
     (s) =>
       s.onTopic &&
-      s.evidence !== "rumor" &&
+      s.evidence === "verified" &&
       !s.ev.items[0].repeat &&
       s.score >= 45,
   );

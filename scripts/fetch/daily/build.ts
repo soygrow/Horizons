@@ -32,6 +32,7 @@ function argValue(name: string): string | undefined {
 function dropReason(s: Scored): string {
   if (!s.onTopic) return "与 AI 主题无关";
   if (s.evidence === "rumor") return "未证实，不发布";
+  if (s.evidence === "pending") return "缺一手材料，不发布";
   if (s.ev.items[0].repeat) return "旧闻，此前已出现过";
   if (s.score < 45) return `分数 ${s.score} < 45`;
   return "分数够但模块配额已满 / 类别未命中";
@@ -134,8 +135,8 @@ async function main(): Promise<void> {
       if (!item.sources.some((s) => s.url.startsWith("http"))) {
         warnings.push(`缺可访问链接：${item.title.slice(0, 40)}`);
       }
-      if (item.evidence === "rumor") {
-        warnings.push(`未证实内容被发布：${item.title.slice(0, 40)}`);
+      if (item.evidence !== "verified") {
+        warnings.push(`非一手材料被发布：${item.title.slice(0, 40)}`);
       }
     }
   }
@@ -155,10 +156,20 @@ async function main(): Promise<void> {
   }
   const file = saveDigest(digest);
   console.log(`\n写入：${file}`);
+  if (digest.brief) {
+    console.log(`\n本期总结：${digest.brief.lead}`);
+    for (const p of digest.brief.points) console.log(`  · ${p}`);
+  }
 
-  // 同步 D1（冷备）。失败只告警：文件已经写成功，站点读的是文件
+  /*
+   * 同步 D1 只落库、不发榜。
+   *
+   * 后台的流程是「生成 → 预览 → 发布」：生成阶段只写 digest_issues，
+   * 决定发不发榜是后面「发布本期」那一步的事。这里顺手发榜等于跳过预览，
+   * 预览期改过的文案也会被这次成稿盖回去。
+   */
   try {
-    execSync(`pnpm tsx scripts/admin/publish-digest.ts --date ${digest.date}`, {
+    execSync(`pnpm tsx scripts/admin/publish-digest.ts --date ${digest.date} --issues-only`, {
       cwd: resolve(import.meta.dirname, "../../.."),
       stdio: "inherit",
     });

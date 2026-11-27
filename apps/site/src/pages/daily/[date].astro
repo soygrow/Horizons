@@ -1,9 +1,18 @@
 ---
+/**
+ * 一期详情：总结 → 详细内容 → 其他信息。
+ *
+ * 第一屏给的是这一期的中文总结（brief），条目列表放在它下面 ——
+ * 读者先知道「今天总体上发生了什么」，再决定要不要往下点开某一条。
+ *
+ * 只展示已核验的条目：过滤在 lib/digest.ts 的 publishedDigest 里做
+ * （成稿阶段已经挡过一次，这里给旧期兜底），所以页面不再出现
+ * 「待核实」徽章与「还缺什么」。
+ */
 import Base from "../../layouts/Base.astro";
 import {
   digests,
   digestCounts,
-  EVIDENCE_META,
   MODULE_META,
   briefOf,
   categoryLabel,
@@ -23,8 +32,9 @@ const newer = index > 0 ? digests[index - 1] : null;
 const older = index >= 0 && index < digests.length - 1 ? digests[index + 1] : null;
 const total = digestCounts(digest);
 /** 期号与首页同口径：总期数倒排 */
-const issueNo =
-  index >= 0 ? String(digests.length - index).padStart(3, "0") : "—";
+const issueNo = index >= 0 ? String(digests.length - index).padStart(3, "0") : "—";
+
+const brief = digest.brief;
 
 /** 全局序号，跨模块连续编号 */
 let counter = 0;
@@ -39,11 +49,13 @@ const rows = digest.modules.map((m) => ({
 }));
 
 const title = `每日情报 ${digest.date} · Horizons`;
-const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，覆盖今日头条、能直接用的工具、成本与定价，以及可立即验证的动作，每条附原始链接与证据等级。`;
+const description = brief
+  ? brief.lead
+  : `${formatDate(digest.date)} 的 AI 情报：${total} 条，每条都有可核对的原始出处。`;
 ---
 
 <Base {title} {description}>
-  <article class="mx-auto max-w-5xl px-4 pb-16 pt-10 sm:px-6">
+  <article class="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6">
     <!-- 刊头 -->
     <nav class="flex items-center justify-between gap-3 text-[11px] text-ink-muted">
       <a href="/daily" class="transition hover:text-ink">← 每日情报</a>
@@ -53,45 +65,66 @@ const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，�
       </div>
     </nav>
 
-    <header class="mt-5 border-b border-border pb-6">
+    <header class="mt-5">
       <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
         <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">
           第 {issueNo} 期 · 每日情报
         </h1>
         <p class="text-[11px] text-ink-muted tabular-nums">{formatDate(digest.date)}</p>
       </div>
-
-      <div class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-ink-muted">
-        <span>
-          从 <span class="font-semibold text-ink tabular-nums">{digest.stats.candidates}</span> 条候选里选出{" "}
-          <span class="font-semibold text-ink tabular-nums">{total}</span> 条
-        </span>
-        <span class="hidden h-3 w-px bg-border sm:block" />
-        <span>
-          其中{" "}
-          <span class="font-semibold text-emerald-600 tabular-nums dark:text-emerald-400">
-            {digest.stats.verified}
-          </span>{" "}
-          条有一手材料
-        </span>
-        <span class="hidden h-3 w-px bg-border sm:block" />
-        <span>{digest.modules.length} 个模块</span>
-      </div>
-
-      <p class="mt-3 text-[11px] leading-relaxed text-ink-muted">
-        标题保留原文，不做机器翻译，方便你直接核对。每条只说三句话：发生了什么、所以呢、还缺什么。
-      </p>
     </header>
 
-    <!-- 模块 -->
+    <!-- 总结：这一屏就是这一期最重要的话 -->
+    {
+      brief && (
+        <section
+          id="brief"
+          class="mt-6 rounded-2xl border border-border bg-surface p-5 sm:p-6"
+          aria-labelledby="brief-title"
+        >
+          <div class="flex items-center justify-between gap-3">
+            <h2 id="brief-title" class="text-[11px] font-semibold tracking-wide text-primary">
+              本期总结
+            </h2>
+            <span class="text-[11px] text-ink-muted tabular-nums">
+              {total} 条 · 全部有一手出处
+            </span>
+          </div>
+
+          <p class="mt-3 max-w-[70ch] text-[17px] leading-[1.9] text-ink sm:text-lg">
+            {brief.lead}
+          </p>
+
+          {brief.points.length > 0 && (
+            <ol class="mt-5 space-y-2.5 border-t border-border pt-4">
+              {brief.points.map((point, i) => (
+                <li class="flex gap-2.5 text-[13px] leading-relaxed text-ink-secondary">
+                  <span class="mt-px shrink-0 font-mono text-[11px] text-ink-muted tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span class="min-w-0">{point}</span>
+                </li>
+              ))}
+            </ol>
+          )}
+        </section>
+      )
+    }
+
+    <!-- 详细内容 -->
+    <div class="mt-10 flex items-baseline justify-between gap-3 border-b border-border pb-2">
+      <h2 class="text-base font-semibold text-ink">详细内容</h2>
+      <span class="text-[11px] text-ink-muted">{digest.modules.length} 个模块 · {total} 条</span>
+    </div>
+
     {
       rows.map((mod) => (
-        <section class="mt-10">
+        <section class="mt-8">
           <div class="flex items-end justify-between gap-3 border-b border-border pb-2">
             <div class="flex items-baseline gap-2">
               <span class="font-mono text-[11px] text-ink-muted/70">{mod.no}</span>
-              <h2 class="text-base font-semibold text-ink">{mod.name}</h2>
-              <span class="text-[11px] text-ink-muted">{mod.desc}</span>
+              <h3 class="text-sm font-semibold text-ink">{mod.name}</h3>
+              <span class="hidden text-[11px] text-ink-muted sm:inline">{mod.desc}</span>
             </div>
             <span class="text-[11px] text-ink-muted tabular-nums">{mod.items.length} 条</span>
           </div>
@@ -100,7 +133,9 @@ const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，�
             {mod.items.map((item) => (
               <li id={item.id} class="flex gap-3 scroll-mt-24 py-5 sm:gap-4">
                 <div class="w-7 shrink-0 text-center">
-                  <span class="text-[11px] font-semibold text-ink-muted tabular-nums">{item.rank}</span>
+                  <span class="text-[11px] font-semibold text-ink-muted tabular-nums">
+                    {item.rank}
+                  </span>
                   <div class="mt-1.5 flex flex-col items-center gap-[3px]" aria-hidden="true">
                     {Array.from({ length: 5 }, (_, i) => (
                       <span
@@ -114,39 +149,16 @@ const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，�
                 </div>
 
                 <div class="min-w-0 flex-1">
-                  <div class="flex flex-wrap items-center gap-1.5">
-                    <span
-                      class:list={[
-                        "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium",
-                        EVIDENCE_META[item.evidence].cls,
-                      ]}
-                    >
-                      <span class:list={["h-1 w-1 rounded-full", EVIDENCE_META[item.evidence].dot]} />
-                      {EVIDENCE_META[item.evidence].label}
-                    </span>
-                    <span class="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] text-ink-secondary">
+                  <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-ink-muted">
+                    <span class="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 text-ink-secondary">
                       {categoryLabel(item.category)}
                     </span>
                     {signalText(item).map((s) => (
-                      <span class="text-[10px] text-ink-muted tabular-nums">{s}</span>
+                      <span class="tabular-nums">{s}</span>
                     ))}
                   </div>
 
-                  <h3 class="mt-2 text-[15px] font-semibold leading-snug text-ink">
-                    {item.sources[0] ? (
-                      <a
-                        href={item.sources[0].url}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        class="underline decoration-border decoration-1 underline-offset-[3px] transition hover:decoration-primary"
-                      >
-                        {item.title}
-                      </a>
-                    ) : (
-                      item.title
-                    )}
-                  </h3>
-
+                  {/* 中文正文在前：读者先读得懂，再决定要不要去看原标题 */}
                   <p class="mt-2 max-w-[78ch] text-[15px] leading-[1.85] text-ink">
                     {item.brief.fact}
                   </p>
@@ -154,18 +166,25 @@ const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，�
                     {item.brief.why}
                   </p>
 
-                  {item.brief.caveat && (
-                    <p class="mt-2 flex max-w-[78ch] items-start gap-1.5 text-[11px] leading-relaxed text-ink-muted">
-                      <span class="mt-[5px] h-1 w-1 shrink-0 rounded-full bg-amber-500" aria-hidden="true" />
-                      <span>
-                        <span class="text-amber-700 dark:text-amber-400">还缺：</span>
-                        {item.brief.caveat}
-                      </span>
-                    </p>
-                  )}
+                  <div class="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-ink-muted">
+                    <span class="shrink-0">原文</span>
+                    {item.sources[0] ? (
+                      <a
+                        href={item.sources[0].url}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        class="min-w-0 truncate text-ink-secondary underline decoration-border underline-offset-2 transition hover:text-primary"
+                        title={item.title}
+                      >
+                        {item.title}
+                      </a>
+                    ) : (
+                      <span class="min-w-0 truncate text-ink-secondary">{item.title}</span>
+                    )}
+                  </div>
 
-                  <div class="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-ink-muted">
-                    <span>来源</span>
+                  <div class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-ink-muted">
+                    <span class="shrink-0">来源</span>
                     {item.sources.map((s, i) => (
                       <>
                         {i > 0 && <span class="text-border-strong">/</span>}
@@ -190,9 +209,15 @@ const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，�
       ))
     }
 
-    <!-- 采集健康度 -->
+    <!-- 其他信息 -->
     <section class="mt-12 rounded-xl border border-border bg-surface p-4">
-      <h2 class="text-sm font-semibold text-ink">来源与采集情况</h2>
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 class="text-sm font-semibold text-ink">其他信息 · 来源与采集</h2>
+        <span class="text-[11px] text-ink-muted tabular-nums">
+          从 {digest.stats.candidates} 条候选里选出 {total} 条
+        </span>
+      </div>
+
       <ul class="mt-3 flex flex-wrap gap-1.5">
         {
           digest.sourceHealth.map((s) => (
@@ -212,8 +237,10 @@ const description = `${formatDate(digest.date)} 的 AI 情报：${total} 条，�
           ))
         }
       </ul>
+
       <p class="mt-3 text-[11px] leading-relaxed text-ink-muted">
         源失败不会让整期缺内容，但会在上面标红；任何一期都能追溯到具体是哪个源没取到。
+        缺一手材料的条目一律不发，所以这里出现的每一条都能点回原始出处。
       </p>
     </section>
 
