@@ -431,6 +431,15 @@ async function main(): Promise<void> {
   // 只移除本次发出去的条目；未富化/未确认的继续留在队列里
   const published = new Set(newItems.map((t) => t.domain));
   const handled = new Set(accepted.map((t) => t.domain.toLowerCase()));
+  /*
+   * 判重复的也要算「已处理」。
+   *
+   * 它们的域名本来就在线上，本轮不可能发出去；留在这里会被下面的 clearCandidates
+   * + syncCandidates 原样写回，而 stage 还是后台派发时写的 publishing —— 结果就是
+   * 永远停在「发布中」，既不能重发也不会消失。2026-11-27 那次 53 条里 40 条重复，
+   * 全部这样卡住了。
+   */
+  for (const d of duplicates) handled.add(d.toLowerCase());
   const remaining = staging.items.filter((i) => !handled.has(i.domain.toLowerCase()));
 
   // 先标「已发榜」再重建队列，顺序不能反：clearCandidates 只删非 published 的行。
@@ -447,7 +456,9 @@ async function main(): Promise<void> {
         itemKey: i.domain.toLowerCase(),
         name: i.name,
         url: i.url ?? `https://${i.domain}`,
-        status: (i.stage ?? "candidate") as ItemStatus,
+        // publishing 是后台派发时写的占位，本轮既然没发出去就必须退回待发，
+        // 否则这条会带着「发布中」被写回队列，永远等不到人来处理
+        status: (i.stage === "publishing" ? "enriched" : (i.stage ?? "candidate")) as ItemStatus,
         // 剩余的更新条目必须保住 refresh，否则重建队列后就被当成新条目
         kind: kindOf(i),
         judge: i.verdict,
