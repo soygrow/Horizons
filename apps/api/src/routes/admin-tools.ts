@@ -56,6 +56,8 @@ const AUDIT_WORKFLOW = "audit-tools.yml";
 const DEPLOY_WORKFLOW = "deploy-site.yml";
 
 const MAX_COUNT = 200;
+/** 抓取时间窗上限（天），与 fetch-staging.ts 的 MAX_DAYS 保持一致；3650 ≈ 不限 */
+const MAX_DAYS = 3650;
 const MAX_PAGE_SIZE = 100;
 /** 指定网站单次上限，与 scripts/admin/fetch-staging.ts 的 MAX_MANUAL 保持一致 */
 const MAX_MANUAL_DOMAINS = 50;
@@ -317,6 +319,8 @@ tools.post("/jobs", async (c) => {
       ? body.topic.trim()
       : "artificial-intelligence";
   const enrich = body.enrich !== false;
+  // 时间窗：PH 与 HN 共用。留空/非数字回落到 30，和脚本默认值一致
+  const days = Math.max(1, Math.min(Number(body.days ?? 30) || 30, MAX_DAYS));
   const note = typeof body.note === "string" ? body.note.slice(0, 120) : "";
 
   const id = crypto.randomUUID();
@@ -328,6 +332,7 @@ tools.post("/jobs", async (c) => {
       count: String(count),
       order,
       topic,
+      days: String(days),
       enrich: String(enrich),
       // workflow_dispatch 的 input 是单行字符串，逗号分隔交给脚本再拆
       domains: domains.join(","),
@@ -347,7 +352,7 @@ tools.post("/jobs", async (c) => {
     .bind(
       id,
       run ? mapStatus(run, "queued") : "queued",
-      JSON.stringify({ count, order, topic, enrich, note, ...(domains.length ? { domains } : {}) }),
+      JSON.stringify({ count, order, topic, days, enrich, note, ...(domains.length ? { domains } : {}) }),
       run?.id ?? null,
       run?.html_url ?? null,
       now,

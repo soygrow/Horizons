@@ -27,7 +27,7 @@ on:
         required: false
         default: "artificial-intelligence"
       days:
-        description: "Product Hunt 时间窗（天）：只抓最近 N 天发布的产品"
+        description: "时间窗（天）：PH 与 HN 共用。30=默认，365=近一年，3650≈不限；扩量时配 order=votes 拿一年内票数最高的"
         required: false
         default: "30"
       enrich:

@@ -738,7 +738,7 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 开始抓取
               </button>
             </div>
-            <div class="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-5">
               <label class="block text-xs font-medium text-ink-secondary">
                 数量
                 <select id="tools-fetch-count" class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary">
@@ -746,6 +746,22 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                   <option value="60" selected>60 个（约 8 分钟）</option>
                   <option value="120">120 个（约 15 分钟）</option>
                   <option value="200">200 个（约 25 分钟）</option>
+                </select>
+              </label>
+              <!-- 时间窗：PH 与 HN 共用。按点赞排序时窗口越大拿到的历史高票产品越多，
+                   扩量阶段主要靠这个把候选池做厚；指定网站模式下会被忽略。 -->
+              <label class="block text-xs font-medium text-ink-secondary">
+                时间窗
+                <select
+                  id="tools-fetch-days"
+                  title="只抓最近 N 天发布的产品；按点赞排序时窗口越大，能翻到的历史高票产品越多"
+                  class="mt-1 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-ink outline-none focus:border-primary"
+                >
+                  <option value="30" selected>近 30 天</option>
+                  <option value="90">近 90 天</option>
+                  <option value="180">近半年</option>
+                  <option value="365">近一年</option>
+                  <option value="730">近两年</option>
                 </select>
               </label>
               <label class="block text-xs font-medium text-ink-secondary">

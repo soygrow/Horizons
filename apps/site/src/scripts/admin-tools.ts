@@ -724,7 +724,10 @@ function renderJobs(jobs: Job[]): void {
               return `指定 ${p.domains.length} 个站点${p.enrich ? " · 补流量" : ""}`;
             }
             const order = p.order === "votes" ? "按点赞" : "最新";
-            return `${p.count ?? "?"} 个 · ${order}${p.enrich ? " · 补流量" : ""}`;
+            // 时间窗只在非默认值时提示，避免每行都挂一句「近 30 天」
+            const win =
+              Number(p.days) && Number(p.days) !== 30 ? ` · 近 ${p.days} 天` : "";
+            return `${p.count ?? "?"} 个 · ${order}${win}${p.enrich ? " · 补流量" : ""}`;
           }
           if (job.kind === "enrich") {
             const n = Array.isArray(p.domains) ? p.domains.length : Number(p.limit ?? 0);
@@ -1378,6 +1381,7 @@ function bind(): void {
     const order = ($("tools-fetch-order") as HTMLSelectElement).value;
     const topic =
       ($("tools-fetch-topic") as HTMLInputElement).value.trim() || "artificial-intelligence";
+    const days = Number(($("tools-fetch-days") as HTMLSelectElement | null)?.value) || 30;
     const enrich = ($("tools-fetch-enrich") as HTMLInputElement).checked;
 
     btn.disabled = true;
@@ -1387,6 +1391,7 @@ function bind(): void {
         count,
         order,
         topic,
+        days,
         enrich,
         ...(domains.length ? { domains } : {}),
       });
