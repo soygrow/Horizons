@@ -81,6 +81,13 @@ const VORTEX_BASE_USD = 0.002;
 /** 单次最多抓 200 个：再多 Actions 容易超时，且后台一次审核不过来 */
 const MAX_COUNT = 200;
 /**
+ * 时间窗上限（天），十年 = 实际不限。
+ *
+ * 之前 days 和 count 共用一个 clamp，`--days 365` 会被静默压成 200，
+ * 想翻更老的数据永远翻不到，日志里那句「近 N 天」还是压完的值，很难察觉。
+ */
+const MAX_DAYS = 3650;
+/**
  * 指定网站单次上限。
  * 每站要探活（最坏 12s 超时）+ 流量富化 + 翻译，50 个在 45 分钟的 job 预算内仍然安全。
  */
@@ -130,10 +137,10 @@ function arg(name: string): string | undefined {
   return i >= 0 ? process.argv[i + 1] : undefined;
 }
 
-function intArg(name: string, fallback: number): number {
+function intArg(name: string, fallback: number, max = MAX_COUNT): number {
   const raw = Number(arg(name));
   if (!Number.isFinite(raw) || raw <= 0) return fallback;
-  return Math.min(Math.floor(raw), MAX_COUNT);
+  return Math.min(Math.floor(raw), max);
 }
 
 /**
@@ -379,7 +386,16 @@ async function fetchAllSources(
   // 补位：HN 走公开 API、直接给真实域名，最稳
   if (out.length < count) {
     try {
-      const hn = await fetchHackerNewsTools(count - out.length, existingNames, seen);
+      // 时间窗跟 PH 保持一致：以前 HN 写死 14 天，--days 调大它也不跟
+      const hn = await fetchHackerNewsTools(
+        count - out.length,
+        existingNames,
+        seen,
+        undefined,
+        // days=0 在 PH 那边表示「不限」，HN 没有这个语义（0 天 = 今天以后，必然空），
+        // 落到十年窗，等价于不限
+        days > 0 ? days : 3650,
+      );
       out.push(...hn.items);
     } catch (e) {
       console.warn(`[staging] HN 抓取失败：${e instanceof Error ? e.message : e}`);
@@ -479,8 +495,8 @@ async function main(): Promise<void> {
   const count = intArg("count", config.maxPerRun);
   const order = arg("order") === "newest" ? ("NEWEST" as const) : ("VOTES" as const);
   const topic = arg("topic") ?? config.productHunt.topicSlugs[0];
-  /** PH 时间窗（天）。0 表示不限，一般没必要——见 fetchProductHuntTools 的注释 */
-  const days = intArg("days", 30);
+  /** 时间窗（天，PH 与 HN 共用）。0 表示不限，一般没必要——见 fetchProductHuntTools 的注释 */
+  const days = intArg("days", 30, MAX_DAYS);
   /** 非空 = 指定网站模式，count/order/topic/days 全部忽略 */
   const manualDomains = parseDomains(arg("domains"));
 

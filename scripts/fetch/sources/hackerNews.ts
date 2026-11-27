@@ -17,13 +17,24 @@ import { config } from "../config";
 
 const HN_SEARCH_URL = "https://hn.algolia.com/api/v1/search_by_date";
 
-/** 只看最近 N 天，和 PH 那边的「新星」口径保持一致 */
+/** 默认只看最近 N 天，和 PH 那边的「新星」口径保持一致；可由调用方用 --days 覆盖 */
 const WINDOW_DAYS = 14;
 /** Show HN 的票数普遍偏低（首页级 100+，普通 5–30），门槛放到 3 */
 const MIN_POINTS = 3;
 const PAGE_SIZE = 100;
-/** 单次最多翻几页，防 API 返回异常时死循环 */
-const MAX_PAGES = 5;
+/** 翻页硬上限，防 API 返回异常时死循环（按时间窗动态放宽，见 pagesFor） */
+const MAX_PAGES = 100;
+
+/**
+ * 时间窗 → 最大翻页数。
+ *
+ * 固定 5 页（500 条）在 14 天窗口下够用，但时间窗一旦拉到一年，
+ * 500 条只够覆盖前几周，后面的老数据永远翻不到。
+ * 按每 7 天 5 页估算，再封顶 MAX_PAGES。
+ */
+function pagesFor(days: number): number {
+  return Math.min(Math.max(Math.ceil(days / 7) * 5, 5), MAX_PAGES);
+}
 
 /**
  * AI 相关性预筛。刻意放宽：这里只是「值不值得进候选池」，
@@ -186,18 +197,19 @@ export async function fetchHackerNewsTools(
   existingNames: Set<string> = new Set(),
   seenDomains: Set<string> = new Set(),
   maxScan?: number,
+  postedAfterDays = WINDOW_DAYS,
 ): Promise<HackerNewsFetchResult> {
   const skipped = { noUrl: 0, notAi: 0, excluded: 0, seen: 0, duplicate: 0 };
   const items: AITool[] = [];
   const scanCap = maxScan ?? Math.max(limit * 10, 200);
 
-  const since = Math.floor(Date.now() / 1000) - WINDOW_DAYS * 86400;
+  const since = Math.floor(Date.now() / 1000) - postedAfterDays * 86400;
   const filters = encodeURIComponent(`created_at_i>${since},points>=${MIN_POINTS}`);
 
   let scanned = 0;
   let pages = 0;
 
-  for (let page = 0; page < MAX_PAGES; page++) {
+  for (let page = 0; page < pagesFor(postedAfterDays); page++) {
     if (items.length >= limit || scanned >= scanCap) break;
 
     const url =

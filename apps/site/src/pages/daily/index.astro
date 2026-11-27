@@ -43,7 +43,7 @@ const archive = digests.slice(1, 9);
 const title = "每日情报 · Horizons";
 const description = latest
   ? `${formatDate(latest.date)} 的 AI 情报：${latestCount} 条，每一条都有一手出处。先读一段中文总结，再看详情。`
-  : "每天 7:30 更新一份 AI 情报：新模型、能直接用的开源项目、价格与成本变化，以及今天就能动手的机会。先给总结，再给细节，每条都带原始链接。";
+  : "每天更新一份 AI 情报：新模型、能直接用的开源项目、价格与成本变化，以及今天就能动手的机会。先给总结，再给细节，每条都带原始链接。";
 
 const MODULE_TONE = ["bg-primary", "bg-sky-500", "bg-violet-500", "bg-emerald-500"];
 const composition = latest
@@ -113,11 +113,11 @@ const faqs = [
               <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60"></span>
               <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary"></span>
             </span>
-            每天 07:30 更新 · 当前免费
+            每天更新 · 当前免费
           </span>
 
           <h1 class="mt-5 text-[1.7rem] font-bold leading-[1.22] tracking-tight text-ink sm:text-[2.6rem]">
-            每天 7:30，<br />
+            每天更新，<br />
             <span
               class="bg-clip-text text-transparent"
               style="background-image: linear-gradient(100deg, #0866fa 0%, #5b3cf3 55%, #703ff4 100%);"
@@ -145,7 +145,7 @@ const faqs = [
 
           <p class="mt-5 text-[11px] leading-relaxed text-ink-muted">
             {latest
-              ? `每天 05:00 开始采集，07:30 出刊。本期读完 ${latest.stats.candidates} 条候选，留下 ${latestCount} 条。`
+              ? `每天更新。本期读完 ${latest.stats.candidates} 条候选，留下 ${latestCount} 条。`
               : "第一期正在生成，下面是这份日报的取舍标准与更新方式。"}
           </p>
         </div>
@@ -411,7 +411,7 @@ const faqs = [
         </div>
 
         <div class="rounded-2xl border border-border bg-surface p-5">
-          <h3 class="text-sm font-semibold text-ink">四类来源 · 每天 07:30</h3>
+          <h3 class="text-sm font-semibold text-ink">四类来源 · 每天更新</h3>
           <ul class="mt-3 space-y-2">
             {sources.map((s, i) => (
               <li class="flex items-start gap-2.5 rounded-lg bg-surface-2 px-3 py-2">
@@ -518,7 +518,7 @@ const faqs = [
     <div class="rounded-3xl border border-border bg-surface px-6 py-10 text-center sm:px-10">
       <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">先把今天这一段话读完</h2>
       <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-ink-secondary">
-        总结讲清今天最重要的变化，细节留给需要的人。每天 07:30 更新，免费，不登录也能看完整一期。
+        总结讲清今天最重要的变化，细节留给需要的人。每天更新，免费，不登录也能看完整一期。
       </p>
       <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
         {latest && (

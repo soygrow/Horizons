@@ -423,8 +423,15 @@ export async function fetchProductHuntTools(
   `;
 
   const pageSize = 20;
-  /** 上限只兜底用：正常凑够 limit 会提前 break */
-  const scanCap = maxScan ?? Math.min(Math.max(limit * 8, 120), 600);
+  /**
+   * 上限只兜底用：正常凑够 limit 会提前 break。
+   *
+   * 上限从 600 提到 2000（2026-11-27）：扩量阶段单轮要产出一两百条，
+   * 而条目在扫的过程中会被名字去重、黑名单、域名解析失败吃掉三到六成，
+   * limit*8 很容易顶到旧上限就停，时间窗再大也白搭。
+   * 代价是每页 20 条、每条最多三层域名解析，扫满 2000 条是十几分钟的量级。
+   */
+  const scanCap = maxScan ?? Math.min(Math.max(limit * 8, 120), 2000);
 
   const items: AITool[] = [];
   let after: string | null = null;
