@@ -237,6 +237,15 @@ async function runPool<T, R>(
   return out;
 }
 
+/** 准入采集的返回结构：快照 + 「查过没有」的标记（见函数注释） */
+interface AdmissionResult {
+  snapshots: Map<string, VortexSnapshot>;
+  /** 本轮确实向 vortex 问过的域名，含查询失败 */
+  checked: Set<string>;
+  /** checked 里真拿到月访问量的条数 */
+  ok: number;
+}
+
 /**
  * 准入采集：一次调用拿到判定与后续展示所需的全部流量数据。
  *
@@ -253,13 +262,23 @@ async function runPool<T, R>(
  *   3. 串行落库 —— d1-client 顺序执行的设计不变，避免并发写互相等锁。
  *
  * 返回 domain → 快照，供 `judge()` 读取可信度信号（dataCoverage / isSmall）。
+ *
+ * 除快照外还回两个「查过没有」的标记，用来区分「没流量」和「没查过」：
+ *
+ *   - `checked`：本轮确实向 vortex 问过的域名（含失败），只有这些站
+ *     才能因「无流量」被挡在待确认之外；
+ *   - `ok`：其中真拿到月访问量的条数。全为 0 说明是 vortex 整体故障
+ *     （超配额、Actor 挂了），不能把整批都判成没流量。
+ *
+ * 超出 MAX_VORTEX_BUY 的站不在 checked 里 —— 它们没查，不该被误杀。
  */
-async function collectAdmission(items: AITool[]): Promise<Map<string, VortexSnapshot>> {
+async function collectAdmission(items: AITool[]): Promise<AdmissionResult> {
   const out = new Map<string, VortexSnapshot>();
-  if (items.length === 0) return out;
+  const checked = new Set<string>();
+  if (items.length === 0) return { snapshots: out, checked, ok: 0 };
   if (!hasApify()) {
     console.warn("[staging] 未配置 APIFY_TOKEN，跳过准入流量采集");
-    return out;
+    return { snapshots: out, checked, ok: 0 };
   }
   // 表缺了就会每轮重复买 vortex，付钱前先挡掉
   await assertStore();
@@ -283,6 +302,7 @@ async function collectAdmission(items: AITool[]): Promise<Map<string, VortexSnap
       const snap = parseVortexBase(hit.payload, hit.period || period);
       applyVortexAdmission(tool, snap);
       out.set(tool.domain.toLowerCase(), snap);
+      checked.add(tool.domain.toLowerCase());
       continue;
     }
     pending.push(tool);
@@ -293,7 +313,7 @@ async function collectAdmission(items: AITool[]): Promise<Map<string, VortexSnap
     );
   }
 
-  if (pending.length === 0) return out;
+  if (pending.length === 0) return { snapshots: out, checked, ok: out.size };
 
   /* ② 并发购买：外部调用并发，不碰 D1 */
   type Fetched = {
@@ -317,6 +337,8 @@ async function collectAdmission(items: AITool[]): Promise<Map<string, VortexSnap
   let ok = 0;
   for (const f of fetched) {
     const domain = f.tool.domain.toLowerCase();
+    // 失败也算「问过了」：正是这类站会被判成无流量、挡在待确认之外
+    checked.add(domain);
     if (!f.snap || !f.item) {
       // 失败也记一行：后台能看出「这个站试过了、失败了」，账目记 0
       await saveRaw({
@@ -331,9 +353,7 @@ async function collectAdmission(items: AITool[]): Promise<Map<string, VortexSnap
       });
       // 注意：这个站仍会落进候选池，之后的采集会因「已见过」而跳过。
       // 要补数据得在后台点「重判」，或把它放进 --domains 手动重抓。
-      console.warn(
-        `[staging] vortex 无数据：${domain}（${f.error ?? "未知"}）—— 已进候选池，需手动重抓`,
-      );
+      console.warn(`[staging] vortex 无数据：${domain}（${f.error ?? "未知"}）`);
       continue;
     }
 
@@ -361,7 +381,7 @@ async function collectAdmission(items: AITool[]): Promise<Map<string, VortexSnap
     `[staging] 准入采集完成 ${ok}/${pending.length} 个｜本次花费 ≈$${spent.toFixed(4)}` +
       `（命中缓存 ${budget.length - pending.length} 个未计费）`,
   );
-  return out;
+  return { snapshots: out, checked, ok: out.size };
 }
 
 /* ------------------------------- 多源合并抓取 ------------------------------- */
@@ -657,9 +677,8 @@ async function main(): Promise<void> {
 
   // 准入即采集：vortex base_data 是全链路唯一付费的流量来源。
   // 富化阶段直接读 collect_raw，同一个域名不会再买第二次。
-  const snapshots = enrich
-    ? await collectAdmission(relevant)
-    : new Map<string, VortexSnapshot>();
+  const admission = enrich ? await collectAdmission(relevant) : null;
+  const snapshots = admission?.snapshots ?? new Map<string, VortexSnapshot>();
   if (enrich) {
     console.log(`[staging] 流量判定字段就绪 ${snapshots.size}/${relevant.length}`);
   }
@@ -685,21 +704,68 @@ async function main(): Promise<void> {
     ? await probeAll(needProbe)
     : new Map<string, boolean | null>();
   console.log(`[staging] 存活探测 ${needProbe.length} 个`);
+
+  /*
+   * 「问过流量、但一个数都没有」的站不进待确认。
+   *
+   * 这类站是 Similarweb 还没收录的新站：vortex 回了空数组，或回了但缺月访问量。
+   * 判定端它们靠 PH 票兜进观察区（watch），但页面上没有任何流量数字 ——
+   * 既不好看，也撑不起收录原则里的「规模达标」，展示出来只会被当成凑数。
+   *
+   * 三个条件同时满足才挡，宁漏勿错：
+   *   1. 非指定网站模式（审核员点名的站要看真实情况，不能替他决定）；
+   *   2. 本轮确实问过 vortex（admission.checked）：超准入上限没买的、
+   *      没开富化的，保持原有 PH 兜底逻辑，否则等于把「没查」当「没流量」；
+   *   3. 本轮 vortex 是好的（ok > 0）：全 0 是超配额 / Actor 故障，
+   *      这时把整批判成无流量会一次干掉一整轮。
+   *
+   * 落库时仍按 rejected 写（不进待确认），配合 REJECT_COOLDOWN_DAYS，
+   * 90 天后会自动被抓回来重查一次流量 —— 正好是「先不收，以后再说」。
+   */
+  const trafficLookupBroken = admission !== null && admission.ok === 0 && admission.checked.size > 0;
+  if (trafficLookupBroken) {
+    console.warn(
+      "[staging] vortex 本轮一条访问量都没拿到，按「未查流量」处理，不筛无流量条目",
+    );
+  }
+  const noTraffic: string[] = [];
   const items: StagingItem[] = fresh.map((t) => {
     // 第 4 个参数带 Similarweb 可信度：样本不足的站即使数够主榜也进观察区。
     // 超出准入上限、本轮没采到的站没有快照，judge 走原有的 PH 票兜底逻辑。
-    const verdict = judge(
+    let verdict = judge(
       t,
       aliveMap.get(t.domain) ?? null,
       relevantDomains.has(t.domain),
       snapshots.get(t.domain.toLowerCase()),
     );
+    const askedTraffic = admission?.checked.has(t.domain.toLowerCase()) ?? false;
+    if (
+      !manual &&
+      !trafficLookupBroken &&
+      askedTraffic &&
+      visitsOf(t) === undefined &&
+      verdict.tier !== "reject"
+    ) {
+      noTraffic.push(t.name);
+      verdict = {
+        ...verdict,
+        tier: "reject",
+        reason: `无流量数据（Similarweb 未收录），暂不收录 · PH ${t.phUpvotes ?? 0} 票`,
+      };
+    }
     return { ...t, verdict, stage: verdict.tier === "reject" ? "rejected" : "candidate" };
   });
+  if (noTraffic.length > 0) {
+    console.log(
+      `[staging] 无流量暂不收录 ${noTraffic.length} 个（不进待确认，${REJECT_COOLDOWN_DAYS} 天后自动重查）：` +
+        `${noTraffic.slice(0, 8).join("、")}${noTraffic.length > 8 ? " 等" : ""}`,
+    );
+  }
   const tally = { core: 0, watch: 0, reject: 0 };
   for (const it of items) tally[it.verdict!.tier]++;
   console.log(
-    `[staging] 判定结果：主榜 ${tally.core}｜观察区 ${tally.watch}｜不收录 ${tally.reject}`,
+    `[staging] 判定结果：主榜 ${tally.core}｜观察区 ${tally.watch}｜不收录 ${tally.reject}` +
+      `（其中无流量 ${noTraffic.length}）`,
   );
 
   // 判定之后、落库之前翻译：判定只看流量与票数，跟语言无关；
