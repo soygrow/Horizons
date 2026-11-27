@@ -865,7 +865,7 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
                 <button
                   id="tools-reject-btn"
                   type="button"
-                  title="把勾选的条目加入拒绝名单，之后不再被抓取"
+                  title="把勾选的条目加入拒绝名单；90 天内不再被抓取，期满后允许重新评估一次"
                   class="rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition hover:border-danger hover:text-danger disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   批量拒绝
@@ -2202,6 +2202,7 @@ wrangler secret put GITHUB_REPO    # 例如 yourname/horizons</pre>
           <button
             id="tools-detail-reject"
             type="button"
+            title="拒绝后 90 天内不再被抓取，期满会重新参与采集评估"
             class="rounded-lg border border-border px-3 py-1.5 text-xs text-ink-secondary transition hover:border-danger hover:text-danger"
           >
             拒绝这个工具

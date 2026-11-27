@@ -6,7 +6,9 @@
  *   - stage = approved  → 仅 --include-approved 时发布（跳过富化）
  *   - stage = candidate / rejected → 一律不发
  *
- * 已拒绝（rejected）域名永久跳过；已存在的域名跳过（不覆盖线上已富化数据）。
+ * 已拒绝（rejected）域名不发布；已存在的域名跳过（不覆盖线上已富化数据）。
+ * 注意「拒绝 90 天后可被重新抓取」只影响采集侧（fetch-staging 的 REJECT_COOLDOWN_DAYS），
+ * 这里没有时间概念：发布只认 status，rejected 永远不发。
  * 发布后只从队列里移除本次发出去的条目，其余候选保留继续审核。
  *
  * --drops：同时执行存量重判给出的下榜清单（content/tools-audit.json）。

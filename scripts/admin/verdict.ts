@@ -213,7 +213,8 @@ export function judge(
 /**
  * 候选生命周期：
  *   candidate → approved（人工确认可收录）→ enriched（富化完成）→ published（已发榜）
- *   candidate → rejected（人工拒绝，域名进永久拒绝名单）
+ *   candidate → rejected（人工拒绝；采集侧按 REJECT_COOLDOWN_DAYS=90 天冷却，
+ *                        期满后可被重新抓回并回到 candidate）
  */
 export type Stage = "candidate" | "approved" | "enriched" | "published" | "rejected";
 

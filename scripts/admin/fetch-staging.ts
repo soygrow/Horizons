@@ -47,7 +47,7 @@ import { looksLikeAiProduct } from "../fetch/ai-relevance";
 import { translateInPlace } from "../fetch/translate";
 import { d1Configured } from "./d1-client";
 import { readListedTools } from "./hydrate-tools";
-import { listCandidates, syncCandidates, type ItemStatus } from "./board-items";
+import { listCandidates, syncCandidates, touchRejected, type ItemStatus } from "./board-items";
 import {
   judge,
   visitsOf,
@@ -94,6 +94,31 @@ const MAX_DAYS = 3650;
 const MAX_MANUAL = 50;
 /** 指定网站的元信息抓取并发：同一个域名的首页，一次 6 个足够，再高容易被 WAF 拦 */
 const META_CONCURRENCY = 6;
+
+/**
+ * 「已拒绝」的冷却期（天）。
+ *
+ * 拒绝是人工判断，但判断会过期：产品会改版、会转向、可能当初只是流量没起来，
+ * 也可能审核时手滑点错。永久拉黑等于判死刑，而候选池只会越来越薄。
+ *
+ * 90 天是个折中：短于这个天数等于反复打扰同一个被否掉的站（还白花域名解析的钱），
+ * 长于它则一年只能回头看一眼一次，「当初拒错了」的条目永远等不到第二次机会。
+ *
+ * 冷却期内的照旧挡住（省采集额度）；期满后重新参与去重以外的所有流程，
+ * 被重新写回候选池时 status 会变回 candidate，updated_at 刷新，再冷却 90 天。
+ */
+const REJECT_COOLDOWN_DAYS = 90;
+const DAY_MS = 86_400_000;
+
+/** 拒绝已满冷却期 → 不再视为「见过」，允许本轮重新抓取 */
+function rejectCooledDown(
+  item: { status: string; updatedAt: number },
+  now: number = Date.now(),
+): boolean {
+  if (item.status !== "rejected") return false;
+  // updatedAt 为 0 表示历史迁移留下的空值，按「很久以前」处理
+  return now - item.updatedAt >= REJECT_COOLDOWN_DAYS * DAY_MS;
+}
 
 /* ------------------------------- 在榜基线 ------------------------------- */
 
@@ -506,14 +531,34 @@ async function main(): Promise<void> {
   // 候选池只从 D1 读：已拒绝的域名也算「见过」，否则后台点过拒绝的下次还会被抓回来
   const pool = await listCandidates<StagingItem>("tools");
 
-  // 已发布 + 候选池（含已拒绝），两类都算「见过」，避免重复抓取占额度
+  /*
+   * 拒绝满冷却期的条目放回可抓范围。
+   *
+   * 手动点名模式（manualDomains）不走这里：那一整段本来就不看 seen/existingNames，
+   * 而且「点名重看一个被拒过的站」是明确意图，不该被冷却期挡住。
+   */
+  const now = Date.now();
+  const cooled = manualDomains.length ? [] : pool.filter((d) => rejectCooledDown(d, now));
+  if (cooled.length) {
+    console.log(
+      `[staging] 拒绝已满 ${REJECT_COOLDOWN_DAYS} 天：${cooled.length} 条重新进入可抓范围` +
+        `（${cooled
+          .slice(0, 5)
+          .map((d) => d.itemKey)
+          .join("、")}${cooled.length > 5 ? " 等" : ""}）`,
+    );
+  }
+  /** 参与「见过」判定的候选池条目：冷却期内的拒绝仍然挡住，期满了放行 */
+  const poolSeen = pool.filter((d) => !rejectCooledDown(d, now));
+
+  // 已发布 + 候选池（拒绝未满冷却期），两类都算「见过」，避免重复抓取占额度
   const seen = new Set<string>([
     ...existing.map((t) => t.domain),
-    ...pool.map((d) => d.itemKey),
+    ...poolSeen.map((d) => d.itemKey),
   ]);
   const existingNames = new Set([
     ...existing.map((t) => t.name.toLowerCase()),
-    ...pool.map((d) => d.name.toLowerCase()),
+    ...poolSeen.map((d) => d.name.toLowerCase()),
   ]);
 
   if (manualDomains.length) {
@@ -571,13 +616,16 @@ async function main(): Promise<void> {
    * 发布时再被判重复 —— 11-27 那次 53 条里 40 条重复就是这么绕了一圈。
    *
    * 候选池按全量算（listCandidates 不带 status）：待确认、待富化、待发布、
-   * 已发布待确认、已拒绝都算「见过」，否则拒绝过的会被反复抓回来。
-   * 例外是指定网站模式：审核员点名重看一眼已拒绝的站，是明确的重新评估意图。
+   * 已发布待确认、拒绝未满冷却期，都算「见过」，否则拒绝过的会被反复抓回来。
+   *
+   * 两个例外：
+   *   - 拒绝已满 REJECT_COOLDOWN_DAYS：给一次重新评估的机会（poolSeen 已放行）；
+   *   - 指定网站模式：审核员点名重看一眼已拒绝的站，不受冷却期限制。
    */
   const knownDomains = new Set<string>([
     ...existing.map((t) => t.domain.toLowerCase()),
     ...pool
-      .filter((d) => !(manualDomains.length > 0 && d.status === "rejected"))
+      .filter((d) => d.status !== "rejected" || (manualDomains.length === 0 && !rejectCooledDown(d, now)))
       .map((d) => d.itemKey.toLowerCase()),
   ]);
   const beforeFilter = fresh.length;
@@ -686,6 +734,26 @@ async function main(): Promise<void> {
   // 没有文件兜底了：写不全就是后台缺数据，必须让这一步红掉
   if (saved !== items.length) {
     throw new Error(`候选池写入不完整：${saved}/${items.length}，已中止以免后台缺条目`);
+  }
+
+  /*
+   * 冷却期满被抓回来、本轮却没进候选池的条目（没过 A1 粗筛 / 探活不通 / 仍判死）：
+   * 顺手刷新 updated_at，让它重新冷却一个周期。
+   *
+   * 不刷新的话，这批域名每一轮采集都会重新出现在扫描结果里，PH 那层还要重做一次
+   * 域名解析（最坏 20s/条），等于永久占用新条目的名额 —— 90 天冷却就退化成了
+   * 「每轮都试一次」。只对本轮真的扫到过的域名生效，没扫到的不动。
+   */
+  const scraped = new Set(fresh.map((t) => t.domain.toLowerCase()));
+  const written = new Set(items.map((t) => t.domain.toLowerCase()));
+  const stillRejected = cooled
+    .map((d) => d.itemKey.toLowerCase())
+    .filter((k) => scraped.has(k) && !written.has(k));
+  if (stillRejected.length) {
+    const n = await touchRejected("tools", stillRejected);
+    console.log(
+      `[staging] ${stillRejected.length} 条过期拒绝本轮仍不合格，刷新时间重新冷却 ${REJECT_COOLDOWN_DAYS} 天（实际更新 ${n} 条）`,
+    );
   }
 
   const total = new Set([...pool.map((d) => d.itemKey), ...items.map((t) => t.domain)]).size;

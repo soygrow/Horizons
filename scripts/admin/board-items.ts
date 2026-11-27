@@ -262,22 +262,71 @@ export async function rejectCandidate(board: string, itemKey: string): Promise<b
   }
 }
 
+/**
+ * 刷新一批「已拒绝」条目的 updated_at，status 不动。
+ *
+ * 用途：拒绝冷却期满被抓回来、但本轮仍然不合格的条目。它们没进候选池，
+ * 若不刷新时间戳，下一轮又会被当成「过期拒绝」重新扫一遍 ——
+ * 域名解析（PH 那层最坏 20s）和白跑的探活会一直占着新条目的名额。
+ *
+ * 只更新 status='rejected' 的行：期间被人工改成别的状态时不该被这条逻辑覆盖。
+ */
+export async function touchRejected(board: string, itemKeys: readonly string[]): Promise<number> {
+  if (!itemKeys.length) return 0;
+  const client = openClient();
+  if (!client) return 0;
+  const now = Date.now();
+  let changed = 0;
+  for (let i = 0; i < itemKeys.length; i += 100) {
+    const chunk = itemKeys.slice(i, i + 100);
+    try {
+      const res = await client.query(
+        `UPDATE board_items SET updated_at=? WHERE board=? AND status='rejected' AND item_key IN (${chunk
+          .map(() => "?")
+          .join(",")})`,
+        [now, board, ...chunk],
+      );
+      changed += res.changes;
+    } catch (e) {
+      console.warn("[items] 刷新拒绝时间失败：", e);
+    }
+  }
+  return changed;
+}
+
 /** 读取某榜的条目，供发布脚本合并 */
 export async function listCandidates<T = unknown>(
   board: string,
   status?: ItemStatus,
-): Promise<Array<{ itemKey: string; status: string; kind: string; name: string; card: T | null }>> {
+): Promise<
+  Array<{
+    itemKey: string;
+    status: string;
+    kind: string;
+    name: string;
+    /**
+     * 最后更新时间（epoch ms）。
+     *
+     * 采集侧靠它判断「已拒绝」是否过了冷却期（见 fetch-staging 的 REJECT_COOLDOWN_DAYS）：
+     * 拒绝是人工判断，但产品会改版、会重新发版、也可能当初拒错了，
+     * 永久拉黑等于判死刑，所以按时间给一次重新评估的机会。
+     */
+    updatedAt: number;
+    card: T | null;
+  }>
+> {
   const client = openClient();
   if (!client) return [];
   try {
     const sql = status
-      ? "SELECT item_key, status, kind, name, card FROM board_items WHERE board=? AND status=? ORDER BY updated_at DESC"
-      : "SELECT item_key, status, kind, name, card FROM board_items WHERE board=? ORDER BY updated_at DESC";
+      ? "SELECT item_key, status, kind, name, updated_at, card FROM board_items WHERE board=? AND status=? ORDER BY updated_at DESC"
+      : "SELECT item_key, status, kind, name, updated_at, card FROM board_items WHERE board=? ORDER BY updated_at DESC";
     const res = await client.query<{
       item_key: string;
       status: string;
       kind: string | null;
       name: string;
+      updated_at: number | null;
       card: string | null;
     }>(sql, status ? [board, status] : [board]);
 
@@ -287,6 +336,8 @@ export async function listCandidates<T = unknown>(
       // 迁移前的行 kind 为 NULL（列刚加上），按新增处理，历史行为不变
       kind: r.kind ?? "new",
       name: r.name,
+      // 列定义为 NOT NULL，但历史迁移补列时可能留下 NULL：按 0 处理 = 从未更新 = 视为已过期
+      updatedAt: r.updated_at ?? 0,
       card: r.card ? (JSON.parse(r.card) as T) : null,
     }));
   } catch (e) {

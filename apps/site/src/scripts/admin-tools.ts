@@ -859,7 +859,7 @@ function renderStaging(data: StagingResp): void {
             : row.stage === "publishing"
               ? "发布进行中，不能重复选择"
               : "已发布成功，点「处理完成」后才会移出列表";
-        const reason = row.rejected ? "已拒绝：不再抓取" : (row.reason ?? "—");
+        const reason = row.rejected ? "已拒绝：90 天内不再抓取" : (row.reason ?? "—");
         // 富化过的（含发布三态）都能看到缺失字段，方便回查当初富化得怎么样
         const enrichedStage =
           row.stage === "enriched" ||
@@ -1638,7 +1638,7 @@ function bind(): void {
     }
     if (
       !window.confirm(
-        `确认拒绝选中的 ${domains.length} 个？\n拒绝后这些域名进入永久不抓取名单，采集时会直接跳过。\n` +
+        `确认拒绝选中的 ${domains.length} 个？\n拒绝后 90 天内不再抓取，期满会重新参与一次采集评估。\n` +
           `（误操作可在「已拒绝」筛选里单条恢复）`,
       )
     ) {
