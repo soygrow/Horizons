@@ -27,8 +27,8 @@ const ROOT = path.resolve(import.meta.dirname, "../..");
 const TOOLS_PATH = path.join(ROOT, "content/aitools.json");
 const STATS_PATH = path.join(ROOT, "content/tools-stats.json");
 
-/** 榜单目标条数（与 data.ts 的 MAX_LISTED_TOOLS 一致） */
-export const TARGET_LISTED = 1000;
+/** 榜单目标条数（必须与 data.ts 的 MAX_LISTED_TOOLS 一致，两处一起改） */
+export const TARGET_LISTED = 3000;
 
 /* --------------------------- 收录口径（来自 shared） --------------------------- */
 export { tierOf, visitsOf };

@@ -1449,7 +1449,8 @@ tools.get("/publish/preview", async (c) => {
     | undefined;
 
   const dropCount = a?.dropped?.length ?? 0;
-  const target = s?.target ?? 1000;
+  // 缺省值与 tool-stats.ts 的 TARGET_LISTED、data.ts 的 MAX_LISTED_TOOLS 对齐
+  const target = s?.target ?? 3000;
   const listedBefore = s?.listed ?? 0;
   const listedAfter = Math.max(0, Math.min(listedBefore - dropCount + pending, target));
 

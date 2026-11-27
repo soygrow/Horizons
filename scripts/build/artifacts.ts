@@ -368,7 +368,7 @@ async function main() {
 
   // 详情页只对「已进榜」的站生成：黑名单（大厂主站 / 非独立 AI 产品）与未达门槛的站
   // 连详情页都不产出，避免从搜索、外链或相似推荐绕回榜单。
-  // 用榜单口径（getToolsByScore，含 1000 条上限）而不是 listedTools，
+  // 用榜单口径（getToolsByScore，含 MAX_LISTED_TOOLS 条上限）而不是 listedTools，
   // 保证「达标但被上限挤出」的站也不会产出详情页，两者条数始终一致。
   const listedForDetail = getToolsByScore();
   const toolDetail = listedForDetail.map((t) => ({
@@ -663,7 +663,7 @@ async function main() {
 
   // ---------- 校验（数据不丢的硬闸门）----------
   // 注意：源文件保存全部候选（tools），只有达到收录门槛的 listedForDetail 才上榜；
-  // 达标数超过 MAX_LISTED_TOOLS 时，榜单按综合分截断到 1000 条
+  // 达标数超过 MAX_LISTED_TOOLS 时，榜单按综合分截断到该条数
   if (toolRows.length !== listedForDetail.length) {
     fail(`tools 条数不一致：产物 ${toolRows.length} ≠ 上榜 ${listedForDetail.length}（源 ${tools.length}）`);
   }
