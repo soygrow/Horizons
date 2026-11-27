@@ -547,6 +547,31 @@ async function main(): Promise<void> {
     console.log(`[staging] 新增候选 ${fresh.length}/${count} 个（跳过原因见上方 [fetch] 日志）`);
   }
 
+  /*
+   * 落库前最后一道闸：已经在线上、或已在候选池里的域名，一条都不该再进来。
+   *
+   * 各源内部已经按 seen 挡过一次，这里再挡一次是因为「漏一个就是白花钱」：
+   * 探活、翻译、Apify 流量都发生在这一行之后，一旦写进队列，后台还要人肉审一遍，
+   * 发布时再被判重复 —— 11-27 那次 53 条里 40 条重复就是这么绕了一圈。
+   *
+   * 候选池按全量算（listCandidates 不带 status）：待确认、待富化、待发布、
+   * 已发布待确认、已拒绝都算「见过」，否则拒绝过的会被反复抓回来。
+   * 例外是指定网站模式：审核员点名重看一眼已拒绝的站，是明确的重新评估意图。
+   */
+  const knownDomains = new Set<string>([
+    ...existing.map((t) => t.domain.toLowerCase()),
+    ...pool
+      .filter((d) => !(manualDomains.length > 0 && d.status === "rejected"))
+      .map((d) => d.itemKey.toLowerCase()),
+  ]);
+  const beforeFilter = fresh.length;
+  fresh = fresh.filter((t) => !knownDomains.has(t.domain.toLowerCase()));
+  if (fresh.length < beforeFilter) {
+    console.log(
+      `[staging] 重复过滤：剔除 ${beforeFilter - fresh.length} 个已在线上/候选池的域名`,
+    );
+  }
+
   if (fresh.length === 0) {
     console.log("[staging] 无新增，候选池未变动");
     console.log(JSON.stringify({ added: 0, enriched: 0, total: pool.length }));
